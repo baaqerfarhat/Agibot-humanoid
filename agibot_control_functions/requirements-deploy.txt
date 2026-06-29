@@ -1,0 +1,4 @@
+# On-robot deployment dependencies (in addition to the robot's ROS 2 install,
+# which provides rclpy / aimdk_msgs / sensor_msgs).
+# Inference is a small numpy MLP -- no torch / onnxruntime needed.
+numpy>=1.21

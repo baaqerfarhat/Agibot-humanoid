@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.ipynb_checkpoints/
+
+# Virtual envs / build
+.venv/
+venv/
+env/
+build/
+dist/
+
+# uv / mjlab runtime outputs (do NOT commit multi-GB training data)
+mjlab/.venv/
+mjlab/logs/
+mjlab/wandb/
+mjlab/outputs/
+mjlab/**/*.log
+*.log
+
+# Training checkpoints & rollouts (ship policies/ artifacts instead)
+*.pt
+logs/
+wandb/
+
+# Large raw sensor logs
+*.csv
+
+# Caches
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# OS
+.DS_Store
