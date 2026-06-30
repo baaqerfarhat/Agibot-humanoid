@@ -37,11 +37,14 @@ The deployment script runs **inside the robot's ROS 2 environment** and needs on
 cd agibot_control_functions
 
 # 1) DRY RUN — computes & prints commands but does NOT move the robot:
-python3 deploy_x2_walk.py --policy policies/x2_policy_original.npz
+python3 deploy_x2_walk.py --policy policies/x2_policy.npz
 
 # 2) Once the dry-run output looks sane AND the robot is safe, engage:
-python3 deploy_x2_walk.py --policy policies/x2_policy_original.npz \
+python3 deploy_x2_walk.py --policy policies/x2_policy.npz \
         --engage --vx 0.3 --run-seconds 8
+
+# (policies/x2_policy_original.npz is the older model that needs base_lin_vel;
+#  prefer policies/x2_policy.npz for ground walking.)
 ```
 
 What the script does each 50 Hz tick: reads IMU + joint state → builds the exact
@@ -68,7 +71,7 @@ Useful flags: `--base-imu {torso,chest}`, `--vx/--vy/--wz` (command), `--gain-sc
 | Policy | Obs | Status | Notes |
 |--------|-----|--------|-------|
 | `x2_policy_original.npz` | 105-dim (**includes `base_lin_vel`**) | trained 10k iters | Ready to run. The robot cannot measure base linear velocity, so the script feeds **zeros** for it — valid while suspended/near-stationary, degraded for free ground walking. |
-| `x2_policy.npz` (deploy) | 102-dim (**no `base_lin_vel`**) | retraining | Recommended for ground walking. Generate it from the `Mjlab-Velocity-Flat-X2-Deploy` run (below). |
+| `x2_policy.npz` (deploy) | 102-dim (**no `base_lin_vel`**) | trained 10k iters | **Recommended for ground walking.** Depends only on on-board sensing (ang vel, projected gravity, joint state, command). |
 
 The deploy variant removes `base_lin_vel` from the *actor* observation (keeping it in the
 critic), so the policy depends only on on-board sensing — the standard sim-to-real fix.
