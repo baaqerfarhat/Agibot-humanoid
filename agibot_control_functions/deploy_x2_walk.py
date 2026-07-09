@@ -105,7 +105,7 @@ def projected_gravity(quat_xyzw) -> np.ndarray:
 
 # =============================== observation builder ===============================
 class ObservationBuilder:
-    def __init__(self, meta: dict, base_imu: str):
+    def __init__(self, meta: dict, base_imu: str, lin_vel_source: str = "zeros"):
         self.joint_names = meta["joint_names"]
         self.default = np.array(meta["default_joint_pos"], np.float32)
         self.obs_names = meta["observation_names"]
@@ -113,6 +113,10 @@ class ObservationBuilder:
         self.njoints = len(self.joint_names)
         self.action_dim = int(meta["action_dim"])
         self.base_imu = base_imu
+        # How to fill the (unmeasurable) base_lin_vel obs term:
+        #   "zeros"   -> [0,0,0]                 (default; what the robot can truly sense)
+        #   "command" -> [cmd_vx, cmd_vy, 0]     (DIAGNOSTIC: pretend we track the command)
+        self.lin_vel_source = lin_vel_source
         self.last_action = np.zeros(self.action_dim, np.float32)
         self._warned_lin_vel = False
 
@@ -127,11 +131,18 @@ class ObservationBuilder:
         parts = []
         for name in self.obs_names:
             if name == "base_lin_vel":
-                if not self._warned_lin_vel:
-                    print("[WARN] policy uses base_lin_vel (unmeasurable) -> feeding ZEROS. "
-                          "Use the Deploy policy instead!")
-                    self._warned_lin_vel = True
-                parts.append(np.zeros(3, np.float32))
+                if self.lin_vel_source == "command":
+                    if not self._warned_lin_vel:
+                        print("[WARN] policy uses base_lin_vel (unmeasurable) -> feeding the "
+                              "COMMANDED velocity as a stand-in (diagnostic).")
+                        self._warned_lin_vel = True
+                    parts.append(np.array([command[0], command[1], 0.0], np.float32))
+                else:
+                    if not self._warned_lin_vel:
+                        print("[WARN] policy uses base_lin_vel (unmeasurable) -> feeding ZEROS. "
+                              "Use the Deploy policy instead!")
+                        self._warned_lin_vel = True
+                    parts.append(np.zeros(3, np.float32))
             elif name == "base_ang_vel":
                 parts.append(ang_vel)
             elif name == "projected_gravity":
@@ -186,6 +197,10 @@ def main():
                     help="ACTUALLY publish commands. Without this it is a dry run.")
     ap.add_argument("--base-imu", default="torso", choices=["torso", "chest"],
                     help="Which IMU is the policy base (training was the pelvis).")
+    ap.add_argument("--lin-vel-source", default="zeros", choices=["zeros", "command"],
+                    help="How to fill the unmeasurable base_lin_vel obs term. "
+                         "'zeros' = honest (default); 'command' = feed the commanded "
+                         "velocity as a stand-in (DIAGNOSTIC to coax a gait).")
     ap.add_argument("--vx", type=float, default=0.3, help="Forward velocity command (m/s).")
     ap.add_argument("--vy", type=float, default=0.0, help="Lateral velocity command (m/s).")
     ap.add_argument("--wz", type=float, default=0.0, help="Yaw rate command (rad/s).")
@@ -201,6 +216,9 @@ def main():
                     help="How long to run the policy after settling.")
     ap.add_argument("--max-joint-step", type=float, default=0.15,
                     help="Max change in a joint target per 20 ms tick (rad).")
+    ap.add_argument("--action-alpha", type=float, default=1.0,
+                    help="EMA low-pass on the policy action (anti-jitter). 1.0=off, "
+                         "smaller=smoother (try 0.5). Reduces hardware vibration.")
     ap.add_argument("--tilt-abort", type=float, default=-0.6,
                     help="Abort if projected_gravity z rises above this (robot tipping).")
     args = ap.parse_args()
@@ -240,7 +258,8 @@ def main():
         print("[ERROR] state topics not ready.")
         client.destroy_node(); commander.destroy_node(); rclpy.shutdown(); return
 
-    obs_builder = ObservationBuilder(meta, base_imu=args.base_imu)
+    obs_builder = ObservationBuilder(meta, base_imu=args.base_imu,
+                                     lin_vel_source=args.lin_vel_source)
 
     def read_jmap():
         imus, head, waist, arm, leg = client.get_robot_states()
@@ -265,6 +284,7 @@ def main():
     CONTROL_DT = 0.02  # 50 Hz, matches training decimation (4 x 5 ms).
     start_pose = {n: jmap0[n].position for n in joint_names}
     prev_target = dict(start_pose)  # for per-tick step clamp
+    filt_action = None  # EMA-filtered action (anti-jitter low-pass on policy output)
 
     t0 = time.perf_counter()
     next_t = t0
@@ -305,7 +325,18 @@ def main():
                 obs = obs_builder.build(imus, jmap, command)
                 action = policy(obs).reshape(-1)
                 obs_builder.last_action = action.astype(np.float32)  # raw action -> next obs
-                raw_target = action * action_scale + default
+                # Anti-jitter: exponential low-pass on the action actually applied.
+                # alpha=1.0 -> no filtering; smaller alpha -> smoother (more lag).
+                if args.action_alpha < 1.0:
+                    if filt_action is None:
+                        filt_action = action.copy()
+                    else:
+                        filt_action = (args.action_alpha * action
+                                       + (1.0 - args.action_alpha) * filt_action)
+                    applied_action = filt_action
+                else:
+                    applied_action = action
+                raw_target = applied_action * action_scale + default
                 target_by_name = {}
                 for i, n in enumerate(joint_names):
                     # per-tick step clamp against last commanded target
