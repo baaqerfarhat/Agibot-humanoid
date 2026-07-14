@@ -1,26 +1,38 @@
 # Agibot-humanoid
 
-End-to-end stack for training a velocity-walking policy for the **AgiBot X2** humanoid
-in simulation (MuJoCo / [mjlab](https://github.com/mujocolab/mjlab)) and deploying it on
-the **real robot** over the ROS 2 control interface.
+End-to-end stack for training and deploying policies on the **AgiBot X2** humanoid.
+Two tasks are included, each with simulation training setup, a trained policy, and an
+on-robot deployment script over the ROS 2 control interface:
 
-Everything needed is in this one repo: the training framework with the X2 robot already
-set up, a trained policy, and the on-robot deployment script.
+1. **Velocity walking** — trained in MuJoCo / [mjlab](https://github.com/mujocolab/mjlab).
+2. **Box pickup (retargeted whole-body tracking)** — walks to a 45 cm box, two-handed
+   squeeze grasp, lifts it to chest height, carries and sets it down. Trained in
+   IsaacLab / [holosoma](https://github.com/amazon-far/holosoma) by tracking a human
+   demonstration from the OmniRetarget dataset retargeted onto the X2. See
+   `box_pickup/README.md` and `box_pickup/videos/x2_box_FINAL_model30000.mp4`.
 
 ```
 Agibot-humanoid/
-├── mjlab/                      # Training framework (MuJoCo-Warp + rsl_rl PPO)
+├── mjlab/                      # Walking training framework (MuJoCo-Warp + rsl_rl PPO)
 │   └── src/mjlab/
 │       ├── asset_zoo/robots/x2/            # X2 MJCF, meshes, actuators, keyframe
 │       └── tasks/velocity/config/x2/       # X2 velocity-walk task + deploy variant
+├── box_pickup/                 # Box-pickup task (holosoma whole-body tracking)
+│   ├── policy/x2_box_policy.npz            # deployable policy (numpy-only inference)
+│   ├── policy/model_30000.pt / .onnx       # final checkpoint + ONNX export
+│   ├── holosoma_overlay/                   # all holosoma changes for the X2 task
+│   ├── setup_holosoma_x2.sh                # recreate the training setup anywhere
+│   └── videos/                             # training progression -> final success
 └── agibot_control_functions/   # Real-robot deployment (run this on the robot)
-    ├── deploy_x2_walk.py       # Loads a policy, reads state, walks the robot (50 Hz)
-    ├── export_policy_npz.py    # Converts a trained .onnx -> self-contained .npz
+    ├── deploy_x2_walk.py       # Walking: loads policy, reads state, walks (50 Hz)
+    ├── deploy_x2_box_pickup.py # Box pickup: plays the 6.5 s pickup motion (50 Hz)
+    ├── export_policy_npz.py    # Walking: trained .onnx -> self-contained .npz
+    ├── export_box_policy_npz.py# Box pickup: holosoma .pt -> self-contained .npz
     ├── robot_states_control.py # ROS 2 RobotStateClient + WholeBodyCommander (provided API)
     ├── robot_states_control.cpp
     ├── README.md               # The robot's state/command API reference
     └── policies/
-        ├── x2_policy_original.npz   # Trained policy, ready to run (numpy-only inference)
+        ├── x2_policy_original.npz   # Trained walking policy (numpy-only inference)
         └── x2_policy_original.onnx  # Same policy in ONNX form
 ```
 
@@ -122,8 +134,38 @@ Then deploy with `--policy policies/x2_policy.npz`.
 
 ---
 
+## 4. Box pickup (retargeted whole-body tracking)
+
+The second task: a single policy that tracks a retargeted human demonstration of a full
+box pickup — walk up, deep bend, two-handed squeeze grasp (the X2 has rigid fingerless
+palms, so it hugs the box between them), lift to chest, short carry, controlled set-down.
+Trained with holosoma's whole-body tracking PPO on IsaacLab, 30k iterations, with domain
+randomization on box mass (2.4–12 kg), friction, and initial pose.
+
+```bash
+# Deploy (inside the robot's ROS 2 env; numpy-only, same pattern as walking):
+cd agibot_control_functions
+python3 deploy_x2_box_pickup.py --policy ../box_pickup/policy/x2_box_policy.npz          # dry run
+python3 deploy_x2_box_pickup.py --policy ../box_pickup/policy/x2_box_policy.npz --engage # for real
+```
+
+Key differences from the walking deployment:
+- The policy is **blind** — it tracks a fixed 6.5 s reference motion (embedded in the
+  `.npz`) and needs the box placed at the reference start: 45 cm cube on the floor,
+  ~0.55 m in front of the robot, centered. First runs: **suspended, no box**.
+- The safety abort watches **roll only** (`--roll-abort`); pitch is part of the motion
+  (deep forward bend), unlike walking where any large tilt is a failure.
+- Full training/retraining instructions, the holosoma overlay, and the training story
+  are in **`box_pickup/README.md`**.
+
+---
+
 ## Attribution
 - `mjlab/` is derived from [mujocolab/mjlab](https://github.com/mujocolab/mjlab) (training
   outputs, virtualenv, and W&B logs are intentionally not committed — see `.gitignore`).
 - `agibot_control_functions/` builds on the AgiBot control API from
   [YujinAnn/agibot_control_functions](https://github.com/YujinAnn/agibot_control_functions).
+- `box_pickup/` builds on [amazon-far/holosoma](https://github.com/amazon-far/holosoma)
+  (whole-body tracking framework) and the
+  [OmniRetarget dataset](https://huggingface.co/datasets/omniretarget/OmniRetarget_Dataset)
+  (`sub3_largebox_003` demonstration).

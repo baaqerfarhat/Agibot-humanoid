@@ -22,6 +22,7 @@ mjlab/**/*.log
 
 # Training checkpoints & rollouts (ship policies/ artifacts instead)
 *.pt
+!box_pickup/policy/model_30000.pt
 logs/
 wandb/
 
