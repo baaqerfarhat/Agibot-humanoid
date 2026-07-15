@@ -4,9 +4,13 @@ from dataclasses import replace
 
 from holosoma.config_types.command import CommandManagerCfg, CommandTermCfg, MotionConfig, NoiseToInitialPoseConfig
 
+# v11 (post hardware trial): dof_pos noise raised 0.1 -> 0.15 rad. On the real
+# robot the ramp-to-start pose is imperfect (encoder offsets, gravity sag), and
+# the policy fell as soon as the bend started from a slightly-off pose. Training
+# must cover that error band, not just +/-0.1 rad around the reference.
 init_pose_config = NoiseToInitialPoseConfig(
     overall_noise_scale=1.0,
-    dof_pos=0.1,
+    dof_pos=0.15,
     root_pos=[0.05, 0.05, 0.01],
     root_rot=[0.1, 0.1, 0.2],
     root_lin_vel=[0.5, 0.5, 0.2],
@@ -36,16 +40,17 @@ X2_BODY_NAMES_TO_TRACK = [
 ]
 
 # Sampling structure: the adaptive sampler focuses on the failure-heavy grasp
-# moment, but is capped by a 30% uniform floor, and 15% of episodes always
-# start from the motion beginning -- both guard against the sampler starving
-# (and the policy forgetting) the walk-up/bend phases of this short clip.
+# moment, but is capped by a 30% uniform floor. start_at_timestep_zero_prob was
+# raised 0.15 -> 0.35 for v11: on hardware the failure was the standing-start
+# bend, which is exactly the phase that only t=0 episodes exercise end-to-end
+# (mid-motion starts spawn the robot already bent with the box at reference).
 motion_config = MotionConfig(
     motion_file="holosoma/data/motions/x2_31dof/whole_body_tracking/sub3_largebox_003_mj.npz",
     body_names_to_track=X2_BODY_NAMES_TO_TRACK,
     body_name_ref=["torso_link"],
     use_adaptive_timesteps_sampler=True,
     adaptive_uniform_ratio=0.3,
-    start_at_timestep_zero_prob=0.15,
+    start_at_timestep_zero_prob=0.35,
     noise_to_initial_pose=init_pose_config,
 )
 

@@ -63,14 +63,52 @@ x2_robot_material_dr = {
     ),
 }
 
+# Hardware-transfer DR (v11, added after the first real-robot trial fell during
+# the bend): the G1 base terms ship with PD-gain randomization and action delay
+# DISABLED, i.e. the policy trains against a perfectly modeled actuator with
+# zero control latency. On the real X2 neither holds -- gain mismatch and
+# ROS-loop latency showed up as a fall in the highest-load phase (deep bend).
+x2_hardware_robustness_setup = {
+    "actuator_randomizer_state": RandomizationTermCfg(
+        func="holosoma.managers.randomization.terms.locomotion:ActuatorRandomizerState",
+        params={
+            "kp_range": [0.85, 1.15],
+            "kd_range": [0.85, 1.15],
+            "rfi_lim_range": [1.0, 1.0],
+            "enable_pd_gain": True,
+            "enable_rfi_lim": False,
+        },
+    ),
+    "setup_action_delay_buffers": RandomizationTermCfg(
+        func="holosoma.managers.randomization.terms.locomotion:setup_action_delay_buffers",
+        params={
+            "ctrl_delay_step_range": [0, 2],  # 0-40 ms at 50 Hz
+            "enabled": True,
+        },
+    ),
+    # Encoder offset / imperfect initial pose: +/-0.03 rad (base was +/-0.01).
+    "setup_dof_pos_bias": RandomizationTermCfg(
+        func="holosoma.managers.randomization.terms.locomotion:setup_dof_pos_bias",
+        params={
+            "dof_pos_bias_range": [-0.03, 0.03],
+            "enabled": True,
+        },
+    ),
+}
+
 x2_31dof_wbt_randomization = RandomizationManagerCfg(
-    setup_terms={**base_setup_terms, **x2_robot_material_dr},
+    setup_terms={**base_setup_terms, **x2_robot_material_dr, **x2_hardware_robustness_setup},
     reset_terms={**base_reset_terms},
     step_terms={**base_step_terms},
 )
 
 x2_31dof_wbt_randomization_w_object = RandomizationManagerCfg(
-    setup_terms={**base_setup_terms, **x2_robot_material_dr, **x2_object_state_dr_at_setup},
+    setup_terms={
+        **base_setup_terms,
+        **x2_robot_material_dr,
+        **x2_hardware_robustness_setup,
+        **x2_object_state_dr_at_setup,
+    },
     reset_terms={**base_reset_terms},
     step_terms={**base_step_terms},
 )

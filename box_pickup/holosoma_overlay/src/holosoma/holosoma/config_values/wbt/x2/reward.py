@@ -47,10 +47,12 @@ x2_31dof_wbt_reward = RewardManagerCfg(
             params={"sigma": 3.14},
             weight=1.0,
         ),
-        # Regularization rewards
+        # Regularization rewards. action_rate raised -0.1 -> -0.3 for v11: the
+        # first hardware trial showed jittery targets exciting the real
+        # actuators; sim tolerated jitter the robot cannot.
         "action_rate_l2": RewardTermCfg(
             func="holosoma.managers.reward.terms.wbt:penalty_action_rate",
-            weight=-0.1,
+            weight=-0.3,
         ),
         "limits_dof_pos": RewardTermCfg(
             func="holosoma.managers.reward.terms.wbt:limits_dof_pos",
