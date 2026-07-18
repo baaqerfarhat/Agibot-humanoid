@@ -27,6 +27,7 @@ Agibot-humanoid/
 └── agibot_control_functions/   # Real-robot deployment (run this on the robot)
     ├── deploy_x2_walk.py       # Walking: loads policy, reads state, walks (50 Hz)
     ├── deploy_x2_box_pickup.py # Box pickup: plays the 7.0 s pickup motion (50 Hz)
+    ├── release_joints.py       # Ramp all joint gains to zero so the robot can be moved by hand
     ├── export_policy_npz.py    # Walking: trained .onnx -> self-contained .npz
     ├── export_box_policy_npz.py# Box pickup: holosoma .pt -> self-contained .npz
     ├── robot_states_control.py # ROS 2 RobotStateClient + WholeBodyCommander (provided API)
