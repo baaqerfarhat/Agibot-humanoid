@@ -21,10 +21,18 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
     -------------------------------------------------------------------------
 
     The policy is BLIND: it does not perceive the box. The box must be placed
-    at the reference start location, i.e. directly IN FRONT of the robot at
-    REACH_FWD (below), before engaging. The motion is 6.5 s: walk up half a
-    step, deep bend, two-handed squeeze grasp, lift to chest, short carry,
-    set down.
+    at the reference start location (see "Box placement" below) before engaging.
+
+    The motion (v16, upright-start reference) is 7.0 s at 50 Hz:
+        0.0 - 0.5 s   stand still, fully upright   <- START THE ROBOT STANDING
+        0.5 - 1.5 s   bend down toward the box
+        1.5 - 2.0 s   two-handed squeeze grasp + lift
+        2.0 - 4.0 s   carry at chest height (~1.7 m of travel with a turn)
+        4.0 - 6.0 s   bend and set the box down
+        6.0 - 7.0 s   stand back up
+    Frame 0 of the reference is a calm upright standing pose with zero
+    velocity, so engaging from a normal standing start is exactly what the
+    policy expects.
 
 #####################################  SAFETY  #####################################
 #  1. First runs: robot SUSPENDED, NO BOX -> verify the motion shape in the air.
@@ -39,8 +47,9 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
 #  7. When done, restart the controller:   aima em start-app mc
 ####################################################################################
 
-Box placement: the reference box start pose (motion frame 0) is ~0.55 m in
-front of the robot's initial pelvis position, centered, resting on the floor
+Box placement: the reference box start pose (motion frame 0) is ~0.40 m in
+front of the robot's initial pelvis position (box CENTER, i.e. near edge
+~0.17 m from the robot), centered on its heading, resting on the floor
 (45 cm cube, ~5-8 kg works well; training randomized 2.4-12 kg and friction).
 Mark the robot's start feet position and the box position together.
 """
@@ -257,8 +266,9 @@ def main():
     print(f"  action joints: {len(joint_names)}   gain scale: {args.gain_scale}")
     print(f"  MODE:          {'ENGAGED (publishing!)' if args.engage else 'DRY RUN (no publish)'}")
     print("=" * 78)
-    print("\nBOX PLACEMENT: 45 cm cube on the floor, ~0.55 m in front of the robot,")
-    print("centered on its heading. First trials: NO BOX, robot suspended.\n")
+    print("\nBOX PLACEMENT: 45 cm cube on the floor, center ~0.40 m in front of the")
+    print("robot, on its heading. Start the robot STANDING UPRIGHT; the motion holds")
+    print("still for 0.5 s, then bends down. First trials: NO BOX, robot suspended.\n")
 
     rclpy.init()
     client = RobotStateClient()
