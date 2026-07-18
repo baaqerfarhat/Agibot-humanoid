@@ -109,6 +109,19 @@ def motion_global_body_ang_vel(env: WholeBodyTrackingManager, sigma: float) -> t
     return torch.exp(-error.mean(-1) / sigma**2)
 
 
+def motion_dof_pos_error_exp(env: WholeBodyTrackingManager, sigma: float) -> torch.Tensor:
+    """Joint-space tracking: match the reference joint angles directly.
+
+    The cartesian body-position rewards are nearly invariant to internal-yaw
+    joints (a hip-yaw toe-out barely moves the ankle link), so the policy can
+    drift into visibly wrong postures (crab-walk) at little cost. This term
+    closes that gap.
+    """
+    motion_command = _get_motion_command_and_assert_type(env)
+    error = torch.square(env.simulator.dof_pos - motion_command.joint_pos)
+    return torch.exp(-error.mean(-1) / sigma**2)
+
+
 # ================================================================================================
 # Object Tracking Rewards
 # ================================================================================================

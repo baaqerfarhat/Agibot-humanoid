@@ -47,6 +47,16 @@ x2_31dof_wbt_reward = RewardManagerCfg(
             params={"sigma": 3.14},
             weight=1.0,
         ),
+        # Joint-space tracking (v17): the cartesian terms above barely notice a
+        # hip-yaw toe-out (rotating the leg about its axis hardly moves the
+        # ankle point), which let the policy carry the box in a crab-walk. Mean
+        # squared error over 31 joints; sigma 0.25 => ~0.83 reward when e.g.
+        # 4 joints are each 0.3 rad off.
+        "motion_dof_pos_error_exp": RewardTermCfg(
+            func="holosoma.managers.reward.terms.wbt:motion_dof_pos_error_exp",
+            params={"sigma": 0.25},
+            weight=1.0,
+        ),
         # Regularization rewards. action_rate raised -0.1 -> -0.3 for v11: the
         # first hardware trial showed jittery targets exciting the real
         # actuators; sim tolerated jitter the robot cannot.
