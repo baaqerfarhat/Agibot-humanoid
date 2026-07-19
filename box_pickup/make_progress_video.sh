@@ -44,7 +44,7 @@ echo "[video] checkpoint: $CKPT (iteration $ITER)"
 echo "[video] recording rollout (takes ~4 min, Isaac Sim startup dominates)..."
 cd /home/baaqer/baaqer_ws/holosoma
 OMNI_KIT_ACCEPT_EULA=1 CUDA_VISIBLE_DEVICES=0 "$HSSIM_PY" \
-    src/holosoma/holosoma/eval_record_driver.py "$CKPT" "$NPZ" 400 demo \
+    src/holosoma/holosoma/eval_record_driver.py "$CKPT" "$NPZ" 460 demo \
     > /tmp/x2_box_video_eval.log 2>&1
 [ -f "$NPZ" ] || { echo "[video] ERROR: rollout failed, see /tmp/x2_box_video_eval.log"; exit 1; }
 
