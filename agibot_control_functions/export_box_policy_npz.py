@@ -4,7 +4,7 @@
 Run in any environment with torch + yaml + numpy (e.g. the holosoma conda env):
 
     python export_box_policy_npz.py \
-        --checkpoint <run_dir>/model_35000.pt \
+        --checkpoint <run_dir>/model_79000.pt \
         --config     <run_dir>/holosoma_config.yaml \
         --motion     <holosoma>/data/motions/x2_31dof/whole_body_tracking/sub3_largebox_003_mj_w_obj.npz \
         --out        ../box_pickup/policy/x2_box_policy.npz

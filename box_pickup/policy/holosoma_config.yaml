@@ -478,7 +478,7 @@ reward:
       func: holosoma.managers.reward.terms.wbt:penalty_action_rate
       params: {}
       tags: []
-      weight: -0.3
+      weight: -0.4
     hands_to_object_distance_exp:
       func: holosoma.managers.reward.terms.wbt:hands_to_object_distance_exp
       params:
@@ -495,6 +495,12 @@ reward:
         soft_dof_pos_limit: 0.9
       tags: []
       weight: -10.0
+    motion_dof_pos_error_exp:
+      func: holosoma.managers.reward.terms.wbt:motion_dof_pos_error_exp
+      params:
+        sigma: 0.25
+      tags: []
+      weight: 1.0
     motion_global_body_ang_vel:
       func: holosoma.managers.reward.terms.wbt:motion_global_body_ang_vel
       params:
@@ -1263,12 +1269,12 @@ terrain:
     terrain_width: 8.0
     vertical_scale: 0.005
 training:
-  checkpoint: /home/baaqer/baaqer_ws/holosoma/logs/WholeBodyTracking/20260717_042346-x2_box_v14_loose_term-locomotion/model_23000.pt
+  checkpoint: /home/baaqer/baaqer_ws/holosoma/logs/WholeBodyTracking/20260718_220450-x2_box_v18_smooth-locomotion/model_50000.pt
   export_onnx: true
   headless: true
   max_eval_steps: null
   multigpu: false
-  name: x2_box_v16_upright
+  name: x2_box_v19_upright_end
   num_envs: 4096
   project: WholeBodyTracking
   seed: 42

@@ -7,7 +7,7 @@ on-robot deployment script over the ROS 2 control interface:
 1. **Velocity walking** — trained in MuJoCo / [mjlab](https://github.com/mujocolab/mjlab).
 2. **Box pickup (retargeted whole-body tracking)** — from an upright standing start,
    bends to a 45 cm box, two-handed squeeze grasp, lifts it to chest height, carries
-   and sets it down (7.0 s). Trained in IsaacLab /
+   sets it down, and returns upright (8.7 s). Trained in IsaacLab /
    [holosoma](https://github.com/amazon-far/holosoma) by tracking a human
    demonstration from the OmniRetarget dataset retargeted onto the X2. See
    `box_pickup/README.md` and `box_pickup/videos/x2_box_v16_upright_iter34500.mp4`.
@@ -20,13 +20,13 @@ Agibot-humanoid/
 │       └── tasks/velocity/config/x2/       # X2 velocity-walk task + deploy variant
 ├── box_pickup/                 # Box-pickup task (holosoma whole-body tracking)
 │   ├── policy/x2_box_policy.npz            # deployable policy (numpy-only inference)
-│   ├── policy/model_35000.pt               # final checkpoint (v16 upright-start)
+│   ├── policy/model_79000.pt               # final checkpoint (v19 upright start+end)
 │   ├── holosoma_overlay/                   # all holosoma changes for the X2 task
 │   ├── setup_holosoma_x2.sh                # recreate the training setup anywhere
 │   └── videos/                             # training progression -> final success
 └── agibot_control_functions/   # Real-robot deployment (run this on the robot)
     ├── deploy_x2_walk.py       # Walking: loads policy, reads state, walks (50 Hz)
-    ├── deploy_x2_box_pickup.py # Box pickup: plays the 7.0 s pickup motion (50 Hz)
+    ├── deploy_x2_box_pickup.py # Box pickup: plays the 8.7 s pickup motion (50 Hz)
     ├── release_joints.py       # Ramp all joint gains to zero so the robot can be moved by hand
     ├── export_policy_npz.py    # Walking: trained .onnx -> self-contained .npz
     ├── export_box_policy_npz.py# Box pickup: holosoma .pt -> self-contained .npz

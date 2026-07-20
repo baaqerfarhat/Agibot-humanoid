@@ -23,16 +23,16 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
     The policy is BLIND: it does not perceive the box. The box must be placed
     at the reference start location (see "Box placement" below) before engaging.
 
-    The motion (v16, upright-start reference) is 7.0 s at 50 Hz:
-        0.0 - 0.5 s   stand still, fully upright   <- START THE ROBOT STANDING
-        0.5 - 1.5 s   bend down toward the box
-        1.5 - 2.0 s   two-handed squeeze grasp + lift
-        2.0 - 4.0 s   carry at chest height (~1.7 m of travel with a turn)
-        4.0 - 6.0 s   bend and set the box down
-        6.0 - 7.0 s   stand back up
-    Frame 0 of the reference is a calm upright standing pose with zero
-    velocity, so engaging from a normal standing start is exactly what the
-    policy expects.
+    The motion (v19, default-pose start AND end) is 8.7 s at 50 Hz:
+        0.0 - 1.0 s   hold the default upright pose  <- START THE ROBOT STANDING
+        1.0 - 2.5 s   bend down toward the box
+        2.5 - 3.0 s   two-handed squeeze grasp + lift
+        3.0 - 6.0 s   carry at chest height (~1.7 m of travel with a turn)
+        6.0 - 7.5 s   bend and set the box down
+        7.5 - 8.7 s   stand back up into the default upright pose
+    Both the first and last frames of the reference are the robot's exact
+    default standing pose at zero velocity, so the task starts from a normal
+    standing start and finishes standing upright.
 
 #####################################  SAFETY  #####################################
 #  1. First runs: robot SUSPENDED, NO BOX -> verify the motion shape in the air.

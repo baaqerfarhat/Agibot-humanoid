@@ -1,12 +1,11 @@
 # X2 Box Pickup — retargeted whole-body tracking policy
 
-A whole-body loco-manipulation policy for the AgiBot X2: from an upright
-standing start it bends to a 45 cm box, squeeze-grasps it with both
-(fingerless) palms, lifts it to chest height, carries it ~1.7 m with a turn,
-and sets it back down — 7.0 s end to end. Current model: **v16, iteration
-35000** (`policy/model_35000.pt`), trained on a corrected reference motion
-that starts fully upright and motionless (see history below). See
-`videos/x2_box_v16_upright_iter34500.mp4` for a recent rollout.
+A whole-body loco-manipulation policy for the AgiBot X2: starting from the
+robot's exact default upright pose it bends to a 45 cm box, squeeze-grasps it
+with both (fingerless) palms, lifts it to chest height, carries it ~1.7 m with
+a turn, sets it back down, and returns to the default upright pose — 8.7 s end
+to end. Current model: **v19, iteration 79000** (`policy/model_79000.pt`).
+See `videos/x2_box_v19_upright_end_iter79000.mp4` for the final rollout.
 
 Built on [amazon-far/holosoma](https://github.com/amazon-far/holosoma)
 (IsaacLab whole-body tracking, PPO) with a human demonstration from the
@@ -19,8 +18,8 @@ Built on [amazon-far/holosoma](https://github.com/amazon-far/holosoma)
 box_pickup/
 ├── policy/
 │   ├── x2_box_policy.npz      # DEPLOYABLE: numpy-only policy + motion reference + metadata
-│   ├── model_35000.pt         # raw holosoma checkpoint (v16 upright-start, iter 35000)
-│   └── holosoma_config.yaml   # full training config snapshot of the v16 run
+│   ├── model_79000.pt         # raw holosoma checkpoint (v19 upright start+end, iter 79000)
+│   └── holosoma_config.yaml   # full training config snapshot of the v19 run
 ├── holosoma_overlay/          # every file added/changed in holosoma for this task
 ├── setup_holosoma_x2.sh       # clone holosoma + apply overlay + install meshes
 ├── render_box_rollout.py      # render recorded eval .npz rollouts to .mp4 (MuJoCo)
@@ -45,12 +44,13 @@ of the robot** (near edge ~0.17 m from the feet), centered on its heading.
 Training randomized box mass 2.4–12 kg and friction, so a mid-weight
 cardboard box is the easiest first target.
 
-**Start the robot standing upright.** The reference motion begins with a calm
-upright standing pose at zero velocity: the script ramps the robot from
-wherever it is to that pose, holds it, then engages the policy. Timeline of
-the 7.0 s motion once engaged: 0.5 s stand still → bend down (0.5–1.5 s) →
-grasp + lift (1.5–2.0 s) → carry at chest height with a turn (2.0–4.0 s) →
-bend and set down (4.0–6.0 s) → stand back up (6.0–7.0 s).
+**Start the robot standing upright.** The reference motion begins AND ends at
+the robot's exact default standing pose at zero velocity: the script ramps the
+robot from wherever it is to that pose, holds it, then engages the policy.
+Timeline of the 8.7 s motion once engaged: hold upright (0–1.0 s) → bend down
+(1.0–2.5 s) → grasp + lift (2.5–3.0 s) → carry at chest height with a turn
+(3.0–6.0 s) → bend and set down (6.0–7.5 s) → stand back up into the default
+pose (7.5–8.7 s).
 
 ## Retrain / evaluate in simulation
 
@@ -60,7 +60,7 @@ bend and set down (4.0–6.0 s) → stand back up (6.0–7.0 s).
 cd ~/holosoma
 python src/holosoma/holosoma/train_agent.py exp:x2-31dof-wbt-w-object \
     logger:disabled --training.num-envs 4096 --training.name x2_box \
-    --training.checkpoint <path>/model_35000.pt   # optional warm start
+    --training.checkpoint <path>/model_79000.pt   # optional warm start
 
 # record a clean demo rollout from a checkpoint (headless), then render it:
 python src/holosoma/holosoma/eval_record_driver.py <ckpt.pt> /tmp/demo.npz 450 demo
@@ -113,4 +113,7 @@ python <this_repo>/box_pickup/render_box_rollout.py   # edit paths at top
 | v12–v13 | retargeter joint-limit bug found and fixed; retrained on corrected reference |
 | v14 | loosened termination thresholds → survives imperfect grasps, learns stand-up |
 | v15 | trimmed optimizer transient from clip start (fixed sideways fall at spawn) |
-| v16 | retarget warm-up → reference starts fully upright at zero velocity → **`model_35000.pt`** |
+| v16 | retarget warm-up → reference starts fully upright at zero velocity |
+| v17 | reference starts at the exact default pose; joint-space tracking reward vs carry crab-walk |
+| v18 | low-pass filtered reference (carry jitter −31%); stronger action-rate penalty |
+| v19 | reference ends back at the default upright pose → **`model_79000.pt`** (final) |
