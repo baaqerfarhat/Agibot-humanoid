@@ -142,7 +142,7 @@ The second task: a single policy that tracks a retargeted human demonstration of
 box pickup — walk up, deep bend, two-handed squeeze grasp (the X2 has rigid fingerless
 palms, so it hugs the box between them), lift to chest, short carry, controlled set-down.
 Trained with holosoma's whole-body tracking PPO on IsaacLab, 30k iterations, with domain
-randomization on box mass (2.4–12 kg), friction, and initial pose.
+randomization on box mass (0.4–1.6 kg), friction, and initial pose.
 
 ```bash
 # Deploy (inside the robot's ROS 2 env; numpy-only, same pattern as walking):

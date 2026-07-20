@@ -50,7 +50,9 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
 Box placement: the reference box start pose (motion frame 0) is ~0.40 m in
 front of the robot's initial pelvis position (box CENTER, i.e. near edge
 ~0.17 m from the robot), centered on its heading, resting on the floor
-(45 cm cube, ~5-8 kg works well; training randomized 2.4-12 kg and friction).
+(45 cm cube, LIGHT: 0.5-1.5 kg; training randomized 0.4-1.6 kg and friction --
+an empty/lightly-filled cardboard box is ideal; do NOT use a heavy box, the
+wrist actuators cannot squeeze-hold much beyond ~2 kg).
 Mark the robot's start feet position and the box position together.
 """
 
@@ -266,9 +268,10 @@ def main():
     print(f"  action joints: {len(joint_names)}   gain scale: {args.gain_scale}")
     print(f"  MODE:          {'ENGAGED (publishing!)' if args.engage else 'DRY RUN (no publish)'}")
     print("=" * 78)
-    print("\nBOX PLACEMENT: 45 cm cube on the floor, center ~0.40 m in front of the")
-    print("robot, on its heading. Start the robot STANDING UPRIGHT; the motion holds")
-    print("still for 0.5 s, then bends down. First trials: NO BOX, robot suspended.\n")
+    print("\nBOX PLACEMENT: 45 cm cube, LIGHT (0.5-1.5 kg), on the floor, center")
+    print("~0.40 m in front of the robot, on its heading. Start the robot STANDING")
+    print("UPRIGHT; the motion holds still for ~1 s, then bends down.")
+    print("First trials: NO BOX, robot suspended.\n")
 
     rclpy.init()
     client = RobotStateClient()

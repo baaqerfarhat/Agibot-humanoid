@@ -41,8 +41,9 @@ The policy is **blind** (no cameras): actor obs = reference-motion clock +
 torso IMU + joint state + previous action. The box must be placed at the
 reference start pose: 45 cm cube, on the floor, its **center ~0.40 m in front
 of the robot** (near edge ~0.17 m from the feet), centered on its heading.
-Training randomized box mass 2.4–12 kg and friction, so a mid-weight
-cardboard box is the easiest first target.
+Training randomized box mass 0.4–1.6 kg and friction, so a LIGHT
+(empty or lightly-filled) cardboard box is the right target — the X2's wrist
+actuators cannot squeeze-hold a heavy box.
 
 **Start the robot standing upright.** The reference motion begins AND ends at
 the robot's exact default standing pose at zero velocity: the script ramps the
