@@ -1269,12 +1269,12 @@ terrain:
     terrain_width: 8.0
     vertical_scale: 0.005
 training:
-  checkpoint: /home/baaqer/baaqer_ws/holosoma/logs/WholeBodyTracking/20260718_220450-x2_box_v18_smooth-locomotion/model_50000.pt
+  checkpoint: /home/baaqer/baaqer_ws/holosoma/logs/WholeBodyTracking/20260722_065631-x2_box_v23_smooth_drop-locomotion/model_82000.pt
   export_onnx: true
   headless: true
   max_eval_steps: null
   multigpu: false
-  name: x2_box_v19_upright_end
+  name: x2_box_v24_one_motion_drop
   num_envs: 4096
   project: WholeBodyTracking
   seed: 42

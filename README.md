@@ -7,10 +7,11 @@ on-robot deployment script over the ROS 2 control interface:
 1. **Velocity walking** — trained in MuJoCo / [mjlab](https://github.com/mujocolab/mjlab).
 2. **Box pickup (retargeted whole-body tracking)** — from an upright standing start,
    bends to a 45 cm box, two-handed squeeze grasp, lifts it to chest height, carries
-   sets it down, and returns upright (8.7 s). Trained in IsaacLab /
+   it ~1.4 m straight ahead (feet pointing forward), sets it down directly in front
+   over planted feet, and returns upright (8.7 s). Trained in IsaacLab /
    [holosoma](https://github.com/amazon-far/holosoma) by tracking a human
    demonstration from the OmniRetarget dataset retargeted onto the X2. See
-   `box_pickup/README.md` and `box_pickup/videos/x2_box_v16_upright_iter34500.mp4`.
+   `box_pickup/README.md` and `box_pickup/videos/x2_box_v24_one_motion_drop_iter89000.mp4`.
 
 ```
 Agibot-humanoid/
@@ -20,7 +21,7 @@ Agibot-humanoid/
 │       └── tasks/velocity/config/x2/       # X2 velocity-walk task + deploy variant
 ├── box_pickup/                 # Box-pickup task (holosoma whole-body tracking)
 │   ├── policy/x2_box_policy.npz            # deployable policy (numpy-only inference)
-│   ├── policy/model_79000.pt               # final checkpoint (v19 upright start+end)
+│   ├── policy/model_89500.pt               # current checkpoint (v24 straight walk + clean set-down)
 │   ├── holosoma_overlay/                   # all holosoma changes for the X2 task
 │   ├── setup_holosoma_x2.sh                # recreate the training setup anywhere
 │   └── videos/                             # training progression -> final success

@@ -23,16 +23,18 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
     The policy is BLIND: it does not perceive the box. The box must be placed
     at the reference start location (see "Box placement" below) before engaging.
 
-    The motion (v19, default-pose start AND end) is 8.7 s at 50 Hz:
+    The motion (v24: straight carry, planted-feet set-down) is 8.7 s at 50 Hz:
         0.0 - 1.0 s   hold the default upright pose  <- START THE ROBOT STANDING
         1.0 - 2.5 s   bend down toward the box
         2.5 - 3.0 s   two-handed squeeze grasp + lift
-        3.0 - 6.0 s   carry at chest height (~1.7 m of travel with a turn)
-        6.0 - 7.5 s   bend and set the box down
-        7.5 - 8.7 s   stand back up into the default upright pose
+        3.0 - 5.8 s   carry ~1.4 m STRAIGHT AHEAD at chest height, feet forward
+        5.8 - 8.0 s   one continuous set-down directly in front, both feet
+                      planted (the pickup played in reverse), stand back up
+        8.0 - 8.7 s   hold the default upright pose
     Both the first and last frames of the reference are the robot's exact
     default standing pose at zero velocity, so the task starts from a normal
-    standing start and finishes standing upright.
+    standing start and finishes standing upright. Leave ~2 m of clear floor
+    in front of the robot for the carry.
 
 #####################################  SAFETY  #####################################
 #  1. First runs: robot SUSPENDED, NO BOX -> verify the motion shape in the air.

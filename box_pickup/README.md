@@ -2,10 +2,12 @@
 
 A whole-body loco-manipulation policy for the AgiBot X2: starting from the
 robot's exact default upright pose it bends to a 45 cm box, squeeze-grasps it
-with both (fingerless) palms, lifts it to chest height, carries it ~1.7 m with
-a turn, sets it back down, and returns to the default upright pose — 8.7 s end
-to end. Current model: **v19, iteration 79000** (`policy/model_79000.pt`).
-See `videos/x2_box_v19_upright_end_iter79000.mp4` for the final rollout.
+with both (fingerless) palms, lifts it to chest height, carries it ~1.4 m
+**straight ahead with feet pointing forward**, sets it down directly in front
+over planted feet, and returns to the default upright pose — 8.7 s end to end.
+Current model: **v24, iteration 89500** (`policy/model_89500.pt`).
+See `videos/x2_box_v24_one_motion_drop_iter89000.mp4` for the latest rollout
+and `videos/reference_motion_STRAIGHT_walk.mp4` for the reference it tracks.
 
 Built on [amazon-far/holosoma](https://github.com/amazon-far/holosoma)
 (IsaacLab whole-body tracking, PPO) with a human demonstration from the
@@ -18,8 +20,8 @@ Built on [amazon-far/holosoma](https://github.com/amazon-far/holosoma)
 box_pickup/
 ├── policy/
 │   ├── x2_box_policy.npz      # DEPLOYABLE: numpy-only policy + motion reference + metadata
-│   ├── model_79000.pt         # raw holosoma checkpoint (v19 upright start+end, iter 79000)
-│   └── holosoma_config.yaml   # full training config snapshot of the v19 run
+│   ├── model_89500.pt         # raw holosoma checkpoint (v24 straight walk + clean set-down)
+│   └── holosoma_config.yaml   # full training config snapshot of the v24 run
 ├── holosoma_overlay/          # every file added/changed in holosoma for this task
 ├── setup_holosoma_x2.sh       # clone holosoma + apply overlay + install meshes
 ├── render_box_rollout.py      # render recorded eval .npz rollouts to .mp4 (MuJoCo)
@@ -49,9 +51,11 @@ actuators cannot squeeze-hold a heavy box.
 the robot's exact default standing pose at zero velocity: the script ramps the
 robot from wherever it is to that pose, holds it, then engages the policy.
 Timeline of the 8.7 s motion once engaged: hold upright (0–1.0 s) → bend down
-(1.0–2.5 s) → grasp + lift (2.5–3.0 s) → carry at chest height with a turn
-(3.0–6.0 s) → bend and set down (6.0–7.5 s) → stand back up into the default
-pose (7.5–8.7 s).
+(1.0–2.5 s) → grasp + lift (2.5–3.0 s) → carry ~1.4 m STRAIGHT AHEAD at chest
+height, feet pointing forward (3.0–5.8 s) → one continuous set-down directly
+in front with both feet planted (5.8–8.0 s, the set-down is the pickup played
+in reverse) → hold the default upright pose (8.0–8.7 s). Leave ~2 m of clear
+floor in front of the robot for the carry.
 
 ## Retrain / evaluate in simulation
 
@@ -61,7 +65,7 @@ pose (7.5–8.7 s).
 cd ~/holosoma
 python src/holosoma/holosoma/train_agent.py exp:x2-31dof-wbt-w-object \
     logger:disabled --training.num-envs 4096 --training.name x2_box \
-    --training.checkpoint <path>/model_79000.pt   # optional warm start
+    --training.checkpoint <path>/model_89500.pt   # optional warm start
 
 # record a clean demo rollout from a checkpoint (headless), then render it:
 python src/holosoma/holosoma/eval_record_driver.py <ckpt.pt> /tmp/demo.npz 450 demo
@@ -117,4 +121,8 @@ python <this_repo>/box_pickup/render_box_rollout.py   # edit paths at top
 | v16 | retarget warm-up → reference starts fully upright at zero velocity |
 | v17 | reference starts at the exact default pose; joint-space tracking reward vs carry crab-walk |
 | v18 | low-pass filtered reference (carry jitter −31%); stronger action-rate penalty |
-| v19 | reference ends back at the default upright pose → **`model_79000.pt`** (final) |
+| v19 | reference ends back at the default upright pose (`model_79000.pt`, first hardware tests) |
+| v20 | carry straightened: the human's ~65° turn removed, hip-yaw splay compressed so feet point forward |
+| v21 | feet bolted during set-down/stand-up (mocap human shuffled feet 30 cm while placing the box) |
+| v22–v23 | set-down replaced with the time-reversed pickup: box lowered straight ahead, quiet waist |
+| v24 | set-down made one continuous motion (no pause / re-lift) → **`model_89500.pt`** (current) |
