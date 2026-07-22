@@ -47,6 +47,9 @@ def main() -> None:
     ap.add_argument("--config", required=True, help="holosoma_config.yaml from the run dir")
     ap.add_argument("--motion", required=True, help="reference motion .npz used in training")
     ap.add_argument("--out", required=True, help="output .npz path")
+    ap.add_argument("--hold-frames", type=int, nargs=2, default=None, metavar=("H0", "H1"),
+                    help="50 Hz frame range of the clip's static HOLD segment "
+                         "(for the hybrid carry hand-off), e.g. --hold-frames 161 261")
     args = ap.parse_args()
 
     # ---------------- checkpoint: actor MLP + obs normalizer ----------------
@@ -122,6 +125,8 @@ def main() -> None:
         "obs_dim": obs_dim,
         "action_dim": int(weights[-1].shape[0]),
     }
+    if args.hold_frames is not None:
+        meta["hold_frame_range"] = [int(args.hold_frames[0]), int(args.hold_frames[1])]
 
     save = {
         "mean": mean,
