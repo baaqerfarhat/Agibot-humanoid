@@ -273,6 +273,11 @@ def main():
                          "projected-gravity x. NOT needed with the "
                          "payload-trained x2_walk_carry.npz (default 0); use "
                          "0.12 if deploying the original x2_policy.npz.")
+    ap.add_argument("--leg-filter", type=float, default=0.5,
+                    help="EMA smoothing on LEG targets during the WBT phases "
+                         "(pickup/set-down). 0 = off. Damps jittery leg "
+                         "stabilization on hardware. Never applied during the "
+                         "carry (the walking policy needs crisp leg control).")
     args = ap.parse_args()
 
     box_policy = NumpyPolicy(args.box_policy)
@@ -308,6 +313,8 @@ def main():
         raise SystemExit("--hold-frame required (policy meta has no hold_frame_range)")
 
     walk_ticks = int(args.walk_seconds / CONTROL_DT)
+    LEG_SET = {n for n in joint_names
+               if ("hip" in n or "knee" in n or "ankle" in n)}
 
     print("=" * 78)
     print(f"  box policy:   {args.box_policy}  (motion {n_frames} f @ {fps} Hz)")
@@ -402,7 +409,11 @@ def main():
                 raw_target = action * box_scale + box_default
                 target_by_name = {}
                 for i, n in enumerate(joint_names):
-                    step = float(np.clip(raw_target[i] - prev_target[n],
+                    tgt = raw_target[i]
+                    if args.leg_filter > 0.0 and n in LEG_SET:
+                        tgt = (1.0 - args.leg_filter) * tgt \
+                            + args.leg_filter * prev_target[n]
+                    step = float(np.clip(tgt - prev_target[n],
                                          -args.max_joint_step, args.max_joint_step))
                     target_by_name[n] = prev_target[n] + step
                 if frame >= hold_frame:
@@ -462,7 +473,11 @@ def main():
                 raw_target = action * box_scale + box_default
                 target_by_name = {}
                 for i, n in enumerate(joint_names):
-                    step = float(np.clip(raw_target[i] - prev_target[n],
+                    tgt = raw_target[i]
+                    if args.leg_filter > 0.0 and n in LEG_SET:
+                        tgt = (1.0 - args.leg_filter) * tgt \
+                            + args.leg_filter * prev_target[n]
+                    step = float(np.clip(tgt - prev_target[n],
                                          -args.max_joint_step, args.max_joint_step))
                     target_by_name[n] = prev_target[n] + step
                 if frame >= n_frames + int(args.hold_end_seconds / CONTROL_DT):

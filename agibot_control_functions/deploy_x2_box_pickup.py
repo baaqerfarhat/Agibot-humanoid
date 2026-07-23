@@ -253,6 +253,11 @@ def main():
                          "checked: the motion contains a deep forward bend.")
     ap.add_argument("--hold-end-seconds", type=float, default=3.0,
                     help="Hold the final reference pose after the motion ends.")
+    ap.add_argument("--leg-filter", type=float, default=0.5,
+                    help="EMA smoothing factor on LEG joint targets (0 = off, "
+                         "0.5 = recommended, higher = smoother/laggier). Damps "
+                         "the jittery leg 'stabilization' feedback loop on real "
+                         "hardware; arms are never filtered (crisp squeeze).")
     args = ap.parse_args()
 
     policy = NumpyPolicy(args.policy)
@@ -314,6 +319,27 @@ def main():
     # Ramp target: the motion's own first frame (near-default standing pose).
     start_ref = {n: float(policy.ref_joint_pos[0][i]) for i, n in enumerate(joint_names)}
 
+    # ---- stance check --------------------------------------------------------
+    # The reference stance (motion frame 0): feet PARALLEL, pointing forward,
+    # centers ~27 cm apart, side by side (no fore-aft offset). Planted feet
+    # cannot slide during the ramp, so if the robot starts with a different
+    # stance the leg joints keep a PERSISTENT error through the whole motion --
+    # the main cause of instability when standing back up with the box.
+    LEG_JOINTS = [n for n in joint_names if ("hip" in n or "knee" in n or "ankle" in n)]
+    LEG_SET = set(LEG_JOINTS)
+    stance_err = {n: jmap0[n].position - start_ref[n] for n in LEG_JOINTS}
+    worst = max(stance_err.items(), key=lambda kv: abs(kv[1]))
+    print("\n[stance] reference stance: feet parallel, pointing forward, centers ~27 cm")
+    print("[stance] apart, side by side. Leg joints vs motion frame 0:")
+    for n in LEG_JOINTS:
+        flag = "  <-- LARGE" if abs(stance_err[n]) > 0.20 else ""
+        print(f"    {n:32s} {stance_err[n]:+.3f} rad{flag}")
+    if abs(worst[1]) > 0.20:
+        print(f"[stance] WARNING: {worst[0]} is {worst[1]:+.2f} rad off the reference.")
+        print("[stance] Feet cannot slide: REPOSITION the robot's feet to the stance")
+        print("[stance] above before engaging (v26+ policies tolerate ~+/-0.3 rad).")
+    # --------------------------------------------------------------------------
+
     print("\n>>> SAFETY: robot suspended? MC stopped on .40? E-stop in hand? <<<")
     input(">>> Press Enter to START (Ctrl+C to abort) <<<")
 
@@ -363,7 +389,15 @@ def main():
                 raw_target = action * action_scale + default
                 target_by_name = {}
                 for i, n in enumerate(joint_names):
-                    step = float(np.clip(raw_target[i] - prev_target[n],
+                    tgt = raw_target[i]
+                    # low-pass the LEG targets: damps the jitter loop where a
+                    # small correction -> actuator overshoot -> IMU motion ->
+                    # harder correction. The reference motion itself is slow,
+                    # so mild lag on the legs is harmless.
+                    if args.leg_filter > 0.0 and n in LEG_SET:
+                        tgt = (1.0 - args.leg_filter) * tgt \
+                            + args.leg_filter * prev_target[n]
+                    step = float(np.clip(tgt - prev_target[n],
                                          -args.max_joint_step, args.max_joint_step))
                     target_by_name[n] = prev_target[n] + step
                 if frame >= n_frames + int(args.hold_end_seconds / CONTROL_DT):
