@@ -30,14 +30,22 @@ box_pickup/
 
 ## Deploy on the real robot
 
-Same pattern as the walking policy — see `../agibot_control_functions/`:
+**Recommended: the HYBRID controller** — WBT policy for pickup/set-down,
+payload-fine-tuned walking policy for the carry, with an IMU heading lock
+that keeps the walk straight:
 
 ```bash
 cd ../agibot_control_functions
-# DRY RUN first (no commands published):
-python3 deploy_x2_box_pickup.py --policy ../box_pickup/policy/x2_box_policy.npz
-# Then escalate per the safety ladder printed by the script.
+# DRY RUN first (no commands published). Defaults already point at
+# ../box_pickup/policy/x2_box_policy.npz + policies/x2_walk_carry.npz:
+python3 deploy_x2_box_hybrid.py
+# Then escalate per the safety ladder printed by the script, e.g.:
+python3 deploy_x2_box_hybrid.py --engage --vx 0.35 --walk-seconds 9
 ```
+
+The single-policy variant (pickup + tracked walk in one WBT policy) is still
+available via `deploy_x2_box_pickup.py --policy ../box_pickup/policy/x2_box_policy.npz`,
+but the hybrid walks far more reliably.
 
 The policy is **blind** (no cameras): actor obs = reference-motion clock +
 torso IMU + joint state + previous action. The box must be placed at the

@@ -1,9 +1,16 @@
 """X2 humanoid velocity environment configurations."""
 
+from dataclasses import replace as dc_replace
+
+import mujoco
+
 from mjlab.asset_zoo.robots import (
   X2_ACTION_SCALE,
   get_x2_robot_cfg,
 )
+from mjlab.asset_zoo.robots.x2.x2_constants import get_spec
+from mjlab.envs.mdp import dr
+from mjlab.managers.scene_entity_config import SceneEntityCfg
 from mjlab.envs import ManagerBasedRlEnvCfg
 from mjlab.envs import mdp as envs_mdp
 from mjlab.envs.mdp.actions import JointPositionActionCfg
@@ -207,4 +214,144 @@ def x2_flat_deploy_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   """
   cfg = x2_flat_env_cfg(play=play)
   del cfg.observations["actor"].terms["base_lin_vel"]
+  return cfg
+
+
+# =============================================================================
+# Box-carry fine-tune (hybrid pickup->carry->setdown controller, walk segment).
+# =============================================================================
+#
+# Upper-body pose at the carry "hold" frame (frame 211 of the in-place
+# pickup/hold/setdown clip sub3_largebox_003_mj_w_obj.npz). During the hybrid
+# carry the WBT policy holds the waist/arms/head essentially static at this
+# pose while the walking policy drives the legs, so here we pin those joints
+# (action scale 0 -> PD holds them at default) and make this pose the default,
+# which also matches how deployment masks upper-body observations (offset 0).
+CARRY_UPPER_POSE = {
+  "waist_yaw_joint": 0.3815,
+  "waist_pitch_joint": 0.1503,
+  "waist_roll_joint": 0.0839,
+  "left_shoulder_pitch_joint": -0.2301,
+  "left_shoulder_roll_joint": -0.0048,
+  "left_shoulder_yaw_joint": -0.2014,
+  "left_elbow_joint": -0.6058,
+  "left_wrist_yaw_joint": -0.8059,
+  "left_wrist_pitch_joint": -0.5580,
+  "left_wrist_roll_joint": 0.7240,
+  "right_shoulder_pitch_joint": -0.4247,
+  "right_shoulder_roll_joint": -0.1232,
+  "right_shoulder_yaw_joint": -0.2231,
+  "right_elbow_joint": -0.4472,
+  "right_wrist_yaw_joint": -0.1160,
+  "right_wrist_pitch_joint": -0.5574,
+  "right_wrist_roll_joint": 1.4605,
+  "head_yaw_joint": 0.0,
+  "head_pitch_joint": 0.0,
+}
+
+# Box center relative to torso_link at the hold frame (measured via FK).
+CARRY_BOX_POS = (0.331, 0.004, 0.09)
+CARRY_BOX_HALF = 0.225  # 45 cm cube.
+
+
+def _get_x2_carry_spec() -> mujoco.MjSpec:
+  """X2 spec with a payload box welded to the chest at the carry pose."""
+  spec = get_spec()
+  torso = spec.body("torso_link")
+  box = torso.add_body(name="carry_box", pos=CARRY_BOX_POS)
+  box.add_geom(
+    name="carry_box_geom",
+    type=mujoco.mjtGeom.mjGEOM_BOX,
+    size=(CARRY_BOX_HALF, CARRY_BOX_HALF, CARRY_BOX_HALF),
+    mass=1.0,  # Nominal; randomized per-env by the payload_mass event.
+    contype=0,
+    conaffinity=0,
+    rgba=(0.82, 0.71, 0.55, 0.7),
+  )
+  return spec
+
+
+def x2_flat_carry_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
+  """Fine-tune the deploy walking policy while carrying a chest payload.
+
+  Same observation/action interface as ``x2_flat_deploy_env_cfg`` (so it can be
+  warm-started from its checkpoints and dropped into the same deploy pipeline),
+  with:
+    * a box payload (0.3--3.0 kg, COM jittered) welded to the chest,
+    * waist/arms/head pinned at the carry pose (action scale 0),
+    * command ranges narrowed to carry speeds,
+    * gentler pushes (carrying a box, no arm recovery available).
+  """
+  cfg = x2_flat_deploy_env_cfg(play=play)
+
+  # Swap in the payload spec and make the carry pose the default upper body.
+  robot_cfg = cfg.scene.entities["robot"]
+  init = robot_cfg.init_state
+  assert init.joint_pos is not None
+  cfg.scene.entities["robot"] = dc_replace(
+    robot_cfg,
+    spec_fn=_get_x2_carry_spec,
+    init_state=dc_replace(init, joint_pos={**init.joint_pos, **CARRY_UPPER_POSE}),
+  )
+
+  # Pin the upper body: zero action scale => PD holds the default (carry) pose.
+  joint_pos_action = cfg.actions["joint_pos"]
+  assert isinstance(joint_pos_action, JointPositionActionCfg)
+  scale = dict(X2_ACTION_SCALE)
+  for pattern in (
+    "waist_yaw_joint",
+    "waist_pitch_joint",
+    "waist_roll_joint",
+    "head_yaw_joint",
+    "head_pitch_joint",
+    ".*_shoulder_pitch_joint",
+    ".*_shoulder_roll_joint",
+    ".*_shoulder_yaw_joint",
+    ".*_elbow_joint",
+    ".*_wrist_yaw_joint",
+    ".*_wrist_pitch_joint",
+    ".*_wrist_roll_joint",
+  ):
+    scale[pattern] = 0.0
+  joint_pos_action.scale = scale
+
+  # Payload randomization: mass 0.3--3.0 kg, COM jittered +-5 cm.
+  cfg.events["payload_mass"] = EventTermCfg(
+    mode="startup",
+    func=dr.body_mass,
+    params={
+      "asset_cfg": SceneEntityCfg("robot", body_names=("carry_box",)),
+      "operation": "abs",
+      "ranges": (0.3, 3.0),
+    },
+  )
+  cfg.events["payload_com"] = EventTermCfg(
+    mode="startup",
+    func=dr.body_com_offset,
+    params={
+      "asset_cfg": SceneEntityCfg("robot", body_names=("carry_box",)),
+      "operation": "add",
+      "ranges": {0: (-0.05, 0.05), 1: (-0.05, 0.05), 2: (-0.05, 0.05)},
+    },
+  )
+
+  # Carry-speed command ranges (and don't let the curriculum re-widen them).
+  twist_cmd = cfg.commands["twist"]
+  assert isinstance(twist_cmd, UniformVelocityCommandCfg)
+  twist_cmd.ranges.lin_vel_x = (-0.3, 0.8)
+  twist_cmd.ranges.lin_vel_y = (-0.2, 0.2)
+  twist_cmd.ranges.ang_vel_z = (-0.4, 0.4)
+  cfg.curriculum.pop("command_vel", None)
+
+  # Gentler pushes: no arm swing available for recovery while carrying.
+  if "push_robot" in cfg.events:
+    cfg.events["push_robot"].params["velocity_range"] = {
+      "x": (-0.3, 0.3),
+      "y": (-0.3, 0.3),
+      "z": (-0.2, 0.2),
+      "roll": (-0.3, 0.3),
+      "pitch": (-0.3, 0.3),
+      "yaw": (-0.5, 0.5),
+    }
+
   return cfg

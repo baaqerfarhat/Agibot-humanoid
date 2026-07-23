@@ -7,11 +7,15 @@ Sequences TWO policies:
               the box -> lift to chest. The motion clock then STOPS in the
               middle of the built-in 2 s HOLD segment (robot standing still,
               box at chest).
-  2. CARRY    (walking policy, x2_policy.npz): the proven velocity-command
-              walking policy drives legs/waist/head while all 14 ARM joints
-              stay LOCKED at the exact targets the WBT policy commanded at the
-              switch (keeps the squeeze). Velocity ramps 0 -> vx -> 0, then a
-              short settle at zero command.
+  2. CARRY    (walking policy, x2_walk_carry.npz): the velocity-command
+              walking policy -- fine-tuned in mjlab WITH a 0.3-3.0 kg chest
+              payload and the arms pinned in the carry pose -- drives
+              legs/waist/head while all 14 ARM joints stay LOCKED at the exact
+              targets the WBT policy commanded at the switch (keeps the
+              squeeze). A wz feedback loop on IMU yaw keeps the walk straight.
+              Velocity ramps 0 -> vx -> 0, then a short settle at zero command.
+              (The original non-payload policy x2_policy.npz still works here;
+              if you use it, set --grav-bias 0.12.)
   3. SET-DOWN (WBT policy again): the motion clock resumes from mid-HOLD and
               plays the remaining hold + set-down + stand-up. Yaw is re-aligned
               at the switch, so heading drift during the carry is fine.
@@ -243,8 +247,12 @@ def publish_pose(commander, pos_by_name, kp_by_name, kd_by_name, gain_scale, eng
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--box-policy", required=True, help="x2_box_policy.npz (WBT, in-place clip)")
-    ap.add_argument("--walk-policy", required=True, help="x2_policy.npz (velocity walking)")
+    ap.add_argument("--box-policy",
+                    default="../box_pickup/policy/x2_box_policy.npz",
+                    help="x2_box_policy.npz (WBT, in-place clip)")
+    ap.add_argument("--walk-policy",
+                    default="policies/x2_walk_carry.npz",
+                    help="velocity walking policy (default: payload fine-tune)")
     ap.add_argument("--engage", action="store_true", help="ACTUALLY publish (else dry run).")
     ap.add_argument("--base-imu", default="torso", choices=["torso", "chest"])
     ap.add_argument("--gain-scale", type=float, default=1.0)
@@ -260,10 +268,11 @@ def main():
     ap.add_argument("--max-joint-step", type=float, default=0.15)
     ap.add_argument("--roll-abort", type=float, default=0.7)
     ap.add_argument("--hold-end-seconds", type=float, default=3.0)
-    ap.add_argument("--grav-bias", type=float, default=0.12,
+    ap.add_argument("--grav-bias", type=float, default=0.0,
                     help="Forward pitch bias added to the walking policy's "
-                         "projected-gravity x (compensates the box payload; "
-                         "0.12 matched sim). Set 0 to disable.")
+                         "projected-gravity x. NOT needed with the "
+                         "payload-trained x2_walk_carry.npz (default 0); use "
+                         "0.12 if deploying the original x2_policy.npz.")
     args = ap.parse_args()
 
     box_policy = NumpyPolicy(args.box_policy)
