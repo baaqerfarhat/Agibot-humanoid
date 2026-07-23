@@ -23,18 +23,22 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
     The policy is BLIND: it does not perceive the box. The box must be placed
     at the reference start location (see "Box placement" below) before engaging.
 
-    The motion (v24: straight carry, planted-feet set-down) is 8.7 s at 50 Hz:
-        0.0 - 1.0 s   hold the default upright pose  <- START THE ROBOT STANDING
-        1.0 - 2.5 s   bend down toward the box
-        2.5 - 3.0 s   two-handed squeeze grasp + lift
-        3.0 - 5.8 s   carry ~1.4 m STRAIGHT AHEAD at chest height, feet forward
-        5.8 - 8.0 s   one continuous set-down directly in front, both feet
+    The motion (v25: IN-PLACE pickup + hold + set-down, NO walking) is 8.1 s
+    at 50 Hz, feet planted at the stance position for the ENTIRE motion:
+        0.0 - 0.7 s   hold the default upright pose  <- START THE ROBOT STANDING
+        0.7 - 2.7 s   bend down toward the box
+        2.7 - 3.2 s   two-handed squeeze grasp + lift to chest
+        3.2 - 5.2 s   HOLD: stand still, box at chest (2 s)
+        5.2 - 7.4 s   one continuous set-down directly in front, both feet
                       planted (the pickup played in reverse), stand back up
-        8.0 - 8.7 s   hold the default upright pose
+        7.4 - 8.1 s   hold the default upright pose
     Both the first and last frames of the reference are the robot's exact
     default standing pose at zero velocity, so the task starts from a normal
-    standing start and finishes standing upright. Leave ~2 m of clear floor
-    in front of the robot for the carry.
+    standing start and finishes standing upright. The box is picked up and
+    set back down at the SAME spot -- no floor clearance needed beyond the
+    box position. (This isolated pickup/set-down is exactly what the hybrid
+    controller `deploy_x2_box_hybrid.py` runs, minus the carry walk it
+    splices into the hold.)
 
 #####################################  SAFETY  #####################################
 #  1. First runs: robot SUSPENDED, NO BOX -> verify the motion shape in the air.
@@ -229,7 +233,9 @@ def publish_pose(commander, pos_by_name, kp_by_name, kd_by_name, gain_scale, eng
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--policy", required=True, help="Path to x2_box_policy.npz")
+    ap.add_argument("--policy",
+                    default="../box_pickup/policy/x2_box_policy.npz",
+                    help="Path to x2_box_policy.npz (default: latest v25 in-place export)")
     ap.add_argument("--engage", action="store_true",
                     help="ACTUALLY publish commands. Without this it is a dry run.")
     ap.add_argument("--base-imu", default="torso", choices=["torso", "chest"],
