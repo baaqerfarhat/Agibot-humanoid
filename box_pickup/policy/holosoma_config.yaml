@@ -136,10 +136,10 @@ command:
           motion_dir: ''
           motion_file: holosoma/data/motions/x2_31dof/whole_body_tracking/sub3_largebox_003_mj_w_obj.npz
           noise_to_initial_pose:
-            dof_pos: 0.15
+            dof_pos: 0.3
             object_pos:
-            - 0.05
-            - 0.05
+            - 0.08
+            - 0.08
             - 0.0
             overall_noise_scale: 1.0
             root_ang_vel:
@@ -151,14 +151,14 @@ command:
             - 0.5
             - 0.2
             root_pos:
-            - 0.05
-            - 0.05
-            - 0.01
+            - 0.1
+            - 0.1
+            - 0.02
             root_rot:
             - 0.1
             - 0.1
             - 0.2
-          start_at_timestep_zero_prob: 0.35
+          start_at_timestep_zero_prob: 0.55
           use_adaptive_timesteps_sampler: true
   step_terms:
     motion_command:
@@ -377,11 +377,11 @@ randomization:
         enable_pd_gain: true
         enable_rfi_lim: false
         kd_range:
-        - 0.85
-        - 1.15
+        - 0.7
+        - 1.3
         kp_range:
-        - 0.85
-        - 1.15
+        - 0.7
+        - 1.3
         rfi_lim_range:
         - 1.0
         - 1.0
@@ -404,15 +404,14 @@ randomization:
       params:
         base_com_range:
           x:
-          - -0.025
-          - 0.025
+          - -0.06
+          - 0.08
           y:
-          - -0.05
-          - 0.05
+          - -0.06
+          - 0.06
           z:
-          - -0.05
-          - 0.05
-        enabled: true
+          - -0.06
+          - 0.06
     randomize_object_rigid_body_inertia_startup:
       func: holosoma.managers.randomization.terms.locomotion:randomize_object_rigid_body_inertia_startup
       params:
@@ -425,7 +424,7 @@ randomization:
       params:
         mass_distribution_params:
         - 0.3
-        - 1.5
+        - 2.0
     randomize_object_rigid_body_material_startup:
       func: holosoma.managers.randomization.terms.locomotion:randomize_object_rigid_body_material_startup
       params:
@@ -455,14 +454,14 @@ randomization:
       params:
         ctrl_delay_step_range:
         - 0
-        - 2
+        - 3
         enabled: true
     setup_dof_pos_bias:
       func: holosoma.managers.randomization.terms.locomotion:setup_dof_pos_bias
       params:
         dof_pos_bias_range:
-        - -0.03
-        - 0.03
+        - -0.05
+        - 0.05
         enabled: true
   step_terms:
     apply_pushes:
@@ -478,7 +477,16 @@ reward:
       func: holosoma.managers.reward.terms.wbt:penalty_action_rate
       params: {}
       tags: []
-      weight: -0.4
+      weight: -0.8
+    foot_slip:
+      func: holosoma.managers.reward.terms.wbt:penalty_foot_slip
+      params:
+        contact_force_threshold: 1.0
+        foot_body_names:
+        - left_ankle_roll_link
+        - right_ankle_roll_link
+      tags: []
+      weight: -1.0
     hands_to_object_distance_exp:
       func: holosoma.managers.reward.terms.wbt:hands_to_object_distance_exp
       params:
@@ -504,12 +512,18 @@ reward:
     motion_global_body_ang_vel:
       func: holosoma.managers.reward.terms.wbt:motion_global_body_ang_vel
       params:
+        exclude_body_names:
+        - left_ankle_roll_link
+        - right_ankle_roll_link
         sigma: 3.14
       tags: []
       weight: 1.0
     motion_global_body_lin_vel:
       func: holosoma.managers.reward.terms.wbt:motion_global_body_lin_vel
       params:
+        exclude_body_names:
+        - left_ankle_roll_link
+        - right_ankle_roll_link
         sigma: 1.0
       tags: []
       weight: 1.0
@@ -528,12 +542,18 @@ reward:
     motion_relative_body_orientation_error_exp:
       func: holosoma.managers.reward.terms.wbt:motion_relative_body_orientation_error_exp
       params:
+        exclude_body_names:
+        - left_ankle_roll_link
+        - right_ankle_roll_link
         sigma: 0.4
       tags: []
       weight: 1.0
     motion_relative_body_position_error_exp:
       func: holosoma.managers.reward.terms.wbt:motion_relative_body_position_error_exp
       params:
+        exclude_body_names:
+        - left_ankle_roll_link
+        - right_ankle_roll_link
         sigma: 0.3
       tags: []
       weight: 1.0
@@ -1204,8 +1224,6 @@ termination:
       is_timeout: false
       params:
         bad_motion_body_pos_body_names:
-        - left_ankle_roll_link
-        - right_ankle_roll_link
         - left_wrist_roll_link
         - right_wrist_roll_link
         bad_motion_body_pos_threshold: 0.4
@@ -1269,12 +1287,12 @@ terrain:
     terrain_width: 8.0
     vertical_scale: 0.005
 training:
-  checkpoint: /home/baaqer/baaqer_ws/holosoma/logs/WholeBodyTracking/20260722_065631-x2_box_v23_smooth_drop-locomotion/model_82000.pt
+  checkpoint: /home/baaqer/baaqer_ws/holosoma/logs/WholeBodyTracking/20260722_192057-x2_box_v25_inplace_hybrid-locomotion/model_93500.pt
   export_onnx: true
   headless: true
   max_eval_steps: null
   multigpu: false
-  name: x2_box_v24_one_motion_drop
+  name: x2_box_v27_planted_feet_dr
   num_envs: 4096
   project: WholeBodyTracking
   seed: 42
