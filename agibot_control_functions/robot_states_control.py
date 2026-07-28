@@ -261,16 +261,27 @@ class RobotStateClient(Node):
         with self._lock:
             self._joint_msg[area] = msg
 
-    def wait_ready(self, timeout_sec: float = 10.0) -> bool:
-        """Block until every topic (all IMUs + all joint groups) has delivered once."""
+    def wait_ready(self, timeout_sec: float = 10.0, required_imus=None) -> bool:
+        """Block until required topics (IMUs + all joint groups) have delivered once.
+
+        required_imus: iterable of IMU source keys (e.g. ["torso"]) that must be
+        live. Defaults to every source in IMU_TOPICS. Pass only the IMU the policy
+        uses so a dead/unused sensor (e.g. a non-publishing chest IMU) does not
+        block readiness.
+        """
+        req_imus = list(IMU_TOPICS) if required_imus is None else list(required_imus)
         t0 = time.time()
         while time.time() - t0 < timeout_sec:
             with self._lock:
-                if (all(self._imu_msg[s] is not None for s in IMU_TOPICS) and
+                if (all(self._imu_msg[s] is not None for s in req_imus) and
                         all(self._joint_msg[g] is not None for g in JOINT_TOPICS)):
                     return True
             time.sleep(0.02)
-        self.get_logger().error("Timed out waiting for state topics.")
+        missing_imu = [s for s in req_imus if self._imu_msg[s] is None]
+        missing_jnt = [g.name for g in JOINT_TOPICS if self._joint_msg[g] is None]
+        self.get_logger().error(
+            f"Timed out waiting for state topics. missing IMUs={missing_imu} "
+            f"joints={missing_jnt}")
         return False
 
     def get_robot_states(self):
@@ -315,12 +326,15 @@ class RobotStateClient(Node):
             imu_msgs = {s: self._imu_msg[s] for s in IMU_TOPICS}
             joint_msgs = {g: self._joint_msg[g] for g in JOINT_TOPICS}
 
-        if (any(imu_msgs[s] is None for s in IMU_TOPICS) or
-                any(joint_msgs[g] is None for g in JOINT_TOPICS)):
+        # Require all joint groups. IMUs are included only if they have delivered
+        # data, so a dead/unused sensor (e.g. a non-publishing chest IMU) is
+        # skipped rather than blocking every read.
+        if any(joint_msgs[g] is None for g in JOINT_TOPICS):
             raise RuntimeError("State not ready (call wait_ready first).")
 
-        # imus: source -> ImuReading (newest of each)
-        imus = {s: self._imu_reading(s, imu_msgs[s]) for s in IMU_TOPICS}
+        # imus: source -> ImuReading (newest of each live source)
+        imus = {s: self._imu_reading(s, imu_msgs[s])
+                for s in IMU_TOPICS if imu_msgs[s] is not None}
 
         head  = self._name_list(joint_msgs[JointArea.HEAD].joints,  JOINT_NAMES[JointArea.HEAD])
         waist = self._name_list(joint_msgs[JointArea.WAIST].joints, JOINT_NAMES[JointArea.WAIST])

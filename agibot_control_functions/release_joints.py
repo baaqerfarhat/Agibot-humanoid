@@ -86,7 +86,9 @@ def main():
     executor.add_node(commander)
     threading.Thread(target=executor.spin, daemon=True).start()
 
-    if not client.wait_ready(timeout_sec=10.0):
+    # Chest IMU is a dead/unused sensor on this robot; require only torso so the
+    # release does not hang waiting for a topic that never publishes.
+    if not client.wait_ready(timeout_sec=10.0, required_imus=["torso"]):
         print("[ERROR] state topics not ready -- is the robot HAL running?")
         client.destroy_node(); commander.destroy_node(); rclpy.shutdown(); return
 

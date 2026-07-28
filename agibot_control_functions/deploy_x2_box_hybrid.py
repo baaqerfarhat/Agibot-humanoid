@@ -48,6 +48,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import threading
 import time
 
@@ -61,6 +62,7 @@ from robot_states_control import (
     robot_model,
 )
 from aimdk_msgs.msg import JointCommand, JointCommandArray
+from run_logger import RunLogger
 
 ARM_JOINT_PREFIXES = ("left_shoulder", "left_elbow", "left_wrist",
                       "right_shoulder", "right_elbow", "right_wrist")
@@ -273,11 +275,15 @@ def main():
                          "projected-gravity x. NOT needed with the "
                          "payload-trained x2_walk_carry.npz (default 0); use "
                          "0.12 if deploying the original x2_policy.npz.")
-    ap.add_argument("--leg-filter", type=float, default=0.5,
+    ap.add_argument("--leg-filter", type=float, default=0.9,
                     help="EMA smoothing on LEG targets during the WBT phases "
                          "(pickup/set-down). 0 = off. Damps jittery leg "
                          "stabilization on hardware. Never applied during the "
                          "carry (the walking policy needs crisp leg control).")
+    ap.add_argument("--log-dir", default="run_logs",
+                    help="Folder for per-run joint/IMU CSV logs.")
+    ap.add_argument("--no-log", action="store_true",
+                    help="Disable per-run data logging.")
     args = ap.parse_args()
 
     box_policy = NumpyPolicy(args.box_policy)
@@ -335,7 +341,9 @@ def main():
     executor.add_node(commander)
     threading.Thread(target=executor.spin, daemon=True).start()
 
-    if not client.wait_ready(timeout_sec=10.0):
+    # Only require the IMU the policies actually use (base_imu). The chest IMU is
+    # an unused, sometimes non-publishing sensor and must not block readiness.
+    if not client.wait_ready(timeout_sec=10.0, required_imus=[args.base_imu]):
         print("[ERROR] state topics not ready.")
         client.destroy_node(); commander.destroy_node(); rclpy.shutdown(); return
 
@@ -360,6 +368,16 @@ def main():
 
     print("\n>>> SAFETY: suspended first? MC stopped on .40? E-stop in hand? <<<")
     input(">>> Press Enter to START (Ctrl+C to abort) <<<")
+
+    run_name = f"box_hybrid_{os.path.splitext(os.path.basename(args.box_policy))[0]}"
+    logger = RunLogger(
+        joint_names, base_imu=args.base_imu, run_name=run_name,
+        meta={"script": "deploy_x2_box_hybrid.py", "box_policy": args.box_policy,
+              "walk_policy": args.walk_policy, "gain_scale": args.gain_scale,
+              "leg_filter": args.leg_filter, "vx": args.vx,
+              "walk_seconds": args.walk_seconds, "engage": args.engage,
+              "task": bmeta.get("task"), "run_path": bmeta.get("run_path")},
+        log_dir=args.log_dir, enabled=not args.no_log)
 
     start_pose = {n: jmap0[n].position for n in joint_names}
     prev_target = dict(start_pose)
@@ -492,6 +510,7 @@ def main():
             publish_pose(commander, target_by_name, kp_by_name, kd_by_name,
                          args.gain_scale, args.engage)
             prev_target = target_by_name
+            logger.log(now - t0, phase, frame, imus, jmap, target_by_name)
 
             if now - last_print >= 1.0:
                 last_print = now
@@ -516,8 +535,14 @@ def main():
             a = min(1.0, (time.perf_counter() - t_stop) / 1.5)
             tgt = {n: (1 - a) * ramp_start[n] + a * default_by_name[n] for n in joint_names}
             publish_pose(commander, tgt, kp_by_name, kd_by_name, args.gain_scale, args.engage)
+            try:
+                imus_i, jmap_i = read_jmap()
+                logger.log(time.perf_counter() - t0, "interrupt", frame, imus_i, jmap_i, tgt)
+            except Exception:
+                pass
             time.sleep(CONTROL_DT)
     finally:
+        logger.close()
         client.destroy_node()
         commander.destroy_node()
         if rclpy.ok():

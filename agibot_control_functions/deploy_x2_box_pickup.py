@@ -66,6 +66,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import threading
 import time
 
@@ -79,6 +80,7 @@ from robot_states_control import (
     robot_model,
 )
 from aimdk_msgs.msg import JointCommand, JointCommandArray
+from run_logger import RunLogger
 
 
 # =============================== policy (numpy MLP) ===============================
@@ -253,11 +255,15 @@ def main():
                          "checked: the motion contains a deep forward bend.")
     ap.add_argument("--hold-end-seconds", type=float, default=3.0,
                     help="Hold the final reference pose after the motion ends.")
-    ap.add_argument("--leg-filter", type=float, default=0.5,
+    ap.add_argument("--leg-filter", type=float, default=0.9,
                     help="EMA smoothing factor on LEG joint targets (0 = off, "
                          "0.5 = recommended, higher = smoother/laggier). Damps "
                          "the jittery leg 'stabilization' feedback loop on real "
                          "hardware; arms are never filtered (crisp squeeze).")
+    ap.add_argument("--log-dir", default="run_logs",
+                    help="Folder for per-run joint/IMU CSV logs.")
+    ap.add_argument("--no-log", action="store_true",
+                    help="Disable per-run data logging.")
     args = ap.parse_args()
 
     policy = NumpyPolicy(args.policy)
@@ -294,7 +300,9 @@ def main():
     executor.add_node(commander)
     threading.Thread(target=executor.spin, daemon=True).start()
 
-    if not client.wait_ready(timeout_sec=10.0):
+    # Only require the IMU the policy actually uses (base_imu). The chest IMU is
+    # an unused, sometimes non-publishing sensor and must not block readiness.
+    if not client.wait_ready(timeout_sec=10.0, required_imus=[args.base_imu]):
         print("[ERROR] state topics not ready.")
         client.destroy_node(); commander.destroy_node(); rclpy.shutdown(); return
 
@@ -342,6 +350,15 @@ def main():
 
     print("\n>>> SAFETY: robot suspended? MC stopped on .40? E-stop in hand? <<<")
     input(">>> Press Enter to START (Ctrl+C to abort) <<<")
+
+    run_name = f"box_pickup_{os.path.splitext(os.path.basename(args.policy))[0]}"
+    logger = RunLogger(
+        joint_names, base_imu=args.base_imu, run_name=run_name,
+        meta={"script": "deploy_x2_box_pickup.py", "policy": args.policy,
+              "gain_scale": args.gain_scale, "leg_filter": args.leg_filter,
+              "engage": args.engage, "task": meta.get("task"),
+              "run_path": meta.get("run_path")},
+        log_dir=args.log_dir, enabled=not args.no_log)
 
     start_pose = {n: jmap0[n].position for n in joint_names}
     prev_target = dict(start_pose)
@@ -412,6 +429,7 @@ def main():
             publish_pose(commander, target_by_name, kp_by_name, kd_by_name,
                          args.gain_scale, args.engage)
             prev_target = target_by_name
+            logger.log(now - t0, phase, frame, imus, jmap, target_by_name)
 
             if now - last_print >= 1.0:
                 last_print = now
@@ -436,8 +454,14 @@ def main():
             a = min(1.0, (time.perf_counter() - t_stop) / 1.5)
             tgt = {n: (1 - a) * ramp_start[n] + a * default_by_name[n] for n in joint_names}
             publish_pose(commander, tgt, kp_by_name, kd_by_name, args.gain_scale, args.engage)
+            try:
+                imus_i, jmap_i = read_jmap()
+                logger.log(time.perf_counter() - t0, "interrupt", frame, imus_i, jmap_i, tgt)
+            except Exception:
+                pass
             time.sleep(CONTROL_DT)
     finally:
+        logger.close()
         client.destroy_node()
         commander.destroy_node()
         if rclpy.ok():

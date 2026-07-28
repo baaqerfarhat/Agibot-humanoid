@@ -254,7 +254,9 @@ def main():
     executor.add_node(commander)
     threading.Thread(target=executor.spin, daemon=True).start()
 
-    if not client.wait_ready(timeout_sec=10.0):
+    # Only require the IMU the policy actually uses (base_imu). The chest IMU is
+    # an unused, sometimes non-publishing sensor and must not block readiness.
+    if not client.wait_ready(timeout_sec=10.0, required_imus=[args.base_imu]):
         print("[ERROR] state topics not ready.")
         client.destroy_node(); commander.destroy_node(); rclpy.shutdown(); return
 
