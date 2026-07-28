@@ -28,6 +28,9 @@ wandb/
 
 # Large raw sensor logs
 *.csv
+# ...but keep the deploy run logs (joint encoder data for policy training)
+!run_logs/
+!run_logs/*.csv
 
 # Caches
 .mypy_cache/
