@@ -24,6 +24,14 @@ OUT_DIR = (
 )
 SPEEDS = [0.8, 1.0, 1.25]
 
+# v30: append this many seconds of the clip's final frame (static, zero
+# velocity) to every variant. The clip ends at the default upright pose, so
+# this trains the post-set-down HOLD -- the exact segment where the robot fell
+# backward on hardware: in sim episodes used to reset the instant the clip
+# ended, so balancing after releasing the box was never practiced. Deployment
+# also plays several seconds past set-down before ramping out.
+END_HOLD_SECONDS = 3.0
+
 
 def lerp(arr: np.ndarray, t_orig: np.ndarray, t_new: np.ndarray) -> np.ndarray:
     """Linear interpolation along axis 0 for arrays of shape (T, ...)."""
@@ -40,6 +48,20 @@ def slerp_wxyz(quats_wxyz: np.ndarray, t_orig: np.ndarray, t_new: np.ndarray) ->
     return out_xyzw[:, [3, 0, 1, 2]]
 
 
+def append_end_hold(out: dict, fps: float) -> dict:
+    """Repeat the final frame for END_HOLD_SECONDS with all velocities zeroed."""
+    n = int(round(END_HOLD_SECONDS * fps))
+    if n <= 0:
+        return out
+    for key in ["joint_pos", "body_pos_w", "body_quat_w", "object_pos_w", "object_quat_w"]:
+        last = out[key][-1:]
+        out[key] = np.concatenate([out[key], np.repeat(last, n, axis=0)], axis=0)
+    for key in ["joint_vel", "body_lin_vel_w", "body_ang_vel_w", "object_lin_vel_w", "object_ang_vel_w"]:
+        zeros = np.zeros((n,) + out[key].shape[1:], dtype=out[key].dtype)
+        out[key] = np.concatenate([out[key], zeros], axis=0)
+    return out
+
+
 def main() -> None:
     import os
 
@@ -54,8 +76,9 @@ def main() -> None:
         name = f"box_speed{int(round(s * 100)):03d}.npz"
         path = os.path.join(OUT_DIR, name)
         if s == 1.0:
-            np.savez(path, **data)
-            print(f"{name}: copied ({T} frames, {duration:.2f}s)")
+            held = append_end_hold(dict(data), fps)
+            np.savez(path, **held)
+            print(f"{name}: copied + {END_HOLD_SECONDS}s end hold ({held['joint_pos'].shape[0]} frames)")
             continue
 
         new_duration = duration / s
@@ -95,8 +118,9 @@ def main() -> None:
         out["object_lin_vel_w"] = lerp(data["object_lin_vel_w"], t_orig, t_new) * s
         out["object_ang_vel_w"] = lerp(data["object_ang_vel_w"], t_orig, t_new) * s
 
+        out = append_end_hold(out, fps)
         np.savez(path, **out)
-        print(f"{name}: {N} frames, {new_duration:.2f}s (speed {s}x)")
+        print(f"{name}: {out['joint_pos'].shape[0]} frames ({new_duration:.2f}s motion + {END_HOLD_SECONDS}s hold, speed {s}x)")
 
 
 if __name__ == "__main__":
