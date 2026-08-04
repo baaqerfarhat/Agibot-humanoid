@@ -185,8 +185,72 @@ x2_31dof_wbt_fast_sac_w_object = replace(
     ),
 )
 
+# Prone slope-crawl whole-body tracking. Uses crawl-specific rewards (no
+# planted-feet suite), chest projected-gravity in the actor, tighter
+# termination, and a 20 s episode so the full ~19 s reference can finish.
+_X2_CRAWL_INIT_HEIGHT = 0.45
+
+x2_31dof_wbt_crawl = replace(
+    x2_31dof_wbt,
+    training=TrainingConfig(
+        project="WholeBodyTracking",
+        name="x2_31dof_wbt_crawl",
+        num_envs=4096,
+    ),
+    algo=replace(
+        algo.ppo,
+        config=replace(
+            algo.ppo.config,
+            # PPO counts these as ADDITIONAL iters from the loaded checkpoint
+            # iter (warm-start from model_49999 + 30000 => ~80k).
+            num_learning_iterations=30000,
+            num_learning_epochs=5,
+            save_interval=500,
+            entropy_coef=0.005,
+            init_noise_std=0.8,
+            actor_learning_rate=1e-3,
+            critic_learning_rate=1e-3,
+            init_at_random_ep_len=True,
+            empirical_normalization=True,
+            use_symmetry=False,
+            actor_optimizer=replace(algo.ppo.config.actor_optimizer, weight_decay=0.000),
+            critic_optimizer=replace(algo.ppo.config.critic_optimizer, weight_decay=0.000),
+        ),
+    ),
+    simulator=replace(
+        simulator.isaacsim,
+        config=replace(
+            simulator.isaacsim.config,
+            sim=replace(
+                simulator.isaacsim.config.sim,
+                max_episode_length_s=20.0,
+            ),
+            scene=replace(simulator.isaacsim.config.scene, env_spacing=0.0),
+        ),
+    ),
+    robot=replace(
+        robot.x2_31dof,
+        control=replace(
+            robot.x2_31dof.control,
+            action_scale=0.25,
+            action_scales_by_effort_limit_over_p_gain=True,
+        ),
+        asset=replace(robot.x2_31dof.asset, enable_self_collisions=True),
+        init_state=replace(robot.x2_31dof.init_state, pos=[0.0, 0.0, _X2_CRAWL_INIT_HEIGHT]),
+    ),
+    observation=observation.x2_31dof_wbt_crawl_observation,
+    termination=termination.x2_31dof_wbt_crawl_termination,
+    command=command.x2_31dof_wbt_crawl_command,
+    reward=reward.x2_31dof_wbt_crawl_reward,
+    nightly=NightlyConfig(
+        iterations=10000,
+        metrics={},
+    ),
+)
+
 __all__ = [
     "x2_31dof_wbt",
+    "x2_31dof_wbt_crawl",
     "x2_31dof_wbt_fast_sac",
     "x2_31dof_wbt_fast_sac_w_object",
     "x2_31dof_wbt_w_object",

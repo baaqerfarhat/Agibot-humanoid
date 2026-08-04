@@ -75,7 +75,8 @@ ITER="$(basename "$CKPT" .pt | sed -E 's/^model_0*//')"
 if [[ "$RUN_BASE" == *crawl* ]]; then
     TYPE="crawl"
     RENDERER="$SCRIPTS_DIR/render_crawl_rollout.py"
-    STEPS=520
+    # Full palmflat slope crawl is ~19 s @ 50 Hz.
+    STEPS=1000
     MOTION=""
 else
     TYPE="box"
@@ -112,8 +113,15 @@ OMNI_KIT_ACCEPT_EULA=1 CUDA_VISIBLE_DEVICES="$EVAL_GPU" "$HSSIM_PY" \
 
 # ---- 2. render to mp4 ----
 echo "[video] rendering..."
-cd /home/baaqer/baaqer_ws
-MUJOCO_GL=egl "$MJLAB_PY" "$RENDERER" "$NPZ" "$MP4" 2>/dev/null || true
-[ -f "$MP4" ] || { echo "[video] ERROR: render failed"; exit 1; }
+RENDER_LOG="/tmp/x2_${TYPE}_video_render.log"
+# EGL teardown often prints a harmless destructor error; keep the log so a
+# real failure is visible. Prefer mjlab venv, fall back to hsretargeting.
+if ! MUJOCO_GL=egl "$MJLAB_PY" "$RENDERER" "$NPZ" "$MP4" >"$RENDER_LOG" 2>&1; then
+    if [ ! -f "$MP4" ]; then
+        HS_PY=/home/baaqer/baaqer_ws/holosoma/.venv/hsretargeting/bin/python
+        MUJOCO_GL=egl "$HS_PY" "$RENDERER" "$NPZ" "$MP4" >>"$RENDER_LOG" 2>&1 || true
+    fi
+fi
+[ -f "$MP4" ] || { echo "[video] ERROR: render failed, see $RENDER_LOG"; exit 1; }
 
 echo "[video] done: $MP4"

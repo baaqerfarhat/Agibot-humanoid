@@ -45,6 +45,23 @@ actor_obs_shared = ObsGroupCfg(
     },
 )
 
+# Actor obs for prone crawl: same as above plus chest projected-gravity
+# (the real-robot chest IMU gravity vector). Critical for telling belly-down
+# from belly-up without privileged state.
+actor_obs_crawl = ObsGroupCfg(
+    concatenate=True,
+    enable_noise=True,
+    history_length=1,
+    terms={
+        **actor_obs_shared.terms,
+        "projected_gravity": ObsTermCfg(
+            func="holosoma.managers.observation.terms.wbt:projected_gravity",
+            scale=1.0,
+            noise=0.05,
+        ),
+    },
+)
+
 critic_obs_shared_terms = {
     "motion_command": ObsTermCfg(
         func="holosoma.managers.observation.terms.wbt:motion_command",
@@ -98,6 +115,17 @@ critic_obs_shared_terms = {
     ),
 }
 
+# Crawl critic gets chest projected-gravity too. Kept separate from
+# critic_obs_shared_terms so box-pickup warm-starts stay dim-compatible.
+critic_obs_crawl_terms = {
+    **critic_obs_shared_terms,
+    "projected_gravity": ObsTermCfg(
+        func="holosoma.managers.observation.terms.wbt:projected_gravity",
+        scale=1.0,
+        noise=0.05,
+    ),
+}
+
 critic_obs_w_object_terms = critic_obs_shared_terms.copy()
 critic_obs_w_object_terms.update(
     {
@@ -143,4 +171,20 @@ x2_31dof_wbt_observation_w_object = ObservationManagerCfg(
     },
 )
 
-__all__ = ["x2_31dof_wbt_observation", "x2_31dof_wbt_observation_w_object"]
+x2_31dof_wbt_crawl_observation = ObservationManagerCfg(
+    groups={
+        "actor_obs": actor_obs_crawl,
+        "critic_obs": ObsGroupCfg(
+            concatenate=True,
+            enable_noise=False,
+            history_length=1,
+            terms=critic_obs_crawl_terms,
+        ),
+    },
+)
+
+__all__ = [
+    "x2_31dof_wbt_crawl_observation",
+    "x2_31dof_wbt_observation",
+    "x2_31dof_wbt_observation_w_object",
+]
