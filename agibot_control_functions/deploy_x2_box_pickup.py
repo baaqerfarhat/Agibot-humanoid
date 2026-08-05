@@ -236,8 +236,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--policy",
-                    default="../box_pickup/policy/x2_box_policy.npz",
-                    help="Path to x2_box_policy.npz (default: latest v25 in-place export)")
+                    default="../box_pickup/policy/x2_box_policy_v31.npz",
+                    help="Path to WBT box policy .npz (default: v31 best = iter 202500)")
     ap.add_argument("--engage", action="store_true",
                     help="ACTUALLY publish commands. Without this it is a dry run.")
     ap.add_argument("--base-imu", default="torso", choices=["torso", "chest"],

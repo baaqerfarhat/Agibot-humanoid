@@ -3,7 +3,7 @@
 
 Sequences TWO policies:
 
-  1. PICKUP   (WBT policy, x2_box_policy.npz): stand -> bend -> squeeze-grasp
+  1. PICKUP   (WBT policy, x2_box_policy_v31.npz): stand -> bend -> squeeze-grasp
               the box -> lift to chest. The motion clock then STOPS in the
               middle of the built-in 2 s HOLD segment (robot standing still,
               box at chest).
@@ -250,8 +250,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--box-policy",
-                    default="../box_pickup/policy/x2_box_policy.npz",
-                    help="x2_box_policy.npz (WBT, in-place clip)")
+                    default="../box_pickup/policy/x2_box_policy_v31.npz",
+                    help="WBT box policy .npz (default: v31 best = iter 202500)")
     ap.add_argument("--walk-policy",
                     default="policies/x2_walk_carry.npz",
                     help="velocity walking policy (default: payload fine-tune)")
