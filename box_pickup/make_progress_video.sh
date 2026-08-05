@@ -22,7 +22,14 @@ LOGS=/home/baaqer/baaqer_ws/holosoma/logs/WholeBodyTracking
 VIDEOS=/home/baaqer/baaqer_ws/Agibot-humanoid/box_pickup/videos
 HSSIM_PY=/home/baaqer/.holosoma_deps/miniconda3/envs/hssim/bin/python
 MJLAB_PY=/home/baaqer/baaqer_ws/mjlab/.venv/bin/python
-SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Resolve symlinks so ~/baaqer_ws/make_progress_video.sh still finds
+# render_*_rollout.py next to the real script under Agibot-humanoid/box_pickup/.
+_SCRIPT="${BASH_SOURCE[0]}"
+while [ -L "$_SCRIPT" ]; do
+    _link="$(readlink "$_SCRIPT")"
+    [[ "$_link" == /* ]] && _SCRIPT="$_link" || _SCRIPT="$(dirname "$_SCRIPT")/$_link"
+done
+SCRIPTS_DIR="$(cd "$(dirname "$_SCRIPT")" && pwd)"
 
 # ---- resolve checkpoint ----
 if [ $# -ge 1 ] && [[ "$1" == *.pt ]]; then
