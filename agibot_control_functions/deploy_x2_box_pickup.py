@@ -260,6 +260,17 @@ def main():
                          "0.5 = recommended, higher = smoother/laggier). Damps "
                          "the jittery leg 'stabilization' feedback loop on real "
                          "hardware; arms are never filtered (crisp squeeze).")
+    ap.add_argument("--init-tol-arm", type=float, default=0.12,
+                    help="Max |meas-start| (rad) allowed on arm joints before "
+                         "the policy is allowed to engage.")
+    ap.add_argument("--init-tol-leg", type=float, default=0.25,
+                    help="Max |meas-start| (rad) allowed on leg joints before "
+                         "the policy is allowed to engage.")
+    ap.add_argument("--init-timeout", type=float, default=20.0,
+                    help="Seconds to wait after settle for the start pose to "
+                         "be reached before aborting engage.")
+    ap.add_argument("--force-engage", action="store_true",
+                    help="Engage even if init pose tolerances are not met.")
     ap.add_argument("--log-dir", default="run_logs",
                     help="Folder for per-run joint/IMU CSV logs.")
     ap.add_argument("--no-log", action="store_true",
@@ -324,32 +335,49 @@ def main():
           f"|action|_max = {np.abs(a0).max():.3f} (should be O(1))")
     print(f"[check] torso roll = {roll_of(np.asarray(imus0[args.base_imu].quat)):+.3f} rad")
 
-    # Ramp target: the motion's own first frame (near-default standing pose).
+    # Ramp / init target: the motion's own first frame (policy-correct start).
     start_ref = {n: float(policy.ref_joint_pos[0][i]) for i, n in enumerate(joint_names)}
 
-    # ---- stance check --------------------------------------------------------
-    # The reference stance (motion frame 0): feet PARALLEL, pointing forward,
-    # centers ~27 cm apart, side by side (no fore-aft offset). Planted feet
-    # cannot slide during the ramp, so if the robot starts with a different
-    # stance the leg joints keep a PERSISTENT error through the whole motion --
-    # the main cause of instability when standing back up with the box.
     LEG_JOINTS = [n for n in joint_names if ("hip" in n or "knee" in n or "ankle" in n)]
     LEG_SET = set(LEG_JOINTS)
-    stance_err = {n: jmap0[n].position - start_ref[n] for n in LEG_JOINTS}
-    worst = max(stance_err.items(), key=lambda kv: abs(kv[1]))
-    print("\n[stance] reference stance: feet parallel, pointing forward, centers ~27 cm")
-    print("[stance] apart, side by side. Leg joints vs motion frame 0:")
+    ARM_JOINTS = [n for n in joint_names
+                  if any(k in n for k in ("shoulder", "elbow", "wrist"))]
+    ARM_SET = set(ARM_JOINTS)
+
+    def pose_errors(jmap):
+        return {n: float(jmap[n].position - start_ref[n]) for n in joint_names}
+
+    def worst_err(err, names):
+        return max(((n, err[n]) for n in names), key=lambda kv: abs(kv[1]))
+
+    def pose_ok(err):
+        arm_bad = [n for n in ARM_JOINTS if abs(err[n]) > args.init_tol_arm]
+        leg_bad = [n for n in LEG_JOINTS if abs(err[n]) > args.init_tol_leg]
+        return arm_bad, leg_bad
+
+    # ---- init pose check (before ramp) ---------------------------------------
+    # Frame-0 reference: standing, arms slightly open (L roll +0.2 / R roll -0.2),
+    # elbows ~-0.3. Planted feet cannot slide, so fix stance by hand first.
+    err0 = pose_errors(jmap0)
+    print("\n[init] target start pose = motion frame 0 (policy-correct):")
+    print("       feet parallel ~27 cm apart; arms slightly abducted; elbows ~-0.3")
+    print("[init] ARM joints vs start:")
+    for n in ARM_JOINTS:
+        flag = "  <-- LARGE" if abs(err0[n]) > args.init_tol_arm else ""
+        print(f"    {n:32s} {err0[n]:+.3f} rad   target={start_ref[n]:+.3f}{flag}")
+    print("[init] LEG joints vs start:")
     for n in LEG_JOINTS:
-        flag = "  <-- LARGE" if abs(stance_err[n]) > 0.20 else ""
-        print(f"    {n:32s} {stance_err[n]:+.3f} rad{flag}")
-    if abs(worst[1]) > 0.20:
-        print(f"[stance] WARNING: {worst[0]} is {worst[1]:+.2f} rad off the reference.")
-        print("[stance] Feet cannot slide: REPOSITION the robot's feet to the stance")
-        print("[stance] above before engaging (v26+ policies tolerate ~+/-0.3 rad).")
+        flag = "  <-- LARGE" if abs(err0[n]) > args.init_tol_leg else ""
+        print(f"    {n:32s} {err0[n]:+.3f} rad   target={start_ref[n]:+.3f}{flag}")
+    arm_bad0, leg_bad0 = pose_ok(err0)
+    if arm_bad0 or leg_bad0:
+        print("[init] WARNING: not at start pose yet. Ramp/settle will pull toward it;")
+        print("[init] policy will NOT engage until arms/legs are within tolerance")
+        print("[init] (or use --force-engage). Fix feet by hand if on the ground.")
     # --------------------------------------------------------------------------
 
     print("\n>>> SAFETY: robot suspended? MC stopped on .40? E-stop in hand? <<<")
-    input(">>> Press Enter to START (Ctrl+C to abort) <<<")
+    input(">>> Press Enter to START ramp-to-init (Ctrl+C to abort) <<<")
 
     run_name = f"box_pickup_{os.path.splitext(os.path.basename(args.policy))[0]}"
     logger = RunLogger(
@@ -362,11 +390,14 @@ def main():
 
     start_pose = {n: jmap0[n].position for n in joint_names}
     prev_target = dict(start_pose)
+    # Stronger gains while pulling into the start pose so arms actually arrive.
+    init_gain = max(float(args.gain_scale), 1.0)
 
     t0 = time.perf_counter()
     next_t = t0
     last_print = 0.0
-    phase = "ramp"  # ramp -> settle -> policy -> done
+    # ramp -> settle -> wait_init -> policy -> done
+    phase = "ramp"
     phase_t0 = t0
     frame = 0
 
@@ -382,21 +413,48 @@ def main():
                 phase = "done"; phase_t0 = now
 
             elapsed = now - phase_t0
+            gain_now = args.gain_scale
 
             if phase == "ramp":
+                gain_now = init_gain
                 alpha = min(1.0, elapsed / max(1e-3, args.ramp_seconds))
                 target_by_name = {n: (1 - alpha) * start_pose[n] + alpha * start_ref[n]
                                   for n in joint_names}
                 if alpha >= 1.0:
                     phase = "settle"; phase_t0 = now
+                    print("\n[phase] settle -- holding start pose\n")
 
             elif phase == "settle":
+                gain_now = init_gain
                 target_by_name = dict(start_ref)
                 if elapsed >= args.settle_seconds:
-                    # Re-align yaw right before engaging (robot may have shifted).
+                    phase = "wait_init"; phase_t0 = now
+                    print("[phase] wait_init -- verifying measured pose == start "
+                          f"(arm tol {args.init_tol_arm:.2f}, leg tol {args.init_tol_leg:.2f})\n")
+
+            elif phase == "wait_init":
+                gain_now = init_gain
+                target_by_name = dict(start_ref)
+                err = pose_errors(jmap)
+                arm_bad, leg_bad = pose_ok(err)
+                ready = (not arm_bad and not leg_bad) or args.force_engage
+                if ready:
+                    wa, wl = worst_err(err, ARM_JOINTS), worst_err(err, LEG_JOINTS)
+                    print(f"[init] READY  worst_arm {wa[0]}={wa[1]:+.3f}  "
+                          f"worst_leg {wl[0]}={wl[1]:+.3f}")
+                    if args.force_engage and (arm_bad or leg_bad):
+                        print("[init] --force-engage: starting despite residual error")
                     obs_builder.align(imus[args.base_imu].quat)
                     phase = "policy"; phase_t0 = now; frame = 0
                     print("\n[phase] policy ENGAGED -- motion clock running\n")
+                elif elapsed >= args.init_timeout:
+                    wa, wl = worst_err(err, ARM_JOINTS), worst_err(err, LEG_JOINTS)
+                    print(f"\n[ABORT] start pose not reached in {args.init_timeout:.0f}s.")
+                    print(f"[ABORT] worst_arm {wa[0]}={wa[1]:+.3f}  "
+                          f"worst_leg {wl[0]}={wl[1]:+.3f}")
+                    print("[ABORT] Reposition (especially feet), then rerun. "
+                          "Or pass --force-engage.")
+                    phase = "done"; phase_t0 = now
 
             elif phase == "policy":
                 frame = int(elapsed / CONTROL_DT)
@@ -427,17 +485,24 @@ def main():
                                   for i, n in enumerate(joint_names)}
 
             publish_pose(commander, target_by_name, kp_by_name, kd_by_name,
-                         args.gain_scale, args.engage)
+                         gain_now, args.engage)
             prev_target = target_by_name
             logger.log(now - t0, phase, frame, imus, jmap, target_by_name)
 
             if now - last_print >= 1.0:
                 last_print = now
                 tag = "DRY" if not args.engage else "CMD"
-                print(f"[{tag}] phase={phase:6s} t={now - t0:5.1f}s frame={frame:3d}/{n_frames} "
+                extra = ""
+                if phase == "wait_init":
+                    err = pose_errors(jmap)
+                    wa, wl = worst_err(err, ARM_JOINTS), worst_err(err, LEG_JOINTS)
+                    extra = (f" arm_err={wa[0].split('_')[1][:4]}{wa[1]:+.2f}"
+                             f" leg_err={wl[0].split('_')[1][:4]}{wl[1]:+.2f}")
+                print(f"[{tag}] phase={phase:9s} t={now - t0:5.1f}s frame={frame:3d}/{n_frames} "
                       f"roll={roll:+.2f} "
                       f"knee_L={target_by_name['left_knee_joint']:+.3f} "
-                      f"elbow_L={target_by_name['left_elbow_joint']:+.3f}")
+                      f"elbow_L={target_by_name['left_elbow_joint']:+.3f}"
+                      f"{extra}")
 
             next_t += CONTROL_DT
             sleep = next_t - time.perf_counter()

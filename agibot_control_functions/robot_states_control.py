@@ -50,10 +50,12 @@ STATE_QOS = QoSProfile(
     durability=DurabilityPolicy.VOLATILE,
 )
 
-# publisher QoS (commands are reliable)
+# publisher QoS: BEST_EFFORT to match HAL joint-command subscribers
+# (HAL reports BEST_EFFORT on /aima/hal/joint/*/command). For 50 Hz
+# position targets, latest-sample delivery beats retransmitting stale cmds.
 PUB_QOS = QoSProfile(
-    reliability=ReliabilityPolicy.RELIABLE,
-    history=HistoryPolicy.KEEP_LAST, depth=10,
+    reliability=ReliabilityPolicy.BEST_EFFORT,
+    history=HistoryPolicy.KEEP_LAST, depth=1,
     durability=DurabilityPolicy.VOLATILE,
 )
 
