@@ -170,17 +170,63 @@ def box_metrics(records, ctrl_dt):
     }
 
 
+def check_export_match(algo, task, pol, steps: int) -> None:
+    """Is the numpy export the same function as the torch checkpoint?
+
+    Adapted runs use the numpy `ExportedPolicy`; the `frozen` baseline uses torch. If
+    the two are not the same function, "frozen vs adapted" partly measures the export.
+    The torch policy drives the sim here, so both see bit-identical observations and
+    the difference reported is the forward pass alone, with no closed-loop amplification.
+    """
+    import torch
+
+    eval_policy = algo.get_inference_policy()
+    actor_state = {"done_indices": [], "stop": False, "obs": task.reset_all()}
+
+    diffs = []
+    for step in range(steps):
+        actor_obs = torch.cat([actor_state["obs"][k] for k in algo.actor_obs_keys], dim=1)
+        a_torch = eval_policy({"actor_obs": actor_obs})
+        a_np = pol.forward(actor_obs[0].detach().cpu().numpy().astype(np.float64))[0]
+        diffs.append(np.abs(a_torch[0].detach().cpu().numpy().astype(np.float64) - a_np).max())
+
+        actor_state["actions"] = a_torch
+        actor_state["step"] = step
+        actor_state = algo.env_step(actor_state)
+
+    diffs = np.asarray(diffs)
+    tol = 1e-4
+    print("\n=== numpy export vs torch checkpoint, identical observations ===")
+    print(f"  steps compared     : {len(diffs)}")
+    print(f"  step 0 diff        : {diffs[0]:.3e}")
+    print(f"  max |action diff|  : {diffs.max():.3e}")
+    print(f"  mean |action diff| : {diffs.mean():.3e}")
+    print(f"  -> {'MATCH' if diffs.max() < tol else 'MISMATCH'} "
+          f"(tol {tol:g}; float32 inference alone should sit near 1e-6)")
+
+
 LEGS_WAIST = ("hip", "knee", "ankle", "waist")
 
+# `cls` selects the adaptation law:
+#   None            -> no adapter at all, holosoma's torch policy (the deployed baseline)
+#   LayerAdapter    -> the shipped law, leak = -gamma*W  (decays toward zero)
+#   W0LeakAdapter   -> leak = -gamma*(W - W0)            (decays toward the trained weights)
+#
+# `frozen_npz` is the control that makes the comparison honest: same numpy forward pass
+# as every adapted run, gain 0, so the only thing separating it from them is adaptation
+# rather than torch-vs-numpy inference.
 VARIANTS = [
-    # name,              gain,   gx,  error_joints
-    ("frozen",           None,   None, None),
-    ("g3e-4_gx1",        3e-4,   1,   LEGS_WAIST),
-    ("g1e-5_gx1",        1e-5,   1,   LEGS_WAIST),
-    ("g3e-4_gx2_schur",  3e-4,   2,   LEGS_WAIST),
-    ("g1e-5_gx2_schur",  1e-5,   2,   LEGS_WAIST),
-    ("g3e-4_waistonly",  3e-4,   1,   ("waist",)),
-    ("g3e-4_noankle",    3e-4,   1,   ("hip", "knee", "waist")),
+    # name,                  gain,   gx,  error_joints, cls
+    ("frozen",               None,   None, None,        None),
+    ("frozen_npz",           0.0,    1,    LEGS_WAIST,  W0LeakAdapter),
+    ("his_g3e-4_gx1",        3e-4,   1,    LEGS_WAIST,  LayerAdapter),
+    ("his_g1e-5_gx1",        1e-5,   1,    LEGS_WAIST,  LayerAdapter),
+    ("w0_g3e-4_gx1",         3e-4,   1,    LEGS_WAIST,  W0LeakAdapter),
+    ("w0_g1e-5_gx1",         1e-5,   1,    LEGS_WAIST,  W0LeakAdapter),
+    ("w0_g3e-4_gx2_schur",   3e-4,   2,    LEGS_WAIST,  W0LeakAdapter),
+    ("w0_g1e-5_gx2_schur",   1e-5,   2,    LEGS_WAIST,  W0LeakAdapter),
+    ("w0_g3e-4_waistonly",   3e-4,   1,    ("waist",),  W0LeakAdapter),
+    ("w0_g3e-4_noankle",     3e-4,   1,    ("hip", "knee", "waist"), W0LeakAdapter),
 ]
 
 
@@ -194,6 +240,9 @@ def main() -> None:
     ap.add_argument("--seed0", type=int, default=600)
     ap.add_argument("--out-dir", default=str(HERE / "isaac_runs"))
     ap.add_argument("--only", default="", help="comma-separated variant names to run")
+    ap.add_argument("--check-export", type=int, default=0, metavar="N",
+                    help="compare the numpy export against the torch policy for N steps "
+                         "on identical observations, then exit")
     ap.add_argument("--record-seed", type=int, default=None,
                     help="save a renderable NPZ for this seed of every variant")
     ap.add_argument("--record-dir", default=str(HERE / "isaac_runs"))
@@ -205,6 +254,10 @@ def main() -> None:
                          "none: also drop PD-gain/latency/CoM randomization; "
                          "all: leave training randomization untouched")
     args = ap.parse_args()
+
+    # Resolve before the chdir below, or relative output paths land inside holosoma.
+    args.out_dir = str(Path(args.out_dir).resolve())
+    args.record_dir = str(Path(args.record_dir).resolve())
 
     paths.enter_holosoma()
 
@@ -309,12 +362,18 @@ def main() -> None:
     task.reset_all()  # PhysX buffers must be valid before probing the mass matrix
     mass_fn = make_mass_matrix_fn(task, mode="schur")
 
+    if args.check_export:
+        check_export_match(algo, task, pol, args.check_export)
+        if simulation_app:
+            close_simulation_app(simulation_app)
+        return
+
     wanted = [v.strip() for v in args.only.split(",") if v.strip()]
     variants = [v for v in VARIANTS if not wanted or v[0] in wanted]
     seeds = list(range(args.seed0, args.seed0 + args.seeds))
 
     results: dict[str, list[dict]] = {}
-    for name, gain, gx, mask in variants:
+    for name, gain, gx, mask, cls in variants:
         if gx == 2 and mass_fn is None:
             print(f"\n[skip] {name}: no mass matrix available")
             continue
@@ -322,12 +381,12 @@ def main() -> None:
         rows = []
         for s in seeds:
             seeding(s, torch_deterministic=False)
-            if gain is None:
+            if cls is None:
                 adapter = None
             else:
                 cfg = AdaptConfig(layer=2, gain=gain, leak=1e-2, gx_level=gx,
                                   error_joints=mask, engage_step=0)
-                adapter = W0LeakAdapter(
+                adapter = cls(
                     pol, cfg, joint_names=pol.meta["joint_names"],
                     mass_matrix_fn=(mass_fn if gx == 2 else None),
                 )
@@ -337,8 +396,9 @@ def main() -> None:
             if args.record_seed is not None and s == args.record_seed:
                 base._save_npz(
                     Path(args.record_dir) / f"isaac_{name}_seed{s}.npz", r,
-                    {"mode": name, "seed": s, "ckpt": args.ckpt,
-                     "gain": gain, "gx_level": gx, "error_joints": list(mask) if mask else None},
+                    {"mode": name, "seed": s, "ckpt": args.ckpt, "gain": gain,
+                     "gx_level": gx, "error_joints": list(mask) if mask else None,
+                     "law": cls.__name__ if cls else "torch"},
                 )
             print(f"  seed {s}: survival {r['survival']:4d} ({r['survival']*ctrl_dt:5.2f}s)  "
                   f"legErr {r['leg_err']:6.2f} deg  carry {r['carry_s']:5.2f}s  "
@@ -361,15 +421,15 @@ def main() -> None:
               f"never fell {full}/{len(rows)}   box held {ok}/{len(rows)}")
 
     print(f"\n=== SUMMARY (mean +/- std over seeds, dr={args.dr}) ===")
-    print(f"  {'variant':20s} {'survival(s)':>16s} {'legErr(deg)':>16s} "
-          f"{'carry(s)':>16s} {'nofall':>8s} {'boxheld':>8s}")
+    print(f"  {'variant':22s} {'survival(s)':>16s} {'legErr(deg)':>16s} "
+          f"{'carry(s)':>16s} {'nofall':>8s} {'boxok':>8s}")
     for name, rows in results.items():
         surv = np.array([r["survival"] for r in rows], float) * ctrl_dt
         err = np.array([r["leg_err"] for r in rows], float)
         carry = np.array([r["carry_s"] for r in rows], float)
         full = int(sum(1 for r in rows if r["survival"] >= args.steps))
         ok = int(sum(1 for r in rows if r["success"]))
-        print(f"  {name:20s} {surv.mean():7.2f} +/-{surv.std():5.2f} "
+        print(f"  {name:22s} {surv.mean():7.2f} +/-{surv.std():5.2f} "
               f"{err.mean():9.2f} +/-{err.std():5.2f} "
               f"{carry.mean():9.2f} +/-{carry.std():5.2f} "
               f"{full:5d}/{len(rows)} {ok:5d}/{len(rows)}")
@@ -378,7 +438,11 @@ def main() -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(
         {"seeds": seeds, "steps": args.steps, "ctrl_dt": ctrl_dt, "dr": args.dr,
-         "ckpt": args.ckpt, "results": results}, indent=2))
+         "obs_noise": args.obs_noise, "ckpt": args.ckpt, "motion": args.motion,
+         "config": {n: {"gain": g, "gx_level": gx, "error_joints": list(m) if m else None,
+                        "law": c.__name__ if c else "torch"}
+                    for n, g, gx, m, c in variants},
+         "results": results}, indent=2))
     print(f"\nwrote {out}")
 
     if simulation_app:
