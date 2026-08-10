@@ -10,9 +10,11 @@ takes precedence.
 |---|---|
 | `isaac_v31_rollout.npz` | the rollout log, 734 steps, per-term observations + base pose |
 | `isaac_v31_rollout.mp4` | video of exactly that rollout |
+| `isaac_v31_reference_vs_actual.mp4` | reference motion and the policy side by side, same camera |
 | `v31_reference_box_speed100.npz` | **v31's actual reference motion, 734 frames** |
+| `v31_reference_as_rollout.npz` | same clip in the rollout schema (base + 31 joints unpacked) |
 | `holosoma_config_v31_20260730_215012.yaml` | the real config for the run |
-| `dump_for_mentor.py`, `postprocess_dump.py` | what produced the log |
+| `dump_for_mentor.py`, `postprocess_dump.py`, `make_reference_rollout.py` | what produced the above |
 
 ---
 
@@ -96,21 +98,37 @@ v31 therefore trained on all three clips in that directory:
 is not what v31 used. Your 434 number matches neither, so that clip has been re-authored more
 than once — another reason to switch to the attached file.
 
+### Two array-layout traps in this clip — please read, one of these may be your bug
+
+**1. `joint_pos` is `(734, 38)`, not 31 wide. The first 7 columns are the floating base**
+(position 3 + quaternion wxyz 4), and the 31 joints follow. `joint_names` has 31 entries and
+names the **joint part only**, so `joint_names[i]` is column `7+i`.
+
+Verified: `joint_pos[:, 7:38]` equals the policy npz's exported `ref_joint_pos` **exactly**
+(max abs diff 0.0 across all 734 frames). Zipping `joint_names` against columns 0..30 instead
+shifts every joint by seven and gives max abs diff 2.44 rad — a robot doing confidently wrong
+things, which is roughly what you describe seeing. `joint_vel` is `(734, 37)` = 6 base + 31,
+same idea.
+
+**2. `body_pos_w` and `body_quat_w` are PELVIS-RELATIVE despite the `_w` suffix.** Body 0
+(pelvis) is exactly `[0,0,0]` / identity at every frame. The world base pose lives in
+`joint_pos[:, :7]`, and it agrees with Isaac's actual spawn at frame 0 to **6.4 mm**.
+
+`make_reference_rollout.py` unpacks all of this correctly if you want a worked example, and
+`v31_reference_as_rollout.npz` is the result.
+
 ### Box placement — your inference was right
 
-Measured from the working Isaac rollout at frame 0, box **center** in the pelvis frame:
+Box **center** in the pelvis frame at frame 0:
 
-```
-x (forward) = 0.3915 m      y (lateral) = 0.0269 m      z = -0.4853 m
-horizontal distance = 0.3924 m
-```
+| source | x (forward) | y (lateral) | z | horizontal |
+|---|---|---|---|---|
+| Isaac rollout | 0.3915 | 0.0269 | -0.4853 | **0.3924 m** |
+| reference clip | 0.3989 | 0.0208 | -0.4855 | **0.3995 m** |
 
-So your 0.40 m is correct to within 1 cm. Keep it.
-
-**Do not use the clip's `object_pos_w` for placement.** It is in the capture's own frame and puts
-the box 0.888 m from the pelvis with a 0.52 m lateral offset, which is not what Isaac spawns.
-Isaac creates the box from `objects_largebox.urdf` via its own scene logic. The channel is still
-useful for the *shape* of the trajectory, just not the origin.
+Your 0.40 m is correct to within 1 cm, and the clip's `object_pos_w` agrees — it **is** usable,
+in the same world frame as `joint_pos[:, :3]`. The clip's box goes 0.184 → 0.830 m → 0.184 m,
+staying 0.36–0.45 m from the pelvis throughout.
 
 ---
 
@@ -130,7 +148,15 @@ your assumption) and `max_episode_length_s: 20.0`.
 
 ## 4. What "it works" looks like
 
-**It genuinely lifts the box and stands back up.** Video: `isaac_v31_rollout.mp4`. From the log:
+**It genuinely lifts the box and stands back up.** Two videos:
+
+- `isaac_v31_rollout.mp4` — the rollout on its own, exactly matching the npz.
+- `isaac_v31_reference_vs_actual.mp4` — the retargeted reference on the left, the policy on the
+  right, same camera and same clock. This is probably the more useful one: it shows the policy
+  tracking with a visible forward lean and a lower box carry than the reference, but completing
+  the whole motion.
+
+From the log:
 
 | | value |
 |---|---|
@@ -198,4 +224,9 @@ Happy to check the topic list on the next hardware session.
 ```bash
 OMNI_KIT_ACCEPT_EULA=1 CUDA_VISIBLE_DEVICES=0 python adaptation/dump_for_mentor.py
 python adaptation/postprocess_dump.py
+python adaptation/make_reference_rollout.py
+python box_pickup/render_side_by_side.py \
+  adaptation/FOR_MENTOR/v31_reference_as_rollout.npz "REFERENCE (retargeted motion)" \
+  adaptation/FOR_MENTOR/isaac_v31_rollout.npz "ISAAC ACTUAL (frozen v31 policy)" \
+  adaptation/FOR_MENTOR/isaac_v31_reference_vs_actual.mp4
 ```

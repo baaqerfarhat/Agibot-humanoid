@@ -136,14 +136,16 @@ def box_metrics(records, ctrl_dt):
     complete success, which is exactly what the first pass did.
     """
     if not records.get("object_pos"):
-        return {"lifted": False, "carry_s": 0.0, "max_box_z": float("nan"), "success": False}
+        return {"lifted": False, "carry_s": 0.0, "max_box_z": float("nan"),
+                "final_dist": float("nan"), "placed": False, "success": False}
     box = np.asarray(records["object_pos"], dtype=float)
     root = np.asarray(records["root_pos"], dtype=float)
     dist = np.linalg.norm(box[:, :2] - root[:, :2], axis=1)
 
     above = np.flatnonzero(box[:, 2] > BOX_LIFT_Z)
     if above.size == 0:
-        return {"lifted": False, "carry_s": 0.0, "max_box_z": float(box[:, 2].max()), "success": False}
+        return {"lifted": False, "carry_s": 0.0, "max_box_z": float(box[:, 2].max()),
+                "final_dist": float(dist[-1]), "placed": False, "success": False}
 
     lift = int(above[0])
     held = (box[:, 2] > BOX_HELD_Z) & (dist < BOX_HELD_DIST)
@@ -152,12 +154,19 @@ def box_metrics(records, ctrl_dt):
         if not held[i]:
             break
         carry += 1
+
+    # The reference ends by SETTING THE BOX DOWN (~step 420 of 734), so "still holding
+    # at the last step" scores a correct placement as a failure. A set-down leaves the
+    # box low and still next to the robot; a drop leaves it far away (>1.2 m observed).
+    placed = bool(box[-1, 2] < BOX_HELD_Z and dist[-1] < BOX_HELD_DIST)
     return {
         "lifted": True,
         "lift_step": lift,
         "carry_s": carry * ctrl_dt,
         "max_box_z": float(box[:, 2].max()),
-        "success": bool(held[-1]),
+        "final_dist": float(dist[-1]),
+        "placed": placed,
+        "success": bool(held[-1] or placed),
     }
 
 
@@ -334,11 +343,13 @@ def main() -> None:
                 )
             print(f"  seed {s}: survival {r['survival']:4d} ({r['survival']*ctrl_dt:5.2f}s)  "
                   f"legErr {r['leg_err']:6.2f} deg  carry {r['carry_s']:5.2f}s  "
-                  f"boxZmax {r['max_box_z']:.2f}  {'HELD' if r['success'] else 'DROPPED'}"
+                  f"boxZmax {r['max_box_z']:.2f}  endDist {r['final_dist']:.2f}  "
+                  f"{'PLACED' if r['placed'] else ('HELD' if r['success'] else 'DROPPED')}"
                   f"{'  DIVERGED' if r['diverged'] else ''}")
         results[name] = [
             {k: r[k] for k in ("survival", "tracked", "leg_err", "drift", "diverged",
-                               "lifted", "carry_s", "max_box_z", "success")} for r in rows
+                               "lifted", "carry_s", "max_box_z", "final_dist",
+                               "placed", "success")} for r in rows
         ]
         surv = np.array([r["survival"] for r in rows], float) * ctrl_dt
         err = np.array([r["leg_err"] for r in rows], float)
