@@ -201,9 +201,8 @@ x2_31dof_wbt_crawl = replace(
         algo.ppo,
         config=replace(
             algo.ppo.config,
-            # PPO counts these as ADDITIONAL iters from the loaded checkpoint
-            # iter (warm-start from model_49999 + 30000 => ~80k).
-            num_learning_iterations=30000,
+            # v5: warm-start from v3 model_49999 + 50000 => ~100k.
+            num_learning_iterations=50000,
             num_learning_epochs=5,
             save_interval=500,
             entropy_coef=0.005,

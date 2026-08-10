@@ -12,12 +12,10 @@ from pathlib import Path
 
 import numpy as np
 
-MOTION = Path("/home/baaqer/baaqer_ws/Agibot-humanoid/adaptation/FOR_MENTOR/"
-              "v31_reference_box_speed100.npz")
-ROLLOUT = Path("/home/baaqer/baaqer_ws/Agibot-humanoid/adaptation/FOR_MENTOR/"
-               "isaac_v31_rollout.npz")
-OUT = Path("/home/baaqer/baaqer_ws/Agibot-humanoid/adaptation/FOR_MENTOR/"
-           "v31_reference_as_rollout.npz")
+HERE = Path(__file__).resolve().parent / "FOR_MENTOR"
+MOTION = HERE / "v31_reference_box_speed100.npz"
+ROLLOUT = HERE / "isaac_v31_rollout.npz"
+OUT = HERE / "v31_reference_as_rollout.npz"
 
 
 def main() -> None:

@@ -148,6 +148,32 @@ MOCAP_DEMO_JOINTS = [
     "RightFootMod",
 ]
 
+# CMU ASF/AMC skeleton joints (subset we export from forward kinematics).
+# Order MUST match the J axis of global_joint_positions produced by parse_cmu.py.
+CMU_DEMO_JOINTS = [
+    "root",
+    "lfemur",
+    "ltibia",
+    "lfoot",
+    "ltoes",
+    "rfemur",
+    "rtibia",
+    "rfoot",
+    "rtoes",
+    "lowerback",
+    "upperback",
+    "thorax",
+    "head",
+    "lhumerus",
+    "lradius",
+    "lwrist",
+    "lhand",
+    "rhumerus",
+    "rradius",
+    "rwrist",
+    "rhand",
+]
+
 SMPLX_DEMO_JOINTS = [
     "Pelvis",
     "L_Hip",
@@ -173,8 +199,48 @@ SMPLX_DEMO_JOINTS = [
     "R_Wrist",
 ]
 
+# G1 robot link positions used as a retargeting source ("robot-to-robot" swap,
+# e.g. replaying the repo's G1 crawl_slope reference on another robot).
+# Order MUST match the J axis of the exported global_joint_positions.
+G1BODY_DEMO_JOINTS = [
+    "pelvis",
+    "torso_link",
+    "left_hip_pitch_link",
+    "left_knee_link",
+    "left_ankle_roll_link",
+    "left_ankle_roll_sphere_5_link",
+    "left_shoulder_roll_link",
+    "left_elbow_link",
+    "left_rubber_hand_link",
+    "right_hip_pitch_link",
+    "right_knee_link",
+    "right_ankle_roll_link",
+    "right_ankle_roll_sphere_5_link",
+    "right_shoulder_roll_link",
+    "right_elbow_link",
+    "right_rubber_hand_link",
+]
+
 # Joint mappings - organized by (data_format, robot_type)
 JOINTS_MAPPINGS = {
+    ("g1body", "x2"): {
+        "pelvis": "pelvis",
+        "torso_link": "torso_link",
+        "left_hip_pitch_link": "left_hip_pitch_link",
+        "left_knee_link": "left_knee_link",
+        "left_ankle_roll_link": "left_ankle_roll_link",
+        "left_ankle_roll_sphere_5_link": "left_ankle_roll_sphere_5_link",
+        "left_shoulder_roll_link": "left_shoulder_roll_link",
+        "left_elbow_link": "left_elbow_link",
+        "left_rubber_hand_link": "left_hand_contact_link",
+        "right_hip_pitch_link": "right_hip_pitch_link",
+        "right_knee_link": "right_knee_link",
+        "right_ankle_roll_link": "right_ankle_roll_link",
+        "right_ankle_roll_sphere_5_link": "right_ankle_roll_sphere_5_link",
+        "right_shoulder_roll_link": "right_shoulder_roll_link",
+        "right_elbow_link": "right_elbow_link",
+        "right_rubber_hand_link": "right_hand_contact_link",
+    },
     ("lafan", "g1"): {
         "Spine1": "pelvis_contour_link",
         "LeftUpLeg": "left_hip_pitch_link",
@@ -191,6 +257,26 @@ JOINTS_MAPPINGS = {
         "RightToeBase": "right_ankle_roll_sphere_5_link",
         "LeftHand": "left_rubber_hand_link",
         "RightHand": "right_rubber_hand_link",
+    },
+    ("lafan", "x2"): {
+        "Spine1": "pelvis",
+        # torso/head anterior cues pin front/back orientation for prone motions
+        "Spine2": "torso_link",
+        "Head": "head_pitch_link",
+        "LeftUpLeg": "left_hip_pitch_link",
+        "RightUpLeg": "right_hip_pitch_link",
+        "LeftLeg": "left_knee_link",
+        "RightLeg": "right_knee_link",
+        "LeftArm": "left_shoulder_roll_link",
+        "RightArm": "right_shoulder_roll_link",
+        "LeftForeArm": "left_elbow_link",
+        "RightForeArm": "right_elbow_link",
+        "LeftFoot": "left_ankle_roll_link",
+        "RightFoot": "right_ankle_roll_link",
+        "LeftToeBase": "left_ankle_roll_sphere_5_link",
+        "RightToeBase": "right_ankle_roll_sphere_5_link",
+        "LeftHand": "left_hand_contact_link",
+        "RightHand": "right_hand_contact_link",
     },
     ("lafan", "t1"): {
         "Spine1": "Trunk",
@@ -294,6 +380,29 @@ JOINTS_MAPPINGS = {
         "LeftFoot": "left_ankle_intermediate_1_link",
         "RightFoot": "right_ankle_intermediate_1_link",
     },
+    ("cmu", "x2"): {
+        "root": "pelvis",
+        # spine + head chain: pins torso front/back orientation so the crawl
+        # cannot flip belly-up (the mapped limb/hip/shoulder points alone are
+        # ~coplanar in the coronal plane and leave ventral/dorsal ambiguous).
+        "lowerback": "waist_yaw_link",
+        "thorax": "torso_link",
+        "head": "head_pitch_link",
+        "lfemur": "left_hip_pitch_link",
+        "rfemur": "right_hip_pitch_link",
+        "ltibia": "left_knee_link",
+        "rtibia": "right_knee_link",
+        "lfoot": "left_ankle_roll_link",
+        "rfoot": "right_ankle_roll_link",
+        "ltoes": "left_ankle_roll_sphere_5_link",
+        "rtoes": "right_ankle_roll_sphere_5_link",
+        "lhumerus": "left_shoulder_roll_link",
+        "rhumerus": "right_shoulder_roll_link",
+        "lradius": "left_elbow_link",
+        "rradius": "right_elbow_link",
+        "lhand": "left_hand_contact_link",
+        "rhand": "right_hand_contact_link",
+    },
     ("mocap", "t1"): {
         "Spine1": "Trunk",
         "LeftUpLeg": "Hip_Pitch_Left",
@@ -319,6 +428,8 @@ TOE_NAMES_BY_FORMAT = {
     "smplh": ["L_Toe", "R_Toe"],
     "mocap": ["LeftToeBase", "RightToeBase"],
     "smplx": ["L_Foot", "R_Foot"],
+    "cmu": ["ltoes", "rtoes"],
+    "g1body": ["left_ankle_roll_sphere_5_link", "right_ankle_roll_sphere_5_link"],
 }
 
 
@@ -345,6 +456,8 @@ DEMO_JOINTS_REGISTRY: dict[str, list[str]] = {
     "smplh": SMPLH_DEMO_JOINTS,
     "mocap": MOCAP_DEMO_JOINTS,
     "smplx": SMPLX_DEMO_JOINTS,
+    "cmu": CMU_DEMO_JOINTS,
+    "g1body": G1BODY_DEMO_JOINTS,
 }
 
 # Type alias for data formats - use str to allow dynamic data formats via DEMO_JOINTS_REGISTRY

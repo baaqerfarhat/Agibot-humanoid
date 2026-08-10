@@ -1,5 +1,10 @@
 # Agibot-humanoid
 
+> **Setting up simulation?** Read **[`SETUP_ISAAC.md`](SETUP_ISAAC.md)** — step-by-step
+> instructions to reproduce the exact Isaac Sim / holosoma environment the box-pickup
+> policy was trained and evaluated in, verified down to the checksums of the reference
+> motion clips. Adaptation work lives in [`adaptation/`](adaptation/).
+
 End-to-end stack for training and deploying policies on the **AgiBot X2** humanoid.
 Two tasks are included, each with simulation training setup, a trained policy, and an
 on-robot deployment script over the ROS 2 control interface:
@@ -11,7 +16,10 @@ on-robot deployment script over the ROS 2 control interface:
    over planted feet, and returns upright (8.7 s). Trained in IsaacLab /
    [holosoma](https://github.com/amazon-far/holosoma) by tracking a human
    demonstration from the OmniRetarget dataset retargeted onto the X2. See
-   `box_pickup/README.md` and `box_pickup/videos/x2_box_v24_one_motion_drop_iter89000.mp4`.
+   `box_pickup/README.md`. Current baseline is **v31** (`model_202500.pt`,
+   `box_pickup/videos/x2_box_v31_flatfoot_iter202500.mp4`) — that is the policy all the
+   adaptation work runs against; v33 (`x2_box_v33_waist_track_iter241500.mp4`) is the
+   latest training run.
 
 ```
 Agibot-humanoid/
@@ -20,11 +28,16 @@ Agibot-humanoid/
 │       ├── asset_zoo/robots/x2/            # X2 MJCF, meshes, actuators, keyframe
 │       └── tasks/velocity/config/x2/       # X2 velocity-walk task + deploy variant
 ├── box_pickup/                 # Box-pickup task (holosoma whole-body tracking)
-│   ├── policy/x2_box_policy.npz            # deployable policy (numpy-only inference)
-│   ├── policy/model_89500.pt               # current checkpoint (v24 straight walk + clean set-down)
+│   ├── policy/x2_box_policy_v31.npz        # deployable policy (numpy-only inference)
 │   ├── holosoma_overlay/                   # all holosoma changes for the X2 task
 │   ├── setup_holosoma_x2.sh                # recreate the training setup anywhere
+│   ├── make_speed_variants.py              # regenerate the reference motion clips
 │   └── videos/                             # training progression -> final success
+├── adaptation/                 # Causality-guided layer adaptation on top of v31
+│   ├── adapt_experiments_isaac.py          # multi-seed adapter sweep in Isaac
+│   ├── dump_for_mentor.py                  # per-step observation/rollout logger
+│   └── FOR_MENTOR/                         # rollout log, reference clip, config, videos
+├── x2_box_policy_share.tar.gz  # v31 checkpoint + exported policies + deploy scripts
 └── agibot_control_functions/   # Real-robot deployment (run this on the robot)
     ├── deploy_x2_walk.py       # Walking: loads policy, reads state, walks (50 Hz)
     ├── deploy_x2_box_pickup.py # Box pickup: plays the 8.7 s pickup motion (50 Hz)

@@ -1356,10 +1356,11 @@ x2_31dof = RobotConfig(
     contact_pairs_multiplier=16,
     control=RobotControlConfig(
         control_type="P",
-        # PD gains taken directly from the AgiBot X2 SDK (robot_model in
-        # Agibot-humanoid/agibot_control_functions/robot_states_control.py) so the
-        # sim controller matches the real robot's onboard controller. Legs use
-        # hip_pitch 180/5 and all other legs 100/5; waist 20/4; arms + head 20/2.
+        # PD gains taken from the AgiBot X2 SDK (robot_model) for legs/arms.
+        # v33: waist_pitch/roll 20/4 -> 60/6. At kp=20 the waist action_scale
+        # was 0.6 rad (~34 deg) so the actor could command past the ±18 deg
+        # hard limit by a huge margin (sim targets hit -160 deg). Higher kp
+        # shrinks action_scale (effort/kp) and makes the squat bend trackable.
         stiffness={
             "hip_pitch": 180.0,
             "hip_roll": 100.0,
@@ -1367,9 +1368,9 @@ x2_31dof = RobotConfig(
             "knee": 100.0,
             "ankle_pitch": 100.0,
             "ankle_roll": 100.0,
-            "waist_yaw": 20.0,
-            "waist_pitch": 20.0,
-            "waist_roll": 20.0,
+            "waist_yaw": 40.0,
+            "waist_pitch": 60.0,
+            "waist_roll": 60.0,
             "shoulder_pitch": 20.0,
             "shoulder_roll": 20.0,
             "shoulder_yaw": 20.0,
@@ -1387,9 +1388,9 @@ x2_31dof = RobotConfig(
             "knee": 5.0,
             "ankle_pitch": 5.0,
             "ankle_roll": 5.0,
-            "waist_yaw": 4.0,
-            "waist_pitch": 4.0,
-            "waist_roll": 4.0,
+            "waist_yaw": 5.0,
+            "waist_pitch": 6.0,
+            "waist_roll": 6.0,
             "shoulder_pitch": 2.0,
             "shoulder_roll": 2.0,
             "shoulder_yaw": 2.0,

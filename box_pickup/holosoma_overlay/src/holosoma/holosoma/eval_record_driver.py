@@ -35,6 +35,10 @@ def main() -> None:
     # producing a clean beginning-to-end rollout instead of the training-style
     # random mid-motion starts.
     demo_mode = len(sys.argv) > 4 and sys.argv[4] == "demo"
+    # Optional 5th arg: pin the demo to one specific motion .npz. Needed for
+    # multi-motion runs (motion_dir), where eval otherwise assigns the recorded
+    # env a RANDOM clip.
+    motion_file_override = sys.argv[5] if len(sys.argv) > 5 else None
 
     checkpoint_cfg = CheckpointConfig(checkpoint=checkpoint_path)
     saved_cfg, saved_wandb_path = load_saved_experiment_config(checkpoint_cfg)
@@ -49,19 +53,28 @@ def main() -> None:
             motion_config = dict(motion_config)
             motion_config["use_adaptive_timesteps_sampler"] = False
             motion_config["start_at_timestep_zero_prob"] = 1.0
+            # No random start-pose freezing in a demo take.
+            motion_config["freeze_at_timestep_zero_prob"] = 0.0
             noise = dict(motion_config.get("noise_to_initial_pose") or {})
             noise["overall_noise_scale"] = 0.0
             motion_config["noise_to_initial_pose"] = noise
+            if motion_file_override:
+                motion_config["motion_file"] = motion_file_override
+                motion_config["motion_dir"] = ""
             motion_term.params["motion_config"] = motion_config
         else:
-            motion_term.params["motion_config"] = dataclasses.replace(
-                motion_config,
+            replacements = dict(
                 use_adaptive_timesteps_sampler=False,
                 start_at_timestep_zero_prob=1.0,
+                freeze_at_timestep_zero_prob=0.0,
                 noise_to_initial_pose=dataclasses.replace(
                     motion_config.noise_to_initial_pose, overall_noise_scale=0.0
                 ),
             )
+            if motion_file_override:
+                replacements["motion_file"] = motion_file_override
+                replacements["motion_dir"] = ""
+            motion_term.params["motion_config"] = dataclasses.replace(motion_config, **replacements)
         # Drop early-termination so the rollout plays the full motion in one
         # continuous take (only the timeout term remains).
         saved_cfg.termination.terms.pop("bad_tracking", None)

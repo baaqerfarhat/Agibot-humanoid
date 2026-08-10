@@ -17,7 +17,12 @@ import sys
 import mujoco
 import numpy as np
 
-XML = "/home/baaqer/baaqer_ws/holosoma/src/holosoma_retargeting/holosoma_retargeting/models/x2/x2_31dof_w_largebox.xml"
+_REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_HOLOSOMA = os.environ.get("HOLOSOMA_ROOT", os.path.join(os.path.dirname(_REPO), "holosoma"))
+# The meshes this XML references only exist in the holosoma clone (setup_holosoma_x2.sh
+# copies them there from mjlab's asset zoo), so render against that copy.
+XML = os.path.join(_HOLOSOMA, "src/holosoma_retargeting/holosoma_retargeting"
+                              "/models/x2/x2_31dof_w_largebox.xml")
 
 L_NPZ, L_LABEL, R_NPZ, R_LABEL, OUT = sys.argv[1:6]
 

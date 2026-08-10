@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -26,20 +25,12 @@ PKG = HERE / "ACC_ADAPTATION_PACKAGE"
 sys.path.insert(0, str(PKG))
 sys.path.insert(0, str(HERE))
 
+import paths  # noqa: E402
 from ace_adapt import AdaptConfig, ExportedPolicy, LayerAdapter  # noqa: E402
 
-
-DEFAULT_CKPT = (
-    "/home/baaqer/baaqer_ws/holosoma/logs/WholeBodyTracking/"
-    "20260730_215012-x2_box_v31_flatfoot-locomotion/model_202500.pt"
-)
-DEFAULT_POLICY_NPZ = (
-    "/home/baaqer/baaqer_ws/Agibot-humanoid/box_pickup/policy/x2_box_policy_v31.npz"
-)
-DEFAULT_MOTION = (
-    "/home/baaqer/baaqer_ws/holosoma/src/holosoma/holosoma/data/motions/"
-    "x2_31dof/whole_body_tracking/box_multispeed/box_speed100.npz"
-)
+DEFAULT_CKPT = str(paths.resolve_ckpt())
+DEFAULT_POLICY_NPZ = str(paths.POLICY_NPZ)
+DEFAULT_MOTION = str(paths.MOTION)
 
 FALL_HEIGHT = 0.35
 TRACK_LIMIT_DEG = 20.0
@@ -197,11 +188,14 @@ def main() -> None:
     ap.add_argument("--out-dir", default="/tmp")
     ap.add_argument("--skip-frozen", action="store_true")
     ap.add_argument("--skip-adapt", action="store_true")
+    ap.add_argument("--gains", default="3e-4",
+                    help="comma-separated Gamma values to sweep")
+    ap.add_argument("--leak-mode", default="zero", choices=["zero", "w0"],
+                    help="sigma-modification target: -gamma*W (zero) or -gamma*(W-W0)")
     args = ap.parse_args()
 
     # Holosoma imports must happen after Isaac / omni bootstrap inside helpers.
-    os.chdir("/home/baaqer/baaqer_ws/holosoma")
-    sys.path.insert(0, "/home/baaqer/baaqer_ws/holosoma/src/holosoma")
+    paths.enter_holosoma()
 
     from holosoma.utils.eval_utils import (  # noqa: E402
         CheckpointConfig,
@@ -337,27 +331,55 @@ def main() -> None:
     summary.append(("frozen_npz", r))
 
     if not args.skip_adapt:
-        print("\n=== ADAPTED (ACE layer 2 on exported npz, Isaac + box) ===")
-        cfg = AdaptConfig(layer=2, gain=3e-4, leak=1e-2, gx_level=1,
-                          error_joints=("hip", "knee", "ankle", "waist"), engage_step=0)
-        adapter = LayerAdapter(pol, cfg, joint_names=pol.meta["joint_names"])
-        r = _rollout(algo, task, adapter, args.steps, ref_pos, ctrl_dt)
-        print(
-            f"  survival {r['survival']:4d} ({r['survival']*ctrl_dt:5.2f}s)  "
-            f"tracked {r['tracked']:4d}  legErr {r['leg_err']:6.2f} deg  "
-            f"|dW| {r['drift']:.3f}  diverged={r['diverged']}  box={r['box_present']}"
-        )
-        _save_npz(
-            out_dir / "isaac_box_adapted.npz",
-            r,
-            {
-                "mode": "adapted",
-                "ckpt": args.ckpt,
-                "policy_npz": args.policy_npz,
-                "adapt": {"layer": cfg.layer, "gain": cfg.gain, "leak": cfg.leak, "gx_level": cfg.gx_level},
-            },
-        )
-        summary.append(("adapted", r))
+        # Isaac applies target = a*scale + default with no leg filter and no rate
+        # limit, so a given weight change moves the legs ~5x more than in the
+        # reference MuJoCo loop the default Gamma was tuned against. Sweep Gamma.
+        class _Adapter(LayerAdapter):
+            def update(self, joint_error, dt):
+                if args.leak_mode == "zero":
+                    return super().update(joint_error, dt)
+                from ace_adapt import _elu_jacobian
+
+                self.step += 1
+                if self.diverged or self.step <= self.cfg.engage_step or self._cache is None:
+                    return
+                a, z = self._cache
+                L, layer = self.pol.n_layers, self.cfg.layer
+                d = self.delta_L(joint_error)
+                for l in range(L - 1, layer, -1):
+                    d = _elu_jacobian(a[l - 1]) * (self.W[l].T @ d)
+                Wdot = (self.cfg.gain * np.outer(d, z[layer])
+                        - self.cfg.leak * (self.W[layer] - self.pol.W0[layer]))
+                self.W[layer] = self.W[layer] + dt * Wdot
+                if (not np.isfinite(self.W[layer]).all()
+                        or self.weight_drift > self.cfg.max_weight_drift):
+                    self.diverged = True
+                    self.W[layer] = self.pol.W0[layer].copy()
+
+        for gain in [float(g) for g in args.gains.split(",")]:
+            tag = f"adapt_g{gain:g}_{args.leak_mode}"
+            print(f"\n=== ADAPTED  Gamma={gain:g}  leak->{args.leak_mode}  (Isaac + box) ===")
+            cfg = AdaptConfig(layer=2, gain=gain, leak=1e-2, gx_level=1,
+                              error_joints=("hip", "knee", "ankle", "waist"), engage_step=0)
+            adapter = _Adapter(pol, cfg, joint_names=pol.meta["joint_names"])
+            r = _rollout(algo, task, adapter, args.steps, ref_pos, ctrl_dt)
+            print(
+                f"  survival {r['survival']:4d} ({r['survival']*ctrl_dt:5.2f}s)  "
+                f"tracked {r['tracked']:4d}  legErr {r['leg_err']:6.2f} deg  "
+                f"|dW| {r['drift']:.3f}  diverged={r['diverged']}  box={r['box_present']}"
+            )
+            _save_npz(
+                out_dir / f"isaac_box_{tag}.npz",
+                r,
+                {
+                    "mode": tag,
+                    "ckpt": args.ckpt,
+                    "policy_npz": args.policy_npz,
+                    "adapt": {"layer": cfg.layer, "gain": cfg.gain, "leak": cfg.leak,
+                              "gx_level": cfg.gx_level, "leak_mode": args.leak_mode},
+                },
+            )
+            summary.append((tag, r))
 
     print("\n=== SUMMARY ===")
     for name, r in summary:

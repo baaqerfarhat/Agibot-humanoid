@@ -14,7 +14,10 @@ takes precedence.
 | `v31_reference_box_speed100.npz` | **v31's actual reference motion, 734 frames** |
 | `v31_reference_as_rollout.npz` | same clip in the rollout schema (base + 31 joints unpacked) |
 | `holosoma_config_v31_20260730_215012.yaml` | the real config for the run |
-| `dump_for_mentor.py`, `postprocess_dump.py`, `make_reference_rollout.py` | what produced the above |
+
+The scripts that produced all of this live one level up in `adaptation/`
+(`dump_for_mentor.py`, `postprocess_dump.py`, `make_reference_rollout.py`); to run them
+yourself, follow `SETUP_ISAAC.md` at the repo root.
 
 ---
 

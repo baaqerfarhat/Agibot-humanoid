@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -27,6 +26,7 @@ PKG = HERE / "ACC_ADAPTATION_PACKAGE"
 sys.path.insert(0, str(PKG))
 sys.path.insert(0, str(HERE))
 
+import paths  # noqa: E402
 from ace_adapt import AdaptConfig, ExportedPolicy, LayerAdapter  # noqa: E402
 
 import eval_adapt_isaac as base  # noqa: E402
@@ -206,8 +206,7 @@ def main() -> None:
                          "all: leave training randomization untouched")
     args = ap.parse_args()
 
-    os.chdir("/home/baaqer/baaqer_ws/holosoma")
-    sys.path.insert(0, "/home/baaqer/baaqer_ws/holosoma/src/holosoma")
+    paths.enter_holosoma()
 
     import dataclasses  # noqa: E402
 

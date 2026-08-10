@@ -413,6 +413,30 @@ def _compute_q_init_base(
             q_init_base = np.concatenate(
                 [human_joints[0, spine_joint_idx, :3], human_quat_init, np.zeros(constants.ROBOT_DOF)]
             )
+        elif data_format == "cmu":
+            # Crawl clips are prone (belly-down). The default yaw-only upright
+            # init lets the floating-base QP settle into a belly-UP basin. Seed
+            # the base orientation from the human's actual torso frame at frame 0
+            # (belly-down) so the solver starts and stays in the correct basin.
+            from scipy.spatial.transform import Rotation as R  # noqa: PLC0415
+
+            dj = constants.DEMO_JOINTS
+            j0 = human_joints[0]
+            cranial = j0[dj.index("thorax")] - j0[dj.index("root")]
+            cranial /= np.linalg.norm(cranial)
+            lateral = j0[dj.index("lhumerus")] - j0[dj.index("rhumerus")]
+            lateral /= np.linalg.norm(lateral)
+            # cross(cranial, shoulder_lateral) points anterior (chest) for CMU FK
+            anterior = np.cross(cranial, lateral)
+            anterior /= np.linalg.norm(anterior)
+            left = np.cross(cranial, anterior)
+            left /= np.linalg.norm(left)
+            anterior = np.cross(left, cranial)
+            anterior /= np.linalg.norm(anterior)
+            # robot base local axes: +X forward(anterior), +Y left, +Z up(cranial)
+            rot = np.column_stack([anterior, left, cranial])
+            human_quat_init = R.from_matrix(rot).as_quat(scalar_first=True)
+            q_init_base = np.concatenate([j0[dj.index("root")][:3], human_quat_init, np.zeros(constants.ROBOT_DOF)])
         else:  # smplh
             _, human_quat_init = transform_from_human_to_world(
                 human_joints[0, 0, :], object_poses[0], np.array([0.0, 0.0, 0.0])
@@ -670,6 +694,29 @@ def main(cfg: RetargetingConfig) -> None:
         object_scale_augmented=_OBJECT_SCALE_AUGMENTED,
     )
 
+    # For prone x2 motions (crawl), keep left/right legs from clipping through
+    # each other: the human source often has knees nearly touching, which is
+    # narrower than the robot's thighs.
+    if robot == "x2" and not cfg.retargeter.self_collision.enable:
+        from dataclasses import replace  # noqa: PLC0415
+
+        from holosoma_retargeting.config_types.retargeter import SelfCollisionConfig  # noqa: PLC0415
+
+        leg_pairs = [
+            ("left_hip_yaw_link", "right_hip_yaw_link"),
+            ("left_knee_link", "right_knee_link"),
+            ("left_knee_link", "right_hip_yaw_link"),
+            ("right_knee_link", "left_hip_yaw_link"),
+        ]
+        # skip optimizer warm-up frames where the default init pose may violate
+        cfg.retargeter = replace(
+            cfg.retargeter,
+            self_collision=SelfCollisionConfig(
+                enable=True, pairs=leg_pairs, tolerance=0.01, windows=[(25, 10**9)]
+            ),
+        )
+        logger.info("Enabled x2 leg self-collision constraints (%d body pairs)", len(leg_pairs))
+
     # Create retargeter
     retargeter_kwargs = build_retargeter_kwargs_from_config(cfg.retargeter, constants, object_urdf_path, task_type)
     retargeter = InteractionMeshRetargeter(**retargeter_kwargs)
@@ -713,6 +760,44 @@ def main(cfg: RetargetingConfig) -> None:
 
     # Determine output path
     dest_res_path = determine_output_path(task_type, save_dir, task_name, cfg.augmentation)
+
+    # Base-orientation tracking for prone motions (crawl): the Laplacian
+    # cost is reflection-invariant and cannot tell belly-down from belly-up, so
+    # supply a per-frame target base orientation from the human torso frame.
+    _TORSO_FRAME_JOINTS = {
+        # data_format: (root, thorax, left_shoulder, right_shoulder)
+        "cmu": ("root", "thorax", "lhumerus", "rhumerus"),
+        "lafan": ("Hips", "Spine2", "LeftArm", "RightArm"),
+        # NOTE: shoulders intentionally swapped -- empirically the cross
+        # convention is mirrored for this source (verified against the G1
+        # pelvis quaternion: dot(cross_anterior, true_forward) = -1.0).
+        "g1body": ("pelvis", "torso_link", "right_shoulder_roll_link", "left_shoulder_roll_link"),
+    }
+    if data_format in _TORSO_FRAME_JOINTS:
+        from scipy.spatial.transform import Rotation as R  # noqa: PLC0415
+
+        dj = retargeter.demo_joints
+        _root, _thorax, _lsh, _rsh = _TORSO_FRAME_JOINTS[data_format]
+        i_root, i_thorax = dj.index(_root), dj.index(_thorax)
+        i_lsh, i_rsh = dj.index(_lsh), dj.index(_rsh)
+        targets = []
+        for f in range(human_joints.shape[0]):
+            j = human_joints[f]
+            cranial = j[i_thorax] - j[i_root]
+            cranial /= np.linalg.norm(cranial)
+            lateral = j[i_lsh] - j[i_rsh]
+            lateral /= np.linalg.norm(lateral)
+            anterior = np.cross(cranial, lateral)
+            anterior /= np.linalg.norm(anterior)
+            left = np.cross(cranial, anterior)
+            left /= np.linalg.norm(left)
+            anterior = np.cross(left, cranial)
+            anterior /= np.linalg.norm(anterior)
+            rot = np.column_stack([anterior, left, cranial])
+            targets.append(R.from_matrix(rot).as_quat(scalar_first=True))
+        retargeter.base_orient_targets = np.asarray(targets)
+        retargeter.w_base_orient = float(os.environ.get("W_BASE_ORIENT", "15.0"))
+        logger.info("Base-orientation tracking enabled (w=%.1f)", retargeter.w_base_orient)
 
     # Retarget motion
     logger.info("Starting retargeting...")

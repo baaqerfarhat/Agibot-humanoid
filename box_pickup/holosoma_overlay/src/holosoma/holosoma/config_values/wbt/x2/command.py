@@ -1,8 +1,16 @@
 """Whole Body Tracking command presets for the AgiBot X2 robot."""
 
+import os
 from dataclasses import replace
+from pathlib import Path
 
 from holosoma.config_types.command import CommandManagerCfg, CommandTermCfg, MotionConfig, NoiseToInitialPoseConfig
+
+# Resolved from this file so the checkout works at any path; X2_MOTION_DIR overrides.
+_MOTION_ROOT = Path(__file__).resolve().parents[3] / "data" / "motions" / "x2_31dof"
+_BOX_MULTISPEED = os.environ.get(
+    "X2_MOTION_DIR", str(_MOTION_ROOT / "whole_body_tracking" / "box_multispeed")
+)
 
 # v11 (post hardware trial): dof_pos noise raised 0.1 -> 0.15 rad. On the real
 # robot the ramp-to-start pose is imperfect (encoder offsets, gravity sag), and
@@ -83,13 +91,20 @@ motion_config = MotionConfig(
 # STABILIZING the upright start pose from a noisy stance before the bend --
 # the exact state the robot is in while the operator holds it pre-engage and
 # again after the stand-up.
+#
+# v32 HOLD FOCUS: biased mid-motion (hold/set-down). That starved the
+# standing-start squat that IRL always runs -- and is where v31 dies.
+#
+# v33 WAIST FIX: restore heavy t=0 sampling so every episode practices the
+# upright -> bend that deploy uses. Keep multispeed motions + mild freeze so
+# the robot still learns to stabilize before bending. Hold/set-down remain
+# reachable via longer episodes and the adaptive sampler.
 motion_config_w_object = replace(
     motion_config,
-    motion_dir=(
-        "/home/baaqer/baaqer_ws/holosoma/src/holosoma/holosoma/data/motions/"
-        "x2_31dof/whole_body_tracking/box_multispeed"
-    ),
-    freeze_at_timestep_zero_prob=0.9,
+    motion_dir=_BOX_MULTISPEED,
+    start_at_timestep_zero_prob=0.70,
+    adaptive_uniform_ratio=0.20,
+    freeze_at_timestep_zero_prob=0.5,
 )
 
 x2_31dof_wbt_command = CommandManagerCfg(
@@ -140,18 +155,20 @@ crawl_init_pose_config = NoiseToInitialPoseConfig(
     object_pos=[0.0, 0.0, 0.0],
 )
 
-# v4: bias resets toward the mid-slope failure region. v3 died ~halfway
-# (~9 s / ~450 frames); fewer t=0 starts + a tighter adaptive uniform floor
-# makes the sampler spend more time on that hard section.
+# v5: deploy ALWAYS starts at t=0 and must crawl the full slope. Single
+# palmflat motion (no standup pack — v6 multi-clip training regressed the
+# climb). Heavy t=0 + healthy uniform floor.
 motion_config_crawl = replace(
     motion_config,
     motion_file=(
         "holosoma/data/motions/x2_31dof/whole_body_tracking/crawl_slope_palmflat_mj.npz"
     ),
+    motion_dir="",
     noise_to_initial_pose=crawl_init_pose_config,
-    start_at_timestep_zero_prob=0.2,
-    adaptive_uniform_ratio=0.15,
+    start_at_timestep_zero_prob=0.70,
+    adaptive_uniform_ratio=0.30,
     freeze_at_timestep_zero_prob=0.0,
+    enable_default_pose_append=False,
 )
 
 x2_31dof_wbt_crawl_command = replace(

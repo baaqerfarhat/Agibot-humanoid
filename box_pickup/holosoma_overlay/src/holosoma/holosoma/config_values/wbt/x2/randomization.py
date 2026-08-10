@@ -35,7 +35,8 @@ x2_object_state_dr_at_setup = {
     "randomize_object_rigid_body_mass_startup": RandomizationTermCfg(
         func="holosoma.managers.randomization.terms.locomotion:randomize_object_rigid_body_mass_startup",
         params={
-            "mass_distribution_params": [0.3, 1.5],
+            # v27: cover light cardboard up to denser demo boxes
+            "mass_distribution_params": [0.3, 2.0],
         },
     ),
     "randomize_object_rigid_body_inertia_startup": RandomizationTermCfg(
@@ -63,17 +64,33 @@ x2_robot_material_dr = {
     ),
 }
 
-# Hardware-transfer DR (v11, added after the first real-robot trial fell during
-# the bend): the G1 base terms ship with PD-gain randomization and action delay
-# DISABLED, i.e. the policy trains against a perfectly modeled actuator with
-# zero control latency. On the real X2 neither holds -- gain mismatch and
-# ROS-loop latency showed up as a fall in the highest-load phase (deep bend).
+# v28: stronger + more frequent pushes than the G1 base (0.5 m/s @ 1-3 s).
+# Random shoves landing mid-bend and mid-stand-up force the policy to learn
+# balance recovery in exactly the phases that wobble on hardware, instead of
+# only ever seeing them unperturbed.
+x2_push_dr = {
+    "push_randomizer_state": RandomizationTermCfg(
+        func="holosoma.managers.randomization.terms.locomotion:PushRandomizerState",
+        params={
+            "push_interval_s": [1.0, 2.5],
+            "max_push_vel": [0.7, 0.7, 0.3, 0.6, 0.6, 0.9],
+            "enabled": True,
+        },
+    ),
+}
+
+# Hardware-transfer DR (v11, widened further in v27 after stand-up-with-box
+# thrashing on the real robot): PD gains, control latency, and encoder bias
+# must cover the real ROS loop + actuator mismatch, especially once a box is
+# in the arms and the COM is no longer the training default.
+# v29: kp/kd +/-30% -> +/-40% so the policy tolerates deployment gain
+# retuning (softer or stiffer PD on the real robot) without retraining.
 x2_hardware_robustness_setup = {
     "actuator_randomizer_state": RandomizationTermCfg(
         func="holosoma.managers.randomization.terms.locomotion:ActuatorRandomizerState",
         params={
-            "kp_range": [0.85, 1.15],
-            "kd_range": [0.85, 1.15],
+            "kp_range": [0.60, 1.40],
+            "kd_range": [0.60, 1.40],
             "rfi_lim_range": [1.0, 1.0],
             "enable_pd_gain": True,
             "enable_rfi_lim": False,
@@ -82,22 +99,43 @@ x2_hardware_robustness_setup = {
     "setup_action_delay_buffers": RandomizationTermCfg(
         func="holosoma.managers.randomization.terms.locomotion:setup_action_delay_buffers",
         params={
-            "ctrl_delay_step_range": [0, 2],  # 0-40 ms at 50 Hz
+            "ctrl_delay_step_range": [0, 3],  # 0-60 ms at 50 Hz
             "enabled": True,
         },
     ),
-    # Encoder offset / imperfect initial pose: +/-0.03 rad (base was +/-0.01).
+    # Encoder offset / imperfect initial pose: +/-0.07 rad (v27: 0.05).
     "setup_dof_pos_bias": RandomizationTermCfg(
         func="holosoma.managers.randomization.terms.locomotion:setup_dof_pos_bias",
         params={
-            "dof_pos_bias_range": [-0.03, 0.03],
+            "dof_pos_bias_range": [-0.07, 0.07],
             "enabled": True,
         },
     ),
 }
 
+# v27: wider torso COM -- payload + imperfect arm squeeze shift the CoM far
+# more than empty-robot walking; stand-up after grasp is the failure mode.
+x2_torso_com_dr = {
+    "randomize_base_com_startup": RandomizationTermCfg(
+        func="holosoma.managers.randomization.terms.locomotion:randomize_base_com_startup",
+        params={
+            "base_com_range": {
+                "x": [-0.08, 0.10],   # forward bias covers box on chest (v28: wider)
+                "y": [-0.06, 0.06],
+                "z": [-0.06, 0.06],
+            },
+        },
+    ),
+}
+
 x2_31dof_wbt_randomization = RandomizationManagerCfg(
-    setup_terms={**base_setup_terms, **x2_robot_material_dr, **x2_hardware_robustness_setup},
+    setup_terms={
+        **base_setup_terms,
+        **x2_push_dr,       # overrides G1 push magnitude/frequency
+        **x2_torso_com_dr,  # overrides G1 COM ranges
+        **x2_robot_material_dr,
+        **x2_hardware_robustness_setup,
+    },
     reset_terms={**base_reset_terms},
     step_terms={**base_step_terms},
 )
@@ -105,6 +143,8 @@ x2_31dof_wbt_randomization = RandomizationManagerCfg(
 x2_31dof_wbt_randomization_w_object = RandomizationManagerCfg(
     setup_terms={
         **base_setup_terms,
+        **x2_push_dr,       # overrides G1 push magnitude/frequency
+        **x2_torso_com_dr,  # overrides G1 COM ranges
         **x2_robot_material_dr,
         **x2_hardware_robustness_setup,
         **x2_object_state_dr_at_setup,

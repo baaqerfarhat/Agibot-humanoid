@@ -22,22 +22,17 @@ import argparse
 import collections
 import dataclasses
 import json
-import os
-import sys
 from pathlib import Path
 
 import numpy as np
 
-CKPT = (
-    "/home/baaqer/baaqer_ws/holosoma/logs/WholeBodyTracking/"
-    "20260730_215012-x2_box_v31_flatfoot-locomotion/model_202500.pt"
-)
+import paths  # noqa: E402
+
+CKPT = str(paths.resolve_ckpt())
 # v31's actual reference: 734 frames, matches the policy npz's exported reference
 # exactly, and carries `object_pos_w` (the true box trajectory).
-MOTION = (
-    "/home/baaqer/baaqer_ws/holosoma/src/holosoma/holosoma/data/motions/"
-    "x2_31dof/whole_body_tracking/box_multispeed/box_speed100.npz"
-)
+MOTION = str(paths.MOTION)
+OUT_DIR = paths.REPO_ROOT / "adaptation" / "FOR_MENTOR"
 
 TERM_LOG: list[tuple[int, str]] = []
 STEP = [0]
@@ -82,12 +77,10 @@ def main() -> None:
     ap.add_argument("--ckpt", default=CKPT)
     ap.add_argument("--motion", default=MOTION)
     ap.add_argument("--steps", type=int, default=734)
-    ap.add_argument("--out", default="/home/baaqer/baaqer_ws/Agibot-humanoid/"
-                                     "adaptation/FOR_MENTOR/isaac_v31_rollout.npz")
+    ap.add_argument("--out", default=str(OUT_DIR / "isaac_v31_rollout.npz"))
     args = ap.parse_args()
 
-    os.chdir("/home/baaqer/baaqer_ws/holosoma")
-    sys.path.insert(0, "/home/baaqer/baaqer_ws/holosoma/src/holosoma")
+    paths.enter_holosoma()
 
     from holosoma.config_types.eval_callback import (
         EvalCallbacksConfig,

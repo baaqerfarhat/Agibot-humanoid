@@ -53,11 +53,10 @@ x2_31dof_wbt_termination = TerminationManagerCfg(
     }
 )
 
-# Crawl: tighter tracking kill so the policy cannot farm reward by lying
-# limp after a flop. Also watch knees (primary support limbs on a crawl) in
-# addition to the wrists.
-# v4: slightly tighter than v3 so mid-slope flops end the episode sooner and
-# the adaptive sampler focuses there.
+# Crawl: FULL XYZ BadTracking (not ZOnly). The slope crawl's progress is in
+# +Y (~2.9 m); ZOnly let the robot walk backward / slide off the ramp edge
+# without ever ending the episode. Kill on 3D root drift + limb/torso drift.
+# v5: watch wrists / knees / ankles / torso so lateral fall-off is fatal.
 x2_31dof_wbt_crawl_termination = TerminationManagerCfg(
     terms={
         "timeout": TerminationTermCfg(
@@ -65,9 +64,9 @@ x2_31dof_wbt_crawl_termination = TerminationManagerCfg(
             is_timeout=True,
         ),
         "bad_tracking": TerminationTermCfg(
-            func="holosoma.managers.termination.terms.wbt:BadTrackingZOnly",
+            func="holosoma.managers.termination.terms.wbt:BadTracking",
             params={
-                "bad_ref_pos_threshold": 0.40,
+                "bad_ref_pos_threshold": 0.35,
                 "bad_ref_ori_threshold": 0.7,
                 "bad_motion_body_pos_threshold": 0.30,
                 "body_names_to_track": X2_BODY_NAMES_TO_TRACK,
@@ -76,6 +75,8 @@ x2_31dof_wbt_crawl_termination = TerminationManagerCfg(
                     "right_wrist_roll_link",
                     "left_knee_link",
                     "right_knee_link",
+                    "left_ankle_roll_link",
+                    "right_ankle_roll_link",
                     "torso_link",
                 ],
                 "bad_object_pos_threshold": 1.0,

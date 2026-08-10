@@ -17,7 +17,8 @@ from pathlib import Path
 
 import numpy as np
 
-NPZ = Path("/home/baaqer/baaqer_ws/Agibot-humanoid/adaptation/FOR_MENTOR/isaac_v31_rollout.npz")
+HERE = Path(__file__).resolve().parent
+NPZ = HERE / "FOR_MENTOR" / "isaac_v31_rollout.npz"
 ALPHABETICAL = ["actions", "base_ang_vel", "dof_pos", "dof_vel",
                 "motion_command", "motion_ref_ori_b"]
 LAG = 3

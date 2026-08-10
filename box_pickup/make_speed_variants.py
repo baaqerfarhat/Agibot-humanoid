@@ -11,17 +11,19 @@ speed-0.8 clip simply has more frames (longer duration).
 Usage: python make_speed_variants.py
 """
 
+import os
+from pathlib import Path
+
 import numpy as np
 from scipy.spatial.transform import Rotation, Slerp
 
-SRC = (
-    "/home/baaqer/baaqer_ws/holosoma/src/holosoma/holosoma/data/motions/"
-    "x2_31dof/whole_body_tracking/sub3_largebox_003_mj_w_obj.npz"
-)
-OUT_DIR = (
-    "/home/baaqer/baaqer_ws/holosoma/src/holosoma/holosoma/data/motions/"
-    "x2_31dof/whole_body_tracking/box_multispeed"
-)
+_REPO = Path(__file__).resolve().parents[1]
+_HOLOSOMA = Path(os.environ.get("HOLOSOMA_ROOT", _REPO.parent / "holosoma"))
+_WBT = (_HOLOSOMA / "src/holosoma/holosoma/data/motions"
+                    "/x2_31dof/whole_body_tracking")
+
+SRC = str(_WBT / "sub3_largebox_003_mj_w_obj.npz")
+OUT_DIR = os.environ.get("X2_MOTION_DIR", str(_WBT / "box_multispeed"))
 SPEEDS = [0.8, 1.0, 1.25]
 
 # v30: append this many seconds of the clip's final frame (static, zero

@@ -140,6 +140,15 @@ class InteractionMeshRetargeter:
 
         self.nq_a = len(self.q_a_indices)
 
+        # Optional per-frame base-orientation tracking. The interaction-mesh
+        # Laplacian cost is reflection-invariant, so for prone motions (e.g.
+        # crawling) it cannot distinguish belly-down from belly-up. When set,
+        # base_orient_targets[frame_idx] (quaternion wxyz) softly pulls the
+        # floating-base orientation toward the human torso frame, breaking that
+        # symmetry. Only active when the base quaternion is an optimization var.
+        self.base_orient_targets: np.ndarray | None = None
+        self.w_base_orient: float = 0.0
+
         # Create complete limits with floating base (-inf, inf) and actuated joint limits
         n_floating_base = 7
         joint_names = [self.robot_model.joint(i).name for i in range(self.robot_model.njnt)]
@@ -690,14 +699,20 @@ class InteractionMeshRetargeter:
             rhs = -phi - self.penetration_tolerance
             constraints += [Ja_n @ dqa >= rhs]
 
-        # Self-collision constraints
+        # Self-collision constraints (soft, with slack): hard constraints can
+        # conflict and go infeasible when limbs are already interpenetrating
+        # (e.g. crossed legs), so allow violation via a heavily penalized slack
+        # that pushes the pose out of collision over iterations/frames.
         Js_sc, phis_sc = self._compute_self_collision_constraints(frame_idx)
-        for key, phi in phis_sc.items():
-            Ja_n_full = Js_sc[key]
-            Ja_n = Ja_n_full[self.q_a_indices]
-            # Enforce: new_distance >= tolerance  =>  phi + J @ dqa >= tol
-            rhs = self._self_collision_tolerance - phi
-            constraints += [Ja_n @ dqa >= rhs]
+        sc_slack = None
+        if phis_sc:
+            sc_slack = cp.Variable(len(phis_sc), nonneg=True, name="sc_slack")
+            for k, (key, phi) in enumerate(phis_sc.items()):
+                Ja_n_full = Js_sc[key]
+                Ja_n = Ja_n_full[self.q_a_indices]
+                # Enforce: new_distance >= tolerance  =>  phi + J @ dqa >= tol
+                rhs = self._self_collision_tolerance - phi
+                constraints += [Ja_n @ dqa >= rhs - sc_slack[k]]
 
         # Joint limits constraints (actuated)
         if self.activate_joint_limits:
@@ -736,6 +751,28 @@ class InteractionMeshRetargeter:
             else:
                 # if a full matrix was supplied, fall back to quad_form
                 obj_terms.append(cp.quad_form(dqa - dqa_smooth, Wsmooth))
+
+        # Self-collision slack penalty (large weight; zero when satisfiable)
+        if sc_slack is not None:
+            obj_terms.append(1e3 * cp.sum_squares(sc_slack) + 1e2 * cp.sum(sc_slack))
+
+        # Base-orientation tracking (breaks belly-up/down reflection symmetry).
+        base_offset = 7 + self.q_a_init_idx  # start of q_a within full q
+        quat_in_qa = base_offset <= 3  # base quaternion is an optimization var
+        if (
+            self.base_orient_targets is not None
+            and self.w_base_orient > 0.0
+            and quat_in_qa
+            and frame_idx < len(self.base_orient_targets)
+        ):
+            quat_dqa_idx = [3 - base_offset, 4 - base_offset, 5 - base_offset, 6 - base_offset]
+            q_cur = np.array([q_a_n_last[k] for k in quat_dqa_idx], dtype=float)
+            q_tgt = np.asarray(self.base_orient_targets[frame_idx], dtype=float).copy()
+            if np.dot(q_cur, q_tgt) < 0.0:  # quaternion double cover
+                q_tgt = -q_tgt
+            obj_terms.append(
+                self.w_base_orient * cp.sum_squares((q_cur + dqa[quat_dqa_idx]) - q_tgt)
+            )
 
         problem = cp.Problem(cp.Minimize(cp.sum(obj_terms)), constraints)
 
