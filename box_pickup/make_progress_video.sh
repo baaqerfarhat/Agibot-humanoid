@@ -82,9 +82,10 @@ ITER="$(basename "$CKPT" .pt | sed -E 's/^model_0*//')"
 if [[ "$RUN_BASE" == *crawl* ]]; then
     TYPE="crawl"
     RENDERER="$SCRIPTS_DIR/render_crawl_rollout.py"
-    # Full palmflat slope crawl is ~19 s @ 50 Hz.
-    STEPS=1000
-    MOTION=""
+    # Pin the full-slope palmflat crawl so multi-motion (standup-pack) runs
+    # cannot randomly demo a standup-only clip and skip the climb.
+    MOTION=/home/baaqer/baaqer_ws/holosoma/src/holosoma/holosoma/data/motions/x2_31dof/whole_body_tracking/crawl_slope_palmflat_mj.npz
+    STEPS="$("$HSSIM_PY" -c "import numpy as np; print(np.load('$MOTION')['joint_pos'].shape[0] - 1)")"
 else
     TYPE="box"
     RENDERER="$SCRIPTS_DIR/render_box_rollout.py"
