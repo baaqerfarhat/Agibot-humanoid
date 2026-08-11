@@ -36,9 +36,18 @@ import numpy as np
 #                   extended survival 53% (p = 0.0011, 6 seeds); with the legs included
 #                   the robot was down in 2.2 s having never lifted the box.
 #   "legs_waist" -- the paper's default. Catastrophic on our policy, healthy or faulted.
+#   "sagittal_legs" -- knees, hip pitch, ankle pitch. Derived from the v33 hardware runs
+#                   (`analyze_deploy_logs.py` on run_logs/box_pickup_v33_last5): on the
+#                   real robot these six joints are the ONLY group carrying large task
+#                   error (16-36 deg) while obeying their commands (servo error 4-9 deg)
+#                   and almost never being clipped by a joint limit. The waist tracks to
+#                   2.2 deg there, so "waist" has nearly nothing to correct, and the roll
+#                   joints are pinned at their stops so adapting them cannot reach the
+#                   plant. UNVALIDATED: needs an Isaac gain sweep before hardware use.
 MASK_PRESETS = {
     "waist": ("waist",),
     "legs_waist": ("hip", "knee", "ankle", "waist"),
+    "sagittal_legs": ("knee", "hip_pitch", "ankle_pitch"),
     "waist_arms": ("waist", "shoulder", "elbow"),
     "all": None,
 }
