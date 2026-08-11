@@ -34,6 +34,7 @@ Agibot-humanoid/
 │   ├── make_speed_variants.py              # regenerate the reference motion clips
 │   └── videos/                             # training progression -> final success
 ├── adaptation/                 # Causality-guided layer adaptation on top of v31
+│   ├── README.md                           # method, online cost, and all Isaac results
 │   ├── adapt_experiments_isaac.py          # multi-seed adapter sweep in Isaac
 │   ├── dump_for_mentor.py                  # per-step observation/rollout logger
 │   └── FOR_MENTOR/                         # rollout log, reference clip, config, videos
