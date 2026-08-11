@@ -218,7 +218,85 @@ Useful flags: `--only`, `--seeds/--seed0`, `--fault SUBSTR:SCALE`, `--dr no-push
 
 ---
 
-## 7. Files
+## 7. Running it on the real X2
+
+Hardware port of the same law, in `../agibot_control_functions/`:
+
+| file | what |
+|---|---|
+| `layer_adapt.py` | the adapter, numpy only, no ROS. Bit-identical to the Isaac `W0LeakAdapter`: over 400 steps on an identical obs/error stream, max weight difference **0.0e+00**. |
+| `deploy_x2_box_adapt.py` | the deploy loop. Imports the observation builder, PD gains, filters and safety ladder from `deploy_x2_box_pickup.py` verbatim, so the ONLY difference from the working frozen deploy is where the action comes from. |
+| `compare_adapt_runs.py` | turns the run logs into a frozen-vs-adapted verdict. |
+
+**Get `deploy_x2_box_pickup.py` working first.** This script is that script plus an
+adapter; if the frozen policy is not already running on the robot, nothing here is
+interpretable.
+
+### The protocol
+
+Adaptation is compared against a control arm produced by the *same code path* with the
+update disabled, so the only difference between the two arms is the adaptation:
+
+```bash
+cd agibot_control_functions
+
+# 0. On the robot, with no motion at all: does the numpy adapter reproduce the
+#    deployed policy, and does the update fit in the 20 ms tick on THIS CPU?
+python deploy_x2_box_adapt.py --self-check
+
+# 1. Frozen control arm.  gain 0 makes the update a no-op.
+python deploy_x2_box_adapt.py --engage --gain 0    --tag frozen
+
+# 2. Adapted arm.
+python deploy_x2_box_adapt.py --engage --gain 3e-4 --tag adapted
+
+# ... alternate 1 and 2 at least three times each, then:
+python compare_adapt_runs.py 'run_logs/*_box_adapt_*.csv'
+```
+
+`compare_adapt_runs.py` averages error only over the frame window every run reached (a
+run that falls early otherwise looks like the most accurate one) and refuses to call a
+winner with fewer than 3 runs per arm. That is not pedantry: in sim a 1e-6 action
+perturbation moved leg tracking error 1.7 deg over 2.4 s, so a single A/B pair on this
+task is noise.
+
+### What is different from the sim runs, and what it costs
+
+- **`--mask waist` is the default here**, not the paper's legs+waist. Section 4 is why:
+  waist-only is the only configuration that ever beat the frozen policy. The leg EMA
+  filter in the deploy loop (`--leg-filter 0.9`) is a second reason — it attenuates leg
+  commands, so adapting leg joints partly fights the filter.
+- **`--gain 3e-4` is inherited from v31, but the sim evidence is v31 and the deploy
+  default is v33.** One thing does transfer exactly: the adapter's input map is
+  `action_scale * Kp`, and since `action_scale = cfg_scale * effort / Kp`, the v33 waist
+  retune (kp 20 -> 60, scale 0.6 -> 0.2) leaves that product **identical** (12.0 for
+  waist pitch/roll, 30.0 for yaw). The error signal the adapter sees on the waist is
+  unchanged. The policy weights are not, so this is a defensible starting point, not a
+  validated one. Re-running section 4's fault experiment on v33 would settle it.
+- **Hardware-only guards**, none of which exist in the paper: a weight-drift bound that
+  reverts to the trained weights and latches adaptation off for the rest of the run
+  (`--max-drift 1.0`, tighter than sim's 5.0; a healthy waist-only run sits near 0.04);
+  a clamp on how far the adapted action may deviate from the frozen action
+  (`--max-action-dev`, costs one extra forward pass); and a loop-deadline watchdog that
+  disables adaptation if the update starts starving the 50 Hz loop.
+- **Adaptation still never persists.** `reset()` runs at every engage, so each take
+  starts from the trained weights.
+
+### Expected outcome, stated in advance
+
+On a *healthy* robot this should do nothing good — that is what section 3 measured, and
+it is what the method is for: **fault recovery**. The honest test is to degrade the
+robot first (the hardware analogue of `--fault`: a weakened joint, added payload, a
+worn actuator) and check whether adaptation extends the motion the frozen policy can no
+longer complete. Running only the healthy comparison and finding no improvement
+reproduces a result we already have.
+
+The per-tick trace lands in `run_logs/<stamp>_..._adapt.csv`: drift, adapted-joint and
+leg tracking error, action deviation, clamp count and loop time, one row per 20 ms.
+
+---
+
+## 8. Files
 
 | path | what |
 |---|---|
@@ -230,10 +308,13 @@ Useful flags: `--only`, `--seeds/--seed0`, `--fault SUBSTR:SCALE`, `--dr no-push
 | `isaac_runs/fault_knee03/` | the fault experiment |
 | `FOR_MENTOR/` | rollout log, reference clip, config and videos sent to him |
 | `dump_for_mentor.py` | produces the per-step observation log in `FOR_MENTOR/` |
+| `../agibot_control_functions/layer_adapt.py` | the adapter, hardware build |
+| `../agibot_control_functions/deploy_x2_box_adapt.py` | on-robot deploy with adaptation |
+| `../agibot_control_functions/compare_adapt_runs.py` | frozen-vs-adapted analysis of run logs |
 
 ---
 
-## 8. Open questions
+## 9. Open questions
 
 1. **Confirm the waist-only result on other faults and held-out seeds.** Everything above
    is one fault (right knee, 30%) on seeds 600–605, which is the pool his configuration
