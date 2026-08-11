@@ -36,14 +36,16 @@ import numpy as np
 #                   extended survival 53% (p = 0.0011, 6 seeds); with the legs included
 #                   the robot was down in 2.2 s having never lifted the box.
 #   "legs_waist" -- the paper's default. Catastrophic on our policy, healthy or faulted.
-#   "sagittal_legs" -- knees, hip pitch, ankle pitch. Derived from the v33 hardware runs
-#                   (`analyze_deploy_logs.py` on run_logs/box_pickup_v33_last5): on the
-#                   real robot these six joints are the ONLY group carrying large task
-#                   error (16-36 deg) while obeying their commands (servo error 4-9 deg)
-#                   and almost never being clipped by a joint limit. The waist tracks to
-#                   2.2 deg there, so "waist" has nearly nothing to correct, and the roll
-#                   joints are pinned at their stops so adapting them cannot reach the
-#                   plant. UNVALIDATED: needs an Isaac gain sweep before hardware use.
+#   "sagittal_legs" -- knees, hip pitch, ankle pitch. Derived from the v33 deployment by
+#                   comparing hardware against the SAME policy and clip in Isaac
+#                   (`analyze_deploy_logs.py --sim`): leg tracking error is the only thing
+#                   that degrades, 8.7 -> 16.8 deg, with knees +15-18 deg and ankle pitch
+#                   +14 deg, while the waist transfers unchanged (1.9 -> 2.2 deg, so
+#                   "waist" has nearly nothing to correct here) and the arms are slightly
+#                   BETTER on hardware. These six joints also obey their commands (servo
+#                   error 4-9 deg) and are almost never clipped by a joint limit, unlike
+#                   the roll joints -- adapting a joint pinned at its stop cannot reach
+#                   the plant. UNVALIDATED: needs an Isaac gain sweep before hardware use.
 MASK_PRESETS = {
     "waist": ("waist",),
     "legs_waist": ("hip", "knee", "ankle", "waist"),

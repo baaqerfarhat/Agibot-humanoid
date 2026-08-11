@@ -1,0 +1,70 @@
+{
+  "seeds": [
+    600,
+    601,
+    602
+  ],
+  "steps": 584,
+  "ctrl_dt": 0.02,
+  "dr": "no-push",
+  "obs_noise": "off",
+  "ckpt": "/home/baaqer/baaqer_ws/holosoma/logs/WholeBodyTracking/20260810_193817-x2_box_v33_waist_track-locomotion/model_253000.pt",
+  "motion": "/home/baaqer/baaqer_ws/holosoma/src/holosoma/holosoma/data/motions/x2_31dof/whole_body_tracking/sub3_largebox_003_mj_w_obj.npz",
+  "fault": null,
+  "config": {
+    "frozen_npz": {
+      "gain": 0.0,
+      "gx_level": 1,
+      "error_joints": [
+        "hip",
+        "knee",
+        "ankle",
+        "waist"
+      ],
+      "law": "W0LeakAdapter"
+    }
+  },
+  "results": {
+    "frozen_npz": [
+      {
+        "survival": 584,
+        "tracked": 44,
+        "leg_err": 8.705548099122922,
+        "drift": 0.0,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 5.24,
+        "max_box_z": 0.7676039934158325,
+        "final_dist": 0.4016683043509222,
+        "placed": true,
+        "success": true
+      },
+      {
+        "survival": 584,
+        "tracked": 43,
+        "leg_err": 10.276276951017923,
+        "drift": 0.0,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 5.2,
+        "max_box_z": 0.736203670501709,
+        "final_dist": 0.3980658129268159,
+        "placed": true,
+        "success": true
+      },
+      {
+        "survival": 584,
+        "tracked": 44,
+        "leg_err": 12.9654850511475,
+        "drift": 0.0,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 5.22,
+        "max_box_z": 0.7281827926635742,
+        "final_dist": 0.3982210896347563,
+        "placed": true,
+        "success": true
+      }
+    ]
+  }
+}
