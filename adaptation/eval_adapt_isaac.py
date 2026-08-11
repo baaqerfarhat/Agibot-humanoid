@@ -40,10 +40,17 @@ def _leg_idx(names: list[str]) -> list[int]:
     return [i for i, n in enumerate(names) if any(k in n for k in ("hip", "knee", "ankle"))]
 
 
-def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: float):
-    """One closed-loop Isaac rollout. adapter=None => frozen torch policy."""
+def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: float,
+             on_reset=None):
+    """One closed-loop Isaac rollout. adapter=None => frozen torch policy.
+
+    `on_reset` runs immediately after the reset, before the first action. Fault
+    injection needs it because resetting restores the nominal actuator scales.
+    """
     eval_policy = algo.get_inference_policy()
     obs_dict = task.reset_all()
+    if on_reset is not None:
+        on_reset()
     actor_state = {"done_indices": [], "stop": False, "obs": obs_dict}
     if adapter is not None:
         adapter.reset()

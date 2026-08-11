@@ -170,6 +170,47 @@ def box_metrics(records, ctrl_dt):
     }
 
 
+def make_fault_fn(task, spec: str):
+    """Emulate degraded actuators by scaling their PD stiffness.
+
+    holosoma computes torque in python as `kp_scale * p_gains * (target - q) - ...`, so
+    scaling `kp_scale` for a joint is a weak actuator: it still tracks, just with less
+    authority, and it sags under load. The policy and the adapter both keep using the
+    NOMINAL Kp -- neither is told the fault happened, which is the point.
+
+    Spec is `substring:scale[,substring:scale...]`, e.g. "knee:0.3".
+    """
+    if not spec:
+        return None, {}
+
+    from holosoma.managers.randomization.terms.locomotion import _get_joint_action_term
+
+    term = _get_joint_action_term(task)
+    if term is None:
+        raise SystemExit("no joint action term found; cannot inject an actuator fault")
+
+    names = list(task.simulator.dof_names)
+    hits: dict[str, float] = {}
+    for part in spec.split(","):
+        key, _, val = part.partition(":")
+        key, scale = key.strip(), float(val)
+        matched = [i for i, n in enumerate(names) if key in n]
+        if not matched:
+            raise SystemExit(f"fault '{key}' matched no joint in {names}")
+        for i in matched:
+            hits[names[i]] = scale
+
+    idx = [names.index(n) for n in hits]
+    scales = [hits[n] for n in hits]
+    print(f"[fault] scaling PD stiffness: " + ", ".join(f"{n}x{s}" for n, s in hits.items()))
+
+    def fn():
+        for i, s in zip(idx, scales):
+            term._kp_scale[:, i] = s
+
+    return fn, hits
+
+
 def check_export_match(algo, task, pol, steps: int) -> None:
     """Is the numpy export the same function as the torch checkpoint?
 
@@ -240,6 +281,9 @@ def main() -> None:
     ap.add_argument("--seed0", type=int, default=600)
     ap.add_argument("--out-dir", default=str(HERE / "isaac_runs"))
     ap.add_argument("--only", default="", help="comma-separated variant names to run")
+    ap.add_argument("--fault", default="", metavar="SUBSTR:SCALE",
+                    help="degrade actuators by scaling their PD stiffness, e.g. "
+                         "'knee:0.3' or 'right_knee:0.2,right_hip_pitch:0.5'")
     ap.add_argument("--check-export", type=int, default=0, metavar="N",
                     help="compare the numpy export against the torch policy for N steps "
                          "on identical observations, then exit")
@@ -322,7 +366,9 @@ def main() -> None:
     if args.dr != "all":
         drop.append("push")
     if args.dr == "none":
-        drop += ["actuator", "delay", "com", "bias", "friction", "mass"]
+        # "randomize_action_delay" and not "delay": dropping the delay SETUP term leaves
+        # env._randomize_ctrl_delay undefined and joint_control.reset() then throws.
+        drop += ["actuator", "randomize_action_delay", "com", "bias", "friction", "mass"]
     if drop:
         for bucket in ("setup_terms", "reset_terms", "step_terms"):
             terms = getattr(saved_cfg.randomization, bucket, None)
@@ -361,6 +407,7 @@ def main() -> None:
 
     task.reset_all()  # PhysX buffers must be valid before probing the mass matrix
     mass_fn = make_mass_matrix_fn(task, mode="schur")
+    fault_fn, fault_hits = make_fault_fn(task, args.fault)
 
     if args.check_export:
         check_export_match(algo, task, pol, args.check_export)
@@ -390,7 +437,8 @@ def main() -> None:
                     pol, cfg, joint_names=pol.meta["joint_names"],
                     mass_matrix_fn=(mass_fn if gx == 2 else None),
                 )
-            r = base._rollout(algo, task, adapter, args.steps, ref_pos, ctrl_dt)
+            r = base._rollout(algo, task, adapter, args.steps, ref_pos, ctrl_dt,
+                              on_reset=fault_fn)
             r.update(box_metrics(r["records"], ctrl_dt))
             rows.append(r)
             if args.record_seed is not None and s == args.record_seed:
@@ -439,6 +487,7 @@ def main() -> None:
     out.write_text(json.dumps(
         {"seeds": seeds, "steps": args.steps, "ctrl_dt": ctrl_dt, "dr": args.dr,
          "obs_noise": args.obs_noise, "ckpt": args.ckpt, "motion": args.motion,
+         "fault": fault_hits or None,
          "config": {n: {"gain": g, "gx_level": gx, "error_joints": list(m) if m else None,
                         "law": c.__name__ if c else "torch"}
                     for n, g, gx, m, c in variants},
