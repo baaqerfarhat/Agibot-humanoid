@@ -41,7 +41,7 @@ def _leg_idx(names: list[str]) -> list[int]:
 
 
 def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: float,
-             on_reset=None, obs_hook=None):
+             on_reset=None, obs_hook=None, action_hook=None):
     """One closed-loop Isaac rollout. adapter=None => frozen torch policy.
 
     `on_reset` runs immediately after the reset, before the first action. Fault
@@ -50,6 +50,10 @@ def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: 
     `obs_hook(actor_obs) -> actor_obs` may rewrite the observation before the
     policy sees it. Used to reproduce a deployment-side observation defect in
     sim; the hook owns any diagnostics it wants to record.
+
+    `action_hook(actions) -> actions` may rewrite the action before it is
+    applied, which is how the deployment's target post-processing (leg EMA,
+    per-tick step clamp) gets reproduced here.
     """
     eval_policy = algo.get_inference_policy()
     obs_dict = task.reset_all()
@@ -105,6 +109,9 @@ def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: 
             obs_np = actor_obs[0].detach().cpu().numpy().astype(np.float64)
             a_np = adapter.act(obs_np)
             actions = torch.as_tensor(a_np, device=actor_obs.device, dtype=actor_obs.dtype).unsqueeze(0)
+
+        if action_hook is not None:
+            actions = action_hook(actions)
 
         actor_state["actions"] = actions
         actor_state["step"] = step

@@ -290,11 +290,14 @@ def main():
                          "0.49 rad of it -- does not eat the abort margin.")
     ap.add_argument("--hold-end-seconds", type=float, default=3.0,
                     help="Hold the final reference pose after the motion ends.")
-    ap.add_argument("--leg-filter", type=float, default=0.9,
-                    help="EMA smoothing factor on LEG joint targets (0 = off, "
-                         "0.5 = recommended, higher = smoother/laggier). Damps "
-                         "the jittery leg 'stabilization' feedback loop on real "
-                         "hardware; arms are never filtered (crisp squeeze).")
+    ap.add_argument("--leg-filter", type=float, default=0.2,
+                    help="EMA smoothing factor on LEG joint targets (0 = off). This has "
+                         "no counterpart in training, so it is pure added lag; "
+                         "adaptation/deploy_artifacts_isaac.py measures the cost in sim "
+                         "(3 seeds): 0.0 and 0.2 both give 100%% success, 0.5 drops to "
+                         "67%%, and 0.9 -- the old default -- gives 0%%, matching the "
+                         "hardware run that aborted at 0.9 while 0.2 completed the "
+                         "motion. Do not raise this above 0.2. Arms are never filtered.")
     ap.add_argument("--init-tol-arm", type=float, default=0.12,
                     help="Max |meas-start| (rad) allowed on arm joints before "
                          "the policy is allowed to engage.")

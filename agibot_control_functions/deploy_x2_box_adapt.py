@@ -141,10 +141,11 @@ def main():
                     help="Abort if |pelvis roll| exceeds this (rad). Pitch is NOT "
                          "checked: the motion contains a deep forward bend.")
     ap.add_argument("--hold-end-seconds", type=float, default=3.0)
-    ap.add_argument("--leg-filter", type=float, default=0.9,
+    ap.add_argument("--leg-filter", type=float, default=0.2,
                     help="EMA on LEG targets. Note this attenuates leg commands, so "
                          "adapting leg joints partly fights this filter -- another "
-                         "reason --mask waist is the default.")
+                         "reason --mask waist is the default. 0.9 was the old default "
+                         "and scores 0%% success in sim; see deploy_x2_box_pickup.py.")
     ap.add_argument("--init-tol-arm", type=float, default=0.12)
     ap.add_argument("--init-tol-leg", type=float, default=0.25)
     ap.add_argument("--init-timeout", type=float, default=20.0)
