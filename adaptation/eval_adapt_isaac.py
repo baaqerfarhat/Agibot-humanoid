@@ -41,11 +41,15 @@ def _leg_idx(names: list[str]) -> list[int]:
 
 
 def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: float,
-             on_reset=None):
+             on_reset=None, obs_hook=None):
     """One closed-loop Isaac rollout. adapter=None => frozen torch policy.
 
     `on_reset` runs immediately after the reset, before the first action. Fault
     injection needs it because resetting restores the nominal actuator scales.
+
+    `obs_hook(actor_obs) -> actor_obs` may rewrite the observation before the
+    policy sees it. Used to reproduce a deployment-side observation defect in
+    sim; the hook owns any diagnostics it wants to record.
     """
     eval_policy = algo.get_inference_policy()
     obs_dict = task.reset_all()
@@ -93,6 +97,8 @@ def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: 
 
     for step in range(max_steps):
         actor_obs = torch.cat([actor_state["obs"][k] for k in algo.actor_obs_keys], dim=1)
+        if obs_hook is not None:
+            actor_obs = obs_hook(actor_obs)
         if adapter is None:
             actions = eval_policy({"actor_obs": actor_obs})
         else:

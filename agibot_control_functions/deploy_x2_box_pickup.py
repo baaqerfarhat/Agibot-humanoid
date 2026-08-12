@@ -14,11 +14,25 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
 
     Observation layout (164 dims, holosoma concatenates terms ALPHABETICALLY):
         [ prev_action(31),
-          base_ang_vel(3),                           <- torso IMU gyro
+          base_ang_vel(3),                           <- PELVIS gyro, see below
           joint_pos - default(31), joint_vel(31),
           ref_joint_pos(31), ref_joint_vel(31),      <- motion clock (from npz)
           motion_ref_ori_b(6) ]                      <- ref torso ori rel. to IMU torso ori
     -------------------------------------------------------------------------
+
+    base_ang_vel is the PELVIS rate, not the torso IMU's. holosoma builds it from
+    the articulation root (the pelvis freejoint body) in the pelvis frame, and the
+    torso sits three waist joints above that. Feeding the raw torso gyro was the
+    root cause of the v33 hardware roll failure: reproducing that exact
+    substitution in Isaac (`adaptation/obs_frame_isaac.py`, 5 seeds) drops the
+    policy from 100% success / 9.8 s survival to 0% / 1.6 s, falling sideways in
+    the same 1.1-1.9 s window the robot did. `base_frame.PelvisEstimator` composes
+    the torso IMU with the measured waist joints to recover the pelvis rate, which
+    removes 90.8% of the observation error and restores 100% success in that same
+    test. Use --base-ang-vel torso only to reproduce the old (broken) behaviour.
+
+    motion_ref_ori_b is NOT affected: holosoma's x2 config sets
+    body_name_ref=["torso_link"], so the raw IMU quat is the correct input there.
 
     The policy is BLIND: it does not perceive the box. The box must be placed
     at the reference start location (see "Box placement" below) before engaging.
@@ -73,6 +87,7 @@ import time
 import numpy as np
 import rclpy
 
+from base_frame import PelvisEstimator
 from robot_states_control import (
     JointArea,
     RobotStateClient,
@@ -164,7 +179,7 @@ class WbtObservationBuilder:
     apply it to every reference quat (the robot may face any direction).
     """
 
-    def __init__(self, policy: NumpyPolicy, base_imu: str):
+    def __init__(self, policy: NumpyPolicy, base_imu: str, use_pelvis_ang_vel: bool = True):
         meta = policy.meta
         self.joint_names = meta["joint_names"]
         self.default = np.array(meta["default_joint_pos"], np.float32)
@@ -173,6 +188,12 @@ class WbtObservationBuilder:
         self.policy = policy
         self.last_action = np.zeros(self.action_dim, np.float32)
         self.yaw_offset = np.array([0, 0, 0, 1], np.float32)  # set by align()
+        # Always reconstructed: the pelvis attitude is the right signal for the
+        # roll abort either way. The flag only decides what the POLICY is fed.
+        self.pelvis_est = PelvisEstimator()
+        self.use_pelvis_ang_vel = bool(use_pelvis_ang_vel)
+        self.last_pelvis_quat = np.array([0, 0, 0, 1], np.float32)
+        self.last_base_ang_vel = np.zeros(3, np.float32)
 
     def align(self, imu_quat_xyzw) -> None:
         """Rotate the reference trajectory into the robot's current heading."""
@@ -187,16 +208,22 @@ class WbtObservationBuilder:
         dq = np.array([jmap[n].velocity for n in self.joint_names], np.float32)
         imu = imus[self.base_imu]
 
+        # motion_ref_ori_b tracks torso_link in training, so it uses the raw IMU
+        # quat. Only base_ang_vel needs the pelvis.
         q_ref = quat_mul(self.yaw_offset, self.policy.ref_quat_xyzw[frame])
         q_rel = quat_mul(quat_inv(np.asarray(imu.quat, np.float32)), q_ref)
         ori6 = quat_to_mat(q_rel)[:, :2].reshape(-1)
+
+        w_pelvis, self.last_pelvis_quat = self.pelvis_est.update(imu.quat, imu.ang_vel, jmap)
+        base_ang_vel = w_pelvis if self.use_pelvis_ang_vel else np.asarray(imu.ang_vel, np.float32)
+        self.last_base_ang_vel = base_ang_vel
 
         # Alphabetical term order (matches holosoma's group concatenation):
         # actions, base_ang_vel, dof_pos, dof_vel, motion_command, motion_ref_ori_b
         return np.concatenate(
             [
                 self.last_action,
-                np.asarray(imu.ang_vel, np.float32),
+                base_ang_vel,
                 q - self.default,
                 dq,
                 self.policy.ref_joint_pos[frame],
@@ -243,6 +270,11 @@ def main():
                     help="ACTUALLY publish commands. Without this it is a dry run.")
     ap.add_argument("--base-imu", default="torso", choices=["torso", "chest"],
                     help="IMU used as the policy base (training ref body = torso_link).")
+    ap.add_argument("--base-ang-vel", default="pelvis", choices=["pelvis", "torso"],
+                    help="Source for the base_ang_vel observation. 'pelvis' (default) "
+                         "reconstructs the pelvis rate from the torso IMU plus the "
+                         "waist joints, which is what training used. 'torso' feeds the "
+                         "raw IMU gyro -- the v33 defect, kept only for A/B testing.")
     ap.add_argument("--gain-scale", type=float, default=1.0,
                     help="Scale on the training PD gains (lower = gentler).")
     ap.add_argument("--ramp-seconds", type=float, default=5.0,
@@ -252,8 +284,10 @@ def main():
     ap.add_argument("--max-joint-step", type=float, default=0.15,
                     help="Max change in a joint target per 20 ms tick (rad).")
     ap.add_argument("--roll-abort", type=float, default=0.7,
-                    help="Abort if |torso roll| exceeds this (rad). Pitch is NOT "
-                         "checked: the motion contains a deep forward bend.")
+                    help="Abort if |pelvis roll| exceeds this (rad). Pitch is NOT "
+                         "checked: the motion contains a deep forward bend. Watches the "
+                         "pelvis (not the torso) so that commanded waist roll -- up to "
+                         "0.49 rad of it -- does not eat the abort margin.")
     ap.add_argument("--hold-end-seconds", type=float, default=3.0,
                     help="Hold the final reference pose after the motion ends.")
     ap.add_argument("--leg-filter", type=float, default=0.9,
@@ -318,7 +352,8 @@ def main():
         print("[ERROR] state topics not ready.")
         client.destroy_node(); commander.destroy_node(); rclpy.shutdown(); return
 
-    obs_builder = WbtObservationBuilder(policy, base_imu=args.base_imu)
+    obs_builder = WbtObservationBuilder(policy, base_imu=args.base_imu,
+                                        use_pelvis_ang_vel=(args.base_ang_vel == "pelvis"))
 
     def read_jmap():
         imus, head, waist, arm, leg = client.get_robot_states()
@@ -334,7 +369,21 @@ def main():
     a0 = policy(obs0)
     print(f"[check] frame-0 obs built (dim {obs0.shape[0]}), "
           f"|action|_max = {np.abs(a0).max():.3f} (should be O(1))")
-    print(f"[check] torso roll = {roll_of(np.asarray(imus0[args.base_imu].quat)):+.3f} rad")
+    print(f"[check] torso roll = {roll_of(np.asarray(imus0[args.base_imu].quat)):+.3f} rad   "
+          f"pelvis roll = {roll_of(obs_builder.last_pelvis_quat):+.3f} rad")
+    print(f"[check] base_ang_vel source = {args.base_ang_vel}"
+          + ("" if args.base_ang_vel == "pelvis" else "   <-- KNOWN-BAD, A/B ONLY"))
+    # Standing upright the waist is ~0, so the reconstruction must be a no-op.
+    # A large delta here means the IMU is not aligned with torso_link.
+    d = float(np.abs(np.asarray(obs_builder.pelvis_est.last_correction)).max())
+    waist0 = {n: float(jmap0[n].position) for n in ("waist_yaw_joint", "waist_pitch_joint",
+                                                   "waist_roll_joint")}
+    print(f"[check] waist at start = " + "  ".join(f"{k.split('_')[1]}={v:+.3f}"
+                                                  for k, v in waist0.items())
+          + f"   |pelvis-torso gyro| = {d:.3f} rad/s")
+    if max(abs(v) for v in waist0.values()) < 0.05 and d > 0.15:
+        print("[WARN] waist is ~0 but the correction is large -- check the IMU mounting "
+              "frame before engaging.")
 
     # Ramp / init target: the motion's own first frame (policy-correct start).
     start_ref = {n: float(policy.ref_joint_pos[0][i]) for i, n in enumerate(joint_names)}
@@ -381,13 +430,25 @@ def main():
     input(">>> Press Enter to START ramp-to-init (Ctrl+C to abort) <<<")
 
     run_name = f"box_pickup_{os.path.splitext(os.path.basename(args.policy))[0]}"
+    PELVIS_COLS = ["pelvis_roll", "pelvis_ang_vel_x", "pelvis_ang_vel_y", "pelvis_ang_vel_z",
+                   "obs_ang_vel_x", "obs_ang_vel_y", "obs_ang_vel_z"]
     logger = RunLogger(
         joint_names, base_imu=args.base_imu, run_name=run_name,
         meta={"script": "deploy_x2_box_pickup.py", "policy": args.policy,
               "gain_scale": args.gain_scale, "leg_filter": args.leg_filter,
               "engage": args.engage, "task": meta.get("task"),
+              "base_ang_vel_source": args.base_ang_vel,
               "run_path": meta.get("run_path")},
-        log_dir=args.log_dir, enabled=not args.no_log)
+        log_dir=args.log_dir, enabled=not args.no_log,
+        extra_columns=PELVIS_COLS)
+
+    def pelvis_extra(q_pelvis, w_pelvis, obs_w):
+        """Both the reconstruction and what the policy actually consumed, so an
+        A/B run can be told apart from its log alone."""
+        return dict(zip(PELVIS_COLS,
+                        [roll_of(np.asarray(q_pelvis, np.float32)),
+                         *np.asarray(w_pelvis, float).tolist(),
+                         *np.asarray(obs_w, float).tolist()]))
 
     start_pose = {n: jmap0[n].position for n in joint_names}
     prev_target = dict(start_pose)
@@ -408,9 +469,19 @@ def main():
             imus, jmap = read_jmap()
 
             # ---- safety: roll abort (pitch is part of the motion, roll is not) ----
-            roll = roll_of(np.asarray(imus[args.base_imu].quat, np.float32))
+            # Watch the PELVIS: waist roll is commanded by the motion and would
+            # otherwise consume the margin. Recomputed fresh here rather than
+            # reusing the observation's value, which is one tick old.
+            imu_now = imus[args.base_imu]
+            w_pelvis_now, q_pelvis_now = obs_builder.pelvis_est.update(
+                imu_now.quat, imu_now.ang_vel, jmap)
+            obs_w_now = (w_pelvis_now if obs_builder.use_pelvis_ang_vel
+                         else np.asarray(imu_now.ang_vel, np.float32))
+            roll = roll_of(q_pelvis_now)
+            torso_roll = roll_of(np.asarray(imu_now.quat, np.float32))
             if phase == "policy" and abs(roll) > args.roll_abort:
-                print(f"\n[ABORT] roll {roll:+.2f} rad exceeds {args.roll_abort}. Holding pose.")
+                print(f"\n[ABORT] pelvis roll {roll:+.2f} rad exceeds {args.roll_abort} "
+                      f"(torso {torso_roll:+.2f}). Holding pose.")
                 phase = "done"; phase_t0 = now
 
             elapsed = now - phase_t0
@@ -488,7 +559,8 @@ def main():
             publish_pose(commander, target_by_name, kp_by_name, kd_by_name,
                          gain_now, args.engage)
             prev_target = target_by_name
-            logger.log(now - t0, phase, frame, imus, jmap, target_by_name)
+            logger.log(now - t0, phase, frame, imus, jmap, target_by_name,
+                       extra=pelvis_extra(q_pelvis_now, w_pelvis_now, obs_w_now))
 
             if now - last_print >= 1.0:
                 last_print = now
@@ -500,7 +572,7 @@ def main():
                     extra = (f" arm_err={wa[0].split('_')[1][:4]}{wa[1]:+.2f}"
                              f" leg_err={wl[0].split('_')[1][:4]}{wl[1]:+.2f}")
                 print(f"[{tag}] phase={phase:9s} t={now - t0:5.1f}s frame={frame:3d}/{n_frames} "
-                      f"roll={roll:+.2f} "
+                      f"roll={roll:+.2f}(pelvis) "
                       f"knee_L={target_by_name['left_knee_joint']:+.3f} "
                       f"elbow_L={target_by_name['left_elbow_joint']:+.3f}"
                       f"{extra}")

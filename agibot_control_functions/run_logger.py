@@ -40,10 +40,14 @@ def _roll_of(q) -> float:
 
 class RunLogger:
     def __init__(self, joint_names, base_imu, run_name, meta=None,
-                 log_dir="run_logs", enabled=True):
+                 log_dir="run_logs", enabled=True, extra_columns=None):
+        """extra_columns: names appended AFTER the per-joint columns, so that
+        positional parsers of older logs keep working. Values come from the
+        `extra` dict passed to log()."""
         self.enabled = bool(enabled)
         self.joint_names = list(joint_names)
         self.base_imu = base_imu
+        self.extra_columns = list(extra_columns or [])
         self.path = None
         self._f = None
         self._w = None
@@ -64,12 +68,14 @@ class RunLogger:
                   "base_quat_x", "base_quat_y", "base_quat_z", "base_quat_w"]
         for n in self.joint_names:
             header += [f"{n}__pos_meas", f"{n}__vel_meas", f"{n}__tgt"]
+        header += self.extra_columns
         self._w.writerow(header)
         self._f.flush()
 
         info = {"run_name": run_name, "base_imu": base_imu, "created": stamp,
                 "joint_names": self.joint_names, "csv": os.path.basename(self.path),
-                "columns_per_joint": ["pos_meas", "vel_meas", "tgt"]}
+                "columns_per_joint": ["pos_meas", "vel_meas", "tgt"],
+                "extra_columns": self.extra_columns}
         if meta:
             info.update(meta)
         try:
@@ -79,7 +85,7 @@ class RunLogger:
             pass
         print(f"[log] recording joint/IMU data -> {self.path}")
 
-    def log(self, t_s, phase, frame, imus, jmap, target_by_name) -> None:
+    def log(self, t_s, phase, frame, imus, jmap, target_by_name, extra=None) -> None:
         """Append one tick. Never raises: logging must not crash a live run."""
         if not self.enabled or self._w is None:
             return
@@ -103,6 +109,9 @@ class RunLogger:
                 row += [float(jr.position), float(jr.velocity)]
             tgt = target_by_name.get(n) if hasattr(target_by_name, "get") else None
             row.append(float(tgt) if tgt is not None else float("nan"))
+        for c in self.extra_columns:
+            v = (extra or {}).get(c)
+            row.append(float(v) if v is not None else float("nan"))
 
         try:
             self._w.writerow(row)

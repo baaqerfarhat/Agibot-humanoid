@@ -128,13 +128,17 @@ def main():
     ap.add_argument("--engage", action="store_true",
                     help="ACTUALLY publish commands. Without this it is a dry run.")
     ap.add_argument("--base-imu", default="torso", choices=["torso", "chest"])
+    ap.add_argument("--base-ang-vel", default="pelvis", choices=["pelvis", "torso"],
+                    help="Source for base_ang_vel. 'pelvis' (default) reconstructs the "
+                         "pelvis rate from the torso IMU plus the waist joints, matching "
+                         "training. 'torso' reproduces the v33 defect; A/B only.")
     ap.add_argument("--gain-scale", type=float, default=1.0,
                     help="Scale on the training PD gains (NOT the adaptation gain).")
     ap.add_argument("--ramp-seconds", type=float, default=5.0)
     ap.add_argument("--settle-seconds", type=float, default=2.0)
     ap.add_argument("--max-joint-step", type=float, default=0.15)
     ap.add_argument("--roll-abort", type=float, default=0.7,
-                    help="Abort if |torso roll| exceeds this (rad). Pitch is NOT "
+                    help="Abort if |pelvis roll| exceeds this (rad). Pitch is NOT "
                          "checked: the motion contains a deep forward bend.")
     ap.add_argument("--hold-end-seconds", type=float, default=3.0)
     ap.add_argument("--leg-filter", type=float, default=0.9,
@@ -290,7 +294,8 @@ def main():
         print("[ERROR] state topics not ready.")
         client.destroy_node(); commander.destroy_node(); rclpy.shutdown(); return
 
-    obs_builder = WbtObservationBuilder(policy, base_imu=args.base_imu)
+    obs_builder = WbtObservationBuilder(policy, base_imu=args.base_imu,
+                                        use_pelvis_ang_vel=(args.base_ang_vel == "pelvis"))
 
     def read_jmap():
         imus, head, waist, arm, leg = client.get_robot_states()
@@ -309,7 +314,10 @@ def main():
           f"|action|_max = {np.abs(a_ref).max():.3f} (should be O(1))")
     print(f"[check] adapter frozen forward matches policy to "
           f"{np.abs(a_ref - a_adp).max():.2e}")
-    print(f"[check] torso roll = {roll_of(np.asarray(imus0[args.base_imu].quat)):+.3f} rad")
+    print(f"[check] torso roll = {roll_of(np.asarray(imus0[args.base_imu].quat)):+.3f} rad   "
+          f"pelvis roll = {roll_of(obs_builder.last_pelvis_quat):+.3f} rad")
+    print(f"[check] base_ang_vel source = {args.base_ang_vel}"
+          + ("" if args.base_ang_vel == "pelvis" else "   <-- KNOWN-BAD, A/B ONLY"))
 
     start_ref = {n: float(policy.ref_joint_pos[0][i]) for i, n in enumerate(joint_names)}
     LEG_JOINTS = [n for n in joint_names if ("hip" in n or "knee" in n or "ankle" in n)]
@@ -380,9 +388,14 @@ def main():
             tick_t = now = time.perf_counter()
             imus, jmap = read_jmap()
 
-            roll = roll_of(np.asarray(imus[args.base_imu].quat, np.float32))
+            # Pelvis, not torso: the motion commands up to 0.49 rad of waist roll,
+            # which would otherwise eat the abort margin.
+            imu_now = imus[args.base_imu]
+            _, q_pelvis_now = obs_builder.pelvis_est.update(imu_now.quat, imu_now.ang_vel, jmap)
+            roll = roll_of(q_pelvis_now)
             if phase == "policy" and abs(roll) > args.roll_abort:
-                print(f"\n[ABORT] roll {roll:+.2f} rad exceeds {args.roll_abort}. Holding pose.")
+                print(f"\n[ABORT] pelvis roll {roll:+.2f} rad exceeds {args.roll_abort} "
+                      f"(torso {roll_of(np.asarray(imu_now.quat, np.float32)):+.2f}). Holding pose.")
                 adapter.freeze("roll abort")
                 phase = "done"; phase_t0 = now
 

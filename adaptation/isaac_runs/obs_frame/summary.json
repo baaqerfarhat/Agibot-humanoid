@@ -1,0 +1,233 @@
+{
+  "seeds": [
+    600,
+    601,
+    602,
+    603,
+    604
+  ],
+  "steps": 500,
+  "ctrl_dt": 0.02,
+  "ckpt": "/home/baaqer/baaqer_ws/holosoma/logs/WholeBodyTracking/20260730_215012-x2_box_v31_flatfoot-locomotion/model_202500.pt",
+  "modes": {
+    "pelvis": {
+      "rows": [
+        {
+          "seed": 600,
+          "survival": 500,
+          "leg_err": 12.913505902008785,
+          "picked": false,
+          "success": true,
+          "peak_lean": 9.90844480207015,
+          "lean_at_peak": -9.90844480207015,
+          "min_height": 0.5140306949615479,
+          "obs_err": 0.0,
+          "raw_err": 0.3967254715787203
+        },
+        {
+          "seed": 601,
+          "survival": 500,
+          "leg_err": 11.49882626291496,
+          "picked": false,
+          "success": true,
+          "peak_lean": 8.05765215058302,
+          "lean_at_peak": -8.05765215058302,
+          "min_height": 0.49831894040107727,
+          "obs_err": 0.0,
+          "raw_err": 0.30873771959532903
+        },
+        {
+          "seed": 602,
+          "survival": 451,
+          "leg_err": 12.507196565721692,
+          "picked": false,
+          "success": true,
+          "peak_lean": 31.373356044647668,
+          "lean_at_peak": -31.373356044647668,
+          "min_height": 0.34958750009536743,
+          "obs_err": 0.0,
+          "raw_err": 0.33871384830821516
+        },
+        {
+          "seed": 603,
+          "survival": 500,
+          "leg_err": 12.534233866668751,
+          "picked": false,
+          "success": true,
+          "peak_lean": 11.240879332331566,
+          "lean_at_peak": -11.240879332331566,
+          "min_height": 0.5059347152709961,
+          "obs_err": 0.0,
+          "raw_err": 0.3737590135475382
+        },
+        {
+          "seed": 604,
+          "survival": 500,
+          "leg_err": 11.026123250732624,
+          "picked": false,
+          "success": true,
+          "peak_lean": 9.100363673616926,
+          "lean_at_peak": -9.100363673616926,
+          "min_height": 0.5276001691818237,
+          "obs_err": 0.0,
+          "raw_err": 0.32975010130802457
+        }
+      ],
+      "survival_mean": 490.2,
+      "survival_std": 19.599999999999998,
+      "leg_err_mean": 12.095977169609363,
+      "peak_lean_mean": 13.936139200649865,
+      "min_height_mean": 0.47909440398216246,
+      "success_rate": 1.0,
+      "picked_rate": 0.0,
+      "obs_err_mean": 0.0,
+      "raw_err_mean": 0.34953723086756544
+    },
+    "torso": {
+      "rows": [
+        {
+          "seed": 600,
+          "survival": 93,
+          "leg_err": 12.844756485180646,
+          "picked": false,
+          "success": false,
+          "peak_lean": 77.98367504375238,
+          "lean_at_peak": -77.98367504375238,
+          "min_height": 0.3215519189834595,
+          "obs_err": 1.1512761410721046,
+          "raw_err": 1.1512761410721046
+        },
+        {
+          "seed": 601,
+          "survival": 88,
+          "leg_err": 12.484393636057005,
+          "picked": false,
+          "success": false,
+          "peak_lean": 43.328674344608544,
+          "lean_at_peak": -43.328674344608544,
+          "min_height": 0.3306388258934021,
+          "obs_err": 0.9794549681696605,
+          "raw_err": 0.9794549681696605
+        },
+        {
+          "seed": 602,
+          "survival": 92,
+          "leg_err": 12.449356629423834,
+          "picked": false,
+          "success": false,
+          "peak_lean": 54.229776861920485,
+          "lean_at_peak": -54.229776861920485,
+          "min_height": 0.32565245032310486,
+          "obs_err": 0.9690698413312955,
+          "raw_err": 0.9690698413312955
+        },
+        {
+          "seed": 603,
+          "survival": 55,
+          "leg_err": 11.15847418349745,
+          "picked": false,
+          "success": false,
+          "peak_lean": 13.4889625515579,
+          "lean_at_peak": 13.4889625515579,
+          "min_height": 0.33689239621162415,
+          "obs_err": 1.1567527627818972,
+          "raw_err": 1.1567527627818972
+        },
+        {
+          "seed": 604,
+          "survival": 71,
+          "leg_err": 11.538061970443868,
+          "picked": false,
+          "success": false,
+          "peak_lean": 7.513536217382088,
+          "lean_at_peak": 7.513536217382088,
+          "min_height": 0.3390582501888275,
+          "obs_err": 1.2028128801861253,
+          "raw_err": 1.2028128801861253
+        }
+      ],
+      "survival_mean": 79.8,
+      "survival_std": 14.715977711317723,
+      "leg_err_mean": 12.095008580920561,
+      "peak_lean_mean": 39.30892500384428,
+      "min_height_mean": 0.3307587683200836,
+      "success_rate": 0.0,
+      "picked_rate": 0.0,
+      "obs_err_mean": 1.0918733187082166,
+      "raw_err_mean": 1.0918733187082166
+    },
+    "torso_fixed": {
+      "rows": [
+        {
+          "seed": 600,
+          "survival": 500,
+          "leg_err": 12.721849144299828,
+          "picked": false,
+          "success": true,
+          "peak_lean": 12.673840343738782,
+          "lean_at_peak": -12.673840343738782,
+          "min_height": 0.5331551432609558,
+          "obs_err": 0.1017588138513723,
+          "raw_err": 0.32916724874772024
+        },
+        {
+          "seed": 601,
+          "survival": 500,
+          "leg_err": 11.668165056909096,
+          "picked": false,
+          "success": true,
+          "peak_lean": 7.66761393033724,
+          "lean_at_peak": -7.66761393033724,
+          "min_height": 0.5313174724578857,
+          "obs_err": 0.10179222318777466,
+          "raw_err": 0.3039845180945622
+        },
+        {
+          "seed": 602,
+          "survival": 500,
+          "leg_err": 11.425040849366589,
+          "picked": false,
+          "success": true,
+          "peak_lean": 7.439544416424246,
+          "lean_at_peak": -7.439544416424246,
+          "min_height": 0.5443370342254639,
+          "obs_err": 0.10008312187241002,
+          "raw_err": 0.3110385909538901
+        },
+        {
+          "seed": 603,
+          "survival": 500,
+          "leg_err": 12.757246255692992,
+          "picked": false,
+          "success": true,
+          "peak_lean": 10.908065194163699,
+          "lean_at_peak": -10.908065194163699,
+          "min_height": 0.4984795153141022,
+          "obs_err": 0.10102239889969739,
+          "raw_err": 0.3243007052083844
+        },
+        {
+          "seed": 604,
+          "survival": 500,
+          "leg_err": 11.577116187300426,
+          "picked": false,
+          "success": true,
+          "peak_lean": 11.757687579199091,
+          "lean_at_peak": -11.757687579199091,
+          "min_height": 0.5078437328338623,
+          "obs_err": 0.09919306821960103,
+          "raw_err": 0.30295047317744866
+        }
+      ],
+      "survival_mean": 500.0,
+      "survival_std": 0.0,
+      "leg_err_mean": 12.029883498713785,
+      "peak_lean_mean": 10.089350292772611,
+      "min_height_mean": 0.523026579618454,
+      "success_rate": 1.0,
+      "picked_rate": 0.0,
+      "obs_err_mean": 0.10076992520617108,
+      "raw_err_mean": 0.31428830723640105
+    }
+  }
+}
