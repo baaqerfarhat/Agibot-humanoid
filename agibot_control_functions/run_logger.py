@@ -40,14 +40,23 @@ def _roll_of(q) -> float:
 
 class RunLogger:
     def __init__(self, joint_names, base_imu, run_name, meta=None,
-                 log_dir="run_logs", enabled=True, extra_columns=None):
+                 log_dir="run_logs", enabled=True, extra_columns=None,
+                 log_effort=False):
         """extra_columns: names appended AFTER the per-joint columns, so that
         positional parsers of older logs keep working. Values come from the
-        `extra` dict passed to log()."""
+        `extra` dict passed to log().
+
+        log_effort: also record the measured joint torque and the commanded
+        feed-forward torque per joint. Needed to check that a feed-forward term
+        actually reaches the actuator, which a position-only log cannot show.
+        Adds two columns per joint, so `columns_per_joint` in the sidecar changes
+        -- read the sidecar rather than assuming a fixed stride.
+        """
         self.enabled = bool(enabled)
         self.joint_names = list(joint_names)
         self.base_imu = base_imu
         self.extra_columns = list(extra_columns or [])
+        self.log_effort = bool(log_effort)
         self.path = None
         self._f = None
         self._w = None
@@ -66,15 +75,18 @@ class RunLogger:
         header = ["t_s", "wall_time", "phase", "frame", "roll",
                   "base_ang_vel_x", "base_ang_vel_y", "base_ang_vel_z",
                   "base_quat_x", "base_quat_y", "base_quat_z", "base_quat_w"]
+        per_joint = ["pos_meas", "vel_meas", "tgt"]
+        if self.log_effort:
+            per_joint += ["eff_meas", "eff_cmd"]
         for n in self.joint_names:
-            header += [f"{n}__pos_meas", f"{n}__vel_meas", f"{n}__tgt"]
+            header += [f"{n}__{c}" for c in per_joint]
         header += self.extra_columns
         self._w.writerow(header)
         self._f.flush()
 
         info = {"run_name": run_name, "base_imu": base_imu, "created": stamp,
                 "joint_names": self.joint_names, "csv": os.path.basename(self.path),
-                "columns_per_joint": ["pos_meas", "vel_meas", "tgt"],
+                "columns_per_joint": per_joint,
                 "extra_columns": self.extra_columns}
         if meta:
             info.update(meta)
@@ -85,7 +97,8 @@ class RunLogger:
             pass
         print(f"[log] recording joint/IMU data -> {self.path}")
 
-    def log(self, t_s, phase, frame, imus, jmap, target_by_name, extra=None) -> None:
+    def log(self, t_s, phase, frame, imus, jmap, target_by_name, extra=None,
+            effort_cmd=None) -> None:
         """Append one tick. Never raises: logging must not crash a live run."""
         if not self.enabled or self._w is None:
             return
@@ -101,14 +114,16 @@ class RunLogger:
 
         row = [f"{float(t_s):.4f}", f"{time.time():.4f}", phase, int(frame),
                f"{roll:.6f}", av[0], av[1], av[2], q[0], q[1], q[2], q[3]]
+        nan = float("nan")
         for n in self.joint_names:
             jr = jmap.get(n) if hasattr(jmap, "get") else None
-            if jr is None:
-                row += [float("nan"), float("nan")]
-            else:
-                row += [float(jr.position), float(jr.velocity)]
+            row += [nan, nan] if jr is None else [float(jr.position), float(jr.velocity)]
             tgt = target_by_name.get(n) if hasattr(target_by_name, "get") else None
-            row.append(float(tgt) if tgt is not None else float("nan"))
+            row.append(float(tgt) if tgt is not None else nan)
+            if self.log_effort:
+                row.append(nan if jr is None else float(getattr(jr, "effort", nan)))
+                ffv = (effort_cmd or {}).get(n)
+                row.append(float(ffv) if ffv is not None else nan)
         for c in self.extra_columns:
             v = (extra or {}).get(c)
             row.append(float(v) if v is not None else float("nan"))

@@ -108,6 +108,11 @@ def main() -> None:
         "action_scale": action_scale,
         "joint_stiffness": stiffness,
         "joint_damping": damping,
+        # Training clips the PD torque to these (clip_torques) but never clips the
+        # position target to the joint limit, so the deploy side needs them to
+        # reproduce the saturated-torque commands the policy relies on.
+        "joint_effort_limit": effort,
+        "clip_torques": bool(ctl.get("clip_torques", False)),
         # NOTE: holosoma concatenates group terms in ALPHABETICAL order.
         "observation_names": [
             "actions",             # previous raw action (31)

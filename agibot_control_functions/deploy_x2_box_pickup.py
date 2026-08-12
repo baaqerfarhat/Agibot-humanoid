@@ -10,7 +10,28 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
     PIPELINE (must match holosoma WBT training):
       observation (built here)  ->  policy MLP  ->  action (31)
       target_q = action * action_scale + default_q       (per joint)
-      publish position targets w/ training PD gains, 50 Hz
+      tau      = clip(kp*(target_q - q) - kd*dq, +-effort_limit)
+      publish position (clipped to the mechanical range) + the leftover torque
+      as `effort`, with the training PD gains, at 50 Hz
+
+    That last step matters more than it looks. Training clips the PD *torque* to
+    the effort limit and never clips the position target, and because
+    action_scale = 0.25*effort_limit/kp an action of 4 already sits exactly on the
+    effort limit. This policy exploits that: it parks ankle_roll, both wrist
+    pitches and the shoulder rolls far outside their mechanical range because that
+    is how a position-controlled policy asks for maximum torque -- ankle roll is
+    saturated on 90% of the motion, the wrist pitches ~80%.
+
+    Clipping those targets to the mechanical limit (what this script did before
+    2026-08-12) leaves the servo with almost no position error, so a max-torque
+    request becomes a near-zero one. Measured on the 2026-08-12 hardware runs
+    (run_logs/_torque_deficit.py) the robot delivered only 10-22% of the intended
+    ankle-roll torque, 3-13% of the wrist-pitch grip torque and ~50% of the
+    shoulder-roll squeeze torque, for a 20-24% whole-body torque deficit through
+    the lift and stand-up. That is why the robot needed a person holding it from
+    behind to avoid pitching forward, and why the arms drifted open and dropped
+    the box. Sending the discarded part as feed-forward `effort` restores the
+    training torque exactly. --no-torque-ff reverts to the old behaviour.
 
     Observation layout (164 dims, holosoma concatenates terms ALPHABETICALLY):
         [ prev_action(31),
@@ -233,29 +254,67 @@ class WbtObservationBuilder:
         ).astype(np.float32)
 
 
-# =============================== command helpers (same as walking) ===============================
+# =============================== command helpers ===============================
 CONTROLLED_AREAS = (JointArea.LEG, JointArea.WAIST, JointArea.ARM, JointArea.HEAD)
 
 
-def build_area_cmd(area, pos_by_name, kp_by_name, kd_by_name, gain_scale):
+def build_area_cmd(area, pos_by_name, kp_by_name, kd_by_name, gain_scale,
+                   jmap=None, eff_by_name=None):
+    """One JointCommandArray for `area`, reproducing training's torque exactly.
+
+    Training clips the PD torque to the effort limit and never clips the position
+    target, so a target parked outside the mechanical range is a max-torque
+    request (see the module docstring). `position` here still stays inside the
+    range, which the firmware expects; the part that the clip would have thrown
+    away is handed over as `effort`, the feed-forward torque, so the low level's
+    `tau = effort + kp*(position - q) + kd*(velocity - dq)` lands on the training
+    torque. `gain_scale` scales that whole torque, so 1.0 reproduces training and
+    lower values stay uniformly gentler.
+
+    With `eff_by_name=None` this degrades to the old position-only behaviour.
+    """
     cmd = JointCommandArray()
+    ff = {}
     for ji in robot_model[area]:
+        n = ji.name
+        des = float(pos_by_name[n])
+        pos = float(np.clip(des, ji.lower_limit, ji.upper_limit))
+        kp = float(kp_by_name[n])
+        kd = float(kd_by_name[n])
+
+        tau_ff = 0.0
+        if eff_by_name is not None and jmap is not None and n in jmap:
+            q = float(jmap[n].position)
+            dq = float(jmap[n].velocity)
+            eff = float(eff_by_name[n])
+            tau_train = float(np.clip(kp * (des - q) - kd * dq, -eff, eff))
+            # what the servo will make on its own from the in-limit target
+            tau_pd = kp * (pos - q) - kd * dq
+            tau_ff = tau_train - tau_pd
+
         jc = JointCommand()
-        jc.name = ji.name
-        jc.position = float(np.clip(pos_by_name[ji.name], ji.lower_limit, ji.upper_limit))
+        jc.name = n
+        jc.position = pos
         jc.velocity = 0.0
-        jc.effort = 0.0
-        jc.stiffness = float(kp_by_name[ji.name] * gain_scale)
-        jc.damping = float(kd_by_name[ji.name] * gain_scale)
+        jc.effort = float(tau_ff * gain_scale)
+        jc.stiffness = float(kp * gain_scale)
+        jc.damping = float(kd * gain_scale)
         cmd.joints.append(jc)
-    return cmd
+        ff[n] = jc.effort
+    return cmd, ff
 
 
-def publish_pose(commander, pos_by_name, kp_by_name, kd_by_name, gain_scale, engage):
+def publish_pose(commander, pos_by_name, kp_by_name, kd_by_name, gain_scale, engage,
+                 jmap=None, eff_by_name=None):
+    """Publish every controlled area; returns the feed-forward torque per joint."""
+    ff = {}
     for area in CONTROLLED_AREAS:
-        cmd = build_area_cmd(area, pos_by_name, kp_by_name, kd_by_name, gain_scale)
+        cmd, area_ff = build_area_cmd(area, pos_by_name, kp_by_name, kd_by_name,
+                                      gain_scale, jmap=jmap, eff_by_name=eff_by_name)
+        ff.update(area_ff)
         if engage:
             commander.publish(area, cmd)
+    return ff
 
 
 # =============================== main ===============================
@@ -281,8 +340,19 @@ def main():
                     help="Time to ramp from current pose to the motion start pose.")
     ap.add_argument("--settle-seconds", type=float, default=2.0,
                     help="Hold the start pose before engaging the policy.")
-    ap.add_argument("--max-joint-step", type=float, default=0.15,
-                    help="Max change in a joint target per 20 ms tick (rad).")
+    ap.add_argument("--no-torque-ff", action="store_true",
+                    help="Send position-only commands, clipped to the mechanical joint "
+                         "limits, with effort=0 -- the pre-2026-08-12 behaviour. This "
+                         "silently discards every saturated-torque request the policy "
+                         "makes (ankle roll, wrist pitch, shoulder roll); keep it only "
+                         "for A/B testing against the old runs.")
+    ap.add_argument("--max-joint-step", type=float, default=0.0,
+                    help="Max change in a joint target per 20 ms tick (rad); 0 = off "
+                         "(default). Training has no such rate limit, so any value here "
+                         "is pure added lag: on the 2026-08-12 runs 0.15 clipped 6.4%% of "
+                         "ticks and put the knee target up to 0.34 rad behind the "
+                         "policy. Torque is already bounded by the effort limit, which "
+                         "is the actual safety quantity, so this is not needed.")
     ap.add_argument("--roll-abort", type=float, default=0.7,
                     help="Abort if |pelvis roll| exceeds this (rad). Pitch is NOT "
                          "checked: the motion contains a deep forward bend. Watches the "
@@ -290,14 +360,15 @@ def main():
                          "0.49 rad of it -- does not eat the abort margin.")
     ap.add_argument("--hold-end-seconds", type=float, default=3.0,
                     help="Hold the final reference pose after the motion ends.")
-    ap.add_argument("--leg-filter", type=float, default=0.2,
-                    help="EMA smoothing factor on LEG joint targets (0 = off). This has "
-                         "no counterpart in training, so it is pure added lag; "
+    ap.add_argument("--leg-filter", type=float, default=0.0,
+                    help="EMA smoothing factor on LEG joint targets (0 = off, default). "
+                         "This has no counterpart in training, so it is pure added lag; "
                          "adaptation/deploy_artifacts_isaac.py measures the cost in sim "
                          "(3 seeds): 0.0 and 0.2 both give 100%% success, 0.5 drops to "
-                         "67%%, and 0.9 -- the old default -- gives 0%%, matching the "
-                         "hardware run that aborted at 0.9 while 0.2 completed the "
-                         "motion. Do not raise this above 0.2. Arms are never filtered.")
+                         "67%%, and 0.9 gives 0%%, matching the hardware run that aborted "
+                         "at 0.9 while 0.2 completed the motion. On hardware 0.0 got "
+                         "furthest, and its logged targets sit 0.0008 rad from the raw "
+                         "policy output vs 0.036 rad at 0.9. Arms are never filtered.")
     ap.add_argument("--init-tol-arm", type=float, default=0.12,
                     help="Max |meas-start| (rad) allowed on arm joints before "
                          "the policy is allowed to engage.")
@@ -323,6 +394,16 @@ def main():
     kp_by_name = dict(zip(joint_names, meta["joint_stiffness"]))
     kd_by_name = dict(zip(joint_names, meta["joint_damping"]))
 
+    # Per-joint torque limit training clipped to. Newer exports carry it; for the
+    # older npz files recover it from the scale relation the training config used,
+    # action_scale = 0.25 * effort_limit / kp  (verified exact on all 31 joints of
+    # v33 against dof_effort_limit_list).
+    if "joint_effort_limit" in meta:
+        eff_limit = np.array(meta["joint_effort_limit"], np.float32)
+    else:
+        eff_limit = 4.0 * action_scale * np.array(meta["joint_stiffness"], np.float32)
+    eff_by_name = None if args.no_torque_ff else dict(zip(joint_names, eff_limit.tolist()))
+
     fps = int(meta["motion_fps"])
     n_frames = int(meta["motion_frames"])
     CONTROL_DT = 1.0 / float(meta.get("control_hz", 50))
@@ -334,6 +415,9 @@ def main():
     print(f"  obs terms:     {meta['observation_names']}  (dim {meta['obs_dim']})")
     print(f"  motion:        {n_frames} frames @ {fps} Hz = {n_frames / fps:.1f} s")
     print(f"  action joints: {len(joint_names)}   gain scale: {args.gain_scale}")
+    print(f"  torque ff:     {'OFF -- position clipped to limits (OLD, known-bad)' if args.no_torque_ff else 'on (matches training clip_torques)'}")
+    print(f"  leg filter:    {args.leg_filter}   max joint step: "
+          f"{'off' if args.max_joint_step <= 0 else f'{args.max_joint_step} rad/tick'}")
     print(f"  MODE:          {'ENGAGED (publishing!)' if args.engage else 'DRY RUN (no publish)'}")
     print("=" * 78)
     print("\nBOX PLACEMENT: 45 cm cube, LIGHT (0.5-1.5 kg), on the floor, center")
@@ -388,6 +472,26 @@ def main():
         print("[WARN] waist is ~0 but the correction is large -- check the IMU mounting "
               "frame before engaging.")
 
+    # Which joints this policy drives past their mechanical limit on purpose, i.e.
+    # which ones need the feed-forward torque to behave like training. Swept over
+    # the whole reference so the operator sees it before engaging, not after.
+    LIMIT_BY_NAME = {ji.name: (ji.lower_limit, ji.upper_limit)
+                     for area in CONTROLLED_AREAS for ji in robot_model[area]}
+    ref_tgt = policy.ref_joint_pos  # (T, 31); the policy tracks this closely
+    sat = []
+    for i, n in enumerate(joint_names):
+        lo_i, hi_i = LIMIT_BY_NAME[n]
+        over = np.maximum(ref_tgt[:, i] - hi_i, lo_i - ref_tgt[:, i])
+        if over.max() > 1e-3:
+            sat.append((n, float(over.max()), 100.0 * float((over > 0).mean())))
+    print(f"[check] torque feed-forward = {'OFF' if args.no_torque_ff else 'ON'}"
+          f"   effort limits {eff_limit.min():.1f}-{eff_limit.max():.1f} Nm")
+    if sat:
+        print("[check] reference itself leaves the mechanical range on "
+              f"{len(sat)} joint(s) -- these need the feed-forward:")
+        for n, o, f in sorted(sat, key=lambda kv: -kv[2])[:6]:
+            print(f"          {n:30s} up to {o:.2f} rad past the limit, {f:.0f}% of frames")
+
     # Ramp / init target: the motion's own first frame (policy-correct start).
     start_ref = {n: float(policy.ref_joint_pos[0][i]) for i, n in enumerate(joint_names)}
 
@@ -439,11 +543,14 @@ def main():
         joint_names, base_imu=args.base_imu, run_name=run_name,
         meta={"script": "deploy_x2_box_pickup.py", "policy": args.policy,
               "gain_scale": args.gain_scale, "leg_filter": args.leg_filter,
+              "max_joint_step": args.max_joint_step,
+              "torque_ff": not args.no_torque_ff,
+              "joint_effort_limit": eff_limit.tolist(),
               "engage": args.engage, "task": meta.get("task"),
               "base_ang_vel_source": args.base_ang_vel,
               "run_path": meta.get("run_path")},
         log_dir=args.log_dir, enabled=not args.no_log,
-        extra_columns=PELVIS_COLS)
+        extra_columns=PELVIS_COLS, log_effort=True)
 
     def pelvis_extra(q_pelvis, w_pelvis, obs_w):
         """Both the reconstruction and what the policy actually consumed, so an
@@ -547,9 +654,11 @@ def main():
                     if args.leg_filter > 0.0 and n in LEG_SET:
                         tgt = (1.0 - args.leg_filter) * tgt \
                             + args.leg_filter * prev_target[n]
-                    step = float(np.clip(tgt - prev_target[n],
-                                         -args.max_joint_step, args.max_joint_step))
-                    target_by_name[n] = prev_target[n] + step
+                    if args.max_joint_step > 0.0:
+                        tgt = prev_target[n] + float(np.clip(
+                            tgt - prev_target[n],
+                            -args.max_joint_step, args.max_joint_step))
+                    target_by_name[n] = float(tgt)
                 if frame >= n_frames + int(args.hold_end_seconds / CONTROL_DT):
                     phase = "done"; phase_t0 = now
                     print("\n[phase] motion complete -> ramping to default\n")
@@ -559,11 +668,12 @@ def main():
                 target_by_name = {n: (1 - alpha) * prev_target[n] + alpha * float(default[i])
                                   for i, n in enumerate(joint_names)}
 
-            publish_pose(commander, target_by_name, kp_by_name, kd_by_name,
-                         gain_now, args.engage)
+            ff = publish_pose(commander, target_by_name, kp_by_name, kd_by_name,
+                              gain_now, args.engage, jmap=jmap, eff_by_name=eff_by_name)
             prev_target = target_by_name
             logger.log(now - t0, phase, frame, imus, jmap, target_by_name,
-                       extra=pelvis_extra(q_pelvis_now, w_pelvis_now, obs_w_now))
+                       extra=pelvis_extra(q_pelvis_now, w_pelvis_now, obs_w_now),
+                       effort_cmd=ff)
 
             if now - last_print >= 1.0:
                 last_print = now
@@ -574,6 +684,11 @@ def main():
                     wa, wl = worst_err(err, ARM_JOINTS), worst_err(err, LEG_JOINTS)
                     extra = (f" arm_err={wa[0].split('_')[1][:4]}{wa[1]:+.2f}"
                              f" leg_err={wl[0].split('_')[1][:4]}{wl[1]:+.2f}")
+                elif eff_by_name is not None and ff:
+                    # the saturated-torque request the old position-only command
+                    # threw away; expect ankle_roll / wrist_pitch here once bending
+                    wn, wv = max(ff.items(), key=lambda kv: abs(kv[1]))
+                    extra = f" ff_max={wn.replace('_joint', '')}{wv:+.1f}Nm"
                 print(f"[{tag}] phase={phase:9s} t={now - t0:5.1f}s frame={frame:3d}/{n_frames} "
                       f"roll={roll:+.2f}(pelvis) "
                       f"knee_L={target_by_name['left_knee_joint']:+.3f} "
@@ -594,12 +709,15 @@ def main():
         while time.perf_counter() - t_stop < 1.5 and rclpy.ok():
             a = min(1.0, (time.perf_counter() - t_stop) / 1.5)
             tgt = {n: (1 - a) * ramp_start[n] + a * default_by_name[n] for n in joint_names}
-            publish_pose(commander, tgt, kp_by_name, kd_by_name, args.gain_scale, args.engage)
             try:
                 imus_i, jmap_i = read_jmap()
-                logger.log(time.perf_counter() - t0, "interrupt", frame, imus_i, jmap_i, tgt)
             except Exception:
-                pass
+                imus_i = jmap_i = None
+            ff = publish_pose(commander, tgt, kp_by_name, kd_by_name, args.gain_scale,
+                              args.engage, jmap=jmap_i, eff_by_name=eff_by_name)
+            if jmap_i is not None:
+                logger.log(time.perf_counter() - t0, "interrupt", frame, imus_i, jmap_i,
+                           tgt, effort_cmd=ff)
             time.sleep(CONTROL_DT)
     finally:
         logger.close()
