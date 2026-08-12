@@ -33,6 +33,11 @@ wandb/
 !run_logs/
 !run_logs/**/*.csv
 
+# Derived presentation artifacts, rebuilt by presentation/insert_surf_videos.py
+# (the video deck is ~95 MB, past GitHub's warning threshold)
+presentation/*_with_videos.pptx
+presentation/surf_assets/clips/
+
 # Caches
 .mypy_cache/
 .ruff_cache/
