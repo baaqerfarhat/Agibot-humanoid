@@ -136,16 +136,22 @@ def main():
                     help="Scale on the training PD gains (NOT the adaptation gain).")
     ap.add_argument("--ramp-seconds", type=float, default=5.0)
     ap.add_argument("--settle-seconds", type=float, default=2.0)
-    ap.add_argument("--max-joint-step", type=float, default=0.15)
+    ap.add_argument("--no-torque-ff", action="store_true",
+                    help="Position-only commands clipped to the mechanical limits, "
+                         "effort=0. Discards every saturated-torque request the policy "
+                         "makes; see deploy_x2_box_pickup.py. A/B only.")
+    ap.add_argument("--max-joint-step", type=float, default=0.0,
+                    help="Max change in a joint target per tick (rad); 0 = off "
+                         "(default). No counterpart in training.")
     ap.add_argument("--roll-abort", type=float, default=0.7,
                     help="Abort if |pelvis roll| exceeds this (rad). Pitch is NOT "
                          "checked: the motion contains a deep forward bend.")
     ap.add_argument("--hold-end-seconds", type=float, default=3.0)
-    ap.add_argument("--leg-filter", type=float, default=0.2,
-                    help="EMA on LEG targets. Note this attenuates leg commands, so "
-                         "adapting leg joints partly fights this filter -- another "
-                         "reason --mask waist is the default. 0.9 was the old default "
-                         "and scores 0%% success in sim; see deploy_x2_box_pickup.py.")
+    ap.add_argument("--leg-filter", type=float, default=0.0,
+                    help="EMA on LEG targets (0 = off, default). This attenuates leg "
+                         "commands, so adapting leg joints partly fights the filter -- "
+                         "another reason --mask waist is the default. 0.9 scores 0%% "
+                         "success in sim; see deploy_x2_box_pickup.py.")
     ap.add_argument("--init-tol-arm", type=float, default=0.12)
     ap.add_argument("--init-tol-leg", type=float, default=0.25)
     ap.add_argument("--init-timeout", type=float, default=20.0)
@@ -204,6 +210,14 @@ def main():
     action_scale = np.array(meta["action_scale"], np.float32)
     kp_by_name = dict(zip(joint_names, meta["joint_stiffness"]))
     kd_by_name = dict(zip(joint_names, meta["joint_damping"]))
+
+    # Same torque-faithful command path as deploy_x2_box_pickup: without this the
+    # adaptation A/B would be measured on top of a 20% whole-body torque deficit.
+    if "joint_effort_limit" in meta:
+        eff_limit = np.array(meta["joint_effort_limit"], np.float32)
+    else:
+        eff_limit = 4.0 * action_scale * np.array(meta["joint_stiffness"], np.float32)
+    eff_by_name = None if args.no_torque_ff else dict(zip(joint_names, eff_limit.tolist()))
 
     fps = int(meta["motion_fps"])
     n_frames = int(meta["motion_frames"])
@@ -357,6 +371,9 @@ def main():
     run_name = f"box_adapt_{pol_tag}_{suffix}"
     run_meta = {"script": "deploy_x2_box_adapt.py", "policy": args.policy,
                 "gain_scale": args.gain_scale, "leg_filter": args.leg_filter,
+                "max_joint_step": args.max_joint_step,
+                "torque_ff": not args.no_torque_ff,
+                "joint_effort_limit": eff_limit.tolist(),
                 "engage": args.engage, "task": meta.get("task"),
                 "run_path": meta.get("run_path"),
                 "adapt": {"gain": args.gain, "leak": args.leak, "mask": args.mask,
@@ -366,7 +383,8 @@ def main():
                           "adapt_after_s": args.adapt_after,
                           "control_dt": CONTROL_DT}}
     logger = RunLogger(joint_names, base_imu=args.base_imu, run_name=run_name,
-                       meta=run_meta, log_dir=args.log_dir, enabled=not args.no_log)
+                       meta=run_meta, log_dir=args.log_dir, enabled=not args.no_log,
+                       log_effort=True)
     alog = AdaptLog(logger.path[:-4] + "_adapt.csv" if logger.path else None)
 
     start_pose = {n: jmap0[n].position for n in joint_names}
@@ -482,9 +500,11 @@ def main():
                     tgt = raw_target[i]
                     if args.leg_filter > 0.0 and n in LEG_SET:
                         tgt = (1.0 - args.leg_filter) * tgt + args.leg_filter * prev_target[n]
-                    step = float(np.clip(tgt - prev_target[n],
-                                         -args.max_joint_step, args.max_joint_step))
-                    target_by_name[n] = prev_target[n] + step
+                    if args.max_joint_step > 0.0:
+                        tgt = prev_target[n] + float(np.clip(
+                            tgt - prev_target[n],
+                            -args.max_joint_step, args.max_joint_step))
+                    target_by_name[n] = float(tgt)
 
                 # No freeze() here: `update` only runs in the policy phase, so leaving
                 # `disabled` clear keeps it meaning "a safety guard tripped".
@@ -498,14 +518,15 @@ def main():
                                   for i, n in enumerate(joint_names)}
                 if alpha >= 1.0 and elapsed > 3.0 and not args.hold_forever:
                     publish_pose(commander, target_by_name, kp_by_name, kd_by_name,
-                                 gain_now, args.engage)
+                                 gain_now, args.engage, jmap=jmap,
+                                 eff_by_name=eff_by_name)
                     print("[phase] at default pose -- exiting (--hold-forever to stay up)")
                     break
 
-            publish_pose(commander, target_by_name, kp_by_name, kd_by_name,
-                         gain_now, args.engage)
+            ff = publish_pose(commander, target_by_name, kp_by_name, kd_by_name,
+                              gain_now, args.engage, jmap=jmap, eff_by_name=eff_by_name)
             prev_target = target_by_name
-            logger.log(now - t0, phase, frame, imus, jmap, target_by_name)
+            logger.log(now - t0, phase, frame, imus, jmap, target_by_name, effort_cmd=ff)
             alog.log(t_s=f"{now - t0:.4f}", phase=phase, frame=frame, adapt_on=adapt_on,
                      drift=f"{adapter.weight_drift:.6f}",
                      drift_frac=f"{adapter.drift_fraction:.6f}",
@@ -555,12 +576,15 @@ def main():
         while time.perf_counter() - t_stop < 1.5 and rclpy.ok():
             a = min(1.0, (time.perf_counter() - t_stop) / 1.5)
             tgt = {n: (1 - a) * ramp_start[n] + a * default_by_name[n] for n in joint_names}
-            publish_pose(commander, tgt, kp_by_name, kd_by_name, args.gain_scale, args.engage)
             try:
                 imus_i, jmap_i = read_jmap()
-                logger.log(time.perf_counter() - t0, "interrupt", frame, imus_i, jmap_i, tgt)
             except Exception:
-                pass
+                imus_i = jmap_i = None
+            ff = publish_pose(commander, tgt, kp_by_name, kd_by_name, args.gain_scale,
+                              args.engage, jmap=jmap_i, eff_by_name=eff_by_name)
+            if jmap_i is not None:
+                logger.log(time.perf_counter() - t0, "interrupt", frame, imus_i, jmap_i,
+                           tgt, effort_cmd=ff)
             time.sleep(CONTROL_DT)
     finally:
         w0_norm = float(np.linalg.norm(adapter.W0[args.layer]))

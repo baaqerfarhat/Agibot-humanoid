@@ -33,6 +33,21 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
     the box. Sending the discarded part as feed-forward `effort` restores the
     training torque exactly. --no-torque-ff reverts to the old behaviour.
 
+    Delivering that torque faithfully then exposed the next layer of the problem,
+    and it is why --action-clip exists. The saturated requests are only safe
+    because in training something PUSHES BACK: the ankle rolls press into the
+    ground, the wrists into the box. Under 22 Nm of ankle-roll torque Isaac holds
+    right_ankle_roll at +0.03 rad; the real robot rolls it to +0.34 (past its
+    +0.263 URDF stop) and keeps it there for 96% of the motion, so it stands on
+    the edges of its feet, and the same happens to the wrists (left_wrist_roll
+    pinned at -1.56 against a reference of 0..+0.72). In the 2026-08-12 13:21/13:22
+    runs, the two with no human support, that lateral error grew for ~100 frames
+    and the robot toppled at 2.9 s. Bounding |action| to 4 on those joints removes
+    only the unachievable part of the request; in Isaac it left survival unchanged
+    on 7/7 seeds (box success 6/7 against 7/7 unclipped). It has to be targeted --
+    clipping every joint instead fails the task on 0/9, because the legs genuinely
+    need their large commands.
+
     Observation layout (164 dims, holosoma concatenates terms ALPHABETICALLY):
         [ prev_action(31),
           base_ang_vel(3),                           <- PELVIS gyro, see below
@@ -346,6 +361,16 @@ def main():
                          "silently discards every saturated-torque request the policy "
                          "makes (ankle roll, wrist pitch, shoulder roll); keep it only "
                          "for A/B testing against the old runs.")
+    ap.add_argument("--action-clip", type=float, default=4.0,
+                    help="Bound |action| on --action-clip-joints. |a|=4 is exactly the "
+                         "effort limit, so this drops only requests for torque the "
+                         "actuator cannot produce. In training those requests are "
+                         "absorbed by contact; on hardware they drive the joint to its "
+                         "mechanical stop. 0 disables (pre-2026-08-12 behaviour).")
+    ap.add_argument("--action-clip-joints", default="ankle_roll,wrist",
+                    help="Comma-separated substrings. Only the joints whose saturated "
+                         "torque leans on contact belong here. Clipping every joint "
+                         "fails the task on 6/6 Isaac seeds.")
     ap.add_argument("--max-joint-step", type=float, default=0.0,
                     help="Max change in a joint target per 20 ms tick (rad); 0 = off "
                          "(default). Training has no such rate limit, so any value here "
@@ -416,6 +441,8 @@ def main():
     print(f"  motion:        {n_frames} frames @ {fps} Hz = {n_frames / fps:.1f} s")
     print(f"  action joints: {len(joint_names)}   gain scale: {args.gain_scale}")
     print(f"  torque ff:     {'OFF -- position clipped to limits (OLD, known-bad)' if args.no_torque_ff else 'on (matches training clip_torques)'}")
+    print(f"  action clip:   "
+          f"{'OFF' if args.action_clip <= 0 else f'+-{args.action_clip:g} on {args.action_clip_joints}'}")
     print(f"  leg filter:    {args.leg_filter}   max joint step: "
           f"{'off' if args.max_joint_step <= 0 else f'{args.max_joint_step} rad/tick'}")
     print(f"  MODE:          {'ENGAGED (publishing!)' if args.engage else 'DRY RUN (no publish)'}")
@@ -495,6 +522,28 @@ def main():
     # Ramp / init target: the motion's own first frame (policy-correct start).
     start_ref = {n: float(policy.ref_joint_pos[0][i]) for i, n in enumerate(joint_names)}
 
+    # Bound the action on the joints whose saturated torque is absorbed by CONTACT in
+    # training -- the ankle rolls press into the ground, the wrists into the box. Sim
+    # keeps them at the reference under that torque (right_ankle_roll sits at +0.03 rad);
+    # hardware cannot, and pins them to their stops (+0.34 rad for 96% of the motion,
+    # left_wrist_roll at -1.56), which rolls the feet onto their edges and topples the
+    # robot at ~2.9 s. |a| = 4 is exactly the effort limit, so this removes only requests
+    # for torque no actuator can produce. Isaac, 7 seeds: survival unchanged from the
+    # unclipped baseline on 7/7, box success 6/7. Clipping ALL joints instead succeeds
+    # on 0/9 -- the legs need their large commands. See
+    # adaptation/action_clip_isaac.py and run_logs/_sim_vs_real.py.
+    if args.action_clip > 0.0:
+        act_clip_mask = np.array(
+            [any(k in n for k in args.action_clip_joints.split(",")) for n in joint_names])
+        print(f"[check] action clip = +-{args.action_clip:g} on "
+              f"{int(act_clip_mask.sum())} joint(s) matching "
+              f"'{args.action_clip_joints}'  (|a|=4 is the effort limit)")
+    else:
+        act_clip_mask = None
+        print("[check] action clip = OFF -- saturated ankle-roll/wrist torque will be "
+              "delivered in full; hardware pins those joints to their stops")
+    act_clip_ticks = 0
+
     LEG_JOINTS = [n for n in joint_names if ("hip" in n or "knee" in n or "ankle" in n)]
     LEG_SET = set(LEG_JOINTS)
     ARM_JOINTS = [n for n in joint_names
@@ -545,6 +594,8 @@ def main():
               "gain_scale": args.gain_scale, "leg_filter": args.leg_filter,
               "max_joint_step": args.max_joint_step,
               "torque_ff": not args.no_torque_ff,
+              "action_clip": args.action_clip,
+              "action_clip_joints": args.action_clip_joints,
               "joint_effort_limit": eff_limit.tolist(),
               "engage": args.engage, "task": meta.get("task"),
               "base_ang_vel_source": args.base_ang_vel,
@@ -642,6 +693,14 @@ def main():
                 frame = int(elapsed / CONTROL_DT)
                 obs = obs_builder.build(imus, jmap, frame)
                 action = policy(obs).reshape(-1)
+                if act_clip_mask is not None:
+                    action = np.where(act_clip_mask,
+                                      np.clip(action, -args.action_clip,
+                                              args.action_clip),
+                                      action)
+                    act_clip_ticks += int(np.any(
+                        act_clip_mask & (np.abs(action) >= args.action_clip - 1e-9)))
+                # Feed back the action actually applied, not the raw one.
                 obs_builder.last_action = action.astype(np.float32)
                 raw_target = action * action_scale + default
                 target_by_name = {}
@@ -689,6 +748,8 @@ def main():
                     # threw away; expect ankle_roll / wrist_pitch here once bending
                     wn, wv = max(ff.items(), key=lambda kv: abs(kv[1]))
                     extra = f" ff_max={wn.replace('_joint', '')}{wv:+.1f}Nm"
+                    if act_clip_mask is not None and phase == "policy":
+                        extra += f" aclip={100.0 * act_clip_ticks / max(frame, 1):.0f}%"
                 print(f"[{tag}] phase={phase:9s} t={now - t0:5.1f}s frame={frame:3d}/{n_frames} "
                       f"roll={roll:+.2f}(pelvis) "
                       f"knee_L={target_by_name['left_knee_joint']:+.3f} "

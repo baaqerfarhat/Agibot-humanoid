@@ -296,12 +296,37 @@ leg tracking error, action deviation, clamp count and loop time, one row per 20 
 
 ---
 
+## 7b. Why the hardware failure is not the fault adaptation recovers
+
+Worth stating plainly, because it is the first thing to check before reaching for the
+adapter. The 2026-08-12 runs fail because the policy commands **torque it cannot get**
+on joints whose saturation is absorbed by contact in training. `action_scale =
+0.25*effort_limit/kp`, so |a| = 4 is already the effort limit, and the policy runs
+|a| = 10-40 on the ankle rolls and wrists. In Isaac the ground and the box push back and
+those joints stay at the reference (`right_ankle_roll` at +0.03 rad); on hardware they go
+to their stops (+0.34 rad, 96% of the motion) and the robot stands on the edges of its
+feet until it topples at 2.9 s. `../run_logs/_sim_vs_real.py` is the comparison.
+
+That is a *command* defect, not a degraded actuator, and it is outside this method's
+domain twice over: the adapter has no term for "this request is unachievable", and the
+joints involved are ankles, which section 4 shows must be excluded from the error mask or
+the robot is down in 2.2 s. The fix is to bound the action -- `action_clip_isaac.py`,
+7 seeds, survival unchanged from baseline on 7/7 with the ankle rolls and wrists clipped
+to |a| = 4, against 0/9 when every joint is clipped. That is now
+`deploy_x2_box_pickup.py --action-clip 4`.
+
+Adaptation stays what section 4 measured it to be: worth running once the robot completes
+the task unaided, as insurance against actuator degradation, at `--mask waist`.
+
+---
+
 ## 8. Files
 
 | path | what |
 |---|---|
 | `ACC_ADAPTATION_PACKAGE/` | his package, unmodified. `ace_adapt.py` is the method. |
 | `adapt_experiments_isaac.py` | the experiment harness: variants, fault injection, metrics |
+| `action_clip_isaac.py` | does bounding the action to the effort limit cost the task? |
 | `eval_adapt_isaac.py` | single-run Isaac rollout loop and the adapter wiring |
 | `paths.py` | resolves checkpoint / motion / policy, all env-overridable |
 | `isaac_runs/` | per-seed JSON summaries and recorded rollouts |
