@@ -1,8 +1,5 @@
 {
   "seeds": [
-    600,
-    601,
-    602,
     603
   ],
   "steps": 584,
@@ -17,7 +14,7 @@
       "joints": [],
       "rows": [
         {
-          "seed": 600,
+          "seed": 603,
           "survival": 584,
           "leg_err": 13.730555198075605,
           "success": true,
@@ -32,64 +29,13 @@
             "right_wrist_pitch_joint": 0.4673267900943756,
             "right_wrist_roll_joint": 0.4841345250606537
           }
-        },
-        {
-          "seed": 601,
-          "survival": 584,
-          "leg_err": 10.617952420256142,
-          "success": true,
-          "peak_lean": 8.445338271874062,
-          "clip_pct": 0.0,
-          "max_abs_action": 32.64628982543945,
-          "watch_absmax": {
-            "left_ankle_roll_joint": 0.0310958381742239,
-            "right_ankle_roll_joint": 0.030851418152451515,
-            "left_wrist_pitch_joint": 0.5212282538414001,
-            "left_wrist_roll_joint": 0.5256630182266235,
-            "right_wrist_pitch_joint": 0.4551891088485718,
-            "right_wrist_roll_joint": 0.5353396534919739
-          }
-        },
-        {
-          "seed": 602,
-          "survival": 584,
-          "leg_err": 11.939934919611616,
-          "success": true,
-          "peak_lean": 8.172235563780877,
-          "clip_pct": 0.0,
-          "max_abs_action": 33.48993682861328,
-          "watch_absmax": {
-            "left_ankle_roll_joint": 0.03542965278029442,
-            "right_ankle_roll_joint": 0.04198765754699707,
-            "left_wrist_pitch_joint": 0.4554506242275238,
-            "left_wrist_roll_joint": 0.40988656878471375,
-            "right_wrist_pitch_joint": 0.4591229259967804,
-            "right_wrist_roll_joint": 0.5030333995819092
-          }
-        },
-        {
-          "seed": 603,
-          "survival": 584,
-          "leg_err": 14.223369256648043,
-          "success": true,
-          "peak_lean": 8.007243203194323,
-          "clip_pct": 0.0,
-          "max_abs_action": 36.221031188964844,
-          "watch_absmax": {
-            "left_ankle_roll_joint": 0.03140809014439583,
-            "right_ankle_roll_joint": 0.03976081684231758,
-            "left_wrist_pitch_joint": 0.523446261882782,
-            "left_wrist_roll_joint": 0.44528278708457947,
-            "right_wrist_pitch_joint": 0.5060418844223022,
-            "right_wrist_roll_joint": 0.4767604470252991
-          }
         }
       ],
       "survival_mean": 584.0,
       "survival_std": 0.0,
-      "leg_err_mean": 12.62795294864785,
+      "leg_err_mean": 13.730555198075605,
       "success_rate": 1.0,
-      "peak_lean_mean": 8.321728080598714,
+      "peak_lean_mean": 8.662095283545593,
       "clip_pct_mean": 0.0
     },
     "runaway4": {
@@ -100,244 +46,29 @@
       ],
       "rows": [
         {
-          "seed": 600,
-          "survival": 584,
-          "leg_err": 13.022116702815632,
-          "success": true,
-          "peak_lean": 4.633040189397936,
-          "clip_pct": 92.46575342465754,
-          "max_abs_action": 36.65070724487305,
-          "watch_absmax": {
-            "left_ankle_roll_joint": 0.032887160778045654,
-            "right_ankle_roll_joint": 0.02522565983235836,
-            "left_wrist_pitch_joint": 0.1819189339876175,
-            "left_wrist_roll_joint": 0.12014584243297577,
-            "right_wrist_pitch_joint": 0.45912277698516846,
-            "right_wrist_roll_joint": 0.24045978486537933
-          }
-        },
-        {
-          "seed": 601,
-          "survival": 584,
-          "leg_err": 15.74744037388,
-          "success": true,
-          "peak_lean": 10.56916655739242,
-          "clip_pct": 95.71917808219177,
-          "max_abs_action": 29.4703369140625,
-          "watch_absmax": {
-            "left_ankle_roll_joint": 0.02545211836695671,
-            "right_ankle_roll_joint": 0.03896014392375946,
-            "left_wrist_pitch_joint": 0.023459628224372864,
-            "left_wrist_roll_joint": 0.016727646812796593,
-            "right_wrist_pitch_joint": 0.4499090909957886,
-            "right_wrist_roll_joint": 0.4859541058540344
-          }
-        },
-        {
-          "seed": 602,
-          "survival": 584,
-          "leg_err": 17.65274625276988,
-          "success": false,
-          "peak_lean": 7.519874751252474,
-          "clip_pct": 94.6917808219178,
-          "max_abs_action": 32.58841323852539,
-          "watch_absmax": {
-            "left_ankle_roll_joint": 0.02970750629901886,
-            "right_ankle_roll_joint": 0.0544755645096302,
-            "left_wrist_pitch_joint": 0.028941914439201355,
-            "left_wrist_roll_joint": 0.02480226382613182,
-            "right_wrist_pitch_joint": 0.47502031922340393,
-            "right_wrist_roll_joint": 0.5678132176399231
-          }
-        },
-        {
           "seed": 603,
-          "survival": 584,
-          "leg_err": 16.908284105306354,
-          "success": true,
-          "peak_lean": 9.026041107520033,
-          "clip_pct": 95.89041095890411,
-          "max_abs_action": 31.999286651611328,
+          "survival": 364,
+          "leg_err": 11.562721801820262,
+          "success": false,
+          "peak_lean": 15.424817876747221,
+          "clip_pct": 92.85714285714286,
+          "max_abs_action": 16.731586456298828,
           "watch_absmax": {
-            "left_ankle_roll_joint": 0.045283105224370956,
-            "right_ankle_roll_joint": 0.04829695448279381,
-            "left_wrist_pitch_joint": 0.03406985104084015,
-            "left_wrist_roll_joint": 0.019323620945215225,
-            "right_wrist_pitch_joint": 0.46191999316215515,
-            "right_wrist_roll_joint": 0.5433642268180847
+            "left_ankle_roll_joint": 0.03454229608178139,
+            "right_ankle_roll_joint": 0.02998341992497444,
+            "left_wrist_pitch_joint": 0.40052530169487,
+            "left_wrist_roll_joint": 0.12789927423000336,
+            "right_wrist_pitch_joint": 0.4551891088485718,
+            "right_wrist_roll_joint": 0.48504480719566345
           }
         }
       ],
-      "survival_mean": 584.0,
+      "survival_mean": 364.0,
       "survival_std": 0.0,
-      "leg_err_mean": 15.832646858692968,
-      "success_rate": 0.75,
-      "peak_lean_mean": 7.937030651390716,
-      "clip_pct_mean": 94.6917808219178
-    },
-    "ankle4": {
-      "clip": 4.0,
-      "joints": [
-        "ankle_roll"
-      ],
-      "rows": [
-        {
-          "seed": 600,
-          "survival": 584,
-          "leg_err": 12.214815816570649,
-          "success": true,
-          "peak_lean": 4.146508455990536,
-          "clip_pct": 1.0273972602739727,
-          "max_abs_action": 35.06205749511719,
-          "watch_absmax": {
-            "left_ankle_roll_joint": 0.038599126040935516,
-            "right_ankle_roll_joint": 0.024441231042146683,
-            "left_wrist_pitch_joint": 0.030676428228616714,
-            "left_wrist_roll_joint": 0.016626283526420593,
-            "right_wrist_pitch_joint": 0.4567199945449829,
-            "right_wrist_roll_joint": 0.4886404275894165
-          }
-        },
-        {
-          "seed": 601,
-          "survival": 281,
-          "leg_err": 13.427187630567762,
-          "success": false,
-          "peak_lean": 11.26657273370659,
-          "clip_pct": 29.537366548042705,
-          "max_abs_action": 27.61014747619629,
-          "watch_absmax": {
-            "left_ankle_roll_joint": 0.10046721994876862,
-            "right_ankle_roll_joint": 0.05377558618783951,
-            "left_wrist_pitch_joint": 0.051800504326820374,
-            "left_wrist_roll_joint": 0.05796520411968231,
-            "right_wrist_pitch_joint": 0.463005930185318,
-            "right_wrist_roll_joint": 0.480852872133255
-          }
-        },
-        {
-          "seed": 602,
-          "survival": 316,
-          "leg_err": 14.015749569257284,
-          "success": true,
-          "peak_lean": 9.168921884919015,
-          "clip_pct": 29.430379746835442,
-          "max_abs_action": 26.978342056274414,
-          "watch_absmax": {
-            "left_ankle_roll_joint": 0.1407885104417801,
-            "right_ankle_roll_joint": 0.03344041481614113,
-            "left_wrist_pitch_joint": 0.023687053471803665,
-            "left_wrist_roll_joint": 0.01527817640453577,
-            "right_wrist_pitch_joint": 0.4633725881576538,
-            "right_wrist_roll_joint": 0.4948974847793579
-          }
-        },
-        {
-          "seed": 603,
-          "survival": 470,
-          "leg_err": 17.68915917788046,
-          "success": true,
-          "peak_lean": 60.212526774728246,
-          "clip_pct": 3.8297872340425534,
-          "max_abs_action": 25.913787841796875,
-          "watch_absmax": {
-            "left_ankle_roll_joint": 0.13665790855884552,
-            "right_ankle_roll_joint": 0.07183348387479782,
-            "left_wrist_pitch_joint": 0.028562624007463455,
-            "left_wrist_roll_joint": 0.032052189111709595,
-            "right_wrist_pitch_joint": 0.49323633313179016,
-            "right_wrist_roll_joint": 0.5253545045852661
-          }
-        }
-      ],
-      "survival_mean": 412.75,
-      "survival_std": 121.78131014240239,
-      "leg_err_mean": 14.33672804856904,
-      "success_rate": 0.75,
-      "peak_lean_mean": 21.198632462336096,
-      "clip_pct_mean": 15.956232697298669
-    },
-    "wrist4": {
-      "clip": 4.0,
-      "joints": [
-        "wrist"
-      ],
-      "rows": [
-        {
-          "seed": 600,
-          "survival": 400,
-          "leg_err": 13.25250211162696,
-          "success": true,
-          "peak_lean": 26.15183320406806,
-          "clip_pct": 93.75,
-          "max_abs_action": 30.8896541595459,
-          "watch_absmax": {
-            "left_ankle_roll_joint": 0.13170085847377777,
-            "right_ankle_roll_joint": 0.09065042436122894,
-            "left_wrist_pitch_joint": 0.021470272913575172,
-            "left_wrist_roll_joint": 0.01626811921596527,
-            "right_wrist_pitch_joint": 0.4615263342857361,
-            "right_wrist_roll_joint": 0.4689371585845947
-          }
-        },
-        {
-          "seed": 601,
-          "survival": 584,
-          "leg_err": 18.120975087967647,
-          "success": true,
-          "peak_lean": 13.089254622039139,
-          "clip_pct": 96.4041095890411,
-          "max_abs_action": 30.884057998657227,
-          "watch_absmax": {
-            "left_ankle_roll_joint": 0.13405880331993103,
-            "right_ankle_roll_joint": 0.03387060388922691,
-            "left_wrist_pitch_joint": 0.025943776592612267,
-            "left_wrist_roll_joint": 0.01705484464764595,
-            "right_wrist_pitch_joint": 0.46052783727645874,
-            "right_wrist_roll_joint": 0.5061362385749817
-          }
-        },
-        {
-          "seed": 602,
-          "survival": 240,
-          "leg_err": 14.622356353824156,
-          "success": true,
-          "peak_lean": 18.26792836177676,
-          "clip_pct": 89.58333333333333,
-          "max_abs_action": 12.652554512023926,
-          "watch_absmax": {
-            "left_ankle_roll_joint": 0.17648176848888397,
-            "right_ankle_roll_joint": 0.01687845215201378,
-            "left_wrist_pitch_joint": 0.025760242715477943,
-            "left_wrist_roll_joint": 0.027056576684117317,
-            "right_wrist_pitch_joint": 0.4429182708263397,
-            "right_wrist_roll_joint": 0.5477389693260193
-          }
-        },
-        {
-          "seed": 603,
-          "survival": 323,
-          "leg_err": 14.073314066303368,
-          "success": false,
-          "peak_lean": 17.06940119234388,
-          "clip_pct": 92.26006191950465,
-          "max_abs_action": 27.75917625427246,
-          "watch_absmax": {
-            "left_ankle_roll_joint": 0.18661734461784363,
-            "right_ankle_roll_joint": 0.030467282980680466,
-            "left_wrist_pitch_joint": 0.019981466233730316,
-            "left_wrist_roll_joint": 0.017018988728523254,
-            "right_wrist_pitch_joint": 0.4572577178478241,
-            "right_wrist_roll_joint": 0.23015445470809937
-          }
-        }
-      ],
-      "survival_mean": 386.75,
-      "survival_std": 127.16401810260636,
-      "leg_err_mean": 15.017286904930533,
-      "success_rate": 0.75,
-      "peak_lean_mean": 18.64460434505696,
-      "clip_pct_mean": 92.99937621046978
+      "leg_err_mean": 11.562721801820262,
+      "success_rate": 0.0,
+      "peak_lean_mean": 15.424817876747221,
+      "clip_pct_mean": 92.85714285714286
     }
   }
 }

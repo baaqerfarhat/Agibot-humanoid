@@ -34,6 +34,28 @@ import eval_adapt_isaac as base  # noqa: E402
 N_DOF = 31
 
 
+class ActionClipHook:
+    """Bounds |action| on selected joints, mirroring the deployment's --action-clip.
+
+    action_scale = 0.25*effort_limit/kp, so |a| = 4 is exactly the effort limit and
+    anything beyond it asks for torque the actuator cannot make.
+    """
+
+    def __init__(self, task, clip: float, subs: tuple[str, ...]):
+        import torch
+
+        self.torch = torch
+        names = list(task.simulator.dof_names)
+        self.clip = float(clip)
+        self.mask = np.array([(not subs) or any(s in n for s in subs) for n in names])
+
+    def __call__(self, actions):
+        a = actions[0].detach().cpu().numpy().astype(float)
+        a[self.mask] = np.clip(a[self.mask], -self.clip, self.clip)
+        return self.torch.as_tensor(a, device=actions.device,
+                                    dtype=actions.dtype).unsqueeze(0)
+
+
 class W0LeakAdapter(LayerAdapter):
     """LayerAdapter with sigma-modification around the FROZEN weights.
 
@@ -290,6 +312,10 @@ def main() -> None:
     ap.add_argument("--record-seed", type=int, default=None,
                     help="save a renderable NPZ for this seed of every variant")
     ap.add_argument("--record-dir", default=str(HERE / "isaac_runs"))
+    ap.add_argument("--action-clip", type=float, default=0.0,
+                    help="Bound |action| on --action-clip-joints to this (4 = the effort "
+                         "limit). Matches deploy_x2_box_pickup.py --action-clip. 0 = off.")
+    ap.add_argument("--action-clip-joints", default="ankle_roll,wrist")
     ap.add_argument("--obs-noise", default="off", choices=["off", "on"],
                     help="training observation noise. Leaving it ON was why the frozen "
                          "baseline dropped the box on 3/5 seeds in the first pass.")
@@ -437,8 +463,16 @@ def main() -> None:
                     pol, cfg, joint_names=pol.meta["joint_names"],
                     mass_matrix_fn=(mass_fn if gx == 2 else None),
                 )
+            # The adapter has no authority over a joint whose action is already past
+            # the effort limit: moving that action from 25 to 20 changes the delivered
+            # torque by zero, so the error it is regulating cannot respond and the
+            # update just spends the norm budget. Clipping first is what gives the
+            # adaptation a working control channel on the ankles and wrists.
+            clip_hook = (ActionClipHook(task, args.action_clip,
+                                        tuple(s for s in args.action_clip_joints.split(",") if s))
+                         if args.action_clip > 0 else None)
             r = base._rollout(algo, task, adapter, args.steps, ref_pos, ctrl_dt,
-                              on_reset=fault_fn)
+                              on_reset=fault_fn, action_hook=clip_hook)
             r.update(box_metrics(r["records"], ctrl_dt))
             rows.append(r)
             if args.record_seed is not None and s == args.record_seed:

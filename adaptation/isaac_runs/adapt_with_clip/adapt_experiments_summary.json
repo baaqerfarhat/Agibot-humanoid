@@ -1,0 +1,329 @@
+{
+  "seeds": [
+    600,
+    601,
+    602,
+    603,
+    604
+  ],
+  "steps": 584,
+  "ctrl_dt": 0.02,
+  "dr": "no-push",
+  "obs_noise": "off",
+  "ckpt": "/home/baaqer/baaqer_ws/holosoma/logs/WholeBodyTracking/20260730_215012-x2_box_v31_flatfoot-locomotion/model_202500.pt",
+  "motion": "/home/baaqer/baaqer_ws/holosoma/src/holosoma/holosoma/data/motions/x2_31dof/whole_body_tracking/box_multispeed/box_speed100.npz",
+  "fault": null,
+  "config": {
+    "frozen_npz": {
+      "gain": 0.0,
+      "gx_level": 1,
+      "error_joints": [
+        "hip",
+        "knee",
+        "ankle",
+        "waist"
+      ],
+      "law": "W0LeakAdapter"
+    },
+    "w0_g3e-4_gx1": {
+      "gain": 0.0003,
+      "gx_level": 1,
+      "error_joints": [
+        "hip",
+        "knee",
+        "ankle",
+        "waist"
+      ],
+      "law": "W0LeakAdapter"
+    },
+    "w0_g1e-5_gx1": {
+      "gain": 1e-05,
+      "gx_level": 1,
+      "error_joints": [
+        "hip",
+        "knee",
+        "ankle",
+        "waist"
+      ],
+      "law": "W0LeakAdapter"
+    },
+    "w0_g3e-4_waistonly": {
+      "gain": 0.0003,
+      "gx_level": 1,
+      "error_joints": [
+        "waist"
+      ],
+      "law": "W0LeakAdapter"
+    }
+  },
+  "results": {
+    "frozen_npz": [
+      {
+        "survival": 407,
+        "tracked": 52,
+        "leg_err": 14.414208751494614,
+        "drift": 0.0,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 3.34,
+        "max_box_z": 0.8594129681587219,
+        "final_dist": 0.6882634518659333,
+        "placed": true,
+        "success": true
+      },
+      {
+        "survival": 584,
+        "tracked": 46,
+        "leg_err": 13.189161265522845,
+        "drift": 0.0,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 5.5600000000000005,
+        "max_box_z": 0.8057306408882141,
+        "final_dist": 0.3080337303184493,
+        "placed": true,
+        "success": true
+      },
+      {
+        "survival": 584,
+        "tracked": 49,
+        "leg_err": 14.953391929376096,
+        "drift": 0.0,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 5.36,
+        "max_box_z": 0.7408962845802307,
+        "final_dist": 0.5789043838998166,
+        "placed": true,
+        "success": true
+      },
+      {
+        "survival": 584,
+        "tracked": 48,
+        "leg_err": 11.733049473975266,
+        "drift": 0.0,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 5.6000000000000005,
+        "max_box_z": 0.8720823526382446,
+        "final_dist": 0.5545952377590331,
+        "placed": true,
+        "success": true
+      },
+      {
+        "survival": 584,
+        "tracked": 46,
+        "leg_err": 13.32942746322416,
+        "drift": 0.0,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 5.48,
+        "max_box_z": 0.7972163558006287,
+        "final_dist": 0.31936691126483163,
+        "placed": true,
+        "success": true
+      }
+    ],
+    "w0_g3e-4_gx1": [
+      {
+        "survival": 109,
+        "tracked": 109,
+        "leg_err": 8.167404891257654,
+        "drift": 0.1094276747847027,
+        "diverged": false,
+        "lifted": false,
+        "carry_s": 0.0,
+        "max_box_z": 0.23762701451778412,
+        "final_dist": 0.8249987635865335,
+        "placed": false,
+        "success": false
+      },
+      {
+        "survival": 107,
+        "tracked": 74,
+        "leg_err": 10.570980047176269,
+        "drift": 0.1508149935920086,
+        "diverged": false,
+        "lifted": false,
+        "carry_s": 0.0,
+        "max_box_z": 0.326010525226593,
+        "final_dist": 0.5671140728894324,
+        "placed": false,
+        "success": false
+      },
+      {
+        "survival": 143,
+        "tracked": 143,
+        "leg_err": 8.750625057652025,
+        "drift": 0.14176896414244042,
+        "diverged": false,
+        "lifted": false,
+        "carry_s": 0.0,
+        "max_box_z": 0.2704591453075409,
+        "final_dist": 0.3222738997749309,
+        "placed": false,
+        "success": false
+      },
+      {
+        "survival": 147,
+        "tracked": 147,
+        "leg_err": 9.101530039246867,
+        "drift": 0.16440161496855824,
+        "diverged": false,
+        "lifted": false,
+        "carry_s": 0.0,
+        "max_box_z": 0.24158039689064026,
+        "final_dist": 0.3004455895976465,
+        "placed": false,
+        "success": false
+      },
+      {
+        "survival": 127,
+        "tracked": 127,
+        "leg_err": 8.718525808039054,
+        "drift": 0.14300954088329365,
+        "diverged": false,
+        "lifted": false,
+        "carry_s": 0.0,
+        "max_box_z": 0.303011417388916,
+        "final_dist": 0.5489037097402478,
+        "placed": false,
+        "success": false
+      }
+    ],
+    "w0_g1e-5_gx1": [
+      {
+        "survival": 203,
+        "tracked": 43,
+        "leg_err": 12.894578182927724,
+        "drift": 0.022690982992166406,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 0.68,
+        "max_box_z": 0.6878437399864197,
+        "final_dist": 0.4497143119679137,
+        "placed": true,
+        "success": true
+      },
+      {
+        "survival": 584,
+        "tracked": 45,
+        "leg_err": 11.094753547261718,
+        "drift": 0.033450975262800685,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 1.02,
+        "max_box_z": 0.7348372340202332,
+        "final_dist": 0.02221844810501084,
+        "placed": true,
+        "success": true
+      },
+      {
+        "survival": 197,
+        "tracked": 40,
+        "leg_err": 13.767354515636246,
+        "drift": 0.023794952021226574,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 0.7000000000000001,
+        "max_box_z": 0.7021015286445618,
+        "final_dist": 0.47759635723014654,
+        "placed": true,
+        "success": true
+      },
+      {
+        "survival": 511,
+        "tracked": 43,
+        "leg_err": 11.955244111437855,
+        "drift": 0.03472560075097726,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 0.8,
+        "max_box_z": 0.6816360950469971,
+        "final_dist": 0.26954120246818636,
+        "placed": true,
+        "success": true
+      },
+      {
+        "survival": 584,
+        "tracked": 46,
+        "leg_err": 10.199967576477171,
+        "drift": 0.03955626599340774,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 5.5600000000000005,
+        "max_box_z": 0.7944334149360657,
+        "final_dist": 0.21730439540420676,
+        "placed": true,
+        "success": true
+      }
+    ],
+    "w0_g3e-4_waistonly": [
+      {
+        "survival": 409,
+        "tracked": 48,
+        "leg_err": 12.220666843497986,
+        "drift": 0.06090333865430192,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 5.46,
+        "max_box_z": 0.8491738438606262,
+        "final_dist": 0.5994064529156222,
+        "placed": true,
+        "success": true
+      },
+      {
+        "survival": 584,
+        "tracked": 43,
+        "leg_err": 12.563803544007227,
+        "drift": 0.028520996504839916,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 5.42,
+        "max_box_z": 0.745631217956543,
+        "final_dist": 0.3069994369936529,
+        "placed": true,
+        "success": true
+      },
+      {
+        "survival": 584,
+        "tracked": 44,
+        "leg_err": 13.930586892639353,
+        "drift": 0.036369959948388056,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 5.46,
+        "max_box_z": 0.755760669708252,
+        "final_dist": 0.30346015585464103,
+        "placed": true,
+        "success": true
+      },
+      {
+        "survival": 531,
+        "tracked": 42,
+        "leg_err": 14.791711901592526,
+        "drift": 0.028949226208026313,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 5.36,
+        "max_box_z": 0.7379248738288879,
+        "final_dist": 0.5178792407028947,
+        "placed": true,
+        "success": true
+      },
+      {
+        "survival": 543,
+        "tracked": 44,
+        "leg_err": 15.323466115513087,
+        "drift": 0.028605148271670933,
+        "diverged": false,
+        "lifted": true,
+        "carry_s": 5.38,
+        "max_box_z": 0.7539198398590088,
+        "final_dist": 0.4530249393426735,
+        "placed": true,
+        "success": true
+      }
+    ]
+  }
+}

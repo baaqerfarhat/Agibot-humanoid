@@ -106,6 +106,9 @@ def main() -> None:
                             "ankle4:4:ankle_roll",
                     help="comma list of name:clip:substrings ('|'-separated, empty=all)")
     ap.add_argument("--out-dir", default=str(HERE / "isaac_runs" / "action_clip"))
+    ap.add_argument("--record-seed", type=int, default=None,
+                    help="Save this seed's rollout per variant, for rendering with "
+                         "box_pickup/render_side_by_side.py.")
     ap.add_argument("--obs-noise", default="off", choices=["off", "on"])
     ap.add_argument("--dr", default="no-push", choices=["no-push", "none", "all"],
                     help="Matches adapt_experiments_isaac.py. The push randomizer shoves "
@@ -265,6 +268,11 @@ def main() -> None:
                 "watch_absmax": {n: float(np.abs(dofp[:, i]).max())
                                  for n, i in zip(watch, watch_idx)},
             })
+            if args.record_seed is not None and sd == args.record_seed:
+                base._save_npz(out_dir / f"isaac_{nm}_seed{sd}.npz", r,
+                               {"mode": nm, "clip": c, "clip_joints": list(subs),
+                                "ckpt": args.ckpt, "policy_npz": args.policy_npz,
+                                "policy_source": args.policy_source})
             w = rows[-1]["watch_absmax"]
             print(f"  seed {sd}: survival {r['survival']:4d} "
                   f"({r['survival']*ctrl_dt:5.2f}s)  leg_err {r['leg_err']:5.2f}  "
