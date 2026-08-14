@@ -15,14 +15,16 @@ torque the URDF says that pose needs, computed in MuJoCo at zero velocity.
 
 Poses are given as frame indices into the motion. Defaults:
 
-      0   standing, the motion's start pose        -- baseline, near zero load
-    160   mid-carry, box up, legs mostly extended  -- the load case, low risk
-    120   end of the deep bend, still holding      -- highest torso load
-     80   deepest bend                             -- most demanding, run last
+      0   the motion's start pose, standing        -- baseline, near zero load
+    160   the standing carry, just after the rise  -- the pose the robot fell out
+                                                      of, and the one that matters
+    120   coming out of the bend, hip at -1.46     -- torso still far forward
+     80   deepest bend, hip at -1.55               -- most demanding, run last
 
-SAFETY. Frames 80 and 120 are deep bends and hold the robot's own weight plus the
-box on the legs and waist for several seconds. Start with `--frames 0,160`, keep a
-hand on the e-stop, and only add the deep poses once the shallow ones look sane.
+SAFETY. The bend in this motion is at the hip, not the knee, so at frames 80 and
+120 the torso is nearly horizontal and the hips and waist carry it for the whole
+hold. Start with `--frames 0,160`, keep a hand on the e-stop, and only add the
+deep poses once the shallow ones look sane.
 Aborts on |pelvis roll| like the deploy does. Dry run (no --engage) prints the
 whole schedule without publishing.
 
@@ -106,7 +108,7 @@ def main() -> None:
         kn = ref[f, joint_names.index("left_knee_joint")]
         hp = ref[f, joint_names.index("left_hip_pitch_joint")]
         print(f"    frame {f:3d}:  knee {kn:+.2f}  hip_pitch {hp:+.2f}"
-              + ("   <-- DEEP BEND, high load" if kn > 0.8 or hp < -1.0 else ""))
+              + ("   <-- torso far forward, high load" if hp < -1.0 else ""))
     print()
 
     rclpy.init()
