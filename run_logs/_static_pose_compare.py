@@ -105,7 +105,7 @@ def sim_static_hold(xml, joint_names, q_by_name, kp, kd, settle_s=6.0, avg_s=0.5
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("csv")
+    ap.add_argument("csv", nargs="+", help="One or more hold logs; poses are pooled.")
     ap.add_argument("--xml", default=XML_PLAIN,
                     help="Robot model. The default has no box, which is why the hold "
                          "is done with empty hands: a box the sim is not holding "
@@ -130,6 +130,8 @@ def main() -> None:
         if kp is None:
             kp = np.array(meta.get("joint_stiffness", pol["joint_stiffness"]), float)
             kd = np.array(meta.get("joint_damping", pol["joint_damping"]), float)
+        if not meta.get("engage", True):
+            raise SystemExit(f"{name}: dry run, nothing was ever commanded.")
         settle = float(meta.get("settle_s", 1.5))
         out = {}
         for ph in sorted({r["phase"] for r in rows if r["phase"].startswith("hold")},
@@ -138,20 +140,39 @@ def main() -> None:
             t0 = float(sel[0]["t_s"])
             sel = [r for r in sel if float(r["t_s"]) - t0 >= settle] or sel
             tau = np.array([[float(r[f"{n}__eff_meas"]) for n in jn] for r in sel])
+            dq = np.array([[float(r[f"{n}__vel_meas"]) for n in jn] for r in sel])
+            # A phase that ended in an abort still looks like a hold in the log, and
+            # its torques are the fall, not the pose. Those numbers are worse than
+            # no numbers: in the 165658 run the toppling at frame 160 showed up as a
+            # +13 Nm waist residual with the opposite sign to the good run.
+            w = max(len(sel) // 4, 1)
+            drift = float(np.abs(tau[-w:].mean(0) - tau[:w].mean(0)).max())
+            speed = float(np.abs(dq).max())
+            why = ("only %d samples" % len(sel) if len(sel) < 50 else
+                   "still moving (max|qvel| %.2f)" % speed if speed > 0.25 else
+                   "torque drifting %.0f Nm across the window" % drift if drift > 5
+                   else None)
+            if why:
+                print(f"  [skip] {os.path.basename(p)} pose {ph[4:]}: {why}")
+                continue
             q = {n: float(np.mean([float(r[f"{n}__pos_meas"]) for r in sel]))
                  for n in jn}
             out[ph] = (tau.mean(axis=0), q)
         if not out:
-            raise SystemExit(f"{name}: no hold phases -- was --engage passed?")
+            raise SystemExit(f"{name}: no usable holds.")
         return jn, out
 
-    jn, holds = load(args.csv)
+    jn, per_file = None, []
+    for name in args.csv:
+        jn, h = load(name)
+        per_file.append((os.path.basename(name), h))
+    holds = per_file[0][1]
 
     if args.baseline:
         # Two hardware runs, so the model is not involved and must not be printed
         # as if it were: the sim is empty-handed and cannot predict a box delta.
         base = load(args.baseline)[1]
-        print(f"box load = {os.path.basename(args.csv)} - "
+        print(f"box load = {os.path.basename(args.csv[0])} - "
               f"{os.path.basename(args.baseline)}\n")
         for ph, (meas, _) in holds.items():
             if ph not in base:
@@ -168,26 +189,45 @@ def main() -> None:
         return
 
     print(f"model: {os.path.basename(args.xml)}")
-    print(f"\n{'pose':>6s}{'group':>8s}{'measured':>11s}{'model':>10s}"
+    print(f"\n{'run':>10s}{'pose':>6s}{'group':>8s}{'measured':>11s}{'model':>10s}"
           f"{'residual':>11s}{'ratio':>8s}")
     per_pose = {}
-    for ph, (meas, q) in holds.items():
-        model_tau, speed = sim_static_hold(args.xml, jn, q, kp, kd)
-        if speed > 0.2:
-            print(f"  [warn] pose {ph[4:]}: sim never settled "
-                  f"(max|qvel| {speed:.2f}); treat its model column as approximate")
-        per_pose[ph] = (meas, model_tau)
-        for gname, keys in GROUPS:
-            idx = [i for i, n in enumerate(jn) if any(k in n for k in keys)]
-            m, g = np.abs(meas[idx]).mean(), np.abs(model_tau[idx]).mean()
-            print(f"{ph[4:]:>6s}{gname:>8s}{m:11.2f}{g:10.2f}{m - g:+11.2f}"
-                  f"{m / max(g, 1e-6):8.2f}x")
-        print()
+    for fname, h in per_file:
+        tag = fname.split("_")[1] if "_" in fname else fname[:8]
+        for ph, (meas, q) in h.items():
+            model_tau, speed = sim_static_hold(args.xml, jn, q, kp, kd)
+            if speed > 0.2:
+                print(f"  [warn] pose {ph[4:]}: sim never settled "
+                      f"(max|qvel| {speed:.2f}); model column is approximate")
+            per_pose[f"{tag}/{ph}"] = (meas, model_tau)
+            for gname, keys in GROUPS:
+                idx = [i for i, n in enumerate(jn) if any(k in n for k in keys)]
+                m, g = np.abs(meas[idx]).mean(), np.abs(model_tau[idx]).mean()
+                print(f"{tag:>10s}{ph[4:]:>6s}{gname:>8s}{m:11.2f}{g:10.2f}"
+                      f"{m - g:+11.2f}{m / max(g, 1e-6):8.2f}x")
+            print()
 
-    print("largest per-joint residuals (measured - model), averaged over poses:")
+    print("largest per-joint residuals (measured - model), averaged over holds:")
     res = np.nanmean([m - g for m, g in per_pose.values()], axis=0)
     for i in np.argsort(-np.abs(res))[:12]:
         print(f"    {jn[i]:28s}{res[i]:+8.2f} Nm")
+
+    # A residual that is equal and opposite on the two legs is not a load the robot
+    # is carrying, it is the legs pushing against each other through the floor --
+    # torque spent on nothing, and spent out of the same budget the policy needs
+    # for lateral balance. Splitting it out keeps it from being read as payload.
+    print("\nleft/right split of the leg and waist roll residuals:")
+    print(f"    {'joint pair':>20s}{'net load':>11s}{'squeeze':>10s}")
+    for stem in ("hip_roll", "hip_pitch", "hip_yaw", "knee",
+                 "ankle_roll", "ankle_pitch"):
+        try:
+            li = jn.index(f"left_{stem}_joint")
+            ri = jn.index(f"right_{stem}_joint")
+        except ValueError:
+            continue
+        net, sq = (res[li] + res[ri]) / 2, (res[li] - res[ri]) / 2
+        print(f"    {stem:>20s}{net:+11.2f}{sq:+10.2f}"
+              + ("   <-- mostly squeeze" if abs(sq) > 2 * abs(net) + 1 else ""))
 
     def group(keys):
         idx = [i for i, n in enumerate(jn) if any(k in n for k in keys)]
