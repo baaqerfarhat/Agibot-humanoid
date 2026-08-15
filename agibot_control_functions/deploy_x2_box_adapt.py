@@ -187,6 +187,14 @@ def main():
     g.add_argument("--adapt-after", type=float, default=0.0,
                    help="Seconds into the motion before adaptation engages. 0 = from "
                         "the first tick, as published.")
+    g.add_argument("--adapt-frames", default="",
+                   help="LO:HI motion frames within which adaptation may update, e.g. "
+                        "120:260 for the stand-up alone. Outside the window the "
+                        "weights are held where they are, not reverted. Use this when "
+                        "the target is one phase of the motion: the descent and the "
+                        "rise load the robot in opposite directions, and an offset "
+                        "learned going down is the wrong sign coming up. Empty = the "
+                        "whole motion.")
     g.add_argument("--max-action-dev", type=float, default=0.5,
                    help="Hard clamp: the adapted action may not differ from the frozen "
                         "action by more than this, per joint (action units, pre "
@@ -197,6 +205,13 @@ def main():
                         "deadline. Guards against the update starving the loop.")
     g.add_argument("--tag", default="",
                    help="Suffix for the log name, e.g. --tag frozen / --tag adapted.")
+    ap.add_argument("--action-clip", type=float, default=4.0,
+                    help="Bound |action| on --action-clip-joints, matching "
+                         "deploy_x2_box_pickup.py. |a|=4 is the effort limit, so this "
+                         "drops only requests for torque the actuator cannot make. "
+                         "Kept here so an adaptation A/B is not also an action-clip "
+                         "A/B. 0 disables.")
+    ap.add_argument("--action-clip-joints", default="ankle_roll,wrist")
     g.add_argument("--self-check", action="store_true",
                    help="Verify the adapter's frozen forward matches the deployed "
                         "policy and time the per-tick cost, then exit. No robot "
@@ -237,6 +252,16 @@ def main():
     masked = [i for i, m in enumerate(adapter.err_mask) if m > 0]
     adapting = args.gain != 0.0
 
+    if args.adapt_frames:
+        lo, _, hi = args.adapt_frames.partition(":")
+        adapt_lo, adapt_hi = int(lo), int(hi or n_frames)
+    else:
+        adapt_lo, adapt_hi = 0, n_frames
+    act_clip_mask = None
+    if args.action_clip > 0:
+        keys = [k.strip() for k in args.action_clip_joints.split(",") if k.strip()]
+        act_clip_mask = np.array([any(k in n for k in keys) for n in joint_names])
+
     print("=" * 78)
     print(f"  policy:        {args.policy}")
     print(f"  task:          {meta.get('task')}   run: {meta.get('run_path', '?')}")
@@ -251,11 +276,16 @@ def main():
               f"   engage at {args.adapt_after:.1f}s")
         print(f"  error mask:    {args.mask} -> {len(adapter.masked_joints)} joints: "
               f"{', '.join(adapter.masked_joints)}")
+        print(f"  adapt window:  frames {adapt_lo}-{adapt_hi}"
+              + ("  (whole motion)" if (adapt_lo, adapt_hi) == (0, n_frames) else
+                 f"  ({adapt_lo / fps:.1f}-{adapt_hi / fps:.1f} s into the motion)"))
         print(f"  guards:        max_drift {args.max_drift:g}, "
               f"max_action_dev {args.max_action_dev:g}, "
               f"max_overrun {args.max_overrun}")
     else:
         print("  ADAPTATION:    OFF (gain 0) -- this is the FROZEN CONTROL ARM")
+    print(f"  action clip:   "
+          f"{'OFF' if args.action_clip <= 0 else f'+-{args.action_clip:g} on {args.action_clip_joints}'}")
     print("=" * 78)
     if args.mask == "legs_waist" and adapting:
         print("\n!!! --mask legs_waist is the configuration that fell in 2.5 s on 6/6")
@@ -381,7 +411,10 @@ def main():
                           "max_drift": args.max_drift,
                           "max_action_dev": args.max_action_dev,
                           "adapt_after_s": args.adapt_after,
-                          "control_dt": CONTROL_DT}}
+                          "adapt_frames": [adapt_lo, adapt_hi],
+                          "control_dt": CONTROL_DT},
+                "action_clip": args.action_clip,
+                "action_clip_joints": args.action_clip_joints}
     logger = RunLogger(joint_names, base_imu=args.base_imu, run_name=run_name,
                        meta=run_meta, log_dir=args.log_dir, enabled=not args.no_log,
                        log_effort=True)
@@ -474,7 +507,9 @@ def main():
                 err_masked = float(np.degrees(np.abs(err_vec[masked])).mean())
                 err_leg = float(np.degrees(np.abs(err_vec[legs])).mean())
                 err_all = float(np.degrees(np.abs(err_vec)).mean())
-                adapter.update(err_vec, CONTROL_DT)
+                in_window = adapt_lo <= frame <= adapt_hi
+                if in_window:
+                    adapter.update(err_vec, CONTROL_DT)
 
                 obs = obs_builder.build(imus, jmap, frame)
                 if args.max_action_dev > 0.0 and adapting and not adapter.disabled:
@@ -489,7 +524,12 @@ def main():
                 else:
                     action = adapter.act(obs)
                 action = np.asarray(action, np.float32).reshape(-1)
-                adapt_on = int(adapting and not adapter.disabled
+                if act_clip_mask is not None:
+                    action = np.where(act_clip_mask,
+                                      np.clip(action, -args.action_clip,
+                                              args.action_clip),
+                                      action)
+                adapt_on = int(adapting and in_window and not adapter.disabled
                                and adapter.step > adapter.engage_step)
 
                 # Feed back the action actually APPLIED, not the raw adapted one.

@@ -269,6 +269,8 @@ def check_export_match(algo, task, pol, steps: int) -> None:
 
 
 LEGS_WAIST = ("hip", "knee", "ankle", "waist")
+RISE = ("waist", "knee", "hip_pitch", "ankle_pitch")
+SAGITTAL = ("knee", "hip_pitch", "ankle_pitch")
 
 # `cls` selects the adaptation law:
 #   None            -> no adapter at all, holosoma's torch policy (the deployed baseline)
@@ -290,6 +292,17 @@ VARIANTS = [
     ("w0_g1e-5_gx2_schur",   1e-5,   2,    LEGS_WAIST,  W0LeakAdapter),
     ("w0_g3e-4_waistonly",   3e-4,   1,    ("waist",),  W0LeakAdapter),
     ("w0_g3e-4_noankle",     3e-4,   1,    ("hip", "knee", "waist"), W0LeakAdapter),
+    # The stand-up set. RISE is the deployed "rise" preset: the waist plus the
+    # sagittal legs, and deliberately no roll axis. With both feet planted the roll
+    # axes close a loop through the floor, so a roll command cannot move the joint,
+    # only press the legs harder into each other -- the 2026-08-14 static-pose test
+    # measured 11.5 Nm of that squeeze on hip_roll against 1.0 Nm of net load. An
+    # integral term aimed there winds up against a kinematic constraint, which is
+    # the mechanism behind legs_waist going down in 2.5 s.
+    ("rise_g3e-4",           3e-4,   1,    RISE,        W0LeakAdapter),
+    ("rise_g1e-4",           1e-4,   1,    RISE,        W0LeakAdapter),
+    ("rise_g1e-5",           1e-5,   1,    RISE,        W0LeakAdapter),
+    ("sagittal_g3e-4",       3e-4,   1,    SAGITTAL,    W0LeakAdapter),
 ]
 
 
@@ -312,6 +325,13 @@ def main() -> None:
     ap.add_argument("--record-seed", type=int, default=None,
                     help="save a renderable NPZ for this seed of every variant")
     ap.add_argument("--record-dir", default=str(HERE / "isaac_runs"))
+    ap.add_argument("--engage-step", type=int, default=0,
+                    help="Hold the trained weights until this control step, so the "
+                         "adaptation only sees one phase of the motion. 120 starts it "
+                         "at the bottom of the bend, which is what --adapt-frames "
+                         "120: does on the robot. The descent and the rise load the "
+                         "robot in opposite directions, so an offset learned on the "
+                         "way down is the wrong sign coming back up.")
     ap.add_argument("--action-clip", type=float, default=0.0,
                     help="Bound |action| on --action-clip-joints to this (4 = the effort "
                          "limit). Matches deploy_x2_box_pickup.py --action-clip. 0 = off.")
@@ -458,7 +478,7 @@ def main() -> None:
                 adapter = None
             else:
                 cfg = AdaptConfig(layer=2, gain=gain, leak=1e-2, gx_level=gx,
-                                  error_joints=mask, engage_step=0)
+                                  error_joints=mask, engage_step=args.engage_step)
                 adapter = cls(
                     pol, cfg, joint_names=pol.meta["joint_names"],
                     mass_matrix_fn=(mass_fn if gx == 2 else None),

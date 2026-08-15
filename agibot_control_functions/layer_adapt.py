@@ -46,10 +46,25 @@ import numpy as np
 #                   error 4-9 deg) and are almost never clipped by a joint limit, unlike
 #                   the roll joints -- adapting a joint pinned at its stop cannot reach
 #                   the plant. UNVALIDATED: needs an Isaac gain sweep before hardware use.
+#   "rise"       -- waist plus the sagittal legs, for the stand-up. Its case is the
+#                   2026-08-14 static-pose test (E2), which held the robot still and
+#                   compared the torque each joint settled at against the same pose
+#                   held in MuJoCo. Split left/right, the roll axes came out as almost
+#                   pure squeeze -- hip_roll net load 1.0 Nm against 11.5 Nm of the two
+#                   legs pressing into each other, ankle_roll 1.0 against 5.3 -- while
+#                   the sagittal axes carried real net load, hip_pitch +10.1 and knee
+#                   -9.9 Nm. That distinction decides what can be adapted. With both
+#                   feet planted the roll axes close a kinematic loop through the
+#                   floor, so a roll command cannot move the joint, only squeeze
+#                   harder; an integral term pointed there winds up without ever
+#                   reducing its error. It is the concrete reason "legs_waist" is
+#                   catastrophic. The sagittal axes are free to move and carry a real
+#                   load, and the waist droops 0.163 rad at the carry pose.
 MASK_PRESETS = {
     "waist": ("waist",),
     "legs_waist": ("hip", "knee", "ankle", "waist"),
     "sagittal_legs": ("knee", "hip_pitch", "ankle_pitch"),
+    "rise": ("waist", "knee", "hip_pitch", "ankle_pitch"),
     "waist_arms": ("waist", "shoulder", "elbow"),
     "all": None,
 }
