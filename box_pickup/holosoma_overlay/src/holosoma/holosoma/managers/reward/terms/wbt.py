@@ -474,3 +474,46 @@ class UndesiredContacts(RewardTermBase):
             assert name in b_names, f"The specified name ({name}) doesn't exist: {b_names}"
             indexes.append(b_names.index(name))
         return torch.tensor(indexes, dtype=torch.long, device=device)
+
+
+def penalty_action_over_effort(
+    env: WholeBodyTrackingManager, limit: float = 4.0, joints: str = ""
+) -> torch.Tensor:
+    """Penalize commanding torque the actuator cannot deliver.
+
+    `action_scale = cfg_scale * effort / kp`, so |a| = 4 IS the effort limit by
+    construction: past that the extra command produces exactly zero extra torque.
+    Nothing in the existing reward set costs the policy anything for exceeding it --
+    `penalty_action_rate` penalizes action CHANGES and `limits_dof_pos` penalizes
+    POSITION limits, so a saturated command is free.
+
+    That matters because simulation hides the consequence. Measured on the v33 box
+    pickup, the hips command |a| up to 9.2 (2.3x the limit) for 52-75% of the rise, in
+    sim and on hardware alike -- but sim's contact resists hard enough to make up the
+    shortfall, so the policy is never taught that the torque is unavailable. On the real
+    robot the floor yields instead and the motion fails.
+
+    Penalizing only the EXCESS (not the magnitude) leaves the policy free to use the
+    full actuator envelope, and only makes the impossible part expensive.
+
+    Args:
+        env: the environment instance
+        limit: |a| at the effort limit; 4.0 for this action_scale convention
+        joints: comma-separated substrings to restrict the penalty to (empty = all).
+            Restricting to "hip_pitch" targets the measured bottleneck without taxing
+            joints that legitimately run near their limit.
+
+    Returns:
+        Reward tensor [num_envs]
+    """
+    actions = env.action_manager.action
+    excess = torch.clamp(torch.abs(actions) - limit, min=0.0)
+    if joints:
+        names = env.simulator.dof_names
+        keys = [s.strip() for s in joints.split(",") if s.strip()]
+        mask = torch.tensor(
+            [1.0 if any(k in n for k in keys) else 0.0 for n in names],
+            device=actions.device, dtype=actions.dtype,
+        )
+        excess = excess * mask
+    return torch.sum(torch.square(excess), dim=1)
