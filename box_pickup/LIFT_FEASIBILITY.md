@@ -66,19 +66,27 @@ Clipping the action at deploy (`--action-clip`) treats the symptom: the policy s
 ### 3.1 Add the effort penalty
 
 `penalty_action_over_effort` is in the overlay at
-`src/holosoma/holosoma/managers/reward/terms/wbt.py`. It penalises only the **excess**
-beyond the limit, so the policy keeps the full actuator envelope and only the impossible
-part becomes expensive.
+`src/holosoma/holosoma/managers/reward/terms/wbt.py`, and is wired into
+`x2_31dof_wbt_reward_w_object` — the preset the box-pickup experiment uses. It
+penalises only the **excess** beyond the limit, so the policy keeps the full actuator
+envelope and only the impossible part becomes expensive.
 
-```yaml
-penalty_action_over_effort:
-  func: holosoma.managers.reward.terms.wbt:penalty_action_over_effort
-  params: {limit: 4.0, joints: "hip_pitch"}
-  weight: -0.5        # raise until the pass criterion below is met
+```python
+"penalty_action_over_effort": RewardTermCfg(
+    func="holosoma.managers.reward.terms.wbt:penalty_action_over_effort",
+    params={"limit": 4.0, "joints": "hip_pitch", "ramp_steps": 400_000},
+    weight=-0.5,
+),
 ```
 
-Start restricted to `hip_pitch` — the measured bottleneck. Penalising every joint taxes
-ones that legitimately run near their limit.
+`joints` restricts it to the measured bottleneck; penalising every joint taxes ones
+that legitimately run near their limit.
+
+`ramp_steps` fades the penalty in linearly over that many environment steps. This
+matters when **warm-starting**: a policy already sitting at `|a| ~ 9` receives
+`(9.2 - 4)^2 ~ 27` per hip the instant the term switches on, which is a large negative
+advantage on a previously-optimal policy. PPO handles that badly and can collapse a
+good policy in a few hundred iterations. 400k steps is ~100 iterations at 4096 envs.
 
 ### 3.2 Keep training under the deploy bound
 
@@ -94,7 +102,28 @@ back toward the demonstrated height, shortening the hip moment arm.
 
 ---
 
-## 4. Pass criterion
+## 4. Running the retrain
+
+Warm-start rather than training from scratch. The task has not changed — grasping,
+balance and tracking are all intact; what has to change is one postural choice inside a
+40-step window. Relearning the rest would waste the 200k+ iterations already spent.
+
+```bash
+cd ../holosoma
+OMNI_KIT_ACCEPT_EULA=1 CUDA_VISIBLE_DEVICES=0 \
+  python src/holosoma/holosoma/train_agent.py exp:x2-31dof-wbt-w-object logger:disabled \
+  --training.num-envs 4096 --training.name x2_box_effort_ft \
+  --training.checkpoint <path>/model_202500.pt
+```
+
+**Host caveat — cuDNN.** On a driver-535 / CUDA-12.2 host the cuDNN 9.2 bundled with the
+torch cu128 wheels raises `CUDNN_STATUS_NOT_INITIALIZED` on any cuDNN call. Training hits
+it through a 1-D smoothing `conv1d` in the adaptive timestep sampler; evaluation never
+does, because the eval harness pins `use_adaptive_timesteps_sampler=False`. Setting
+`torch.backends.cudnn.enabled = False` before importing the trainer fixes it at no cost —
+that conv is tiny and the fallback kernel is fine.
+
+## 5. Pass criterion
 
 **Hip-pitch `|a| < 4.0` through frames 110–150.** It currently peaks at 9.2. One
 measurement in simulation decides whether the retrain worked — before any hardware time.
@@ -111,7 +140,7 @@ print("mean", np.abs(a[rise][:, HIP]).mean(), "peak", np.abs(a[rise][:, HIP]).ma
 
 ---
 
-## 5. What not to do
+## 6. What not to do
 
 | approach | why not |
 |---|---|
@@ -127,7 +156,7 @@ steers toward a point the robot cannot reach.
 
 ---
 
-## 6. Reproducing the measurements
+## 7. Reproducing the measurements
 
 The hip-demand measurement runs on the harness as it stands:
 
@@ -142,7 +171,7 @@ OMNI_KIT_ACCEPT_EULA=1 CUDA_VISIBLE_DEVICES=0 $PY adaptation/adapt_experiments_i
   --out-dir adaptation/isaac_runs/hipcheck
 ```
 
-Then apply the pass criterion in section 4 to the recorded `actions`.
+Then apply the pass criterion in section 5 to the recorded `actions`.
 
 **Use `--dr no-push`, not `--dr none`.** `--dr none` drops every randomisation term whose
 key matches `mass`, which includes `randomize_object_rigid_body_mass_startup`. Training
@@ -155,7 +184,7 @@ vs 0.30 rad) come from replaying a hardware run's recorded actions through the s
 so both sides execute identical commands. That needs a small addition to the harness and
 is not reproducible with the flags in this branch.
 
-## 7. Where adaptation does help
+## 8. Where adaptation does help
 
 Not with this. But once the lift works, the ACC layer adaptation is established for
 **actuator degradation**, at gain `1e-4` (the inherited `3e-4` is what made it harmful):

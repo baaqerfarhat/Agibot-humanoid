@@ -274,6 +274,14 @@ apples-to-apples comparison against my numbers.
 **`OMNI_KIT_ACCEPT_EULA=1` is required** or Isaac Sim will block waiting on the licence
 prompt. All my commands set it inline.
 
+**cuDNN is unusable on a driver-535 host, and only TRAINING notices.** The cuDNN 9.2
+bundled with the torch cu128 wheels raises `CUDNN_STATUS_NOT_INITIALIZED` on any cuDNN
+call when the driver is 535 / CUDA 12.2. Evaluation never hits it — the eval harness pins
+`use_adaptive_timesteps_sampler=False`, and everything else in the policy path is
+cuBLAS. Training does, through a 1-D smoothing `conv1d` in the adaptive sampler, and dies
+seconds after the scene loads. Set `torch.backends.cudnn.enabled = False` before
+importing the trainer; that conv is tiny, so the fallback costs nothing.
+
 **Re-run `setup_holosoma_x2.sh` after pulling.** Overlay edits do not propagate to your
 holosoma checkout on their own.
 
