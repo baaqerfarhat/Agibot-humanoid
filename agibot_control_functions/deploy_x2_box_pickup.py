@@ -337,13 +337,15 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--policy",
-                    default="../box_pickup/policy/x2_box_policy_clean_iter9000.npz",
-                    help="Path to WBT box policy .npz (default: clean retrain, iter 9000). "
-                         "Unlike the v31/v33 lineage this policy was TRAINED with the same "
-                         "+-4 bound on ankle_roll/wrist that --action-clip applies here, so "
-                         "the clip is no longer imposed after the fact on a policy that had "
-                         "learned to rely on saturation. Waist pitch/yaw and planted feet "
-                         "were objectives during training rather than later patches.")
+                    default="../box_pickup/policy/x2_box_policy_clean_grasp_iter9000.npz",
+                    help="Path to WBT box policy .npz (default: clean-grasp retrain, iter 9000). "
+                         "Trained with the same +-4 bound on ankle_roll/wrist that --action-clip "
+                         "applies here, so the clip is not imposed after the fact on a policy "
+                         "that had learned to rely on saturation. Waist pitch/yaw, planted feet, "
+                         "and keeping the HANDS OFF THE FLOOR were objectives during training "
+                         "rather than later patches: the previous policy planted both palms on "
+                         "the ground during the grasp and pushed off them, which this one never "
+                         "does (0 of 733 frames in floor contact, vs 103).")
     ap.add_argument("--engage", action="store_true",
                     help="ACTUALLY publish commands. Without this it is a dry run.")
     ap.add_argument("--base-imu", default="torso", choices=["torso", "chest"],
