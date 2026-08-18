@@ -1,6 +1,7 @@
 """Render a recorded eval rollout (robot + box) to an MP4 using MuJoCo offscreen (EGL)."""
 
 import os
+import pathlib
 
 os.environ.setdefault("MUJOCO_GL", "egl")
 os.environ.pop("DISPLAY", None)
@@ -11,7 +12,16 @@ import sys
 import mujoco
 import numpy as np
 
-XML = "/home/baaqer/baaqer_ws/holosoma/src/holosoma_retargeting/holosoma_retargeting/models/x2/x2_31dof_w_largebox.xml"
+# Resolve like the rest of the repo does: env override, then the holosoma
+# checkout beside this repo, then the original author's absolute path.
+XML = os.environ.get(
+    "X2_RENDER_XML",
+    str(pathlib.Path(__file__).resolve().parents[1].parent
+        / "holosoma/src/holosoma_retargeting/holosoma_retargeting/models/x2"
+          "/x2_31dof_w_largebox.xml"),
+)
+if not os.path.exists(XML):
+    XML = "/home/baaqer/baaqer_ws/holosoma/src/holosoma_retargeting/holosoma_retargeting/models/x2/x2_31dof_w_largebox.xml"
 NPZ = sys.argv[1] if len(sys.argv) > 1 else "/home/baaqer/baaqer_ws/x2_box_eval_rollout.npz"
 OUT = sys.argv[2] if len(sys.argv) > 2 else "/home/baaqer/baaqer_ws/x2_box_carry_progress.mp4"
 

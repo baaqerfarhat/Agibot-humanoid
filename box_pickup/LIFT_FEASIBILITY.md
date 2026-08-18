@@ -9,6 +9,28 @@ Everything below is measured. Reproduce commands are at the end.
 
 ---
 
+
+> **Correction (2026-08-18).** The premise below — that the hips command torque the
+> actuator cannot deliver — is wrong, and the fix it motivated has been replaced.
+> Reconstructing delivered torque from the recorded rollouts
+> (`tau = kp*(default + a*scale - q) - kd*qd`, clipped as `clip_torques=True` does)
+> shows **hip_pitch never exceeds 0.95x of its 120 N-m limit and the knees never pass
+> 0.29x**. `|a| = 4` equals the effort limit only if the joint stays pinned at its
+> default; the hip reaches `|a| = 9.12` while delivering 34.8 N-m, because it tracks
+> its target to within 0.19 rad. **Action magnitude is not a torque criterion.**
+>
+> The joints that actually saturate are the three small ones: waist_pitch (48 N-m,
+> 1.82x demand / 11% of the baseline episode), ankle_pitch (36) and ankle_roll (24,
+> 1.99x / 22%). Worse, ankle_roll degrades monotonically as the hip-targeted penalty
+> trains — 1.99x -> 4.17x -> 7.61x — because the policy sheds hip command and the
+> load lands on the smallest actuator on the robot.
+>
+> `penalty_action_over_effort` is therefore replaced by
+> `penalty_joint_torque_saturation`, which charges on delivered torque against each
+> joint's own limit, masked to `waist_pitch,ankle_pitch,ankle_roll`. Full audit and
+> seed-averaged results: `box_pickup_results/README.md`.
+
+
 ## 1. The chain
 
 | # | measurement | value |

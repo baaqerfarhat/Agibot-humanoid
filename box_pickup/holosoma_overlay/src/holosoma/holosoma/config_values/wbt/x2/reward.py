@@ -299,6 +299,17 @@ x2_31dof_wbt_fast_sac_reward = RewardManagerCfg(
 # the box the dominant objective forces the grasp/lift to actually happen.
 x2_31dof_wbt_reward_w_object = RewardManagerCfg(
     terms={
+        # The legs are never torque-limited: hip_pitch peaks at 0.95x of its 120 N-m
+        # limit and the knees at 0.29x, across every policy measured. The joints that
+        # actually saturate are the three small ones -- waist_pitch 48, ankle_pitch 36,
+        # ankle_roll 24 N-m -- so charge on DELIVERED torque there, not on |a| at the
+        # hips. See penalty_joint_torque_saturation for the measurement table.
+        "penalty_joint_torque_saturation": RewardTermCfg(
+            func="holosoma.managers.reward.terms.wbt:penalty_joint_torque_saturation",
+            params={"joints": "waist_pitch,ankle_pitch,ankle_roll", "ramp_steps": 24_000,
+                    "require_lifted_z": 0.30},
+            weight=-0.05,
+        ),
         **x2_31dof_wbt_reward.terms,
         "object_global_ref_position_error_exp": RewardTermCfg(
             func="holosoma.managers.reward.terms.wbt:object_global_ref_position_error_exp",

@@ -477,7 +477,8 @@ class UndesiredContacts(RewardTermBase):
 
 
 def penalty_action_over_effort(
-    env: WholeBodyTrackingManager, limit: float = 4.0, joints: str = ""
+    env: WholeBodyTrackingManager, limit: float = 4.0, joints: str = "",
+    ramp_steps: int = 0, require_lifted_z: float = 0.0
 ) -> torch.Tensor:
     """Penalize commanding torque the actuator cannot deliver.
 
@@ -499,6 +500,19 @@ def penalty_action_over_effort(
     Args:
         env: the environment instance
         limit: |a| at the effort limit; 4.0 for this action_scale convention
+        require_lifted_z: only charge the penalty while the box is above this height
+            (0 = always charge). WITHOUT this gate the term has a degenerate optimum:
+            never touch the box at all. Measured on a first attempt at weight -0.5, the
+            policy learned exactly that -- 5/5 seeds stood for the full episode with
+            boxZmax 0.19 (the box's resting height) and carry 0.00 s, while leg tracking
+            IMPROVED to 5.5-6.8 deg because a near-static reference is easy to track.
+            Approaching and lifting is what costs hip effort, so if not-lifting is
+            cheaper than lifting, the policy stops lifting. Gating on box height makes
+            the penalty shape HOW the robot lifts rather than WHETHER it does.
+        ramp_steps: fade the penalty in linearly over this many env steps (0 = off).
+            NOTE the unit: `common_step_counter` advances once per `env.step()`, NOT
+            per environment, and there are 24 steps per learning iteration -- so 24_000
+            is ~1000 iterations regardless of how many envs are running.
         joints: comma-separated substrings to restrict the penalty to (empty = all).
             Restricting to "hip_pitch" targets the measured bottleneck without taxing
             joints that legitimately run near their limit.
@@ -508,6 +522,101 @@ def penalty_action_over_effort(
     """
     actions = env.action_manager.action
     excess = torch.clamp(torch.abs(actions) - limit, min=0.0)
+
+    if require_lifted_z > 0.0:
+        motion_command = _get_motion_command_and_assert_type(env)
+        lifted = (motion_command.simulator_object_pos_w[:, 2] > require_lifted_z).float()
+        excess = excess * lifted.unsqueeze(-1)
+
+    # Ramp in. Warm-starting from a policy that already sits at |a| ~ 9 means this term
+    # arrives as a large negative advantage on a previously-optimal policy, which PPO
+    # handles badly. Fading it in lets the posture migrate instead of being shocked.
+    #
+    # Count locally rather than using env.common_step_counter: that attribute only
+    # exists on LeggedRobotLocomotionManager, and the WBT envs inherit from BaseTask,
+    # where _init_counters/_update_counters_each_step are no-ops. Reading it through
+    # getattr(..., 0) silently pins the ramp at zero and the term becomes inert.
+    if ramp_steps > 0:
+        step = getattr(env, "_effort_penalty_step", 0) + 1
+        env._effort_penalty_step = step
+        excess = excess * min(1.0, step / float(ramp_steps))
+    if joints:
+        names = env.simulator.dof_names
+        keys = [s.strip() for s in joints.split(",") if s.strip()]
+        mask = torch.tensor(
+            [1.0 if any(k in n for k in keys) else 0.0 for n in names],
+            device=actions.device, dtype=actions.dtype,
+        )
+        excess = excess * mask
+    return torch.sum(torch.square(excess), dim=1)
+
+
+def penalty_joint_torque_saturation(
+    env: WholeBodyTrackingManager, joints: str = "",
+    ramp_steps: int = 0, require_lifted_z: float = 0.0
+) -> torch.Tensor:
+    """Penalize demanding more torque than the actuator can deliver.
+
+    This replaces `penalty_action_over_effort`, which charged for `|a| > 4` on the
+    hips. That premise was wrong. `action_scale = cfg * effort / kp` makes `|a| = 4`
+    the effort limit ONLY if the joint stays pinned at its default: the torque is
+    `kp * (default + a*scale - q) - kd * qd`, so once the joint MOVES toward its
+    target the position error -- not the action -- sets the torque. Measured on the
+    v31 rollout the hip commands `|a| = 9.12` while delivering 34.8 N-m of its 120
+    N-m limit, because it tracks its target to within 0.19 rad. Meanwhile waist_pitch
+    saturates at `|a| = 4.44`, precisely because it CANNOT follow: a 0.59 rad error
+    pins the PD at the ceiling. Action magnitude is not a torque criterion.
+
+    So compute the torque the PD actually asks for, exactly as
+    `JointControlAction.apply_actions` does before its `torch.clip`, and charge for
+    the part above the limit. Normalizing the excess by each joint's own limit keeps
+    a 24 N-m ankle comparable to a 120 N-m hip; without it the large actuators would
+    dominate a sum they are nowhere near saturating.
+
+    Measured saturation on seed 600 (peak demand as a multiple of the joint limit,
+    and share of the episode saturated):
+
+        joint         limit   baseline     w=-0.05 +2000   w=-0.15 +2000
+        hip_pitch     120     0.71x   0%   0.75x   0%      0.83x   0%
+        knee          120     0.28x   0%   0.24x   0%      0.29x   0%
+        waist_pitch    48     1.82x  11%   0.99x   0%      0.89x   0%
+        ankle_pitch    36     1.39x   0%   1.18x   1%      1.17x   1%
+        ankle_roll     24     1.99x  22%   4.17x  99%      7.61x  98%
+
+    The legs are never the bottleneck. The joints that run out of authority are the
+    three small ones, and ankle_roll gets monotonically worse the longer the old
+    hip-targeted penalty trains -- the policy sheds hip command and the load lands on
+    the smallest actuator on the robot, which in sim is free (the simulator delivers
+    its 24 N-m and the contact model absorbs the rest) and on hardware means no
+    lateral ankle authority is left.
+
+    Args:
+        env: the environment instance
+        joints: comma-separated substrings to restrict the penalty to (empty = all).
+            "waist_pitch,ankle_pitch,ankle_roll" targets the measured bottlenecks.
+        ramp_steps: fade in linearly over this many env steps (0 = off). Counted
+            locally -- `env.common_step_counter` does not exist on BaseTask envs and
+            reading it through `getattr(..., 0)` silently pins the ramp at zero.
+        require_lifted_z: only charge while the box is above this height (0 = always).
+            Without it the term shares the degenerate optimum of its predecessor:
+            never lift, never saturate.
+    """
+    actions = env.action_manager.action
+    # Mirror JointControlAction.apply_actions, pre-clip.
+    torques = (
+        env.p_gains * (actions * env.action_scales + env.default_dof_pos - env.simulator.dof_pos)
+        - env.d_gains * env.simulator.dof_vel
+    )
+    limits = torch.clamp(env.torque_limits, min=1e-3)
+    excess = torch.clamp(torch.abs(torques) - limits, min=0.0) / limits
+    if require_lifted_z > 0.0:
+        motion_command = _get_motion_command_and_assert_type(env)
+        lifted = (motion_command.simulator_object_pos_w[:, 2] > require_lifted_z).float()
+        excess = excess * lifted.unsqueeze(-1)
+    if ramp_steps > 0:
+        step = getattr(env, "_torque_sat_penalty_step", 0) + 1
+        env._torque_sat_penalty_step = step
+        excess = excess * min(1.0, step / float(ramp_steps))
     if joints:
         names = env.simulator.dof_names
         keys = [s.strip() for s in joints.split(",") if s.strip()]
