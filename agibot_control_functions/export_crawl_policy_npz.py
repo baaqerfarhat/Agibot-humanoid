@@ -89,6 +89,15 @@ def main() -> None:
         "action_scale": action_scale,
         "joint_stiffness": stiffness,
         "joint_damping": damping,
+        # Training clips the PD torque to these (clip_torques) but never clips
+        # the position target, so deploy needs them to reproduce the saturated
+        # torque requests instead of silently discarding them.
+        "joint_effort_limit": effort,
+        "clip_torques": bool(ctl.get("clip_torques", False)),
+        # base_ang_vel and projected_gravity are both expressed in the PELVIS
+        # (articulation-root) frame in training; motion_ref_ori_b tracks
+        # torso_link. deploy_x2_crawl.py reconstructs the pelvis from the torso
+        # IMU + waist joints for the first two and uses the raw IMU for the third.
         "observation_names": [
             "actions",
             "base_ang_vel",
