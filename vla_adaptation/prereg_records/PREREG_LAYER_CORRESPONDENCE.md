@@ -285,3 +285,41 @@ any positive.**
   class-shape-generic, not inverse-finding, and is reported as such.
 - **K (kill rule): if b6 ≥ w6 even unclipped, the correspondence idea is dead in every
   form tested, and no fifth variant is run.**
+
+### Parameter-route results — 2026-08-19 13:20 PDT. **P1, P2, P3 ALL PASS; the ranking inverts.**
+
+Raw: `outputs/param_route_g0.5.json`, log `outputs/param_route_search.log`. Gate first:
+the exact inverse (θ\* = 1/g − 1) recovers **100.0%** at BOTH magnitudes through the
+parameter route (vs 5.8% clipped) — the backend comment confirmed to the centimetre.
+
+| arm (held-out, unclipped, joint_gain g=0.5) | steps | dist | recovery | mean ‖r_k‖ |
+|---|---|---|---|---|
+| nominal | 300.0 | +5.90 m | — | — |
+| frozen | 44.8 | +0.81 m | — | — |
+| **w6 rescale (inverse class)** | 231.3 | **+6.31 m** | **+107.7%** | 17.5 |
+| b0 (input-side) | 210.3 | +4.44 m | +71.1% | **97.9** |
+| **b6 constant** | 46.0 | +0.84 m | **+0.9%** | 0.51 |
+
+- **P1 passes** (w6 > b0 > b6), **P2 passes** (107.7% vs the 100% oracle ceiling),
+  **P3 passes** (cos(found θ, θ\*) = **+0.604**, vs obs_bias's 0.04). Kill rule not
+  triggered — decisively: the constant that won every envelope-bound cell recovers
+  **0.9%** here.
+- Honest riders: (a) distance-recovery exceeds 100% while steps are 231/300 — the found
+  edit **overspeeds** at some stability cost (rule 4: both reported); the found θ has
+  ‖θ‖ 1.34 vs θ\*'s 3.46 — a smaller, differently-shaped edit that out-SCORES the exact
+  inverse on the metric. (b) b0's 71.1% comes with mean ‖r_k‖ ≈ 98 — a violent,
+  brute-force solution the unclipped contract permits; displacement reporting (rule 6)
+  is what keeps this comparable. (c) ACE_hat is ≈ 0/negative for all three classes while
+  search recovers up to 107.7% — the ACE-rescope (class-effect detector only) replicates
+  a fifth time.
+
+### The completed "which layer/class" answer, both contracts
+
+**The winning edit site is jointly determined by the fault's inverse SHAPE and the
+deployment CONTRACT.** Under the shipped action envelope (u_max 0.10), only near-constant
+edits survive the clip, so the output bias wins everywhere (2×2 above). Under a parameter
+trust-region, the inverse-shaped class wins by two orders (107.7% vs 0.9%) with the found
+edit genuinely pointing at the analytic inverse (cos +0.60). Neither "always the last
+layer" nor "the layer where the fault enters" is right on its own; the contract decides
+which question is being asked. This section closes the correspondence family (four tests,
+multiplicity recorded).
