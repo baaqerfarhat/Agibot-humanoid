@@ -30,6 +30,15 @@ import paths  # noqa: E402
 from ace_adapt import AdaptConfig, ExportedPolicy, LayerAdapter  # noqa: E402
 
 import eval_adapt_isaac as base  # noqa: E402
+from paper_adapter import (  # noqa: E402
+    PaperExact, PaperW0Leak, PaperW0LeakSpec, WeightedP01, WeightedP01Spec,
+    WeightedP10, WeightedP003, WeightedP003Spec, WeightedP001,
+    GatedAdapter, GatedAdapterTight, AceL0, AceL1, AceL2, AceL3,
+    WeightedPArm, WeightedPArmOnly, VelocityErrorAdapter, SlidingErrorAdapter,
+    SlidingErrorAdapterLowGain, BaseAttitudeAdapter, BaseAttitudeAdapterHi,
+    SlidingLambda2, SlidingLambda10, SaturationReliefAdapter, SaturationReliefStrong,
+    LookaheadAdapter, LookaheadShort, LookaheadLong,
+)
 
 N_DOF = 31
 
@@ -84,6 +93,79 @@ class W0LeakAdapter(LayerAdapter):
         if not np.isfinite(self.W[layer]).all() or self.weight_drift > self.cfg.max_weight_drift:
             self.diverged = True
             self.W[layer] = self.pol.W0[layer].copy()
+
+
+# --------------------------------------------------------------------------------------
+# Controls for the section-4 fault result.
+#
+# The task is chaotic: a 4.2e-6 action difference flips the torch-frozen arm from 6/6 to
+# 4/6 survival, while the waist-only adapter's total weight drift is 0.021 Frobenius
+# (0.19% of ||W2||_F = 11.156). The adapted arm therefore differs from its control by a
+# perturbation ~10^5 larger than one already shown to change outcomes, and nothing in the
+# original variant set separates "the law steers usefully" from "any perturbation of this
+# size reshuffles the fall time". These two controls close that gap.
+# --------------------------------------------------------------------------------------
+MEASURED_WAIST_DRIFT = 0.021   # ||W - W0||_F of w0_g3e-4_waistonly under the knee fault
+DRIFT_RAMP_STEPS = 568         # its mean survival, over which that drift accumulates
+
+
+class _RandomOffsetBase(LayerAdapter):
+    """Weight perturbation of the SAME norm as the adapter's, in a random direction.
+
+    No error signal, no update law -- only the magnitude is matched. If this
+    reproduces the waist-only survival gain, that gain is not evidence that the
+    adaptation steers anywhere useful.
+    """
+
+    RAMP = True
+
+    def reset(self):
+        super().reset()
+        layer = self.cfg.layer
+        # seeding(s) has already seeded the global RNG, so the direction is
+        # deterministic per experiment seed but differs across seeds.
+        rng = np.random.default_rng(int(np.random.randint(0, 2**31 - 1)))
+        d = rng.standard_normal(self.W[layer].shape)
+        self._dir = d / np.linalg.norm(d)
+        self._W_ref = self.pol.W0[layer].copy()
+
+    def update(self, joint_error, dt):
+        self.step += 1
+        if self.diverged:
+            return
+        layer = self.cfg.layer
+        frac = min(1.0, self.step / DRIFT_RAMP_STEPS) if self.RAMP else 1.0
+        self.W[layer] = self._W_ref + (MEASURED_WAIST_DRIFT * frac) * self._dir
+
+
+class RandomRampAdapter(_RandomOffsetBase):
+    """Random direction, magnitude ramped like the real drift. The fair control."""
+
+    RAMP = True
+
+
+class RandomFixedAdapter(_RandomOffsetBase):
+    """Random direction at full magnitude from step 0. The harsher control."""
+
+    RAMP = False
+
+
+class SignScrambledAdapter(W0LeakAdapter):
+    """The real law, real gain, real mask -- but the error vector's SIGNS are
+    scrambled by a fixed per-episode pattern.
+
+    Preserves the update's magnitude and temporal structure while destroying the
+    causal correspondence between a joint's error and its correction. Direction
+    matters if and only if this loses to the unscrambled law.
+    """
+
+    def reset(self):
+        super().reset()
+        rng = np.random.default_rng(int(np.random.randint(0, 2**31 - 1)))
+        self._sign = rng.choice([-1.0, 1.0], size=len(self.action_scale))
+
+    def update(self, joint_error, dt):
+        super().update(np.asarray(joint_error, dtype=float) * self._sign, dt)
 
 
 def make_mass_matrix_fn(task, mode: str = "schur"):
@@ -303,6 +385,51 @@ VARIANTS = [
     ("rise_g1e-4",           1e-4,   1,    RISE,        W0LeakAdapter),
     ("rise_g1e-5",           1e-5,   1,    RISE,        W0LeakAdapter),
     ("sagittal_g3e-4",       3e-4,   1,    SAGITTAL,    W0LeakAdapter),
+    # controls for the waist-only fault result (gain/gx/mask unused by the random pair)
+    ("rand_ramp_waist",      0.0,    1,    ("waist",),  RandomRampAdapter),
+    ("rand_fixed_waist",     0.0,    1,    ("waist",),  RandomFixedAdapter),
+    ("scramble_waist",       3e-4,   1,    ("waist",),  SignScrambledAdapter),
+    # theory-faithful port: P is a positive diagonal (no binary mask), so Theorem 1
+    # holds for every one of these. mask column is ignored by PaperAdapter.
+    ("paper_exact",          3e-4,   1,    None,        PaperExact),
+    ("paper_w0leak",         3e-4,   1,    None,        PaperW0Leak),
+    ("paper_w0leak_spec",    3e-4,   1,    None,        PaperW0LeakSpec),
+    ("wP_leg0.1",            3e-4,   1,    None,        WeightedP10),
+    ("wP_leg0.01",           3e-4,   1,    None,        WeightedP01),
+    ("wP_leg0.01_spec",      3e-4,   1,    None,        WeightedP01Spec),
+    ("wP_leg0.003",          3e-4,   1,    None,        WeightedP003),
+    ("wP_leg0.003_spec",     3e-4,   1,    None,        WeightedP003Spec),
+    ("wP_leg0.001",          3e-4,   1,    None,        WeightedP001),
+    # engage only once tracking degrades past the healthy per-frame profile
+    ("gated",                3e-4,   1,    None,        GatedAdapter),
+    ("gated_tight",          3e-4,   1,    None,        GatedAdapterTight),
+    # ACE probes: matched relative weight perturbation per layer, no adaptation
+    ("ace_L0",               0.0,    1,    None,        AceL0),
+    ("ace_L1",               0.0,    1,    None,        AceL1),
+    ("ace_L2",               0.0,    1,    None,        AceL2),
+    ("ace_L3",               0.0,    1,    None,        AceL3),
+    # grasp-side: arms regulated, legs still de-emphasised
+    ("wP_arm",               3e-4,   1,    None,        WeightedPArm),
+    ("wP_armonly",           3e-4,   1,    None,        WeightedPArmOnly),
+    # same law, same P/Gamma/leak/guard -- only the regulated error e changes
+    ("err_vel",              3e-4,   1,    None,        VelocityErrorAdapter),
+    ("err_slide",            3e-4,   1,    None,        SlidingErrorAdapter),
+    ("err_slide_lo",         1e-4,   1,    None,        SlidingErrorAdapterLowGain),
+    ("err_base",             3e-4,   1,    None,        BaseAttitudeAdapter),
+    ("err_base_hi",          1e-2,   1,    None,        BaseAttitudeAdapterHi),
+    ("err_base_vhi",         3e-2,   1,    None,        BaseAttitudeAdapterHi),
+    # gain-matched control: is the sliding advantage the ERROR or just the lower gain?
+    ("wP_leg0.01_lo",        1e-4,   1,    None,        WeightedP01Spec),
+    ("err_slide_l2",         1e-4,   1,    None,        SlidingLambda2),
+    ("err_slide_l10",        1e-4,   1,    None,        SlidingLambda10),
+    # redistribute away from saturated hips onto the waist/knee/ankle that have headroom
+    ("sat_relief",           3e-4,   1,    None,        SaturationReliefAdapter),
+    ("sat_relief_hi",        1e-3,   1,    None,        SaturationReliefAdapter),
+    ("sat_relief_waist",     1e-3,   1,    None,        SaturationReliefStrong),
+    # anticipatory: regulate against where the reference WILL be, at the tuned gain
+    ("lead_h5",              1e-4,   1,    None,        LookaheadShort),
+    ("lead_h15",             1e-4,   1,    None,        LookaheadAdapter),
+    ("lead_h30",             1e-4,   1,    None,        LookaheadLong),
 ]
 
 
@@ -319,6 +446,35 @@ def main() -> None:
     ap.add_argument("--fault", default="", metavar="SUBSTR:SCALE",
                     help="degrade actuators by scaling their PD stiffness, e.g. "
                          "'knee:0.3' or 'right_knee:0.2,right_hip_pitch:0.5'")
+    ap.add_argument("--fault-onset", type=int, default=0, metavar="STEP",
+                    help="control step at which the fault is injected. 0 (default) "
+                         "degrades the actuator from reset; >0 starts the episode "
+                         "healthy and fails the joint mid-motion, which is the "
+                         "regime the paper's case study actually studies.")
+    ap.add_argument("--keep-object-mass", action="store_true",
+                    help="With --dr none, KEEP the object mass/inertia randomisation. "
+                         "Training sampled box mass as 0.1 + U(0.3,2.0) kg; --dr none "
+                         "otherwise drops it and evaluates on a 0.1 kg box, below the "
+                         "trained range and with the arms effectively unloaded.")
+    ap.add_argument("--box-mass-add", default="", metavar="LO,HI",
+                    help="Override the object mass randomisation (ADD, kg). Training used "
+                         "0.3,2.0 on a 0.1 kg base = 0.4-2.1 kg total. Larger values are "
+                         "OOD payloads: a matched disturbance the policy never saw, whose "
+                         "signature is visible in the arm joints.")
+    ap.add_argument("--box-friction", default="", metavar="LO,HI",
+                    help="Override the object dynamic-friction range. Low values make the "
+                         "box slip in the grasp -- an OOD grasp condition.")
+    ap.add_argument("--replay-actions", default="", metavar="CSV",
+                    help="Feed the ACTIONS recorded in a hardware run into sim instead of "
+                         "the policy's. Identical commands both sides, so the resulting "
+                         "state difference is the PLANT residual -- the sim-to-real gap "
+                         "with the policy's own feedback removed.")
+    ap.add_argument("--inject-residual", default="", metavar="NPZ",
+                    help="Add a per-frame action offset measured by --replay-actions, "
+                         "reproducing the hardware plant residual in sim as a matched "
+                         "disturbance the adapter must reject.")
+    ap.add_argument("--residual-scale", type=float, default=1.0,
+                    help="Scale the injected residual (1.0 = as measured).")
     ap.add_argument("--check-export", type=int, default=0, metavar="N",
                     help="compare the numpy export against the torch policy for N steps "
                          "on identical observations, then exit")
@@ -348,6 +504,12 @@ def main() -> None:
     # Resolve before the chdir below, or relative output paths land inside holosoma.
     args.out_dir = str(Path(args.out_dir).resolve())
     args.record_dir = str(Path(args.record_dir).resolve())
+    # Same trap as the out-dir: these are read AFTER enter_holosoma() chdirs, so a
+    # relative path would resolve against the holosoma checkout.
+    if args.replay_actions:
+        args.replay_actions = str(Path(args.replay_actions).resolve())
+    if args.inject_residual:
+        args.inject_residual = str(Path(args.inject_residual).resolve())
 
     paths.enter_holosoma()
 
@@ -421,8 +583,27 @@ def main() -> None:
             if not terms:
                 continue
             for key in [k for k in terms if any(d in k.lower() for d in drop)]:
+                if (args.keep_object_mass and "object" in key.lower()
+                        and ("mass" in key.lower() or "inertia" in key.lower())):
+                    print(f"[dr] KEPT {bucket}.{key} (realistic box mass)")
+                    continue
                 terms.pop(key)
                 print(f"[dr] disabled {bucket}.{key}")
+
+    def _override(term_substr, param_name, spec):
+        lo, hi = [float(v) for v in spec.split(",")]
+        for bucket in ("setup_terms", "reset_terms", "step_terms"):
+            terms = getattr(saved_cfg.randomization, bucket, None) or {}
+            for k, t in list(terms.items()):
+                if term_substr in k.lower():
+                    prm = t.params if hasattr(t, "params") else t.get("params")
+                    prm[param_name] = [lo, hi]
+                    print(f"[box] {bucket}.{k}.{param_name} -> [{lo}, {hi}]")
+
+    if args.box_mass_add:
+        _override("object_rigid_body_mass", "mass_distribution_params", args.box_mass_add)
+    if args.box_friction:
+        _override("object_rigid_body_material", "dynamic_friction_range", args.box_friction)
 
     eval_cfg = saved_cfg.get_eval_config()
     object.__setattr__(eval_cfg.training, "headless", True)
@@ -454,12 +635,54 @@ def main() -> None:
     task.reset_all()  # PhysX buffers must be valid before probing the mass matrix
     mass_fn = make_mass_matrix_fn(task, mode="schur")
     fault_fn, fault_hits = make_fault_fn(task, args.fault)
+    fault_step_fn = None
+    if fault_fn is not None and args.fault_onset > 0:
+        clear_fn, _ = make_fault_fn(task, ",".join(f"{k}:1.0" for k in fault_hits))
+        onset = args.fault_onset
+
+        def fault_step_fn(step, _apply=fault_fn, _onset=onset):
+            if step == _onset:
+                _apply()
+
+        fault_reset_fn = clear_fn          # start healthy, fail later
+    else:
+        fault_reset_fn = fault_fn
 
     if args.check_export:
         check_export_match(algo, task, pol, args.check_export)
         if simulation_app:
             close_simulation_app(simulation_app)
         return
+
+    # ---- action replay / residual injection -----------------------------------------
+    action_hook = None
+    if args.replay_actions:
+        import csv as _csv
+        jn = pol.meta["joint_names"]
+        sc = np.asarray(pol.meta["action_scale"], float)
+        df = np.asarray(pol.meta["default_joint_pos"], float)
+        rows = [r for r in _csv.DictReader(open(args.replay_actions))
+                if r["phase"] == "policy"]
+        tgt = np.array([[float(r[f"{n}__tgt"]) for n in jn] for r in rows])
+        REPLAY = (tgt - df) / sc
+        print(f"[replay] {len(REPLAY)} recorded actions from {args.replay_actions}")
+
+        def action_hook(a, _R=REPLAY):
+            import torch
+            i = min(action_hook.step, len(_R) - 1)
+            action_hook.step += 1
+            return torch.as_tensor(_R[i], device=a.device, dtype=a.dtype).unsqueeze(0)
+        action_hook.step = 0
+    elif args.inject_residual:
+        RES = np.load(args.inject_residual)["action_offset"] * args.residual_scale
+        print(f"[residual] injecting {RES.shape} offset, mean |da| = {np.abs(RES).mean():.3f}")
+
+        def action_hook(a, _R=RES):
+            import torch
+            i = min(action_hook.step, len(_R) - 1)
+            action_hook.step += 1
+            return a + torch.as_tensor(_R[i], device=a.device, dtype=a.dtype).unsqueeze(0)
+        action_hook.step = 0
 
     wanted = [v.strip() for v in args.only.split(",") if v.strip()]
     variants = [v for v in VARIANTS if not wanted or v[0] in wanted]
@@ -483,16 +706,23 @@ def main() -> None:
                     pol, cfg, joint_names=pol.meta["joint_names"],
                     mass_matrix_fn=(mass_fn if gx == 2 else None),
                 )
-            # The adapter has no authority over a joint whose action is already past
-            # the effort limit: moving that action from 25 to 20 changes the delivered
-            # torque by zero, so the error it is regulating cannot respond and the
-            # update just spends the norm budget. Clipping first is what gives the
-            # adaptation a working control channel on the ankles and wrists.
+            # Upstream: clipping first gives the adapter a working control channel on
+            # joints whose action is already past the effort limit.
             clip_hook = (ActionClipHook(task, args.action_clip,
                                         tuple(s for s in args.action_clip_joints.split(",") if s))
                          if args.action_clip > 0 else None)
+            # Local: action replay / residual injection. Compose so the effort-limit
+            # clip is applied LAST -- it is a physical bound on whatever we produce.
+            if action_hook is not None:
+                action_hook.step = 0        # per-rollout, not per-session
+            if action_hook is not None and clip_hook is not None:
+                def _hook(a, _inner=action_hook, _clip=clip_hook):
+                    return _clip(_inner(a))
+            else:
+                _hook = action_hook or clip_hook
             r = base._rollout(algo, task, adapter, args.steps, ref_pos, ctrl_dt,
-                              on_reset=fault_fn, action_hook=clip_hook)
+                              on_reset=fault_reset_fn, on_step=fault_step_fn,
+                              action_hook=_hook)
             r.update(box_metrics(r["records"], ctrl_dt))
             rows.append(r)
             if args.record_seed is not None and s == args.record_seed:
@@ -508,7 +738,7 @@ def main() -> None:
                   f"{'PLACED' if r['placed'] else ('HELD' if r['success'] else 'DROPPED')}"
                   f"{'  DIVERGED' if r['diverged'] else ''}")
         results[name] = [
-            {k: r[k] for k in ("survival", "tracked", "leg_err", "drift", "diverged",
+            {k: r[k] for k in ("survival", "tracked", "leg_err", "leg_err_fix", "drift", "diverged",
                                "lifted", "carry_s", "max_box_z", "final_dist",
                                "placed", "success")} for r in rows
         ]
@@ -540,6 +770,7 @@ def main() -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(
         {"seeds": seeds, "steps": args.steps, "ctrl_dt": ctrl_dt, "dr": args.dr,
+        "fault_onset": args.fault_onset,
          "obs_noise": args.obs_noise, "ckpt": args.ckpt, "motion": args.motion,
          "fault": fault_hits or None,
          "config": {n: {"gain": g, "gx_level": gx, "error_joints": list(m) if m else None,

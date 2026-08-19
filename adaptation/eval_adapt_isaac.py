@@ -41,7 +41,7 @@ def _leg_idx(names: list[str]) -> list[int]:
 
 
 def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: float,
-             on_reset=None, obs_hook=None, action_hook=None):
+             on_reset=None, obs_hook=None, action_hook=None, on_step=None):
     """One closed-loop Isaac rollout. adapter=None => frozen torch policy.
 
     `on_reset` runs immediately after the reset, before the first action. Fault
@@ -81,6 +81,11 @@ def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: 
         "leg_err_deg": [],
         "frame": [],
         "weight_drift": [],
+        # V(s) from the TRAINED CRITIC. It sees 308 privileged dims (box pose/velocity,
+        # body poses, base linear velocity) that the robot cannot sense, so this is a
+        # sim-only diagnostic -- but it is the only signal that says "how well will this
+        # go from here", which is what an anticipatory correction needs to target.
+        "value": [],
     }
 
     # Optional box handle (same detection as EvalRecordingCallback).
@@ -100,6 +105,11 @@ def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: 
     import torch
 
     for step in range(max_steps):
+        # Time-triggered actuator faults: the paper initiates faults mid-run, not at
+        # t=0, so the adapter has to detect and compensate a transition rather than a
+        # constant degradation it started inside.
+        if on_step is not None:
+            on_step(step)
         actor_obs = torch.cat([actor_state["obs"][k] for k in algo.actor_obs_keys], dim=1)
         if obs_hook is not None:
             actor_obs = obs_hook(actor_obs)
@@ -125,6 +135,8 @@ def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: 
 
         sim = task.simulator
         q = sim.dof_pos[0].detach().cpu().numpy()
+        # read the root state BEFORE the adapter block: the context hook needs it
+        root = sim.robot_root_states[0].detach().cpu().numpy()
         frame = int(cmd.time_steps[0].item()) if hasattr(cmd, "time_steps") else step
         frame = min(frame, len(ref_pos) - 1)
         err_vec = q - ref_pos[frame]
@@ -132,15 +144,34 @@ def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: 
         errs.append(leg_err)
 
         if adapter is not None:
+            # Adapters that regulate something other than joint POSITION error need the
+            # rest of the state. Optional hook: position-error adapters ignore it.
+            if hasattr(adapter, "set_context"):
+                adapter.set_context(
+                    dof_vel=sim.dof_vel[0].detach().cpu().numpy().copy(),
+                    root_pos=root[:3].copy(),
+                    root_quat_xyzw=root[3:7].copy(),
+                    root_lin_vel=root[7:10].copy(),
+                    root_ang_vel=root[10:13].copy(),
+                    frame=frame,
+                )
             adapter.update(err_vec, ctrl_dt)
 
-        root = sim.robot_root_states[0].detach().cpu().numpy()
         records["dof_pos"].append(q.copy())
         records["dof_vel"].append(sim.dof_vel[0].detach().cpu().numpy().copy())
         records["actions"].append(actions[0].detach().cpu().numpy().copy())
         records["root_pos"].append(root[:3].copy())
         records["root_quat_xyzw"].append(root[3:7].copy())
         records["leg_err_deg"].append(leg_err)
+        try:
+            ck = getattr(algo, "critic_obs_keys", None)
+            if ck:
+                raw = torch.cat([actor_state["obs"][k] for k in ck], dim=1)
+                with torch.no_grad():
+                    v = algo.critic.evaluate({"critic_obs": algo._normalize_critic_obs(raw)})
+                records["value"].append(float(v.flatten()[0]))
+        except Exception:
+            pass
         records["frame"].append(frame)
         records["weight_drift"].append(adapter.weight_drift if adapter is not None else 0.0)
 
@@ -162,12 +193,17 @@ def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: 
         actor_state["obs"] = actor_state.get("obs", actor_state["obs"])
 
     mean_err = float(np.mean(errs)) if errs else float("nan")
+    # Fixed-window error: comparable ACROSS variants that survive different lengths.
+    W_FIX = 120
+    err_fix = (float(np.mean(errs[:W_FIX])) if len(errs) >= W_FIX
+               else float("nan"))
     drift = adapter.weight_drift if adapter is not None else 0.0
     diverged = bool(adapter.diverged) if adapter is not None else False
     return {
         "survival": survival,
         "tracked": tracked if tracked is not None else survival,
         "leg_err": mean_err,
+        "leg_err_fix": err_fix,
         "drift": drift,
         "diverged": diverged,
         "records": records,
