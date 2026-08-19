@@ -316,3 +316,21 @@ adaptation code is written.**
   server, then the fault suite (perception-side: camera/proprio bias; actuation-side:
   gain/offset; dynamics-side: object mass/friction) + headroom gate before any adaptation.
   GR00T remains the later cross-embodiment variant if hardware allows.
+
+## Vehicle amendment 2 — 19 Aug 14:45: SONIC/GR00T-WholeBodyControl is the primary vehicle
+
+`github.com/NVlabs/GR00T-WholeBodyControl` releases what the project's SONIC notes said was
+missing: **PyTorch checkpoints** (3 Unitree G1 variants — the ONNX-only blocker is gone),
+the full training stack, a **MuJoCo sim environment** (laptop-runnable; Isaac only for
+training), 50 Hz control, and a C++/TensorRT real-G1 deployment stack. Tasks are genuinely
+**loco-manipulation** (locomotion modes + bimanual manipulation + motion tracking).
+
+- **Primary:** SONIC-G1 in MuJoCo — the loco-manipulation testbed; faults/OOD mirror the
+  walker suite (torque limits, gains, friction, payload; the 08-16 friction-OOD winner cell
+  is the first candidate); edit sites = decoder output bias/rescale (FSQ bottleneck makes
+  decoder-only adaptation forced, which IS the VLA case).
+- **Comparisons:** UnifoLM-VLA-0 (Unitree's own VLA, LIBERO ckpt) and openpi π0-FAST —
+  manipulation-only, same method, same prereg discipline. Two frozen foundation models +
+  one method + matched controls is the paper table.
+- Hardware: MuJoCo sim local (CPU now, GPU after driver fix); model inference torch;
+  64-GPU finetuning irrelevant (we never finetune — episodic search only).
