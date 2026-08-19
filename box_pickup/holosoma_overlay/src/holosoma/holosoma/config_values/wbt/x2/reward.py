@@ -306,9 +306,16 @@ x2_31dof_wbt_reward_w_object = RewardManagerCfg(
         # hips. See penalty_joint_torque_saturation for the measurement table.
         "penalty_joint_torque_saturation": RewardTermCfg(
             func="holosoma.managers.reward.terms.wbt:penalty_joint_torque_saturation",
+            # Ungated: ankle_roll saturates across the WHOLE episode -- approach and
+            # descent included -- so a lifted-box gate charged for only part of it and
+            # the term rose instead of falling (4.17x -> 4.87x over 3000 iterations).
+            # Weight cut 5x because it is now active ~100% of the time rather than
+            # during the carry alone. Watch feet_anchor/foot_slip: the cheapest way to
+            # shed ankle torque is to move where the feet land, which would read as
+            # success here while changing the gait.
             params={"joints": "waist_pitch,ankle_pitch,ankle_roll", "ramp_steps": 24_000,
-                    "require_lifted_z": 0.30},
-            weight=-0.05,
+                    "require_lifted_z": 0.0, "position_term_only": True},
+            weight=-0.10,
         ),
         **x2_31dof_wbt_reward.terms,
         "object_global_ref_position_error_exp": RewardTermCfg(

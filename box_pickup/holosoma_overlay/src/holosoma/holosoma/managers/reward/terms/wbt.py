@@ -553,7 +553,8 @@ def penalty_action_over_effort(
 
 def penalty_joint_torque_saturation(
     env: WholeBodyTrackingManager, joints: str = "",
-    ramp_steps: int = 0, require_lifted_z: float = 0.0
+    ramp_steps: int = 0, require_lifted_z: float = 0.0,
+    position_term_only: bool = False,
 ) -> torch.Tensor:
     """Penalize demanding more torque than the actuator can deliver.
 
@@ -608,6 +609,21 @@ def penalty_joint_torque_saturation(
         - env.d_gains * env.simulator.dof_vel
     )
     limits = torch.clamp(env.torque_limits, min=1e-3)
+    if position_term_only:
+        # Charge only the POSITION component. A joint held by ground contact cannot
+        # follow a large commanded offset, so kp*(target - q) sits pinned at the limit
+        # for the whole episode -- that is a sustained, unrealizable command. The
+        # kd*qd component, by contrast, spikes transiently whenever the joint moves
+        # fast and is legitimate. Measured on right_ankle_roll: the fine-tuned policy
+        # commands +35.2 deg while achieving +1.8 deg, so |P| averages 58 N-m against
+        # a 24 N-m limit and the actuator is pinned 99% of the episode. The baseline
+        # commands +5.0 deg and is pinned 22%, mostly from damping. Nothing in the
+        # reward set objected: action_rate penalises CHANGES, and a constant offset
+        # has zero rate, so the phantom offset is free -- and in sim it BUYS stability,
+        # since a permanently maxed ankle presses the foot down and raises friction.
+        torques = env.p_gains * (
+            actions * env.action_scales + env.default_dof_pos - env.simulator.dof_pos
+        )
     excess = torch.clamp(torch.abs(torques) - limits, min=0.0) / limits
     if require_lifted_z > 0.0:
         motion_command = _get_motion_command_and_assert_type(env)
