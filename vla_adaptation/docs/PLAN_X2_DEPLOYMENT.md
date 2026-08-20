@@ -154,6 +154,30 @@ images. Two ways forward:
 Physics-only Isaac work (Phase C's G, the rank/certification scripts) is unaffected --
 that path never touches Hydra.
 
+**Route 2 chosen (root is unavailable) — and MuJoCo rendering is VERIFIED on this box.**
+`x2/mj_render_check.py`, offscreen with `MUJOCO_GL=egl`:
+
+    x2_31dof_w_largebox.xml   nq=45 nbody=46 ngeom=96 nmesh=38   render 224x224 OK, nonblack
+    x2_31dof.xml              nq=38 nbody=45 ngeom=95 nmesh=37   render 224x224 OK, nonblack
+
+The image shows the robot standing with the box (`results/x2_mujoco_render_proof.png`), so
+the geometry the Isaac USD was arguing about is present and renderable in MJCF form.
+
+Three things make the port much smaller than a rewrite:
+- **holosoma already supports MuJoCo as a first-class backend** (`simulator:mujoco`,
+  classic or warp). The X2 experiment config merely *selects* `simulator.isaacsim`, so
+  switching is config-level.
+- **The manipulation scene already exists in MJCF**: `x2_31dof_w_largebox.xml` is X2 with
+  the box (one extra body, nq 45 vs 38).
+- **A blocker was cleared:** holosoma's `data/robots/x2/x2_31dof.xml` declares
+  `meshdir="assets"` while the directory is named `meshes`, so it would not load under
+  MuJoCo at all. Fixed with an additive symlink `assets -> meshes` (untracked, changes no
+  file in the pinned checkout). It now loads: 38 dof, 43 bodies, 37 meshes.
+
+Remaining for Phase A on this route: install mujoco into an env holosoma can see WITHOUT
+mutating the training env, build the eval config against `simulator.mujoco`, add a head
+camera to the MJCF, and re-run the Phase A gate with frames.
+
 ### Phase B — is there a gap, and is it the right size?  *(the condition-A gate)*
 
 Run the frozen `REAL_G1` head on X2 through the harness. Report success rate, end-effector
