@@ -67,6 +67,15 @@ x2_31dof_wbt = ExperimentConfig(
             robot.x2_31dof.control,
             action_scale=0.25,
             action_scales_by_effort_limit_over_p_gain=True,
+            # ankle_roll auto-scales to 0.06 rad/unit (0.25*24/100), letting the policy
+            # command +35 deg on a joint whose reference spans -5.2..+4.2 deg. The foot
+            # is in ground contact and cannot follow, so kp*(target-q) pins at the 24
+            # N-m limit for 99% of the episode -- a free exploit, since action_rate
+            # penalises CHANGES and a constant offset has zero rate, while a permanently
+            # maxed ankle presses the foot down and buys friction in sim. 0.02 keeps the
+            # full reference range reachable (+-5.2 deg at |a|~4.5) while making
+            # saturation impossible below |a|=12.
+            action_scale_overrides={"ankle_roll": 0.02},
         ),
         asset=replace(robot.x2_31dof.asset, enable_self_collisions=True),
         init_state=replace(robot.x2_31dof.init_state, pos=[0.0, 0.0, _X2_WBT_INIT_HEIGHT]),
@@ -125,6 +134,15 @@ x2_31dof_wbt_fast_sac = ExperimentConfig(
             robot.x2_31dof.control,
             action_scale=0.25,
             action_scales_by_effort_limit_over_p_gain=True,
+            # ankle_roll auto-scales to 0.06 rad/unit (0.25*24/100), letting the policy
+            # command +35 deg on a joint whose reference spans -5.2..+4.2 deg. The foot
+            # is in ground contact and cannot follow, so kp*(target-q) pins at the 24
+            # N-m limit for 99% of the episode -- a free exploit, since action_rate
+            # penalises CHANGES and a constant offset has zero rate, while a permanently
+            # maxed ankle presses the foot down and buys friction in sim. 0.02 keeps the
+            # full reference range reachable (+-5.2 deg at |a|~4.5) while making
+            # saturation impossible below |a|=12.
+            action_scale_overrides={"ankle_roll": 0.02},
         ),
         asset=replace(robot.x2_31dof.asset, enable_self_collisions=True),
         init_state=replace(robot.x2_31dof.init_state, pos=[0.0, 0.0, _X2_WBT_INIT_HEIGHT]),
@@ -148,6 +166,12 @@ x2_31dof_wbt_w_object = replace(
     command=command.x2_31dof_wbt_command_w_object,
     robot=replace(
         robot.x2_31dof_w_object,
+        # NOTE: this replaces `robot` wholesale, so the control block customised on
+        # x2_31dof_wbt above is NOT inherited -- it must be set again here.
+        control=replace(
+            robot.x2_31dof_w_object.control,
+            action_scale_overrides={"ankle_roll": 0.02},
+        ),
         asset=replace(robot.x2_31dof_w_object.asset, enable_self_collisions=True),
         object=replace(
             robot.x2_31dof_w_object.object,
@@ -169,6 +193,12 @@ x2_31dof_wbt_fast_sac_w_object = replace(
     command=command.x2_31dof_wbt_command_w_object,
     robot=replace(
         robot.x2_31dof_w_object,
+        # NOTE: this replaces `robot` wholesale, so the control block customised on
+        # x2_31dof_wbt above is NOT inherited -- it must be set again here.
+        control=replace(
+            robot.x2_31dof_w_object.control,
+            action_scale_overrides={"ankle_roll": 0.02},
+        ),
         asset=replace(robot.x2_31dof_w_object.asset, enable_self_collisions=True),
         object=replace(
             robot.x2_31dof_w_object.object,
@@ -233,6 +263,15 @@ x2_31dof_wbt_crawl = replace(
             robot.x2_31dof.control,
             action_scale=0.25,
             action_scales_by_effort_limit_over_p_gain=True,
+            # ankle_roll auto-scales to 0.06 rad/unit (0.25*24/100), letting the policy
+            # command +35 deg on a joint whose reference spans -5.2..+4.2 deg. The foot
+            # is in ground contact and cannot follow, so kp*(target-q) pins at the 24
+            # N-m limit for 99% of the episode -- a free exploit, since action_rate
+            # penalises CHANGES and a constant offset has zero rate, while a permanently
+            # maxed ankle presses the foot down and buys friction in sim. 0.02 keeps the
+            # full reference range reachable (+-5.2 deg at |a|~4.5) while making
+            # saturation impossible below |a|=12.
+            action_scale_overrides={"ankle_roll": 0.02},
         ),
         asset=replace(robot.x2_31dof.asset, enable_self_collisions=True),
         init_state=replace(robot.x2_31dof.init_state, pos=[0.0, 0.0, _X2_CRAWL_INIT_HEIGHT]),
