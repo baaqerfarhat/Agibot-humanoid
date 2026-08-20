@@ -23,6 +23,20 @@ Four boot gotchas, each of which fails without naming its cause (see the module 
      passes --enable_cameras, without which replicator's OmniGraph never exists and
      annotator.attach() dies with "Invalid object in Py_Graph".
 
+CAMERA STATUS (20 Aug): NOT WORKING, and the failure is upstream of this file.
+The prim attaches, the render product is created, and the app launches with
+`enable_cameras=True` (verified in args_cli) -- but the annotator returns shape (0,)
+forever. So does holosoma's OWN video-recorder annotator in the same process, which is
+the tell: this is not a bug in how we attach. Drive mechanisms tried, all empty:
+sim.sim.step(render=True), sim.sim.render(), video_recorder.capture_frame(),
+SimulationApp.update(). rep.orchestrator.step() -- replicator's documented driver --
+blocks indefinitely instead.
+
+Next things to try, in order: (a) run holosoma's own eval CLI with video recording on and
+see whether IT ever writes a non-empty mp4 -- if not, this is a pre-existing environment
+problem rather than anything the harness introduced; (b) use IsaacLab's Camera /
+TiledCamera sensor instead of raw replicator, which owns the graph lifecycle properly.
+
 Usage:
     h = X2Harness(with_camera=True)
     h.setup()
@@ -162,16 +176,26 @@ class X2Harness:
                                                   do_array_copy=True)
         ann.attach([rp])
         self._rep, self._ann = rep, ann
+        print(f"  [cam] attached {self.res} at {cam_path}", flush=True)
 
     # -------------------------------------------------------------- capture
     def grab_rgb(self):
         """One RGB frame, or None while the render graph is still warming up."""
         if self._ann is None:
             return None
+        # NOTE: do NOT call rep.orchestrator.step() here. It can block indefinitely when
+        # the render pipeline is driven by the sim loop rather than by replicator -- that
+        # call, not GPU contention, is what hung three probe runs for an hour each. The
+        # annotator is populated by sim.sim.step(render=True); it simply returns an empty
+        # buffer for the first few frames while the graph warms up.
+        # The rollout steps PHYSICS only; nothing drives the renderer, so the annotator
+        # stays empty unless we ask for a render pass here.
         try:
-            self._rep.orchestrator.step(rt_subframes=1)
-        except Exception:
-            pass
+            self.task.simulator.sim.render()
+        except Exception as e:
+            if not getattr(self, "_render_warned", False):
+                print("  [cam] render() failed:", type(e).__name__, str(e)[:60])
+                self._render_warned = True
         a = np.asarray(self._ann.get_data())
         if a.size == 0:
             return None
