@@ -1,0 +1,35 @@
+{
+  "experiment": "GR00T N1.7 feasibility on Quadro RTX 8000 (Turing sm_75)",
+  "date": "2026-08-20T01:30-07:00",
+  "model": "nvidia/GR00T-N1.7-3B",
+  "backbone": "nvidia/Cosmos-Reason2-2B (gated; licence accepted)",
+  "dataset": "demo_data/droid_sample, traj 1, 60 steps",
+  "embodiment_tag": "OXE_DROID_RELATIVE_EEF_RELATIVE_JOINT",
+  "verdict": "RUNS, and is practical once cast to fp16",
+  "torch": {"version": "2.9.0+cu128", "arch_list_includes_sm_75": true},
+  "required_settings": [
+    "sys.modules['flash_attn'] = None  -- installed flash-attn is worse than absent on sm_75",
+    "policy.model.half()  -- bf16 has no mem-efficient SDPA kernel on sm_75, silently uses MATH"
+  ],
+  "arms": {
+    "bf16_default": {"sec_per_inference_step": 13.812, "mse": 0.0017983, "mae": 0.0283373},
+    "fp16_patched": {"sec_per_inference_step": 0.377,  "mse": 0.0017687, "mae": 0.0279606}
+  },
+  "speedup": 36.6,
+  "model_load_sec": 17.2,
+  "base_checkpoint_supported_tags": [
+    "OXE_DROID_RELATIVE_EEF_RELATIVE_JOINT", "REAL_G1", "REAL_R1_PRO_SHARPA",
+    "REAL_R1_PRO_SHARPA_HUMAN", "REAL_R1_PRO_SHARPA_MAXINSIGHTS",
+    "REAL_R1_PRO_SHARPA_MECKA", "XDOF", "XDOF_SUBTASK"
+  ],
+  "per_embodiment_interface": {
+    "slots": 32,
+    "action_decoder.layer2.b": [32, 132],
+    "action_decoder.layer2.W": [32, 1024, 132],
+    "action_decoder.layer1.W": [32, 1024, 1024],
+    "state_encoder.layer1.W": [32, 132, 1024],
+    "state_encoder.layer2.W": [32, 1024, 1536],
+    "action_encoder.W1.W": [32, 132, 1536],
+    "shared_trunk": "32 DiT blocks, vl_self_attention, vlln, position_embedding, Cosmos VLM"
+  }
+}
