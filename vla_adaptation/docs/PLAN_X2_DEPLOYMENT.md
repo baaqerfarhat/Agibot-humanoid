@@ -166,6 +166,40 @@ downstream -- this cost the project weeks once." It would have cost weeks again:
 as a clean 12/12 pass, and its self-check (trace(M) varies) passed honestly while
 checking the wrong thing.
 
+**Correction to this retraction (same session):** the claim that "the contact projection
+is inert" was itself wrong. At a *physical* state it is live —
+`||correction||/||Minv|| = 9.5e-2`, rank 12. It merely leaves the HAND map almost
+unchanged (`||G||` 1701 free vs 1700 contact), because foot constraints act in directions
+the hand Jacobian barely sees. The identical cosines that prompted the claim were a real
+physical near-invariance, not a coding bug. The airborne-pose defect stands.
+
+**Debugging log — six hypotheses eliminated, C2 still fails.** Measured at a settled
+reset state (feet z ~0.09-0.10), 16 directions, eps=50 (well above the 1.9e-4 replay
+noise floor):
+
+| hypothesis | test | verdict |
+|---|---|---|
+| M is returned already inverted | pinv(M) vs M-as-inverse | pinv(M) right: cos +0.53 vs -0.14 |
+| joint-first, not root-first | both row layouts | root-first right: +0.53 vs +0.00 |
+| dof_ids permutation unnecessary | with vs without | **permutation matters**: +0.53 vs +0.22 |
+| joint PD fights the applied effort | zero stiffness/damping | already 0 — holosoma applies torques directly |
+| one sim step != sim_dt | get_physics_dt, nstep 1/2/4 | dt is 0.005; ratio flat ~0.09-0.12 |
+| Jacobian row/body convention | idx vs idx-1, [lin;ang] vs [ang;lin] | original right: +0.53 vs +0.30/+0.01 |
+
+**The residual signature, and it is specific:** splitting the 6-D task error,
+**linear-only cos = -0.08** while **angular-only cos = +0.54**. The angular block
+partially agrees; the linear block carries no information at all, and the magnitude is
+~10x over-predicted throughout. That pattern points at the ground-contact response rather
+than at the algebra — a standing robot's linear hand acceleration is dominated by
+unilateral frictional contact, which neither the rigid bilateral projection nor the
+free-floating model represents.
+
+**Recommendation before spending more on this:** `ACCGain.matrix()` in the private
+`x2_ttcl` testbed is *already certified 8/8* for X2. Rebuilding a certified G from PhysX
+primitives is duplicating work that exists, and doing it worse. Get `x2_ttcl` onto this
+machine and use it; the scripts here (`x2/c1_rank.py`, `x2/c2*.py`) then become a
+cross-check of that implementation rather than a replacement for it.
+
 **Before C1 is rerun:** place the root so the feet actually contact the ground (use the
 clip's root trajectory, not the reset pose, or settle under gravity); fix or remove the
 contact projection and prove it changes G; and re-run C2 to the 8/8 bar first. **C1 is
