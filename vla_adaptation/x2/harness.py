@@ -40,6 +40,9 @@ from pathlib import Path
 import numpy as np
 
 ADAPTATION = Path(__file__).resolve().parents[2] / "adaptation"
+# ace_adapt (ExportedPolicy) lives in the vendored package dir, and the adaptation
+# scripts put BOTH on sys.path -- see the header of adapt_experiments_isaac.py.
+sys.path.insert(0, str(ADAPTATION / "ACC_ADAPTATION_PACKAGE"))
 sys.path.insert(0, str(ADAPTATION))
 
 TASK_PROMPT = "pick up the box and carry it"
@@ -184,16 +187,22 @@ class X2Harness:
         seeding(seed, torch_deterministic=False)
         frames, steps_at = [], []
 
-        def on_step(step):
-            if self.with_camera and step % capture_every == 0:
+        # _rollout on this branch has no on_step hook (that lives on lift-feasibility),
+        # but obs_hook fires once per control step and can pass the obs through
+        # untouched, which is all a frame grab needs.
+        step_n = [0]
+
+        def obs_hook(obs):
+            i = step_n[0]; step_n[0] += 1
+            if self.with_camera and i % capture_every == 0:
                 f = self.grab_rgb()
                 if f is not None:
-                    frames.append(f)
-                    steps_at.append(step)
+                    frames.append(f); steps_at.append(i)
+            return obs
 
         r = base._rollout(self.algo, self.task, None,
                           max_steps or self.steps, self.ref_pos, self.ctrl_dt,
-                          on_step=on_step)
+                          obs_hook=obs_hook)
         r.update(box_metrics(r["records"], self.ctrl_dt))
         r["frames"] = np.stack(frames) if frames else None
         r["frame_steps"] = steps_at

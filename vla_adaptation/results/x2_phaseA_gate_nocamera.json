@@ -1,0 +1,40 @@
+{
+  "episodes": [
+    {
+      "seed": 0.0,
+      "survival": 314.0,
+      "lifted": 1.0,
+      "carry_s": 2.3000000000000003,
+      "max_box_z": 1.083821415901184,
+      "final_dist": 1.2485389571371661,
+      "placed": 0.0,
+      "success": 0.0,
+      "n_frames": 0
+    },
+    {
+      "seed": 1.0,
+      "survival": 500.0,
+      "lifted": 1.0,
+      "carry_s": 5.46,
+      "max_box_z": 0.7551974654197693,
+      "final_dist": 0.38474777756317413,
+      "placed": 1.0,
+      "success": 1.0,
+      "n_frames": 0
+    },
+    {
+      "seed": 2.0,
+      "survival": 272.0,
+      "lifted": 1.0,
+      "carry_s": 1.06,
+      "max_box_z": 0.6247187852859497,
+      "final_dist": 0.38666652207583757,
+      "placed": 1.0,
+      "success": 1.0,
+      "n_frames": 0
+    }
+  ],
+  "success": 2,
+  "n": 3,
+  "frames": 0
+}
