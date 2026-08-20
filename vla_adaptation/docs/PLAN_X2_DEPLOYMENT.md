@@ -123,6 +123,37 @@ preference order: the existing holosoma/Isaac `box_pickup` scene with cameras ad
 rate. **Kill:** no runnable X2 manipulation scene within two weeks -> the sim target is not
 available and the direction waits on hardware, which is worth knowing early.
 
+### Phase A status (20 Aug) — scoring half DONE, camera half BLOCKED BY THE DRIVER
+
+`x2/harness.py` boots X2, runs the trained v31 policy and scores it (2/3 success,
+~1-2 min per 500-step episode). **Cameras cannot work on this machine at all**, and the
+cause is neither the harness nor GPU contention:
+
+    Installed driver: 535.5            <- Omniverse's MISPARSE of 535.261.03
+    The unsupported driver range: [0.0, 535.129)
+    [Error] carb.scenerenderer-rtx: rtx driver verification failed
+    [Warning] omni.hydra.rtx: HydraEngine rtx failed creating scene renderer
+
+The real driver (535.261.03) is NEWER than the recommended 535.161.07. With no RTX
+renderer there is no Hydra engine, so every replicator annotator returns shape (0,)
+forever -- ours AND holosoma's own video recorder, which is why no mp4 is written either.
+Forcing `--/rtx/verifyDriverVersion/enabled=false` gets past the check and then segfaults
+in `UsdManager::createHydraEngine`, so it is not merely a bad version string.
+
+**Consequence for the plan.** Phase A cannot complete under Isaac here, and Phase B needs
+images. Two ways forward:
+
+1. **Upgrade the NVIDIA driver** to one Omniverse accepts. Needs root. Unblocks Isaac
+   rendering and keeps the whole X2 asset/scene stack as-is -- the cheapest option if
+   the machine can take a driver change.
+2. **Render under MuJoCo instead.** holosoma ships a mujoco backend, `mjlab` is vendored
+   in this repo, and LIBERO rendered 500 episodes on this box with `MUJOCO_GL=egl` -- so
+   MuJoCo's offscreen path demonstrably works on this driver. Costs a backend port of
+   the box-pickup scene; buys independence from Omniverse entirely.
+
+Physics-only Isaac work (Phase C's G, the rank/certification scripts) is unaffected --
+that path never touches Hydra.
+
 ### Phase B — is there a gap, and is it the right size?  *(the condition-A gate)*
 
 Run the frozen `REAL_G1` head on X2 through the harness. Report success rate, end-effector

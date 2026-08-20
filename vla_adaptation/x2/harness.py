@@ -119,6 +119,13 @@ class X2Harness:
             # (4) THIS is what passes --enable_cameras at launch.
             object.__setattr__(eval_cfg.logger.video, "enabled", True)
 
+        # DO NOT re-add the driver-check override here. Omniverse misparses this box's
+        # driver 535.261.03 as "535.5", calls it below its 535.129 minimum, and refuses
+        # the RTX renderer -- which is why every annotator is empty. Passing
+        # --/rtx/verifyDriverVersion/enabled=false gets past the check and then SEGFAULTS
+        # in omni::usd::UsdManager::createHydraEngine. Cameras need a driver upgrade
+        # (root), or a MuJoCo backend. Physics-only use of this harness is unaffected.
+
         env, device, app = setup_simulation_environment(eval_cfg)
         self.env, self.device, self.app = env, device, app
 
