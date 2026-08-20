@@ -132,6 +132,45 @@ error, and failure mode against an X2-appropriate reference.
 — frozen success in (5%, 70%). Floor-dead gives no search signal (the tq04 lesson);
 near-ceiling gives nothing to win. **Report the headroom explicitly.**
 
+### RETRACTION — C1 as first reported is withdrawn (20 Aug, same night)
+
+`x2_c1_rank_boxpickup.json` reported G full rank 12/12 frames on X2. **That result does
+not stand.** C2 ran immediately after and failed, with two causes that both invalidate C1:
+
+1. **The configurations were not physical.** C1 posed the robot by writing joint angles
+   from mid-clip while leaving the root at its RESET pose. Measured foot heights at the
+   evaluated state: left z=0.544, right z=0.689, ground z=0. **The robot was airborne**,
+   so "box-pickup configurations" is false and the contact-consistent projection was
+   applied to a robot in no contact at all.
+2. **The contact projection is inert.** both-feet (12 constraints), left-foot-only, and
+   free-floating produce cosines identical to four decimals (+0.2765) and identical
+   magnitude ratios (0.135). A 12-constraint projection cannot leave G unchanged, so
+   `Mc^-1 = M^-1 - M^-1 Jc^T (Jc M^-1 Jc^T)^+ Jc M^-1` is not doing anything as coded.
+
+C2's finite-difference certification against the sim (below) is the falsifier:
+
+| gate | result |
+|---|---|
+| 0 — does J vary with the kinematic write? | **PASS**, max dJ 1.04 (so C1's J was live, not stale) |
+| 1 — replay determinism | **FAIL**, max diff 1.9e-4 (small: ~0.1% of the FD signal, not the main cause) |
+| 2 — epsilon plateau | cos pinned at +0.75 across FIVE decades; no plateau structure, and \|fd\| 10x below \|pred\| |
+| 3 — 32-direction holdout | cos mean **+0.33**, min -0.95, \|fd\|/\|pred\| median **0.14** |
+
+The walker's gate was cos +0.954. A flat-but-wrong cosine across five decades is the
+signature of a modelling error rather than a numerical one, and the magnitude being
+~7x too large points at the same place.
+
+**This is the protocol doing its job.** LESSONS §4z records six bugs found by exactly
+this certification, and the plan's own C2 says "an uncertified G invalidates everything
+downstream -- this cost the project weeks once." It would have cost weeks again: C1 read
+as a clean 12/12 pass, and its self-check (trace(M) varies) passed honestly while
+checking the wrong thing.
+
+**Before C1 is rerun:** place the root so the feet actually contact the ground (use the
+clip's root trajectory, not the reset pose, or settle under gravity); fix or remove the
+contact projection and prove it changes G; and re-run C2 to the 8/8 bar first. **C1 is
+not established, and nothing downstream may cite it.**
+
 ### Phase C — verify the premises, no adaptation yet  *(the cheap disqualifiers)*
 
 - **C1 (P1).** `rank(G_B) = p` across states on X2 via `ACCGain.matrix()`. *Already measured
