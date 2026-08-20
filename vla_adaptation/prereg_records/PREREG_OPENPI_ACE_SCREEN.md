@@ -183,6 +183,60 @@ the variance is not a selection stage.
 
 ---
 
+## Section 0 result — 2026-08-20 00:30 PDT, BEFORE the gate and screen. **The random-init number was wrong by 3x.**
+
+Raw: `results/openpi_s0_bias_fidelity.json`. Trained `pi05_libero`, bf16, observation and
+noise held fixed, beta on 8 of 32 dims.
+
+| | random init | **trained** |
+|---|---|---|
+| ratio measured/predicted | 0.942 | **0.311** |
+| cross-dim leak | 11.9% | **2.9%** |
+
+Stability sweep, 3 noise seeds x beta in {0.02, 0.05, 0.10}:
+
+| beta | seed 7 | seed 11 | seed 23 |
+|---|---|---|---|
+| 0.02 | 0.310 | 0.326 | 0.373 |
+| 0.05 | 0.313 | 0.323 | 0.378 |
+| 0.10 | 0.324 | 0.338 | 0.375 |
+
+**ratio = 0.340 +/- 0.026** (min 0.310, max 0.378). Essentially constant in beta across a
+5x range, so the map is LINEAR; the spread is driven by the noise draw, not the magnitude.
+
+### What this changes
+
+- **The b6 class still works, at ~1/3 the analytic gain.** A target action offset needs
+  `beta ~ 2.9x` the naive value. Any sigma0 carried over from the walker's action-space
+  constants would have searched a 3x-too-small region -- the exact units trap of LESSONS
+  rule "a scale correction silently retunes every constant downstream of it".
+- **The trained flow is CONTRACTIVE, and that is the interesting part.** At random init the
+  sampler passes a velocity-field offset through almost intact (0.94). Trained, it rejects
+  two thirds of it. The denoiser is a feedback loop that funnels `x_t` toward the data
+  manifold, so perturbing its velocity produces a partially cancelling correction on the
+  next step -- a flow-matching instance of the `S + T = I` argument in
+  `PLAN_CROSS_EMBODIMENT.md` section 1.5, arising INSIDE the action head rather than in the
+  robot's servo loop. It also predicts the direction of a useful contrast: an edit applied
+  to the emitted action CHUNK (client-side, post-sampler) faces no such rejection and should
+  land at ratio 1.0, whereas the same edit at the layer is attenuated 3x. The two routes
+  are therefore NOT equivalent here, which is the openpi analogue of the residual-contract
+  vs parameter-route distinction the walker closed on.
+- Cross-dim leak FELL (11.9% -> 2.9%): the trained head is far cleaner in its channel
+  separation than a random one.
+
+### Caveat carried forward
+
+Measured on `cfg.fake_obs()`, a synthetic observation. The ratio is stable across noise
+draws but has NOT been measured on real LIBERO observations, which is the operating
+regime. Re-measure on a real observation stream before any b6-class search claim rests on
+the 0.34 figure; the qualitative finding (trained flow attenuates, ~3x, linearly) is what
+this section establishes.
+
+**No part of the gate or screen design changes as a result** -- section 3 perturbs weights
+directly and does not depend on this ratio. Recorded here because a later search does.
+
+---
+
 ## Results
 
 *(appended after the run)*

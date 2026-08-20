@@ -1,0 +1,32 @@
+{
+  "experiment": "PREREG_OPENPI_ACE_SCREEN section 0 -- bias-edit fidelity",
+  "date": "2026-08-20T00:30-07:00",
+  "checkpoint": "gs://openpi-assets/checkpoints/pi05_libero",
+  "model": "Pi0Config(pi05=True, action_horizon=10, discrete_state_input=False)",
+  "dtype": "bfloat16",
+  "edit_site": "action_out_proj/bias",
+  "edited_dims": 8,
+  "action_dim": 32,
+  "observation": "cfg.fake_obs() -- SYNTHETIC, see caveat in the prereg",
+  "sampler": "flow matching, 10 steps, x_t += dt*v_t, sum(dt) = -1",
+  "analytic_prediction": "a constant bias beta lands as -beta on the action",
+  "headline": {"ratio_measured_over_predicted": 0.340, "sd": 0.026,
+               "min": 0.310, "max": 0.378, "n": 9},
+  "random_init_reference": {"ratio": 0.942, "cross_dim_leak": 0.119},
+  "sweep": [
+    {"beta": 0.02, "noise_seed": 7,  "ratio": 0.310, "leak": 0.062},
+    {"beta": 0.05, "noise_seed": 7,  "ratio": 0.313, "leak": 0.028},
+    {"beta": 0.10, "noise_seed": 7,  "ratio": 0.324, "leak": 0.019},
+    {"beta": 0.02, "noise_seed": 11, "ratio": 0.326, "leak": 0.052},
+    {"beta": 0.05, "noise_seed": 11, "ratio": 0.323, "leak": 0.023},
+    {"beta": 0.10, "noise_seed": 11, "ratio": 0.338, "leak": 0.016},
+    {"beta": 0.02, "noise_seed": 23, "ratio": 0.373, "leak": 0.047},
+    {"beta": 0.05, "noise_seed": 23, "ratio": 0.378, "leak": 0.025},
+    {"beta": 0.10, "noise_seed": 23, "ratio": 0.375, "leak": 0.018}
+  ],
+  "readings": [
+    "linear in beta across a 5x range; spread is driven by the noise draw",
+    "trained flow is contractive: it rejects ~2/3 of a velocity-field offset",
+    "client-side chunk edits face no such rejection -- predicted ratio 1.0, not measured"
+  ]
+}
