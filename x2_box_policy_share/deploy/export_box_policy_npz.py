@@ -82,6 +82,17 @@ def main() -> None:
         action_scale = [ctl["action_scale"] * e / kp for e, kp in zip(effort, stiffness)]
     else:
         action_scale = [float(ctl["action_scale"])] * len(joint_names)
+    # Per-joint overrides must be applied here too, or a policy trained with a
+    # capped scale deploys with the uncapped one. ankle_roll is capped at 0.02
+    # (vs 0.06 from effort/kp) because the auto-scale sizes authority to the
+    # ACTUATOR, not to the joint's task range, and the surplus let the policy
+    # command a sustained +35 deg offset the foot cannot follow -- pinning the
+    # 24 N-m actuator for 99% of the episode. Exporting without this would put a
+    # 3x mismatch on the robot with no error anywhere.
+    for key, value in (ctl.get("action_scale_overrides") or {}).items():
+        for i, name in enumerate(joint_names):
+            if key in name:
+                action_scale[i] = float(value)
 
     # ---------------- reference motion ----------------
     m = np.load(args.motion, allow_pickle=True)
