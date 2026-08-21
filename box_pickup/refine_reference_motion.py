@@ -40,7 +40,7 @@ from rebuild_reference_motion import (
     pull_inside,
     support_margin,
 )
-from urdf_fk import quat_wxyz_to_mat
+from urdf_fk import mat_to_quat_wxyz, quat_wxyz_to_mat
 
 WS = Path("/home/baaqer/baaqer_ws")
 MOTIONS = WS / "holosoma/src/holosoma/holosoma/data/motions/x2_31dof/whole_body_tracking"
@@ -63,6 +63,10 @@ BAL_MARGIN = 0.025  # m the CoM is kept inside the feet while both are down
 BAL_MARGIN_SS = -0.030  # m allowed outside during a step: a walking CoM is meant to
 # travel towards the swing foot, and forcing it over the stance foot every instant
 # both destroys the gait and injects the acceleration it was supposed to remove
+STAND_H = 0.640  # m from the soles to the pelvis in the final stance. A straight leg
+# is 0.670, so this leaves a gentle knee bend and keeps the IK off that singularity.
+SETTLE_S = 1.2  # s to rise out of the set-down into that stance
+HOLD_S = 0.4  # s held upright, so the episode ends settled rather than mid-move
 BOX_SIGMA = 6.0  # frames; a carried box is low-passed by its own inertia, it does
 # not copy every tremor in the hands
 ZMP_MARGIN = 0.010  # m the ZMP is kept inside the feet while both are down
@@ -162,6 +166,54 @@ def main():
     dt = 1.0 / FPS
 
     log(f"source: {SRC.name}  {n} frames, {n/FPS:.2f}s  (walk kept)")
+
+    # ------------------------------------------- 0. finish standing up after the drop
+    # The retarget stops 22 deg short of upright, still rising out of the set-down, so
+    # the episode would end with the robot folded over.  Ease to a neutral stance on
+    # the feet it is already standing on.  Done here, before everything else, so the
+    # foot pinning, the balance pass and the ZMP retiming all cover the new frames too.
+    log("\n[0] finish the clip standing upright")
+    R_end = quat_wxyz_to_mat(root_quat[-1])
+    qL = {nm: dof[-1, jn.index(nm)] for leg in legs.values() for nm in leg.names}
+    foot_end = {b: legs[b].fk(qL, root_pos[-1], R_end) for b in FEET}
+    floor_end = min(
+        (p + Rm @ np.asarray(FIXED_FRAMES[s][1]))[2]
+        for b, (p, Rm) in foot_end.items()
+        for s in SPHERES if s.startswith(b.split("_")[0])
+    )
+    stance_end = {
+        b: (np.array([p[0], p[1], floor_end + SOLE_DZ]), level(yaw_of(Rm)))
+        for b, (p, Rm) in foot_end.items()
+    }
+    yaw_end = yaw_of(R_end)
+    tgt_rp = np.array([
+        np.mean([stance_end[b][0][0] for b in FEET]),
+        np.mean([stance_end[b][0][1] for b in FEET]),
+        floor_end + STAND_H,
+    ])
+    tgt_rq = mat_to_quat_wxyz(level(yaw_end))
+    tgt_dof = leg_ik(  # neutral upper body, legs solved to stay on those two feet
+        legs, np.zeros(len(jn)), jn, tgt_rp, level(yaw_end), stance_end, robot.lim
+    )
+    ease = int(SETTLE_S * FPS)
+    hold = int(HOLD_S * FPS)
+    w = 0.5 * (1 - np.cos(np.pi * np.arange(1, ease + 1) / ease))  # C1 at both ends
+    key = Rot.from_quat(np.stack([root_quat[-1], tgt_rq])[:, [1, 2, 3, 0]])
+    add_q = Slerp([0.0, 1.0], key)(w).as_quat()[:, [3, 0, 1, 2]]
+    add_dof = dof[-1] + w[:, None] * (tgt_dof - dof[-1])
+    add_rp = root_pos[-1] + w[:, None] * (tgt_rp - root_pos[-1])
+    dof = np.concatenate([dof, add_dof, np.repeat(tgt_dof[None], hold, 0)])
+    root_pos = np.concatenate([root_pos, add_rp, np.repeat(tgt_rp[None], hold, 0)])
+    root_quat = np.concatenate([root_quat, add_q, np.repeat(tgt_rq[None], hold, 0)])
+    pad = ease + hold
+    box_pos = np.concatenate([box_pos, np.repeat(box_pos[-1][None], pad, 0)])
+    box_quat = np.concatenate([box_quat, np.repeat(box_quat[-1][None], pad, 0)])
+    carry_m = np.concatenate([carry_m, np.zeros(pad)])
+    n = len(dof)
+    tp = np.degrees(np.arccos(np.clip(
+        robot.fk(dof[-1], jn, root_pos[-1], root_quat[-1])["torso_link"][1][2, 2], -1, 1)))
+    log(f"    appended {SETTLE_S:.1f}s rise + {HOLD_S:.1f}s hold on the final stance:"
+        f" trunk pitch ends at {tp:.1f} deg, pelvis at {root_pos[-1,2]:.3f} m")
 
     def stage(tag, dofs=None, rp=None, rq=None):
         """Planar CoM acceleration after a stage, so any kink is attributed correctly."""
@@ -367,6 +419,8 @@ def main():
     # ----------------------------- 7. stretch the clock where the body cannot follow
     log("\n[7] stretch the clock where CoM accel / joint speed exceed the hardware")
     best, n0 = np.inf, n
+    snap = None  # the best-scoring clip seen, restored on the way out: a warp that
+    # makes things worse must not be the one we keep just because it was the last
     for it in range(6):
         com = np.array([
             robot.com(robot.fk(dof[f], jn, root_pos[f], root_quat[f]))[0] for f in range(len(dof))
@@ -396,15 +450,18 @@ def main():
         log(f"    pass {it}: peak CoM accel {ca.max():5.2f} m/s^2, peak joint speed "
             f"{vr.max()*100:3.0f}% of limit, {len(dof)/FPS:.2f}s")
         score = float(over.max())
-        if score <= 1.02:
-            break
-        if score > best - 0.02:  # a posture problem will not yield to more time
+        if score < best - 0.02:
+            best = score
+            snap = (dof.copy(), root_pos.copy(), root_quat.copy(),
+                    box_pos.copy(), box_quat.copy(), carry_m.copy(), dsup.copy())
+        else:  # a posture problem will not yield to more time
             log("    no further gain from stretching; the residual is spatial, not timing")
+            break
+        if score <= 1.02:
             break
         if len(dof) > 1.25 * n0:
             log("    stopping: any more and the walk stops looking like the original")
             break
-        best = score
         speed = gaussian_filter1d(1.0 / np.maximum(over, 1.0), 6.0, mode="nearest")
         s = np.concatenate([[0.0], np.cumsum(1.0 / (FPS * speed[:-1]))])
         src = np.interp(np.arange(int(s[-1] * FPS) + 1) / FPS, s, np.arange(len(speed)))
@@ -428,6 +485,10 @@ def main():
                 {b: (tgt_p[b][f], tgt_R[b][f]) for b in FEET}, robot.lim,
             )
 
+    if snap is not None and len(snap[0]) != n:
+        dof, root_pos, root_quat, box_pos, box_quat, carry_m, dsup = snap
+        n = len(dof)
+        log(f"    rolled back to the best pass ({n/FPS:.2f}s)")
     log(f"    clip length {n0/FPS:.2f}s -> {n/FPS:.2f}s"
         f"  ({100*(n/n0-1):+.0f}% to stay inside the feet)")
 

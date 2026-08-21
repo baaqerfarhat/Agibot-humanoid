@@ -115,10 +115,25 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--checkpoint", required=True)
     ap.add_argument("--config", required=True)
-    ap.add_argument("--motion", default=str(MOTION))
+    ap.add_argument("--motion", default=None)
     ap.add_argument("--out", required=True)
     ap.add_argument("--skip-export", action="store_true")
     args = ap.parse_args()
+
+    # Default to the clip the run ACTUALLY trained on, read from its own config.
+    # This used to default to a hardcoded path; exporting a newer run with it
+    # embeds the wrong reference trajectory in the deployed npz, so the robot
+    # would track a motion the policy has never seen -- on hardware, not in a video.
+    if args.motion is None:
+        import yaml
+
+        cfg = yaml.safe_load(open(args.config))
+        rel = cfg["command"]["setup_terms"]["motion_command"]["params"]["motion_config"][
+            "motion_file"
+        ]
+        cand = Path("/home/baaqer/baaqer_ws/holosoma/src/holosoma") / rel
+        args.motion = str(cand if cand.exists() else MOTION)
+        print(f"[export] motion from run config: {Path(args.motion).name}")
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

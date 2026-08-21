@@ -82,6 +82,15 @@ def main() -> None:
         action_scale = [ctl["action_scale"] * e / kp for e, kp in zip(effort, stiffness)]
     else:
         action_scale = [float(ctl["action_scale"])] * len(joint_names)
+    # Mirror JointControlAction._configure_action_scales: per-joint overrides are
+    # applied AFTER the effort/kp derivation. Without this the export silently ships
+    # the derived scale, and a policy trained with ankle_roll capped at 0.02 would be
+    # deployed at 0.06 -- every ankle command 3x what the policy meant, on the joint
+    # that has the least authority to begin with.
+    for key, value in (ctl.get("action_scale_overrides") or {}).items():
+        for i, name in enumerate(joint_names):
+            if key in name:
+                action_scale[i] = float(value)
 
     # ---------------- reference motion ----------------
     m = np.load(args.motion, allow_pickle=True)
