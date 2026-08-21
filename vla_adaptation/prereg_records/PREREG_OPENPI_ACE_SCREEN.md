@@ -239,4 +239,55 @@ directly and does not depend on this ratio. Recorded here because a later search
 
 ## Results
 
-*(appended after the run)*
+### §1 fault suite and headroom gate — run 2026-08-20, 18:24–20:49 PDT
+
+Frozen π0.5-LIBERO served from `gs://openpi-assets/checkpoints/pi05_libero`, `libero_spatial`,
+2 trials/task × 10 tasks = 20 episodes per cell, identical initial states across cells.
+Client: `vla_adaptation/openpi/gate_faults.py`; per-cell JSONs in `results/gate04/`.
+
+**Harness check.** The same client run with no fault: **19/20 = 95%**. Consistent with the
+99.0% reference (one failure in 20 has probability 0.18 at p = 0.99); the reference for the
+gate stays the 500-episode number, per §1.
+
+| fault | sev | success | drop | verdict |
+|---|---|---|---|---|
+| gain | 0.7 | 19/20 = 95% | 4 | drop < 30 |
+| gain | 0.5 | 15/20 = 75% | 24 | drop < 30 |
+| gain | 0.3 | 0/20 = 0% | 99 | floor-dead |
+| offset | 0.05 | 11/20 = 55% | 44 | **KEEP** |
+| offset | 0.10 | 1/20 = 5% | 94 | floor-dead |
+| offset | 0.20 | 0/20 = 0% | 99 | floor-dead |
+| brightness | 0.1 | 20/20 = 100% | −1 | drop < 30 |
+| brightness | 0.2 | 20/20 = 100% | −1 | drop < 30 |
+| brightness | 0.4 | 20/20 = 100% | −1 | drop < 30 |
+
+**Exactly one cell survives: `offset @ 0.05`, 55%, a 44-point drop.** The §1 tie-break
+(prefer the actuation-gain cell) never triggers, there being no tie.
+
+**Interpretation recorded with the runs, not after.** §1 says "per-joint action gain … on
+the 7-DoF arm action", but LIBERO's 7-vector is 6 OSC deltas plus a gripper channel that is
+effectively ±1; scaling that 7th dim models a disabled gripper rather than a weak joint. The
+arm faults were therefore applied to dims 0–5. Every cell JSON records `dims: 6`.
+
+**The brightness null is verified, not assumed.** A perception fault reading exactly 100% at
+all three severities is the shape of a dead term, so it was checked directly: the fault is
+live at the input — 100% of pixels change, image mean 120 → 145.6 → 170.5 → 215.5 — while
+the resulting change in the served action, |Δa| ≈ 0.018–0.020, sits **at the sampler's own
+noise floor**: querying the identical observation twice gives |Δa| = 0.0168. π0.5-LIBERO is
+invariant to a global brightness bias up to its own stochasticity. That noise floor is
+itself a number the screen must clear.
+
+**Two cells excluded near a boundary, neither re-run.**
+- `gain @ 0.5` drops 24 points, 6 points outside the 30-point threshold — and 6 > 5, so §7's
+  declared re-run-at-40-episodes clause does not cover it. No gain severity between 0.5 and
+  0.3 was tested and none will be: §1 forbids re-sweeping severities to manufacture a cell.
+- `offset @ 0.10` sits at exactly 5.0% — 1 episode of 20 — and the floor is `> 5%`, so it is
+  excluded by a single episode. Flagged as fragile and left excluded, for the same reason.
+
+**Consequence for the screen, stated plainly.** The surviving fault is a *constant action
+offset*, which is precisely the b6 class: `action_out_proj/bias` produces a constant action
+offset, so fault class and tier-1 edit class coincide. That is the most favourable geometry
+available and the least informative about the general case. §1 preferred the gain cell
+exactly because its inverse is state-dependent and multiplicative — the regime the walker's
+residual contract could not express — and that cell did not survive the gate. Any positive
+result from a search on this cell carries that caveat.
