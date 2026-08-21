@@ -239,6 +239,40 @@ directly and does not depend on this ratio. Recorded here because a later search
 
 ## Results
 
+### §0b pre-run check on the SCREEN — recorded before any draw is scored
+
+The same discipline §0 applies to the b6 class, applied to the intervention itself: how far
+does a c = 0.02 layer perturbation actually move the action, against the sampler's own
+noise? Measured on one real `libero_spatial` observation, server-side, before the screen ran.
+
+**The perturbation is live through the serving path, and this had to be established rather
+than assumed.** openpi serves via `nnx_utils.module_jit`, which splits the module ONCE and
+closes over that state — mutating the model in place is a silent no-op through inference.
+`ace_server.py` therefore passes state as a jit *argument*. With the sampler RNG pinned the
+noise floor is exactly 0.0000 and every site moves the action by a non-zero amount:
+
+| site | applied ‖Δ‖/‖W‖ | \|Δaction\| mean (RNG pinned) |
+|---|---|---|
+| `action_out_proj/bias` | 0.0187 | 0.0002 |
+| `action_out_proj/kernel` | 0.0199 | 0.0004 |
+| `llm/mlp/linear/L0` | 0.0200 | 0.0005 |
+| `img/.../Dense_1/kernel/B26` | 0.0200 | 0.0003 |
+
+**The number that matters: the sampler's own noise floor on the same observation, RNG free,
+is 0.019** — roughly **40×** the effect of the intervention being screened.
+
+What this does and does not imply. It does NOT prove the screen is dead: over a 220-step
+closed loop a *systematic* weight change accumulates coherently (~T) while zero-mean sampler
+noise accumulates as ~√T, so the gap narrows with horizon, and a weight perturbation alters
+the policy function in a state-dependent way rather than adding a constant. It does mean the
+screen is being run at an intervention scale far below the policy's intrinsic variability,
+and that a primary failure under §6 would be substantially a statement about **power at
+c = 0.02**, not about whether `ACE_hat` can rank layers in principle.
+
+Recorded here, before the run, so that a null result is interpretable rather than
+retrospectively explained. **No rescue follows from it**: c stays 0.02, the site list stays
+frozen, draws and episodes-per-draw stay as declared (§7).
+
 ### §1 fault suite and headroom gate — run 2026-08-20, 18:24–20:49 PDT
 
 Frozen π0.5-LIBERO served from `gs://openpi-assets/checkpoints/pi05_libero`, `libero_spatial`,
