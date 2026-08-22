@@ -79,6 +79,20 @@ def site_stats(state, site: Site) -> dict:
     raise KeyError(f"{site.path} not found in the state tree")
 
 
+def rel_tol(numel: int) -> float:
+    """How far the REALISED ||Delta||/||W|| may sit from c before a draw is called dead.
+
+    rho is set so the ratio equals c in EXPECTATION; the realised norm of a Gaussian draw
+    is chi-distributed, with relative sd 1/sqrt(2*numel). That is 12.5% at the 32-element
+    bias site, so a fixed +-10% band rejects a third of its legitimate draws -- which is
+    exactly what aborted the first run. The band therefore scales as 6 sigma, floored at
+    25% so huge layers still get a meaningful check. This guards against a perturbation
+    that never landed (rel ~ 0); it is not a constraint on the estimator, which stays
+    N(0, rho^2 I) as pre-registered.
+    """
+    return float(max(0.25, 6.0 / np.sqrt(2.0 * numel)))
+
+
 def rho_for(stats: dict, c: float = C_REL) -> float:
     """prereg §3: rho = c * ||W||_F / sqrt(numel), so ||Delta||_F/||W||_F == c."""
     return c * stats["fro"] / np.sqrt(stats["numel"])
@@ -169,7 +183,8 @@ def main():
                        rho=st["rho"], fro=st["fro"], numel=st["numel"],
                        applied_rel=applied["rel"], delta_fro=applied["dnorm"],
                        pin_rng=holder["pin_rng"],
-                       ok=abs(applied["rel"] - C_REL) < 0.1 * C_REL)
+                       rel_tol=rel_tol(st["numel"]),
+                       ok=bool(abs(applied["rel"] - C_REL) <= rel_tol(st["numel"]) * C_REL))
         ack["stamp"] = stamp
         a.ack.write_text(json.dumps(ack, indent=1))
         logging.info("control applied: %s", ack)

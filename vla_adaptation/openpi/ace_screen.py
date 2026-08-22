@@ -87,9 +87,13 @@ class Runner:
                 raise RuntimeError(f"server never acked control for {site} draw {draw}")
         if site is not None:
             rel = ack.get("applied_rel", 0.0)
-            if not ack.get("ok") or abs(rel - C_REL) > 0.1 * C_REL:
+            # tolerance is the server's dimension-aware band: this catches a perturbation
+            # that never landed, not the chi-fluctuation of a legitimate Gaussian draw.
+            tol = ack.get("rel_tol", 0.25)
+            if not ack.get("ok") or abs(rel - C_REL) > tol * C_REL:
                 raise RuntimeError(
-                    f"perturbation NOT live for {site} draw {draw}: applied_rel={rel}")
+                    f"perturbation NOT live for {site} draw {draw}: "
+                    f"applied_rel={rel:.5f} outside +-{100*tol:.0f}% of {C_REL}")
         return ack
 
     def probe(self):
