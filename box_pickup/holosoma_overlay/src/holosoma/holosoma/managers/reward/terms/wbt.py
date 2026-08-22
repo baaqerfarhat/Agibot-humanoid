@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import re
 from typing import TYPE_CHECKING, List
 
@@ -465,10 +466,40 @@ def hands_to_object_relative_position_error_exp(
 # ================================================================================================
 
 
+def _reference_stance_mask(
+    env: WholeBodyTrackingManager,
+    idxs: List[int],
+    height: float,
+    speed: float,
+) -> torch.Tensor:
+    """Which feet the REFERENCE has planted right now. [E, F] bool.
+
+    The planted-feet penalties below were written for an in-place clip where the
+    answer is always "both", so they were free to charge for any foot motion at
+    all. Against a clip that walks, that is simply wrong: it bills the policy for
+    the steps the reference is asking it to take, and -- worse -- for the catch
+    step that would save it when the CoM leaves the support polygon. Gating on the
+    reference keeps the whole point of the penalties (no skating, no hovering, no
+    inventing steps) while leaving the reference's own steps, and a recovery step
+    where the reference is already mid-swing, unpriced.
+
+    A foot counts as planted when the reference has it both low and slow; height
+    alone cannot tell, because the swings in this clip only clear a few cm.
+    """
+    motion_command = _get_motion_command_and_assert_type(env)
+    t = motion_command.time_steps
+    ref_pos = motion_command.motion.body_pos_w[t][:, idxs]  # [E, F, 3], floor at z=0
+    ref_vel = motion_command.motion.body_lin_vel_w[t][:, idxs]
+    return (ref_pos[..., 2] < height) & (torch.norm(ref_vel[..., :2], dim=-1) < speed)
+
+
 def penalty_foot_slip(
     env: WholeBodyTrackingManager,
     foot_body_names: List[str] | None = None,
     contact_force_threshold: float = 1.0,
+    reference_stance_only: bool = False,
+    stance_height: float = 0.10,
+    stance_speed: float = 0.20,
 ) -> torch.Tensor:
     """Penalize horizontal foot velocity while the foot is in contact.
 
@@ -484,6 +515,8 @@ def penalty_foot_slip(
     # contact: max |F| over recent history > threshold
     hist = env.simulator.contact_forces_history  # [E, H, B, 3]
     contact = torch.max(torch.norm(hist[:, :, idxs, :], dim=-1), dim=1)[0] > contact_force_threshold
+    if reference_stance_only:
+        contact = contact & _reference_stance_mask(env, idxs, stance_height, stance_speed)
     vel_xy = env.simulator._rigid_body_vel[:, idxs, :2]  # [E, 2, 2]
     slip = torch.norm(vel_xy, dim=-1) * contact.float()
     return torch.sum(slip, dim=1)
@@ -543,6 +576,9 @@ def penalty_feet_contact_loss(
     env: WholeBodyTrackingManager,
     foot_body_names: List[str] | None = None,
     contact_force_threshold: float = 1.0,
+    reference_stance_only: bool = False,
+    stance_height: float = 0.10,
+    stance_speed: float = 0.20,
 ) -> torch.Tensor:
     """Penalize each foot that has lost ground contact (0, 1, or 2).
 
@@ -561,7 +597,100 @@ def penalty_feet_contact_loss(
     idxs = [env.simulator.find_rigid_body_indice(n) for n in foot_body_names]
     hist = env.simulator.contact_forces_history  # [E, H, B, 3]
     contact = torch.max(torch.norm(hist[:, :, idxs, :], dim=-1), dim=1)[0] > contact_force_threshold
-    return torch.sum((~contact).float(), dim=1)
+    missing = ~contact
+    if reference_stance_only:
+        missing = missing & _reference_stance_mask(env, idxs, stance_height, stance_speed)
+    return torch.sum(missing.float(), dim=1)
+
+
+class ComSupportMarginPenalty(RewardTermBase):
+    """Penalize the CoM approaching, or leaving, the edge of the support polygon.
+
+    Rollouts of v6 fall the same way every time: the CoM crosses outside the feet
+    at the top of the lift and the robot topples ~1.1 s later. Nothing in the
+    reward notices. Every existing term is a tracking error or a joint-level
+    penalty, and by the time tracking error reports the fall the robot is already
+    committed -- statically there is no recovery once the CoM is out, whatever the
+    ankles do. This gives the balance state its own dense signal, one that starts
+    charging while there is still a support polygon to steer back into.
+
+    The margin is the signed distance from the CoM's ground projection to the hull
+    of the soles that are carrying load: positive inside, negative outside. Rather
+    than build a hull, it is measured as the smallest clearance over a fan of
+    horizontal directions, which is batched, cheap, and smooth in the foot pose.
+    """
+
+    # Sole corners in the ankle_roll_link frame, from the URDF's contact spheres.
+    # The spheres are their own links but sit behind fixed joints, so the sim
+    # collapses them into the ankle and they never appear in body_names; the foot
+    # has to be reconstructed from the ankle pose and these offsets instead.
+    SOLE = ((-0.05, 0.05), (-0.05, -0.05), (0.11, 0.05), (0.11, -0.05), (0.139, 0.0))
+
+    def __init__(self, cfg: RewardTermCfg, env: WholeBodyTrackingManager):
+        super().__init__(cfg, env)
+        self.env = env
+        names = cfg.params.get("foot_body_names") or [
+            "left_ankle_roll_link",
+            "right_ankle_roll_link",
+        ]
+        self.idxs = [env.simulator.find_rigid_body_indice(n) for n in names]
+        self.margin = float(cfg.params.get("margin", 0.04))
+        self.cap = float(cfg.params.get("cap", 0.20))
+        self.force_threshold = float(cfg.params.get("contact_force_threshold", 1.0))
+        k = int(cfg.params.get("directions", 16))
+        ang = torch.arange(k, device=env.device, dtype=torch.float32) * (2.0 * math.pi / k)
+        self.dirs = torch.stack([torch.cos(ang), torch.sin(ang)], dim=-1)  # [K, 2]
+        sole = torch.tensor(self.SOLE, device=env.device, dtype=torch.float32)
+        self.sole = torch.cat([sole, torch.full_like(sole[:, :1], -0.068)], dim=-1)  # [S, 3]
+        self._mass_cache: torch.Tensor | None = None
+
+    def __call__(self, env: WholeBodyTrackingManager, **kwargs) -> torch.Tensor:
+        pos = env.simulator._rigid_body_pos[:, self.idxs, :]  # [E, F, 3]
+        rot = env.simulator._rigid_body_rot[:, self.idxs, :]  # [E, F, 4] xyzw
+        e, f, s = pos.shape[0], pos.shape[1], self.sole.shape[0]
+        corners = pos[:, :, None, :] + quat_apply(
+            rot[:, :, None, :].expand(e, f, s, 4).reshape(-1, 4),
+            self.sole[None, None].expand(e, f, s, 3).reshape(-1, 3),
+            w_last=True,
+        ).reshape(e, f, s, 3)
+
+        hist = env.simulator.contact_forces_history  # [E, H, B, 3]
+        loaded = (
+            torch.max(torch.norm(hist[:, :, self.idxs, :], dim=-1), dim=1)[0] > self.force_threshold
+        )  # [E, F]
+
+        proj = corners[..., :2].reshape(e, f * s, 2) @ self.dirs.T  # [E, F*S, K]
+        keep = loaded[:, :, None].expand(e, f, s).reshape(e, f * s)
+        proj = torch.where(keep[..., None], proj, torch.full_like(proj, -1e6))
+        support = proj.amax(dim=1)  # [E, K] hull extent in each direction
+        margin = (support - self._com(env) @ self.dirs.T).amin(dim=-1)  # [E]
+        # Airborne means no polygon at all; cap keeps that from dwarfing every
+        # other term rather than letting a -1e6 margin blow the reward up.
+        return torch.clamp(self.margin - margin, min=0.0, max=self.cap)
+
+    def reset(self, env_ids: torch.Tensor | None = None) -> None:
+        """Nothing to carry between episodes: the margin is read off the current pose."""
+
+    def _com(self, env: WholeBodyTrackingManager) -> torch.Tensor:
+        mass = self._masses(env)  # [E, B]
+        pos = env.simulator._rigid_body_pos[..., :2]  # [E, B, 2]
+        return (pos * mass[..., None]).sum(dim=1) / mass.sum(dim=1, keepdim=True)
+
+    def _masses(self, env: WholeBodyTrackingManager) -> torch.Tensor:
+        if getattr(self, "_mass_cache", None) is None:
+            sim = env.simulator
+            if hasattr(sim, "_robot") and hasattr(sim._robot, "root_physx_view"):
+                m = sim._robot.root_physx_view.get_masses().to(env.device)
+            else:  # mujoco keeps it on the model
+                from holosoma.simulator.mujoco.fields import _field_view
+
+                m = _field_view(sim, "body_mass").to(env.device)
+            nb = env.simulator._rigid_body_pos.shape[1]
+            m = m.reshape(-1, m.shape[-1])[:, :nb]
+            if m.shape[0] == 1:
+                m = m.expand(env.num_envs, -1)
+            self._mass_cache = m.contiguous()
+        return self._mass_cache
 
 
 def _feet_gravity_in_foot_frame(env: WholeBodyTrackingManager, idxs: List[int]) -> torch.Tensor:

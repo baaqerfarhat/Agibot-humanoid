@@ -96,6 +96,14 @@ box_grasp_init_pose = NoiseToInitialPoseConfig(
     object_pos=[0.05, 0.05, 0.0],
 )
 
+# When the REFERENCE has a foot planted, for the gated foot penalties below. The
+# ankle_roll_link rides 68 mm above its contact spheres, so a flat foot sits at
+# ~0.068 m; 0.10 m admits it with margin without admitting a swing. Height alone
+# cannot decide, though -- the swings in this clip only clear 2-6 cm -- so a foot
+# has to be slow as well as low to count as planted.
+X2_STANCE_HEIGHT = 0.10
+X2_STANCE_SPEED = 0.20
+
 X2_BODY_NAMES_TO_TRACK = [
     "pelvis",
     "left_hip_roll_link",
@@ -315,20 +323,30 @@ x2_31dof_box_grasp_reward = RewardManagerCfg(
             params={"joint_names": ["waist_yaw_joint"]},
             weight=-2.0,
         ),
-        # ---- CARRIED OVER (2/3): planted feet -----------------------------
-        # The reference never moves a foot (0.1 mm of lift, 0.001 m/s of
-        # contact-phase slide), so both terms are ~0 for a policy that tracks
-        # it and only charge for the skating/stepping the original objective
-        # left free. foot_slip sums |v_xy| over feet in contact; contact_loss
-        # counts unloaded feet (0/1/2). They are kept in proportion (-4 / -3):
-        # lifting a foot zeroes foot_slip, so if contact_loss were much cheaper
-        # the policy would escape slip by stepping. 20 N demands the foot be
-        # loaded, not just grazing the floor.
+        # ---- CARRIED OVER (2/3): planted feet, now gated on the reference --
+        # foot_slip sums |v_xy| over feet in contact; contact_loss counts
+        # unloaded feet (0/1/2). They are kept in proportion (-4 / -3): lifting
+        # a foot zeroes foot_slip, so if contact_loss were much cheaper the
+        # policy would escape slip by stepping. 20 N demands the foot be loaded,
+        # not just grazing the floor.
+        #
+        # v7: both are gated on the reference's own stance. They were written
+        # for an in-place clip where the reference never moves a foot, so
+        # charging for any foot motion cost nothing correct. This clip walks in,
+        # so ungated they bill the policy for the steps the reference is asking
+        # for -- and, far worse, for the catch step that is the only thing that
+        # saves it once the CoM leaves the feet. v6 shuffled instead of stepping
+        # and toppled. Gated, they still forbid skating a planted foot and
+        # hovering one the reference has planted; they just stop pricing the
+        # steps the clip contains and the recovery the robot needs.
         "foot_slip": RewardTermCfg(
             func="holosoma.managers.reward.terms.wbt:penalty_foot_slip",
             params={
                 "foot_body_names": ["left_ankle_roll_link", "right_ankle_roll_link"],
                 "contact_force_threshold": 1.0,
+                "reference_stance_only": True,
+                "stance_height": X2_STANCE_HEIGHT,
+                "stance_speed": X2_STANCE_SPEED,
             },
             weight=-4.0,
         ),
@@ -337,8 +355,34 @@ x2_31dof_box_grasp_reward = RewardManagerCfg(
             params={
                 "foot_body_names": ["left_ankle_roll_link", "right_ankle_roll_link"],
                 "contact_force_threshold": 20.0,
+                "reference_stance_only": True,
+                "stance_height": X2_STANCE_HEIGHT,
+                "stance_speed": X2_STANCE_SPEED,
             },
             weight=-3.0,
+        ),
+        # ---- NEW: keep the CoM inside the feet ----------------------------
+        # v6 fell the same way every rollout: the CoM crossed outside the
+        # support polygon at the top of the lift and the robot toppled 1.1 s
+        # later, 82% of the escape lateral. Nothing in the reward could see it.
+        # Tracking error only reports the fall once it is already unrecoverable
+        # -- statically, once the CoM is out, no ankle torque brings it back --
+        # so the policy never had a gradient toward staying balanced, only
+        # toward matching poses. This charges for the margin itself, from 4 cm
+        # of clearance inward, while there is still a polygon to steer into.
+        # Weight is deliberately below the tracking terms: it should break ties
+        # between equally on-reference poses, not buy a crouch that ignores the
+        # clip.
+        "com_support_margin": RewardTermCfg(
+            func="holosoma.managers.reward.terms.wbt:ComSupportMarginPenalty",
+            params={
+                "foot_body_names": ["left_ankle_roll_link", "right_ankle_roll_link"],
+                "margin": 0.04,
+                "cap": 0.20,
+                "contact_force_threshold": 1.0,
+                "directions": 16,
+            },
+            weight=-2.0,
         ),
         # v31's feet_anchor / foot_not_flat / feet_edge_contact are NOT included.
         # They were three successive attempts to stop ankle-roll edge-standing
@@ -573,9 +617,13 @@ x2_box_grasp_object_dr = {
             "restitution_range": [0.0, 0.2],
         },
     ),
+    # Added to the URDF's 0.1 kg, so this is a 0.6-1.4 kg box. v7: was [0.3, 1.5],
+    # i.e. 0.4-1.6 kg, which straddled rather than bracketed the real ~1 kg box and
+    # spent a third of its envs above the mass the waist could lift at all under the
+    # old posture. Centred on the real box, +/-40% for robustness.
     "randomize_object_rigid_body_mass_startup": RandomizationTermCfg(
         func="holosoma.managers.randomization.terms.locomotion:randomize_object_rigid_body_mass_startup",
-        params={"mass_distribution_params": [0.3, 1.5]},
+        params={"mass_distribution_params": [0.5, 1.3]},
     ),
     "randomize_object_rigid_body_inertia_startup": RandomizationTermCfg(
         func="holosoma.managers.randomization.terms.locomotion:randomize_object_rigid_body_inertia_startup",

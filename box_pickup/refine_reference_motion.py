@@ -21,6 +21,7 @@ the walk, the step timing pattern, and the overall pose sequence.
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -33,6 +34,7 @@ from scipy.spatial.transform import Slerp
 sys.path.insert(0, str(Path(__file__).parent))
 from rebuild_reference_motion import (
     FIXED_FRAMES,
+    URDF,
     LegChain,
     Robot,
     ik_reach,
@@ -40,6 +42,7 @@ from rebuild_reference_motion import (
     pull_inside,
     support_margin,
 )
+from check_static_torque import G, effort_limits, subtrees
 from urdf_fk import mat_to_quat_wxyz, quat_wxyz_to_mat
 
 WS = Path("/home/baaqer/baaqer_ws")
@@ -63,6 +66,31 @@ BAL_MARGIN = 0.025  # m the CoM is kept inside the feet while both are down
 BAL_MARGIN_SS = -0.030  # m allowed outside during a step: a walking CoM is meant to
 # travel towards the swing foot, and forcing it over the stance foot every instant
 # both destroys the gait and injects the acceleration it was supposed to remove
+PAYLOAD = 1.0  # kg. The real box. The waist budget below is set against THIS mass.
+WAIST_BUDGET = 0.85  # keep waist_pitch under 75% of its 48 N-m limit, leaving headroom
+# for the dynamics the static estimate ignores, while leaving the trunk enough lean
+# that the arms can still reach the floor: the shoulder-to-palm span is only 540 mm,
+# so every degree the torso stands up raises the shoulder and eats into the reach.
+# At 100% the lift is impossible at all, and the raw retarget sits at 101%.
+GRIP_Z = 0.30  # m. Lowest the palms are asked to go when they are on the box.
+ANKLE_GUARD = np.radians(3.0)  # how close an ankle may sit to its stop
+REACH_SAFE = 0.52  # m of shoulder-to-palm span to stay inside. The arm spans 540 mm
+# fully extended; this leaves it something to work with rather than locking straight.
+REACH_BAND = 0.05  # m over which the stand-up is eased off as that span is approached
+POSTURE_RAD = 0.9  # rad of trunk correction per unit of over-budget torque. The lever
+# is roughly linear in lean -- 71 deg costs 106% of the waist limit, 45 deg costs 87%,
+# 35 deg costs 75% -- so this converges in a handful of passes.
+WAIST_SHARE = 0.5  # half the correction comes out of waist_pitch (while it has bend
+# left to give), the rest by standing the pelvis up, so the pose keeps its character.
+PELVIS_MIN = 0.27  # m. Deeper and the ankle runs out of pitch holding a flat sole.
+DROP_MAX = 0.30  # m the pelvis may sink below its retargeted height. It has to be this
+# large: the retarget is a back-lift that stays standing at 569 mm and folds at the
+# waist, so turning it into a squat that reaches an 18 cm box is a big drop by
+# construction. PELVIS_MIN, not this, is what actually stops the descent.
+HOLD_LEAD = 10  # frames either side of pickup/set-down where the hands must be on the box
+POSTURE_GAIN = 0.7
+POSTURE_ITERS = 24
+POSTURE_SIGMA = 10.0  # frames. Smooths the correction so the descent stays continuous.
 STAND_H = 0.640  # m from the soles to the pelvis in the final stance. A straight leg
 # is 0.670, so this leaves a gentle knee bend and keeps the IK off that singularity.
 SETTLE_S = 1.2  # s to rise out of the set-down into that stance
@@ -268,6 +296,268 @@ def main():
     root_pos = gaussian_filter1d(root_pos, SMOOTH_SIGMA, axis=0, mode="nearest")
     log(f"    peak joint jerk {j0:.0f} -> {np.abs(np.diff(dof,3,axis=0)).max()/dt**3:.0f} rad/s^3")
     stage("smoothing")
+
+    # ------------------- 1.5 unload the waist by trading trunk lean for knee flexion
+    # The retarget is a human's back-dominated pickup: at the bottom the trunk is
+    # pitched 83 deg, nearly horizontal, and waist_pitch spends 91% of its 48 N-m
+    # limit cantilevering the robot's OWN upper body -- before the box is counted.
+    # A 1 kg box takes it to 99% and 1.6 kg puts it over, so the lift is at best
+    # marginal and at worst impossible however well the policy is trained.
+    #
+    # The legs are idle by comparison (hip_pitch peaks at 0.96x of 120 N-m, the knee
+    # at 0.40x), so the load can simply be moved to joints that have the headroom:
+    # stand the torso up and let the knees carry the descent instead. The hands must
+    # still reach the box, so every degree of trunk that comes out is paid for by
+    # dropping and advancing the pelvis, which is exactly the deeper knee bend.
+    log("\n[1.5] unload the waist: trade trunk lean for knee flexion")
+    eff = effort_limits(URDF)
+    sub = subtrees(robot.chain)
+    jinfo = {j.name: j for j in robot.chain.joints}
+    wp_lim = eff["waist_pitch_joint"]
+
+    def waist_load(dofs, rp, rq, payload):
+        """Gravity torque on waist_pitch, as a fraction of its effort limit."""
+        out_t = np.zeros(len(dofs))
+        j = jinfo["waist_pitch_joint"]
+        for f in range(len(dofs)):
+            out = robot.fk(dofs[f], jn, rp[f], rq[f])
+            jp, jR = out[j.child]
+            tau = np.zeros(3)
+            for link in sub["waist_pitch_joint"]:
+                if link in out and link in robot.mass:
+                    m, c = robot.mass[link]
+                    p, Rm = out[link]
+                    tau += np.cross(p + Rm @ c - jp, m * G)
+            if carry_m[f] > 0.5:
+                tau += np.cross(box_pos[f] - jp, payload * G)
+            out_t[f] = abs(float((jR @ j.axis) @ tau)) / wp_lim
+        return out_t
+
+    wp_i = jn.index("waist_pitch_joint")
+
+    def trunk_axis(dofs, rp, rq):
+        """Torso up-vector per frame. Its tilt off vertical IS the waist's lever arm."""
+        return np.array([
+            robot.fk(dofs[f], jn, rp[f], rq[f])["torso_link"][1][:, 2] for f in range(len(dofs))
+        ])
+
+    # Which way does waist_pitch lean the trunk? Read it off the model rather than
+    # trusting a sign convention.
+    probe = dof.copy()
+    probe[:, wp_i] += 0.02
+    wsign = np.sign(
+        np.arccos(np.clip(trunk_axis(probe, root_pos, root_quat)[:, 2], -1, 1)).sum()
+        - np.arccos(np.clip(trunk_axis(dof, root_pos, root_quat)[:, 2], -1, 1)).sum()
+    )
+
+    rp_in = root_pos.copy()
+    F0P, F0R, LOW0 = feet_now(dof, root_pos, root_quat)  # the feet stay on their own path
+    ground = float(np.median(np.minimum.reduce([LOW0[b] for b in FEET])))
+    before = waist_load(dof, root_pos, root_quat, PAYLOAD)
+    lean0 = np.degrees(np.arccos(np.clip(trunk_axis(dof, root_pos, root_quat)[:, 2], -1, 1)))
+    LP0, RP0 = palms(dof, root_pos, root_quat)  # the hands may not come off the box
+    # Take the grip up off the floor. The retarget grasps at ankle height, which for
+    # this robot is the one demand that cannot be met: reaching that low forces a
+    # trunk lean of 66 deg, and 66 deg costs 120% of the waist limit, so the pickup
+    # is impossible whichever way the conflict is resolved. Gripping higher on the
+    # box breaks the deadlock, and it is also the safer lift -- it is what stops the
+    # robot from having to drive itself back up off the floor. The box itself does
+    # not move: it is welded to the hands at whatever offset they take it at, so a
+    # higher grip simply means holding the same box further up its side.
+    LP0[:, 2] = np.maximum(LP0[:, 2], GRIP_Z)
+    RP0[:, 2] = np.maximum(RP0[:, 2], GRIP_Z)
+    # ...but only at the two instants where that is actually true. The box is welded
+    # to the palms for the whole carry, so in between it simply rides wherever the
+    # hands go; the only poses that have to be met are the pickup, where the hands
+    # must arrive at the box's retargeted resting spot, and the set-down, where they
+    # must put it back on the floor. Holding the hands to the entire retargeted path
+    # was extending the arms half a metre through the lift, which put more mass out
+    # in front of the waist than the lean it was buying back.
+    grip = np.nonzero(carry_m > 0.01)[0]
+    holds = np.zeros(n, bool)
+    if len(grip):
+        for edge in (grip[0], grip[-1]):
+            holds[max(edge - HOLD_LEAD, 0):edge + HOLD_LEAD + 1] = True
+    # How far the torso may stand up is set by the arms, not by the waist. The
+    # shoulder can only get 540 mm from the palm, and standing the trunk up RAISES
+    # the shoulder -- a back-lift holds the shoulders low and out over the box, a
+    # squat holds them high and back -- so there is a lean below which the hands
+    # simply cannot reach the floor, whereupon the IK flails the arms out in front
+    # and puts back more waist lever than the lean was buying. That limit is not a
+    # fixed angle: it depends on how deep the squat got and where the box is, and it
+    # differs between the pickup and the set-down. Measure it per frame instead.
+    def reach_need(dofs, rp, rq):
+        """Shoulder-to-target distance each arm would have to span. Holds only."""
+        out = np.zeros(len(dofs))
+        for f in np.nonzero(holds)[0]:
+            o = robot.fk(dofs[f], jn, rp[f], rq[f])
+            out[f] = max(
+                np.linalg.norm(LP0[f] - o["left_shoulder_pitch_link"][0]),
+                np.linalg.norm(RP0[f] - o["right_shoulder_pitch_link"][0]),
+            )
+        return out
+    for _ in range(POSTURE_ITERS):
+        tz = trunk_axis(dof, root_pos, root_quat)
+        lean = np.arccos(np.clip(tz[:, 2], -1, 1))
+        # Drive the torque itself, not a proxy angle: the same trunk lean costs very
+        # different amounts depending on how far the arms are reaching, and the
+        # set-down is far more expensive than the grasp at an identical lean.
+        over = waist_load(dof, root_pos, root_quat, PAYLOAD) / WAIST_BUDGET - 1.0
+        excess = np.minimum(np.maximum(over, 0.0) * POSTURE_RAD, lean)
+        # Stop standing up wherever the hands are already at the edge of their reach.
+        excess *= np.where(
+            holds, np.clip((REACH_SAFE - reach_need(dof, root_pos, root_quat)) / REACH_BAND, 0, 1), 1.0
+        )
+        if excess.max() < np.radians(0.25):
+            break
+        # Smoothed in time so the descent stays one continuous motion instead of
+        # developing a hinge where the correction switches on.
+        turn = gaussian_filter1d(excess, POSTURE_SIGMA, mode="nearest") * POSTURE_GAIN
+        # Give the waist joint back as much of its bend as it will take, then stand
+        # the pelvis up for the rest, so the pose keeps the retargeted character.
+        tw = np.clip(wsign * dof[:, wp_i], 0.0, None)
+        take = np.minimum(turn * WAIST_SHARE, tw)
+        dof[:, wp_i] -= wsign * take
+        for f in np.nonzero(turn - take > 1e-6)[0]:
+            # Turn the pelvis about its OWN pitch axis, never about whichever axis
+            # would shed the tilt fastest. The lean is what loads waist_pitch, and
+            # waist_pitch is a sagittal joint; rotating about the fastest axis also
+            # rolls the pelvis, and the legs pay for that roll by running ankle_roll
+            # into its stop and standing the robot on the edges of its feet.
+            R0 = quat_wxyz_to_mat(root_quat[f])
+            ax = R0[:, 1]
+            sgn = np.sign(np.cross(ax, tz[f])[2])  # d(upright)/d(rotation) about ax
+            if sgn == 0:
+                continue
+            root_quat[f] = mat_to_quat_wxyz(
+                Rot.from_rotvec(ax * sgn * (turn[f] - take[f])).as_matrix() @ R0
+            )
+        # Standing up lifts the hands off the box. The arms reach back down for it
+        # first; only what they cannot cover is paid for by squatting lower, and the
+        # squat stops at the depth the legs can actually hold a flat foot at.
+        for f in np.nonzero(holds)[0]:
+            R0 = quat_wxyz_to_mat(root_quat[f])
+            q = {nm: dof[f, i] for i, nm in enumerate(jn)}
+            for s, P0 in (("left", LP0), ("right", RP0)):
+                q = ik_reach(arms[s], q, armfree[s], P0[f], robot.lim, q, root_pos[f], R0)
+            for i, nm in enumerate(jn):
+                dof[f, i] = q[nm]
+        LP, RP = palms(dof, root_pos, root_quat)
+        short = ((LP0 - LP) + (RP0 - RP)) / 2.0 * holds[:, None]
+        root_pos += gaussian_filter1d(short, POSTURE_SIGMA, axis=0, mode="nearest")
+        # Bound the squat rather than letting the hand shortfall drive it: past a
+        # point the ankle cannot hold a flat sole (-46 deg of pitch), the leg IK
+        # starts trading foot orientation for position, and a contact sphere ends up
+        # under the floor -- which takes the stance detector, the balance pass and
+        # the ZMP retiming down with it. Leftover reach is the arms' problem.
+        root_pos[:, 2] = np.clip(
+            root_pos[:, 2], np.maximum(rp_in[:, 2] - DROP_MAX, PELVIS_MIN), rp_in[:, 2]
+        )
+
+    # The loop above stops as soon as the waist is inside budget, and its last act is
+    # always to move the pelvis, so the arms have never been solved against the pose
+    # the clip actually ended up in. Close that: alternate reaching and squatting until
+    # the hands are back on the box, or until the legs refuse to go any lower.
+    for _ in range(10):
+        for f in np.nonzero(holds)[0]:
+            R0 = quat_wxyz_to_mat(root_quat[f])
+            q = {nm: dof[f, i] for i, nm in enumerate(jn)}
+            for s, P0 in (("left", LP0), ("right", RP0)):
+                q = ik_reach(arms[s], q, armfree[s], P0[f], robot.lim, q, root_pos[f], R0)
+            for i, nm in enumerate(jn):
+                dof[f, i] = q[nm]
+        LP, RP = palms(dof, root_pos, root_quat)
+        short = ((LP0 - LP) + (RP0 - RP)) / 2.0 * holds[:, None]
+        if np.linalg.norm(short, axis=1).max() < 0.005:
+            break
+        was = root_pos.copy()
+        root_pos += gaussian_filter1d(short, POSTURE_SIGMA, axis=0, mode="nearest")
+        root_pos[:, 2] = np.clip(
+            root_pos[:, 2], np.maximum(rp_in[:, 2] - DROP_MAX, PELVIS_MIN), rp_in[:, 2]
+        )
+        # Only give up once the pelvis has stopped moving at all. Testing height
+        # alone quit on the first pass, because height is pinned at the depth floor
+        # long before the sideways and forward travel has finished paying off.
+        if np.abs(root_pos - was).max() < 1e-4:
+            break
+    log(f"    hands back on the box to {np.linalg.norm(short, axis=1).max()*1000:.0f} mm"
+        f" at worst, with the pelvis at {root_pos[holds, 2].min()*1000:.0f} mm")
+
+    # The pelvis has moved and rotated under a set of legs that have not been told,
+    # so the feet are currently hanging off it. Fold the legs to put every foot back
+    # exactly where it was retargeted: that folding is the knee flexion we bought.
+    ankles = [f"{s}_ankle_{a}_joint" for s in ("left", "right") for a in ("pitch", "roll")]
+    for _ in range(4):
+        err = np.zeros((n, 3))
+        sat = np.zeros(n)
+        for f in range(n):
+            R0 = quat_wxyz_to_mat(root_quat[f])
+            dof[f] = leg_ik(
+                legs, dof[f], jn, root_pos[f], R0,
+                {b: (F0P[b][f], F0R[b][f]) for b in FEET}, robot.lim,
+            )
+            q = {nm: dof[f, jn.index(nm)] for leg in legs.values() for nm in leg.names}
+            e = [F0P[b][f] - legs[b].fk(q, root_pos[f], R0)[0] for b in FEET]
+            err[f] = e[int(np.argmax([np.linalg.norm(x) for x in e]))]
+            # How deep the squat can go is set by the ankle, not by a number I pick:
+            # past about -46 deg of pitch the sole cannot stay flat any more, the IK
+            # starts trading foot orientation for position, and a contact sphere ends
+            # up under the floor -- which then poisons the floor reference the stance
+            # detector and every balance pass downstream depend on.
+            # How close to its stop, not how far past it: leg_ik clamps, so a joint
+            # jammed on its limit reads as exactly legal and the old test could
+            # never fire while the feet were being tipped onto their edges.
+            sat[f] = max(
+                (ANKLE_GUARD - min(q[a] - lo, hi - q[a])
+                 for a in ankles for lo, hi in (robot.lim[a],)),
+                default=0.0,
+            )
+        if np.linalg.norm(err, axis=1).max() < 0.005:
+            break
+        root_pos += gaussian_filter1d(err, 5.0, axis=0, mode="nearest")
+    # The squat asks the ankle for more roll than it has, so the sole tips and a
+    # corner of it ends up under the floor -- 30 mm under, at the deepest part of the
+    # set-down. That one dip then defines the floor for the whole clip, and every
+    # other frame reads as 30 mm airborne, which is enough to take the stance
+    # detector, the balance pass and the ZMP retiming with it. Stand the robot back
+    # up by whatever it sank; the legs are already folded, so this only unloads them.
+    _, _, LOWn = feet_now(dof, root_pos, root_quat)
+    sink = np.maximum(ground - np.minimum.reduce([LOWn[b] for b in FEET]), 0.0)
+    root_pos[:, 2] += gaussian_filter1d(sink, 4.0, mode="nearest")
+    if sink.max() > 1e-4:
+        log(f"    lifted the clip out of the floor: sank up to {sink.max()*1000:.0f} mm"
+            f" on {int((sink > 0.002).sum())} frames")
+    log(f"    feet put back on their retargeted path, worst shortfall"
+        f" {np.linalg.norm(err, axis=1).max()*1000:.1f} mm;"
+        f" deepest pelvis {root_pos[:,2].min()*1000:.0f} mm; ankles come within"
+        f" {np.degrees(ANKLE_GUARD - sat.max()):.1f} deg of a stop on"
+        f" {int((sat > 0).sum())} frames")
+    after = waist_load(dof, root_pos, root_quat, PAYLOAD)
+    lean1 = np.degrees(np.arccos(np.clip(trunk_axis(dof, root_pos, root_quat)[:, 2], -1, 1)))
+    LPf, RPf = palms(dof, root_pos, root_quat)
+    hand_err = ((np.linalg.norm(LPf - LP0, axis=1) + np.linalg.norm(RPf - RP0, axis=1)) / 2)[holds]
+    w = before.argmax()
+    log(f"    trunk lean peak {lean0.max():.0f} -> {lean1.max():.0f} deg"
+        f"   (median over the grasp {np.median(lean1[55:110]):.0f})")
+    log(f"    waist_pitch peak {before.max()*100:.0f}% -> {after.max()*100:.0f}% of"
+        f" {wp_lim:.0f} N-m at {PAYLOAD:.1f} kg; frames over budget"
+        f" {int((before>WAIST_BUDGET).sum())} -> {int((after>WAIST_BUDGET).sum())}")
+    log(f"    hands left {hand_err.mean()*1000:.0f} mm off their retargeted path on average,"
+        f" {hand_err.max()*1000:.0f} mm at worst, over the {int(holds.sum())} pickup/set-down frames")
+    log(f"    pelvis at the old worst frame (t={w/FPS:.2f}s) drops"
+        f" {(root_pos[w,2]-rp_in[w,2])*1000:+.0f} mm to {root_pos[w,2]*1000:.0f} mm")
+    for f in np.argsort(-after)[:4]:
+        log(f"      worst-remaining t={f/FPS:5.2f}s  {after[f]*100:3.0f}%"
+            f"  trunk {lean1[f]:4.1f} deg  pelvis {root_pos[f,2]*1000:3.0f} mm"
+            f"  (was {before[f]*100:3.0f}% at {lean0[f]:4.1f} deg)")
+    if os.environ.get("REFINE_STOP") == "1.5":
+        np.savez("/tmp/refine_15.npz", dof=dof, root_pos=root_pos, root_quat=root_quat,
+                 box_pos=box_pos, box_quat=box_quat, carry_m=carry_m, joint_names=jn,
+                 holds=holds, lean1=lean1, LP0=LP0, RP0=RP0,
+                 LPf=LPf, RPf=RPf, rp_in=rp_in)
+        log("\n[stop] REFINE_STOP=1.5, dumped /tmp/refine_15.npz")
+        return
+    stage("waist unload")
 
     # ------------------------------------- 2. pin + level each foot while it is loaded
     log("\n[2] pin and level every stance phase (swing left alone)")
