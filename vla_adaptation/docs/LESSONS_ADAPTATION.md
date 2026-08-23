@@ -2176,3 +2176,156 @@ channel that survives the argument is **impedance**: `∂τ/∂σ = K_p ẽ` gro
 instead of being constant (`MODEL_AND_DERIVATIONS.md` §7.1), and unlike `gait_period_s` no single
 static value serves both grades and payloads — so there is genuinely something to adapt. Screen it
 with rule 12 before building it.
+
+---
+
+# 9. The VLA chapter — π0.5-LIBERO (20–23 Aug)
+
+Everything above is the walker. This section is a frozen 3.35B VLA, and the headline is that
+the method's central claim survives the jump: **a policy nobody can backprop through was
+repaired online, completely, by editing six numbers.** The rest of the section is why the
+*selection* half of the ACC pipeline did not survive, and what the measurements say to do
+instead.
+
+## 9a. The fault gate: one cell survives, and it is the easy one
+
+180 episodes, 9 cells (`PREREG_OPENPI_ACE_SCREEN` §1). Only `offset @ 0.05` on the arm dims
+passes: 55% against a 99.0% nominal, a 44-point drop that is not floor-dead.
+
+The gain arm brackets the window without landing in it (0.5 → 75%, 0.3 → 0/20), and no
+severity between them was tested because the prereg forbids re-sweeping to manufacture a
+cell. Brightness does **nothing** at any severity — verified live rather than assumed: the
+fault reaches the model (100% of pixels change, image mean 120 → 215) and the served action
+moves 0.018–0.020 against a 0.0168 noise floor. π0.5 is genuinely invariant to a global
+brightness bias.
+
+**The survivor is the most favourable geometry available**: a constant action offset, when
+`action_out_proj/bias` *produces* a constant action offset. Fault class and edit class
+coincide, so everything downstream is the easy case and is reported as such.
+
+## 9b. THE POSITIVE: a frozen VLA is fully repairable online, by six numbers
+
+| condition | success |
+|---|---|
+| wrong sign (k = −1) | 0.0% (0/15) |
+| no edit, faulted | 46.7% (7/15) |
+| k = 0.5 | 86.7% (13/15) |
+| **k = 1.0, the computed edit** | **100.0% (15/15)** |
+| k = 1.5 | 20.0% (3/15) |
+| k = 1.0 applied to the **healthy** policy | 6.7% (1/15) |
+
+46.7% → 100%, against a 99.0% nominal. No gradient, no fine-tuning, one layer's bias vector.
+
+Three properties, all of which matter more than the headline:
+
+- **It is specific, not a tonic.** The same edit on the healthy policy gives 6.7%. This is a
+  compensating inverse and it only helps against the fault it inverts.
+- **The basin is narrow.** k = 1.5 scores 20% — *worse than not repairing at all*. Overshoot
+  by half is more damaging than the original fault. Any search here must be scaled to
+  k ∈ [0.4, 1.2] or it spends its budget below its own starting point.
+- **k = 1.0 was computed, not searched.** The scale came from quantile norm stats plus an
+  attenuation measured open-loop on a synthetic observation, and it landed on 15/15 in
+  closed loop. That is a two-way validation of both.
+
+## 9c. Normalisation is not a detail — it decides whether the search is well posed
+
+The obvious repair ("cancel +0.05 with ≈ −0.05") is **wrong**, and wrong in the direction
+that would have been read as *the class is not reachable*.
+
+π0.5 emits **normalised** actions; `Unnormalize` runs afterwards. Under quantile norm,
+`env = (norm+1)/2·(q99−q01) + q01`, so each dim carries its own scale `(q99−q01)/2` — and
+those differ **7×** across the arm channels. A *uniform* env-space fault is therefore wildly
+**anisotropic** in the units the model works in:
+
+| dim | fault in norm units | % of action range | β needed |
+|---|---|---|---|
+| dx / dy / dz | 0.053–0.060 | ~3% | 0.157–0.178 |
+| **drx** | **0.391** | **19.5%** | **1.149** |
+| dry / drz | 0.198–0.285 | 10–14% | 0.581–0.839 |
+
+A "+0.05 offset" is 3% of the action range on translation and **19.5% on drx**. That is why
+this cell survived the gate while brightness did nothing, and why `offset @ 0.10` was lethal.
+
+**Rule 26. Parameterise the edit in the units the task is measured in, not the units the
+parameter happens to live in.** In env-action units the repair is isotropic (−0.05 on all
+six dims) and an isotropic CEM is well conditioned. In raw bias units the same target spans
+7.3×, and an isotropic search under-explores `drx` — which carries most of the fault — while
+over-exploring `dz`. Same search, same budget, different coordinates, and only one of them
+can find the answer.
+
+## 9d. Why the ACE screen measured nothing — four diagnoses, each measured
+
+The pre-registered screen returned **F(9,70) = 0.294, p = 0.974, η² = 0.036**: sites explain
+3.6% of draw variance. Four causes, in increasing order of how much they matter.
+
+1. **The baseline was on different initial states than the draws.** All ten sites read
+   *positive*, which looks like a class effect and is not one. The same faulted policy scores
+   **40.0 / 46.7 / 52.0 / 55.0%** on four disjoint initial-state sets; draws vs baseline is
+   +12.0 points at SE 11.2, **z = 1.07**. §3 fixed the baseline's episode *count* and never
+   required it to share the draws' initial states. (The ANOVA is unaffected — it compares
+   sites on identical states, so the offset cancels.)
+2. **Unpaired scoring.** 96% of a 5-episode success rate is sampler noise. Pinning the
+   sampler RNG makes an episode exactly deterministic — repeating one gives
+   `max|ΔAction| = 0.0e+00` — so baseline and perturbed differ *only* by weights and each
+   episode contributes a clean −1/0/+1.
+3. **The scale was below the threshold of behaviour.** Paired, at c = 0.02, a perturbation
+   flips **0 of 6** outcomes. Trajectories diverge across the full action range and the
+   policy *re-converges to the same result*. Flips appear as c grows, and the ordering across
+   sites is monotone and stable at every scale — a real ranking was there, buried.
+4. **The matching itself is the deep fault.** `ρ = c·‖W‖_F/√numel` equalises *relative
+   parameter* displacement. It equalises nothing that matters: measured |ΔAction| per unit c
+   spans **30×** across sites, and `llm/mlp/linear/L17` returns **exactly zero** at 50% of
+   its own norm — a whole trunk layer with no causal path to the action.
+
+   It fails worst exactly where it matters. `action_out_proj/bias` has ‖W‖_F = 0.034 over 32
+   entries, so the screen probed it at **ρ = 0.0006** when the oracle showed it needs
+   **0.157–1.149** to do anything — and that is the site with a verified 100% repair. For a
+   common output displacement the per-site c spans **0.74 … 21.2**, a 28× range. **No single
+   c probes these sites comparably**, which is precisely what §3 assumed.
+
+**Rule 27. Match interventions by their effect on the output, never by relative parameter
+norm.** §3 chose relative matching so the ranking "would not be a ranking of layer sizes".
+It instead produced a ranking of how directly a layer's parameters reach the output, at
+wildly unmatched effective strength — the same failure it was designed to avoid, one level
+down.
+
+## 9e. THE STRUCTURAL RESULT: ACE measures curvature, adaptation uses the gradient
+
+This is why ACE has now lost its job six times, and it is not an empirical accident.
+
+For a symmetric perturbation `Δ ~ N(0, ρ²I)` and a locally smooth metric `M`, expand:
+
+    E[M(W+Δ)] − M(W)  =  E[∇M·Δ]  +  ½E[ΔᵀHΔ]  +  O(ρ³)
+                      =        0   +  ½ρ²·tr(H) +  O(ρ³)
+
+**The first-order term vanishes identically.** So `ACE_hat` estimates `½ρ²·tr(H)` — the
+*average curvature* of the metric at that site. Adaptability is a first-order quantity: the
+best edit in a ρ-neighbourhood gains `≈ ρ‖∇M‖`. `tr(H)` and `‖∇M‖` are different objects and
+there is no reason for them to correlate.
+
+The measurements say exactly this. `action_out_proj/bias` is nearly **inert under random
+perturbation** — mixed ±0.167 at matched scale, mean ≈ 0 — while admitting a **100% repair**
+along one specific direction. A random 32-dim perturbation projects onto the 6-dim repair
+direction with expected magnitude ~1/√32, so an isotropic estimator averages the signal away
+by construction.
+
+**Rule 28. An isotropic average cannot rank sites by a quantity defined as a maximum.**
+`ACE_hat` is a *class-effect detector* (does perturbing this class help on average?), and
+`ACE_CONNECTION.md` §5's original job for it — a searchability screen — is unreachable for a
+reason that is now algebraic rather than empirical. Five prior falsifications plus this one.
+
+## 9f. The fix: antithetic pairs isolate the first-order term
+
+If the problem is that `E[∇M·Δ] = 0` kills the signal, difference the arms instead of
+averaging them:
+
+    D  =  M(W+Δ) − M(W−Δ)  =  2∇M·Δ + O(ρ³)
+
+The curvature terms are **identical in both arms and cancel exactly**. `E|D|` over random Δ
+estimates `ρ‖∇M‖` up to a dimensional constant, so `mean|D|` ranks sites by the first-order
+sensitivity that adaptation actually exploits — while `(M₊+M₋)/2 − M(W)` recovers the old
+isotropic estimator from the *same episodes*, giving a perfectly matched comparison of the
+two estimands at zero extra cost.
+
+Both arms are scored paired against one deterministic baseline, so every episode is
+noise-free. Result appended below when the run completes.
