@@ -1,0 +1,111 @@
+{
+ "c_rel": 0.5,
+ "draws": 5,
+ "episodes": 6,
+ "baseline": [
+  true,
+  false,
+  true,
+  true,
+  false,
+  false
+ ],
+ "blocks": [
+  {
+   "site": "action_out_proj/bias",
+   "draw": 0,
+   "seed": 7000,
+   "applied_rel": 0.5469169616699219,
+   "result": [
+    true,
+    false,
+    true,
+    true,
+    true,
+    false
+   ],
+   "paired_diff": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "ace": 0.16666666666666666,
+   "wall_s": 182.8
+  },
+  {
+   "site": "action_out_proj/bias",
+   "draw": 1,
+   "seed": 7001,
+   "applied_rel": 0.46073251962661743,
+   "result": [
+    true,
+    false,
+    true,
+    true,
+    false,
+    true
+   ],
+   "paired_diff": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ],
+   "ace": 0.16666666666666666,
+   "wall_s": 184.0
+  },
+  {
+   "site": "action_out_proj/bias",
+   "draw": 2,
+   "seed": 7002,
+   "applied_rel": 0.5717573761940002,
+   "result": [
+    true,
+    false,
+    false,
+    true,
+    true,
+    false
+   ],
+   "paired_diff": [
+    0,
+    0,
+    -1,
+    0,
+    1,
+    0
+   ],
+   "ace": 0.0,
+   "wall_s": 214.7
+  },
+  {
+   "site": "action_out_proj/bias",
+   "draw": 3,
+   "seed": 7003,
+   "applied_rel": 0.3453724682331085,
+   "result": [
+    true,
+    false,
+    true,
+    true,
+    false,
+    false
+   ],
+   "paired_diff": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ace": 0.0,
+   "wall_s": 203.9
+  }
+ ]
+}

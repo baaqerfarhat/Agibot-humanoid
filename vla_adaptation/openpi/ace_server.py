@@ -214,14 +214,18 @@ def main():
         else:
             site = BY_NAME[req["site"]]
             st = norms[site.name]
-            state, applied = perturbed_state(base_state, site, st["rho"], int(req["seed"]))
+            # c_rel lets a probe sweep the perturbation SCALE; the screen leaves it at the
+            # pre-registered C_REL and is unaffected.
+            c = float(req.get("c_rel", C_REL))
+            rho = rho_for(st, c) if c != C_REL else st["rho"]
+            state, applied = perturbed_state(base_state, site, rho, int(req["seed"]))
             holder["state"] = state
-            ack = dict(site=site.name, draw=req.get("draw"), seed=req["seed"],
-                       rho=st["rho"], fro=st["fro"], numel=st["numel"],
+            ack = dict(site=site.name, draw=req.get("draw"), seed=req["seed"], c_rel=c,
+                       rho=rho, fro=st["fro"], numel=st["numel"],
                        applied_rel=applied["rel"], delta_fro=applied["dnorm"],
                        pin_rng=holder["pin_rng"],
                        rel_tol=rel_tol(st["numel"]),
-                       ok=bool(abs(applied["rel"] - C_REL) <= rel_tol(st["numel"]) * C_REL))
+                       ok=bool(abs(applied["rel"] - c) <= rel_tol(st["numel"]) * c))
         ack["stamp"] = stamp
         a.ack.write_text(json.dumps(ack, indent=1))
         logging.info("control applied: %s", ack)

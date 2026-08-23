@@ -1,0 +1,15 @@
+{
+ "c_rel": 0.5,
+ "draws": 3,
+ "episodes": 6,
+ "matched": true,
+ "baseline": [
+  true,
+  false,
+  true,
+  true,
+  false,
+  false
+ ],
+ "blocks": []
+}
