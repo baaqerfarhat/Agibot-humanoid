@@ -1,0 +1,73 @@
+{
+ "beta": [
+  0.17460234316344528,
+  0.1776475029422868,
+  0.15689412392282379,
+  1.1487668794224042,
+  0.839220809786399,
+  0.5812051252313563,
+  0.1470882411776473
+ ],
+ "conds": [
+  {
+   "label": "k=0.0 faulted (floor)",
+   "k": 0.0,
+   "faulted": true,
+   "n": 15,
+   "successes": 7,
+   "success_rate": 0.4666666666666667,
+   "bias_l2": 0.0,
+   "wall_s": 966.2
+  },
+  {
+   "label": "k=0.5",
+   "k": 0.5,
+   "faulted": true,
+   "n": 15,
+   "successes": 13,
+   "success_rate": 0.8666666666666667,
+   "bias_l2": 0.7823708653450012,
+   "wall_s": 733.2
+  },
+  {
+   "label": "k=1.0 oracle",
+   "k": 1.0,
+   "faulted": true,
+   "n": 15,
+   "successes": 15,
+   "success_rate": 1.0,
+   "bias_l2": 1.5647417306900024,
+   "wall_s": 618.3
+  },
+  {
+   "label": "k=1.5",
+   "k": 1.5,
+   "faulted": true,
+   "n": 15,
+   "successes": 3,
+   "success_rate": 0.2,
+   "bias_l2": 2.3471126556396484,
+   "wall_s": 1003.7
+  },
+  {
+   "label": "k=-1.0 wrong sign",
+   "k": -1.0,
+   "faulted": true,
+   "n": 15,
+   "successes": 0,
+   "success_rate": 0.0,
+   "bias_l2": 1.5647417306900024,
+   "wall_s": 720.8
+  },
+  {
+   "label": "k=1.0 NO fault",
+   "k": 1.0,
+   "faulted": false,
+   "n": 15,
+   "successes": 1,
+   "success_rate": 0.06666666666666667,
+   "bias_l2": 1.5647417306900024,
+   "wall_s": 728.1
+  }
+ ]
+}

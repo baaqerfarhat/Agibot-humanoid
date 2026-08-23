@@ -325,3 +325,66 @@ available and the least informative about the general case. §1 preferred the ga
 exactly because its inverse is state-dependent and multiplicative — the regime the walker's
 residual contract could not express — and that cell did not survive the gate. Any positive
 result from a search on this cell carries that caveat.
+
+
+### §2-§4 the screen — run 2026-08-21/22, 400 draw-episodes + 20 baseline
+
+Cell: `offset @ 0.05`, the gate's only survivor. 10 sites x 8 draws x 5 episodes, c = 0.02,
+common random numbers across sites (initial states 2-5), baseline on initial states 6-7.
+Every draw's applied displacement was acked and verified before its episodes ran; 80/80
+draws passed. Raw blocks in `results/ace_screen/screen.json`.
+
+| site | tier | mean M | ACE_hat | sd |
+|---|---|---|---|---|
+| `action_in_proj/kernel` | interface | 0.575 | +0.175 | 0.167 |
+| `action_out_proj/bias` | interface | 0.550 | +0.150 | 0.177 |
+| `time_mlp_out/kernel` | interface | 0.550 | +0.150 | 0.093 |
+| `llm/mlp/linear/L0` | VLM trunk | 0.550 | +0.150 | 0.233 |
+| `expert/mlp_1/linear/L0` | action expert | 0.525 | +0.125 | 0.238 |
+| `img/.../Dense_1/kernel/B26` | vision | 0.525 | +0.125 | 0.212 |
+| `llm/mlp/linear/L17` | VLM trunk | 0.500 | +0.100 | 0.214 |
+| `expert/mlp_1/linear/L8` | action expert | 0.475 | +0.075 | 0.183 |
+| `expert/mlp_1/linear/L17` | action expert | 0.475 | +0.075 | 0.238 |
+| `action_out_proj/kernel` | interface | 0.475 | +0.075 | 0.104 |
+
+**PRIMARY FAILS.** One-way ANOVA over 10 sites x 8 draws: **F(9,70) = 0.294, p = 0.974,
+eta^2 = 0.036**. The threshold was p < 0.05 AND eta^2 >= 0.25. Sites account for 3.6% of the
+variance in draw scores; 96% is draw noise.
+
+**§5 predictions, scored as stated.**
+- **P2 fails.** Tier order by mean|ACE_hat| is interface > VLM trunk > vision > action
+  expert. Interface does lead, but the action expert comes LAST rather than second. With
+  eta^2 = 0.036 the ordering is not distinguishable from noise anyway, so this is reported
+  rather than interpreted.
+- **P3 fails, and the failure is uninformative.** Predicted ACE_hat < 0 at >= 7 sites;
+  observed 0 of 10 -- every site positive. That is **not** a class effect. The baseline was
+  measured on initial states 6-7 while every draw ran on 2-5, and the faulted policy scores
+  differently on each disjoint initial-state set it has been measured on:
+
+  | set | episodes | success |
+  |---|---|---|
+  | init 0-1 (gate) | 20 | 55.0% |
+  | init 2-5 (all draws) | 400 | 52.0% |
+  | init 6-7 (this baseline) | 20 | 40.0% |
+  | init 8-9 (oracle floor) | 15 | 46.7% |
+
+  Draws vs baseline is +12.0 points with SE 11.2, **z = 1.07** -- not distinguishable from
+  zero. The n=20 shared baseline is too noisy to support any claim about ACE_hat's SIGN.
+  **This is a design fault in §3 of this document**, which fixed the baseline's episode
+  count but never required it to share the draws' initial states. The ANOVA is unaffected,
+  since it compares sites to each other on identical initial states and the baseline offset
+  cancels.
+- **P4 holds.** Top |ACE_hat| is `action_in_proj/kernel`, not `action_out_proj/bias`.
+
+**Reading, per §6's kill row.** ACE_hat does not separate layers beyond draw noise on a
+3.35B-parameter model with a genuine 10-site menu. Combined with the five prior
+class-effect-only results, the estimator is retired as a selection stage in this project --
+reported, not re-tuned. Phase 0.5 proceeds directly to a tier-1 search, which needs no
+layer ranking.
+
+**With the §0b caveat attached, as promised before the run.** The intervention was measured
+at ~40x below the sampler's own noise floor before any draw was scored, so this null is
+substantially a statement about power at c = 0.02, not a demonstration that ACE_hat cannot
+rank layers at any scale. Per §7 no rescue at another c follows. What the run does establish
+independently of power: 96% of the variance in a 5-episode draw score is noise, which is a
+hard constraint on any future screen scored this way.

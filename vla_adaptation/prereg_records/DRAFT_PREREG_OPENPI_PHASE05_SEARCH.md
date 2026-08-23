@@ -32,27 +32,48 @@ Per `PREREG_OPENPI_ACE_SCREEN` §6, and stated here in advance:
 all 32 — the remaining dims are unused by this embodiment and searching them would inflate
 the dimension for nothing.
 
-## 2. The gate before the search — reachability, measured not argued
+## 2. The gate before the search — RUN, and it passed at the ceiling
 
-The framework's order is headroom *then reachability*, and reachability here is cheap and
-has an analytic answer, so it is measured first and reported whatever it says.
+**Run 2026-08-22, before the search. Result: the class is fully reachable.**
+`results/oracle/FINDINGS_ONLINE_REPAIR.md`.
 
-The fault adds +0.05 to arm dims 0–5. Cancelling it needs an action shift of −0.05, which
-through §0's measured 0.34 attenuation needs a bias edit of **β ≈ 0.05 / 0.34 ≈ 0.147** on
-the corresponding dims. **Oracle arm: set that edit, run 20 episodes, report the recovery.**
+The scalar β ≈ 0.147 written in the first version of this draft was **wrong**, and is
+corrected here. It ignored normalisation: π0.5 emits normalised actions and `Unnormalize`
+runs afterwards, so a bias edit lives in normalised units while the fault is applied in env
+units. With quantile norm each dim has scale `(q99−q01)/2`, and those differ 7× across the
+arm channels — a uniform +0.05 env offset is 3.0% of the action range on translation and
+19.5% on `drx`. The repair is therefore a per-dim vector
 
-- Oracle recovers **≥ 70% of headroom** → the class is reachable; the search runs.
-- Oracle recovers **< 30%** → the ceiling, not the search, is the binding constraint. Report
-  that and do **not** run a 400-episode search against a ceiling that is not there. This is
-  the walker's envelope-selects-the-class result applied before the spend, not after.
-- Between the two → run, and report the search against the measured ceiling rather than
-  against full headroom.
+    β_i = (0.05 / scale_i) / 0.34        spanning 0.157 … 1.149
+
+| k on β | faulted | result |
+|---|---|---|
+| −1.0 | yes | 0.0% |
+| 0.0 | yes | 46.7% (floor) |
+| 0.5 | yes | 86.7% |
+| **1.0** | yes | **100.0%** |
+| 1.5 | yes | 20.0% |
+| 1.0 | **no** | 6.7% |
+
+**Ceiling = 100%**, so the §2 gate ("oracle recovers ≥ 70% of headroom") passes outright and
+the search is licensed. Three things this fixes in the design below:
+
+1. **σ₀ is now set from a measured basin, not a guess.** k = 1.5 scores 20% — worse than no
+   repair — so the useful range is roughly k ∈ [0.4, 1.2]. σ₀ = 0.3·β_oracle would put over
+   a third of the initial population past k = 1.3. **σ₀ is reduced to 0.15·β_oracle.**
+2. **The search is parameterised in ENV-ACTION units, not raw bias units.** In env units the
+   target is isotropic (−0.05 on all six dims); in bias units it spans 7.3× and an isotropic
+   CEM is ill-conditioned exactly where the fault is largest. The search vector is `u` in env
+   units, mapped to the bias by `β_i = −u_i / (scale_i · 0.34)`.
+3. **A specificity control is added to §4**: the settled edit applied to the UNFAULTED policy.
+   The oracle edit takes a healthy policy from 99% to 6.7%, so a settled edit that does *not*
+   damage the healthy policy is not the inverse and would need explaining.
 
 ## 3. Method
 
 Across-episode CEM on the edit vector, exactly the protocol the walker validated:
 
-- population 10 × 6 generations, elites 3, sigma0 chosen as 0.3·β_oracle
+- population 10 × 6 generations, elites 3, **σ₀ = 0.15·β_oracle** (§2, measured basin)
 - **≥ 2 fresh episodes per candidate**, both common to the generation's candidates —
   single-episode scoring is variance-seeking and measurably fails (`PREREG_ONLINE_TQ05` → `_V2`)
 - **fresh seeds only, no replay**; no initial state is revisited across generations
@@ -66,7 +87,8 @@ Across-episode CEM on the edit vector, exactly the protocol the walker validated
 | `never_refit` | selection without learning — same loop, refit disabled |
 | `random_norm_matched` | edits of the same norm, no search |
 | `frozen_faulted` | the 47.5% floor |
-| `oracle` | §2's analytic inverse — the ceiling |
+| `oracle` | §2's analytic inverse — the ceiling, measured at **100%** |
+| `settled_unfaulted` | specificity: the settled edit on the HEALTHY policy |
 
 ## 5. Budget
 
@@ -82,8 +104,7 @@ came from learning rather than from selection luck.
 
 ## 7. Predictions, stated in advance
 
-1. The oracle clears 70% of headroom. The fault class and the edit class coincide exactly
-   here — this is the most favourable geometry the gate could have handed us.
+1. ~~The oracle clears 70% of headroom.~~ **Confirmed before the search: 100%.**
 2. `cem_online` passes the primary. It is a ≤7-dim search on a class known to be reachable.
 3. `never_refit` recovers a non-trivial share anyway — selection alone was worth +1.33 m of
    +1.38 m on the walker, and that near-tie is the result most likely to repeat here.

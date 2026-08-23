@@ -98,6 +98,32 @@ def rho_for(stats: dict, c: float = C_REL) -> float:
     return c * stats["fro"] / np.sqrt(stats["numel"])
 
 
+BIAS_PATH = "action_out_proj/bias/.value"
+
+
+def bias_edited_state(base_state, add):
+    """base_state with a fixed vector ADDED to action_out_proj/bias.
+
+    Separate from the ACE draw: this is a deliberate, computed edit (the analytic repair),
+    not a random perturbation. Returns (state, applied_l2).
+    """
+    add = np.asarray(add, np.float32)
+    applied = {}
+
+    def f(path, v):
+        if path_str(path) != BIAS_PATH:
+            return v
+        w32 = jnp.asarray(v, jnp.float32)
+        pad = jnp.zeros_like(w32).at[: add.shape[0]].set(jnp.asarray(add))
+        applied["l2"] = float(jnp.linalg.norm(pad))
+        return jnp.asarray(w32 + pad, v.dtype)
+
+    st = jax.tree_util.tree_map_with_path(f, base_state)
+    if "l2" not in applied:
+        raise KeyError("action_out_proj/bias not found")
+    return st, applied
+
+
 def perturbed_state(base_state, site: Site, rho: float, seed: int):
     """base_state with N(0, rho^2) added at exactly one site. Returns (state, applied_rel)."""
     key = jax.random.key(seed)
@@ -170,7 +196,18 @@ def main():
         req = json.loads(a.control.read_text())
         holder["stamp"] = stamp
         holder["pin_rng"] = bool(req.get("pin_rng", False))
-        if req.get("site") is None:
+        if req.get("bias_add") is not None:
+            st, ap = bias_edited_state(base_state, req["bias_add"])
+            holder["state"] = st
+            want = float(np.linalg.norm(np.asarray(req["bias_add"], np.float32)))
+            # ok means "the edit that landed is the edit that was asked for" -- a
+            # deliberately ZERO edit (the k=0 control) is a legitimate request, so this
+            # compares against the request rather than demanding a non-zero norm.
+            ack = dict(site="bias_add", draw=req.get("draw"), applied_l2=ap["l2"],
+                       requested_l2=want, n=len(req["bias_add"]),
+                       ok=bool(abs(ap["l2"] - want) <= 1e-4 + 1e-3 * want),
+                       pin_rng=holder["pin_rng"], applied_rel=0.0)
+        elif req.get("site") is None:
             holder["state"] = base_state
             ack = dict(site=None, draw=req.get("draw"), applied_rel=0.0, ok=True,
                        pin_rng=holder["pin_rng"])
