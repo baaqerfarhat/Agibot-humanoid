@@ -11,5 +11,181 @@
   false,
   false
  ],
- "blocks": []
+ "blocks": [
+  {
+   "site": "action_out_proj/bias",
+   "draw": 0,
+   "seed": 7000,
+   "c_rel": 21.18460522830525,
+   "applied_rel": 23.172439575195312,
+   "result": [
+    true,
+    false,
+    true,
+    true,
+    true,
+    false
+   ],
+   "paired_diff": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "ace": 0.16666666666666666,
+   "wall_s": 186.2
+  },
+  {
+   "site": "action_out_proj/bias",
+   "draw": 1,
+   "seed": 7001,
+   "c_rel": 21.18460522830525,
+   "applied_rel": 19.520872116088867,
+   "result": [
+    true,
+    false,
+    true,
+    true,
+    true,
+    false
+   ],
+   "paired_diff": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "ace": 0.16666666666666666,
+   "wall_s": 189.8
+  },
+  {
+   "site": "action_out_proj/bias",
+   "draw": 2,
+   "seed": 7002,
+   "c_rel": 21.18460522830525,
+   "applied_rel": 24.22490882873535,
+   "result": [
+    true,
+    false,
+    false,
+    true,
+    false,
+    false
+   ],
+   "paired_diff": [
+    0,
+    0,
+    -1,
+    0,
+    0,
+    0
+   ],
+   "ace": -0.16666666666666666,
+   "wall_s": 231.2
+  },
+  {
+   "site": "action_out_proj/kernel",
+   "draw": 0,
+   "seed": 7100,
+   "c_rel": 0.7449561692866066,
+   "applied_rel": 0.7489417791366577,
+   "result": [
+    true,
+    false,
+    true,
+    true,
+    true,
+    false
+   ],
+   "paired_diff": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "ace": 0.16666666666666666,
+   "wall_s": 232.7
+  },
+  {
+   "site": "action_out_proj/kernel",
+   "draw": 1,
+   "seed": 7101,
+   "c_rel": 0.7449561692866066,
+   "applied_rel": 0.7391197681427002,
+   "result": [
+    true,
+    false,
+    true,
+    true,
+    false,
+    false
+   ],
+   "paired_diff": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ace": 0.0,
+   "wall_s": 353.1
+  },
+  {
+   "site": "action_out_proj/kernel",
+   "draw": 2,
+   "seed": 7102,
+   "c_rel": 0.7449561692866066,
+   "applied_rel": 0.7432575225830078,
+   "result": [
+    true,
+    false,
+    true,
+    true,
+    false,
+    false
+   ],
+   "paired_diff": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "ace": 0.0,
+   "wall_s": 364.5
+  },
+  {
+   "site": "action_in_proj/kernel",
+   "draw": 0,
+   "seed": 7200,
+   "c_rel": 0.7714718521602332,
+   "applied_rel": 0.7712324261665344,
+   "result": [
+    true,
+    false,
+    true,
+    true,
+    true,
+    false
+   ],
+   "paired_diff": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "ace": 0.16666666666666666,
+   "wall_s": 329.3
+  }
+ ]
 }

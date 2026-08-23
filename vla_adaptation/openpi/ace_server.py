@@ -124,8 +124,15 @@ def bias_edited_state(base_state, add):
     return st, applied
 
 
-def perturbed_state(base_state, site: Site, rho: float, seed: int):
-    """base_state with N(0, rho^2) added at exactly one site. Returns (state, applied_rel)."""
+def perturbed_state(base_state, site: Site, rho: float, seed: int, sign: float = 1.0,
+                    dims: int | None = None):
+    """base_state with sign * N(0, rho^2) added at one site. Returns (state, applied).
+
+    `sign` exists for ANTITHETIC sampling: the same direction applied as +Delta and
+    -Delta. Averaging M(+D) and M(-D) estimates curvature (what an isotropic ACE measures);
+    DIFFERENCING them cancels curvature and isolates the first-order term 2*grad(M).Delta,
+    which is the quantity adaptability actually depends on.
+    """
     key = jax.random.key(seed)
     applied = {}
 
@@ -134,7 +141,19 @@ def perturbed_state(base_state, site: Site, rho: float, seed: int):
             return v
         w32 = jnp.asarray(v, jnp.float32)
         target = w32[site.index] if site.index is not None else w32
-        delta = rho * jax.random.normal(key, target.shape, jnp.float32)
+        delta = sign * rho * jax.random.normal(key, target.shape, jnp.float32)
+        # Restrict the perturbation to the TASK-RELEVANT subspace. LIBERO uses only the
+        # first 7 of the model's 32 action dims -- LiberoOutputs discards the rest as
+        # padding -- so a perturbation spread over all 32 puts 78% of its energy into
+        # directions that cannot affect anything. `dims` masks the axis of length 32.
+        if dims is not None:
+            ax = [i for i, n in enumerate(target.shape) if n == 32]
+            if ax:
+                m = np.zeros(target.shape, np.float32)
+                sl = [slice(None)] * target.ndim
+                sl[ax[0]] = slice(0, dims)
+                m[tuple(sl)] = 1.0
+                delta = delta * jnp.asarray(m)
         applied["rel"] = float(jnp.linalg.norm(delta) / jnp.linalg.norm(target))
         applied["dnorm"] = float(jnp.linalg.norm(delta))
         out = w32.at[site.index].add(delta) if site.index is not None else w32 + delta
@@ -218,9 +237,11 @@ def main():
             # pre-registered C_REL and is unaffected.
             c = float(req.get("c_rel", C_REL))
             rho = rho_for(st, c) if c != C_REL else st["rho"]
-            state, applied = perturbed_state(base_state, site, rho, int(req["seed"]))
+            state, applied = perturbed_state(base_state, site, rho, int(req["seed"]),
+                                             float(req.get("sign", 1.0)), req.get("dims"))
             holder["state"] = state
             ack = dict(site=site.name, draw=req.get("draw"), seed=req["seed"], c_rel=c,
+                       sign=float(req.get("sign", 1.0)), dims=req.get("dims"),
                        rho=rho, fro=st["fro"], numel=st["numel"],
                        applied_rel=applied["rel"], delta_fro=applied["dnorm"],
                        pin_rng=holder["pin_rng"],

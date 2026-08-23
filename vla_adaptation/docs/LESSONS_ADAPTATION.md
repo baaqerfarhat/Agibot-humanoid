@@ -2329,3 +2329,38 @@ two estimands at zero extra cost.
 
 Both arms are scored paired against one deterministic baseline, so every episode is
 noise-free. Result appended below when the run completes.
+
+## 9g. 78% of the perturbation went into dimensions the task discards
+
+A third dilution, independent of the other two and the sharpest at the site that matters.
+
+**LIBERO uses 7 of the model's 32 action dims.** `LiberoOutputs` returns `actions[..., :7]`
+and the checkpoint's norm stats are length 7; dims 7–31 are padding, discarded before the
+action ever reaches the environment. So an isotropic perturbation of `action_out_proj/bias`
+(32 entries) puts **25/32 = 78% of its energy into directions that cannot affect anything**.
+
+Measured open-loop at fixed ρ, restricting the draw to dims 0:7:
+
+| site | \|ΔA\| all 32 dims | \|ΔA\| dims 0:7 | retained |
+|---|---|---|---|
+| `action_out_proj/bias` | 0.0162–0.0243 | 0.0162–0.0238 | **0.98–1.01×** |
+| `action_out_proj/kernel` | 0.0134–0.0152 | 0.0124–0.0145 | 0.92–0.95× |
+| `action_in_proj/kernel` | 0.0177–0.0240 | 0.0152–0.0205 | 0.80–0.86× |
+
+The restricted draw carries only √(7/32) = 0.47 of the norm and reproduces **essentially all**
+of the output-side effect — the discarded dims contribute nothing, as the architecture says
+they must. `action_in_proj` retains less (0.80–0.86) because it consumes the 32-dim noise
+vector `x_t`, whose padding entries still propagate internally even though their outputs are
+thrown away.
+
+**The honest qualification.** This does *not* rescue the screen on its own, and it is worth
+being precise about why: once perturbations are matched by measured **output displacement**
+(§9d, rule 27), the dilution is already absorbed — the calibration simply assigns the bias
+site a larger c to compensate. Restricting to the task subspace makes the intervention 2.1×
+more *efficient* per unit norm, not more *effective* at matched |ΔAction|. It is a
+statement about where a layer's influence lives, not a fix for the estimator.
+
+**Rule 29. Before perturbing a layer, check which of its coordinates the task can even see.**
+A padded action head, a multi-embodiment output projection, a shared trunk serving several
+heads — all put most of a layer's parameters outside the task's reach, and an isotropic
+draw spends its budget there. Cheap to check: mask the axis and re-measure the output.
