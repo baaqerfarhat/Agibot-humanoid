@@ -42,6 +42,10 @@ SPHERES = [k for k in FIXED_FRAMES if "sphere" in k and "ankle" in k]
 FLOOR = 0.011  # m: the contact sphere's radius, i.e. its centre height when resting
 RAMP = 40  # frames (0.8 s) to spread the opening reposition over
 SETTLE = 9  # frames of opening transient, for reporting
+FPS = 50.0
+SWING = 0.045  # m of clearance above which a foot is genuinely swinging, not hovering
+STILL = 0.15   # m/s of horizontal speed below which it is not swinging either
+JOINT_SIGMA = 0.8  # frames of smoothing on the leg joints after per-frame IK
 LIFT_SIGMA = 9.0  # frames. Smooths the seating so it adds no acceleration of its own
 
 
@@ -98,8 +102,6 @@ def main():
         step = gaussian_filter1d(np.maximum(FLOOR - low, 0.0), LIFT_SIGMA, mode="nearest")
         root_pos[:, 2] += step
         total += step
-    # The box rides with the hands, so it has to come up by exactly the same amount
-    # wherever the robot is holding it, or the grasp stops being rigid.
     # The box rides with the hands, so it comes up with them -- but by a single
     # constant, not the per-frame lift. The lift varies by a centimetre across the
     # carry and handing that variation to the box doubles its peak acceleration; a
@@ -115,19 +117,127 @@ def main():
     #    leg has no length left to reach forward with. Ramping the same displacement
     #    over 0.8 s instead brings it down to the clip's own typical rate, and because
     #    both ends of the window are left untouched nothing steps at either boundary.
-    #    Orientation follows the clip -- blending that too puts a jump in the ankle
-    #    worse than the skate being removed.
-    ends = {b: (feet(0)[b][0], feet(RAMP)[b][0]) for b in FEET}
-    worst = 0.0
-    for f in range(1, RAMP):
-        s = (f / RAMP) ** 2 * (3.0 - 2.0 * (f / RAMP))
+    #    Horizontal only, and after levelling: this pass has no business setting foot
+    #    HEIGHT, and interpolating it undid the levelling over exactly the opening
+    #    second the hover was worst in. Orientation follows the clip for the same
+    #    reason -- blending it puts a jump in the ankle worse than the skate removed.
+    def ramp_opening():
+        ends = {b: (feet(0)[b][0][:2], feet(RAMP)[b][0][:2]) for b in FEET}
+        worst = 0.0
+        for f in range(1, RAMP):
+            s = (f / RAMP) ** 2 * (3.0 - 2.0 * (f / RAMP))
+            cur = feet(f)
+            tgt = {}
+            for b in FEET:
+                p = cur[b][0].copy()
+                p[:2] = ends[b][0] + s * (ends[b][1] - ends[b][0])
+                tgt[b] = (p, cur[b][1])
+            keep = dof[f].copy()
+            dof[f] = leg_ik(
+                legs, dof[f], jn, root_pos[f], quat_wxyz_to_mat(root_quat[f]), tgt, lim
+            )
+            res = max(np.linalg.norm(feet(f)[b][0] - tgt[b][0]) for b in FEET)
+            if res > 0.003:
+                dof[f] = keep
+                continue
+            worst = max(worst, res)
+        return worst
+
+    # Run once here so the levelling pass that follows sees sensible foot SPEEDS -- its
+    # stance test is speed-gated, and against the raw 690 mm/s skate every opening frame
+    # reads as swinging and gets skipped, which is exactly the stretch that hovers.
+    log(f"        opening ramp: worst leg IK residual {ramp_opening()*1000:.1f} mm")
+
+    # 3. Put each foot down individually. Seating fixes the clip's overall height by
+    #    moving the root, so it can only ever put the LOWER foot on the ground -- it
+    #    cannot close a left/right difference. The refine pass leaves one: the left foot
+    #    floats a median 4.4 mm against the right's 0.9, and spends 44% of the clip in a
+    #    5-40 mm limbo, neither planted nor swinging. The raw mocap has both feet at
+    #    0.0 mm with a 0.2 mm gap. That hover is what reads as the leg swinging in the
+    #    air before the grasp, and the policy holds it there because the clip asks it to.
+    #    Only frames that are slow and already low are touched, so real swings survive.
+    pos = np.empty((n, len(FEET), 3))
+    clr = np.empty((n, len(FEET)))
+    for f in range(n):
+        ff = feet(f)
+        for i, b in enumerate(FEET):
+            pos[f, i], clr[f, i] = ff[b][0], ff[b][2]
+    drop = np.zeros((n, len(FEET)))
+    for i, b in enumerate(FEET):
+        spd = np.r_[0.0, np.linalg.norm(np.diff(pos[:, i, :2], axis=0), axis=1)] * FPS
+        planted = ((clr[:, i] - FLOOR) < SWING) & (spd < STILL)
+        want = gaussian_filter1d(np.where(planted, FLOOR, clr[:, i]), 3.0, mode="nearest")
+        drop[:, i] = np.maximum(clr[:, i] - want, 0.0)  # only ever lower a foot
+    base = dof.copy()
+
+    def try_drop(f, frac, commit):
+        """Lower frame f's feet by `frac` of their drop; return the IK residual."""
         cur = feet(f)
-        tgt = {b: (ends[b][0] + s * (ends[b][1] - ends[b][0]), cur[b][1]) for b in FEET}
-        dof[f] = leg_ik(
-            legs, dof[f], jn, root_pos[f], quat_wxyz_to_mat(root_quat[f]), tgt, lim
+        tgt = {}
+        for i, b in enumerate(FEET):
+            p = cur[b][0].copy()
+            p[2] -= frac * drop[f, i]
+            tgt[b] = (p, cur[b][1])
+        q = leg_ik(
+            legs, base[f].copy(), jn, root_pos[f], quat_wxyz_to_mat(root_quat[f]), tgt, lim
         )
-        worst = max(worst, max(np.linalg.norm(feet(f)[b][0] - tgt[b][0]) for b in FEET))
-    log(f"        opening ramp: worst leg IK residual {worst*1000:.1f} mm")
+        was = dof[f].copy()
+        dof[f] = q
+        res = max(np.linalg.norm(feet(f)[b][0] - tgt[b][0]) for b in FEET)
+        if not commit:
+            dof[f] = was
+        return res
+
+    # An unreachable target does not make leg_ik fall short, it makes it swing the leg:
+    # with the knee already against its 0 deg stop the solver walks the hip instead and
+    # throws the foot a sixth of a metre. So find how much of the drop each frame can
+    # actually hold -- but accepting that per frame is what makes the joint traces
+    # ragged, because neighbours settle on different fractions and a 6-DOF leg has more
+    # than one way to reach a target. Smoothing the FRACTION first keeps the correction
+    # continuous, which is far cheaper than smoothing the joints afterwards and having
+    # to re-assert everything the smoothing undid.
+    ok = np.zeros(n)
+    for f in range(n):
+        if drop[f].max() < 1e-4:
+            ok[f] = 1.0
+            continue
+        for cand in (1.0, 0.75, 0.5, 0.3, 0.15, 0.0):
+            if try_drop(f, cand, commit=False) <= 0.003:
+                ok[f] = cand
+                break
+    frac = np.minimum(gaussian_filter1d(ok, 3.0, mode="nearest"), ok)
+    worst_lvl, done, gave_up = 0.0, 0, int((ok < 1e-6).sum())
+    for f in range(n):
+        if drop[f].max() * frac[f] < 1e-4:
+            continue
+        res = try_drop(f, frac[f], commit=True)
+        # Reach is not monotonic in the target, so a smoothed fraction can land between
+        # two that solve and still diverge. Those frames go back to the seated pose,
+        # which is merely un-levelled rather than thrown.
+        if res > 0.003:
+            dof[f] = base[f].copy()
+            gave_up += 1
+            continue
+        worst_lvl = max(worst_lvl, res)
+        done += 1
+    log(f"        levelled {done}/{n} frames by up to {drop.max()*1000:.0f} mm"
+        f" (worst residual {worst_lvl*1000:.1f} mm); {gave_up} out of the legs' reach")
+
+    # The levelling solves each frame on its own, and a 6-DOF leg has more than one way
+    # to reach a target, so neighbouring frames can land on different solutions and the
+    # joint traces come out ragged even though every foot is where it should be -- peak
+    # jerk tripled before this. Smoothing the leg joints costs a fraction of a mm of
+    # foot height and takes it back out.
+    # Smoothing drags the opening back towards the skate it was just pulled out of, and
+    # re-asserting the placement puts some of the raggedness back, so alternate the two
+    # until they agree. They converge because the ramp's targets are themselves smooth:
+    # doing it once each way leaves either 11 mm/frame of skate or double the jerk.
+    if JOINT_SIGMA > 0:
+        leg_idx = [jn.index(nm) for lg in legs.values() for nm in lg.names]
+        dof[:, leg_idx] = gaussian_filter1d(
+            dof[:, leg_idx], JOINT_SIGMA, axis=0, mode="nearest"
+        )
+        log(f"        re-ramp after smoothing: {ramp_opening()*1000:.1f} mm residual")
 
     low1 = np.array([min(feet(f)[b][2] for b in FEET) for f in range(n)])
     t1 = travel()
