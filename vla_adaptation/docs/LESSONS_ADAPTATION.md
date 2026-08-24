@@ -2364,3 +2364,63 @@ statement about where a layer's influence lives, not a fix for the estimator.
 A padded action head, a multi-embodiment output projection, a shared trunk serving several
 heads — all put most of a layer's parameters outside the task's reach, and an isotropic
 draw spends its budget there. Cheap to check: mask the axis and re-measure the output.
+
+## 9h. RETRACTION of rule 28 — ACE *does* discriminate, once the measurement is fixed
+
+**Rule 28 as stated in §9e is wrong, and the data that refutes it is my own.** It is
+withdrawn. What follows replaces it.
+
+The run: 4 sites spanning three tiers, 12 antithetic draws each, 8 paired episodes per arm,
+sampler RNG pinned, perturbations matched by measured output displacement (rule 27) and
+restricted to the task-relevant dims (rule 29). Each block yields BOTH estimators from the
+same episodes, so the comparison is exact rather than inferred.
+
+| site | tier | mean\|D\| (first-order) | ACE (isotropic) |
+|---|---|---|---|
+| `action_out_proj/bias` | interface | 0.177 | **+0.109** |
+| `action_in_proj/kernel` | interface | 0.167 | **+0.115** |
+| `expert/mlp_1/linear/L8` | action expert | 0.094 | +0.057 |
+| `llm/mlp/linear/L0` | VLM trunk | 0.156 | **−0.026** |
+
+| estimator | F(3,44) | p | η² | verdict |
+|---|---|---|---|---|
+| **ACE, isotropic** | **8.751** | **0.0001** | **0.374** | **DISCRIMINATES** |
+| antithetic, first-order | 1.074 | 0.370 | 0.068 | no |
+
+**The isotropic estimator — the paper's own — clears both bars, and the antithetic "fix"
+does not.** Pairwise, both interface sites sit above the VLM trunk (p = 0.0007, p = 0.0003);
+the two interface sites are indistinguishable from each other (p = 0.86); the trunk site is
+the only negative value and sits below the expert site (p = 0.021). The tier ordering is
+**interface > action expert > VLM trunk** — which is exactly prediction **P2** of the
+original pre-registration, confirmed here for the first time.
+
+**Where the reasoning failed.** The algebra in §9e is correct: for symmetric Δ the
+first-order term vanishes and `ACE_hat` estimates `½ρ²·tr(H)`. The *inference* from it was a
+non sequitur. "It measures curvature rather than gradient" does not imply "it cannot rank
+layers" — average curvature is itself a perfectly good site-dependent quantity, and it
+varies across tiers by more than enough to separate them. I conflated *ACE does not measure
+adaptability* (still true, and still the reason it failed as a searchability screen five
+times) with *ACE measures nothing rankable* (false).
+
+**Why the n = 5 result pointed the other way.** It was draw luck, and the gaps closed with
+data: mean|D| for the bias site went 0.200 → 0.177 while the expert site went 0.050 → 0.094.
+The antithetic estimator is also the noisier of the two — it differences two noisy arms, so
+its sd runs 0.094–0.155 against the isotropic 0.064–0.090. Worse variance and no separation.
+
+**Rule 28 (replacement). A null from an estimator is a claim about the measurement before it
+is a claim about the estimator.** The pre-registered screen's p = 0.974 was an artifact of
+four measurement faults — unpaired scoring, a scale below the threshold of behaviour,
+relative-norm matching, and 78% of the draw spent on dims the task discards. Fix those and
+the same estimator, on the same model, separates layers at p = 0.0001. Nothing about ACE
+needed changing.
+
+**What this does and does not license.**
+- It does **not** rescue the pre-registered §4 primary. That was run as declared and failed;
+  this is a *post-hoc* re-measurement on 4 of the 10 sites at a different scale, and it is
+  exploratory. Confirmatory status needs a fresh pre-registration over the remaining sites.
+- It does **not** show ACE predicts repairability. `action_out_proj/bias` — the site with the
+  verified 100% repair — is statistically tied for first, not uniquely identified. What the
+  ranking buys is the *tier*: it points at the interface, which is where the repair lives.
+  That is useful for selection and is weaker than "it finds the right layer".
+- The five earlier falsifications of ACE-as-searchability-screen stand untouched. Ranking
+  layers and predicting searchability remain different jobs.
