@@ -279,11 +279,15 @@ def main():
         for f in range(n):
             if box_pos[f, 2] > BOX_DOWN:
                 continue  # carried: the box is overhead, feet underneath are fine
-            Rb = quat_wxyz_to_mat(box_quat[f])[:2, :2]
+            # Full 3x3, transposed. Taking the top-left 2x2 block instead is only the
+            # same thing for a box that is level, and this one rests tilted about 9 deg,
+            # which was enough to make the pass believe it had cleared frames it had not.
+            Rb3 = quat_wxyz_to_mat(box_quat[f])
+            Rb = Rb3[:2, :2]
             cur = feet(f)
             for i, b in enumerate(FEET):
                 pts = np.array([cur[b][0] + cur[b][1] @ s for s in SOLE_PTS[b]])
-                loc = (pts[:, :2] - box_pos[f, :2]) @ Rb
+                loc = (pts - box_pos[f]) @ Rb3
                 # Inflate the footprint by the sphere's radius: a centre sitting just
                 # OUTSIDE the box still has the sphere lapping over the face, and testing
                 # centres alone leaves exactly those frames touching.
@@ -291,6 +295,7 @@ def main():
                 inside = (
                     (loc[:, 0] > lo[0]) & (loc[:, 0] < hi[0])
                     & (loc[:, 1] > lo[1]) & (loc[:, 1] < hi[1])
+                    & (loc[:, 2] > BOX_MIN[2] - SPHERE_R) & (loc[:, 2] < BOX_MAX[2] + SPHERE_R)
                 )
                 if not inside.any():
                     continue
@@ -306,7 +311,7 @@ def main():
                         v[axis] = sign * dist
                         best = (dist, v)
                 if best is not None:
-                    out[f, i] = Rb @ best[1]
+                    out[f, i] = (Rb3 @ np.r_[best[1], 0.0])[:2]
         return out
 
     moved = stuck = 0
@@ -350,9 +355,50 @@ def main():
             else:
                 dof[f] = base_f
                 stuck += 1
-    dof[:, leg_idx] = gaussian_filter1d(dof[:, leg_idx], 1.0, axis=0, mode="nearest")
+        # Smooth inside the loop, not after it. Solving each frame's escape on its own
+        # leaves the joint traces ragged (jerk 5756 against the clip's own 4096), and a
+        # filter bolted on at the end just puts the feet back in the box. Smoothing here
+        # lets the next iteration re-asssert the clearance on top of it, so the two
+        # converge instead of fighting.
+        dof[:, leg_idx] = gaussian_filter1d(dof[:, leg_idx], 1.2, axis=0, mode="nearest")
     log(f"        cleared feet out of the box: {moved} frame-moves up to"
         f" {biggest*1000:.0f} mm; {stuck} the legs could not reach")
+
+    # 5. Drop leading frames until the clip STARTS clear of the box. Everything else
+    #    can be solved by walking a foot out of the way, but frame 0 cannot: the right
+    #    knee is against its 0 deg stop there, so the leg has no length to give, and
+    #    pushing harder only makes the IK swing it. The clip is clear a couple of frames
+    #    later anyway, and spawning the robot already touching the box is what fires it
+    #    across the floor -- 145 mm inside 0.2 s in the rollout that prompted this.
+    def touching(f):
+        if box_pos[f, 2] > BOX_DOWN:
+            return 0.0
+        Rb3 = quat_wxyz_to_mat(box_quat[f])
+        cur = feet(f)
+        worst = 0.0
+        for b in FEET:
+            for s in SOLE_PTS[b]:
+                l = Rb3.T @ (cur[b][0] + cur[b][1] @ s - box_pos[f])
+                o = np.maximum(np.maximum(BOX_MIN - l, l - BOX_MAX), 0.0)
+                sd = np.linalg.norm(o) if o.any() else -min(
+                    np.min(l - BOX_MIN), np.min(BOX_MAX - l)
+                )
+                worst = min(worst, sd - SPHERE_R)
+        return worst
+
+    cut = 0
+    # Only genuine penetration. A sphere grazing the face at half a millimetre is
+    # harmless, and trimming those too ate half a second and left the clip starting
+    # half-squatted at 557 mm and already dropping at 270 mm/s -- no way to begin a
+    # run on hardware.
+    while cut < 25 and touching(cut) < -0.0005:
+        cut += 1
+    if cut:
+        log(f"        trimmed {cut} opening frame(s) ({cut/FPS:.2f} s): the clip started"
+            f" {touching(0)*1000:.0f} mm inside the box and is clear from there")
+        root_pos, root_quat, dof = root_pos[cut:], root_quat[cut:], dof[cut:]
+        box_pos, box_quat = box_pos[cut:], box_quat[cut:]
+        n = len(dof)
 
     from cut_walking import to_training_npz
 
