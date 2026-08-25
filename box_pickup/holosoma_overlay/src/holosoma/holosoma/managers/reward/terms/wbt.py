@@ -618,6 +618,16 @@ class ComSupportMarginPenalty(RewardTermBase):
     of the soles that are carrying load: positive inside, negative outside. Rather
     than build a hull, it is measured as the smallest clearance over a fan of
     horizontal directions, which is batched, cheap, and smooth in the foot pose.
+
+    It only charges while BOTH feet are down. A walking robot puts its CoM outside
+    its support polygon on every step -- that is what walking is, you fall forward
+    onto the next foot -- and in a v12 rollout all 74 single-support frames had the
+    CoM outside, by as much as 262 mm, against 21 of 431 double-support frames at
+    worst 21 mm. Charging for the former would pay the policy to stop picking its
+    feet up, which is the glued-foot shuffle this task has fought since v31. Static
+    support is only the right test when the robot is standing on both feet, so that
+    is the only place it is applied; dynamic balance during a step is the ZMP's
+    business, and the reference is what supplies it.
     """
 
     # Sole corners in the ankle_roll_link frame, from the URDF's contact spheres.
@@ -637,12 +647,15 @@ class ComSupportMarginPenalty(RewardTermBase):
         self.margin = float(cfg.params.get("margin", 0.04))
         self.cap = float(cfg.params.get("cap", 0.20))
         self.force_threshold = float(cfg.params.get("contact_force_threshold", 1.0))
+        self.contact_height = float(cfg.params.get("contact_height", 0.02))
         k = int(cfg.params.get("directions", 16))
         ang = torch.arange(k, device=env.device, dtype=torch.float32) * (2.0 * math.pi / k)
         self.dirs = torch.stack([torch.cos(ang), torch.sin(ang)], dim=-1)  # [K, 2]
         sole = torch.tensor(self.SOLE, device=env.device, dtype=torch.float32)
         self.sole = torch.cat([sole, torch.full_like(sole[:, :1], -0.068)], dim=-1)  # [S, 3]
         self._mass_cache: torch.Tensor | None = None
+        self._com_cache: torch.Tensor | None = None
+        self._com_probed = False
 
     def __call__(self, env: WholeBodyTrackingManager, **kwargs) -> torch.Tensor:
         pos = env.simulator._rigid_body_pos[:, self.idxs, :]  # [E, F, 3]
@@ -655,26 +668,68 @@ class ComSupportMarginPenalty(RewardTermBase):
         ).reshape(e, f, s, 3)
 
         hist = env.simulator.contact_forces_history  # [E, H, B, 3]
-        loaded = (
+        pressed = (
             torch.max(torch.norm(hist[:, :, self.idxs, :], dim=-1), dim=1)[0] > self.force_threshold
         )  # [E, F]
+        # Force on its own was calling both feet loaded almost all of the time, which
+        # handed the term a two-foot polygon during single support and left it worth
+        # -0.006 of a 65-point reward -- silent. The sole has to be on the ground too.
+        grounded = corners[..., 2].amin(dim=-1) < self.contact_height
+        loaded = pressed & grounded  # [E, F]
 
         proj = corners[..., :2].reshape(e, f * s, 2) @ self.dirs.T  # [E, F*S, K]
         keep = loaded[:, :, None].expand(e, f, s).reshape(e, f * s)
         proj = torch.where(keep[..., None], proj, torch.full_like(proj, -1e6))
         support = proj.amax(dim=1)  # [E, K] hull extent in each direction
         margin = (support - self._com(env) @ self.dirs.T).amin(dim=-1)  # [E]
-        # Airborne means no polygon at all; cap keeps that from dwarfing every
-        # other term rather than letting a -1e6 margin blow the reward up.
-        return torch.clamp(self.margin - margin, min=0.0, max=self.cap)
+        pen = torch.clamp(self.margin - margin, min=0.0, max=self.cap)
+        # Standing on both feet is the only state a static support test describes, so
+        # it is the only one charged for. That also disposes of the airborne case,
+        # whose -1e6 margin would otherwise ride the cap through every flight phase.
+        return pen * loaded.all(dim=-1).to(pen.dtype)
 
     def reset(self, env_ids: torch.Tensor | None = None) -> None:
         """Nothing to carry between episodes: the margin is read off the current pose."""
 
     def _com(self, env: WholeBodyTrackingManager) -> torch.Tensor:
         mass = self._masses(env)  # [E, B]
-        pos = env.simulator._rigid_body_pos[..., :2]  # [E, B, 2]
-        return (pos * mass[..., None]).sum(dim=1) / mass.sum(dim=1, keepdim=True)
+        pos = env.simulator._rigid_body_pos  # [E, B, 3] -- link ORIGINS
+        off = self._com_offsets(env)
+        if off is not None:
+            # A link's origin is not its centre of mass: they sit a mean of 66 mm
+            # apart on this robot and 192 mm apart on the torso, which is the
+            # heaviest body of the lot.
+            rot = env.simulator._rigid_body_rot  # [E, B, 4] xyzw
+            n = pos.shape[0] * pos.shape[1]
+            pos = pos + quat_apply(
+                rot.reshape(n, 4), off.reshape(n, 3), w_last=True
+            ).reshape(pos.shape)
+        return (pos[..., :2] * mass[..., None]).sum(dim=1) / mass.sum(dim=1, keepdim=True)
+
+    def _com_offsets(self, env: WholeBodyTrackingManager) -> torch.Tensor | None:
+        """Each link's own centre of mass in its own frame, or None if the sim won't say."""
+        if self._com_probed:
+            return self._com_cache
+        self._com_probed = True
+        sim = env.simulator
+        try:
+            if hasattr(sim, "_robot") and hasattr(sim._robot, "root_physx_view"):
+                off = sim._robot.root_physx_view.get_coms().to(env.device)[..., :3]
+            else:  # mujoco keeps it on the model
+                from holosoma.simulator.mujoco.fields import _field_view
+
+                off = _field_view(sim, "body_ipos").to(env.device)
+            if off.dim() == 2:
+                off = off[None]
+            off = torch.stack(
+                [self._reorder(env, off[..., c]) for c in range(3)], dim=-1
+            )
+            if off.shape[0] == 1:
+                off = off.expand(env.num_envs, -1, -1)
+            self._com_cache = off.contiguous()
+        except Exception:  # noqa: BLE001 -- fall back to link origins, as before
+            self._com_cache = None
+        return self._com_cache
 
     def _masses(self, env: WholeBodyTrackingManager) -> torch.Tensor:
         if getattr(self, "_mass_cache", None) is None:
@@ -685,12 +740,29 @@ class ComSupportMarginPenalty(RewardTermBase):
                 from holosoma.simulator.mujoco.fields import _field_view
 
                 m = _field_view(sim, "body_mass").to(env.device)
-            nb = env.simulator._rigid_body_pos.shape[1]
-            m = m.reshape(-1, m.shape[-1])[:, :nb]
+            m = self._reorder(env, m.reshape(-1, m.shape[-1]))
             if m.shape[0] == 1:
                 m = m.expand(env.num_envs, -1)
             self._mass_cache = m.contiguous()
         return self._mass_cache
+
+    @staticmethod
+    def _reorder(env: WholeBodyTrackingManager, x: torch.Tensor) -> torch.Tensor:
+        """Put a per-body quantity into the same body order as _rigid_body_pos.
+
+        body_ids is a permutation, not a prefix: the simulator lists bodies depth
+        first and holosoma wants its config's order, so _rigid_body_pos is gathered
+        through it. Truncating to the first nb entries instead -- which is what this
+        did until now -- pairs every body's position with some other body's mass. The
+        resulting "CoM" sits near the pelvis whatever the robot does, so the support
+        margin read healthy through every fall and the term was worth -0.006 of a
+        65-point reward.
+        """
+        nb = env.simulator._rigid_body_pos.shape[1]
+        ids = getattr(env.simulator, "body_ids", None)
+        if ids is not None and len(ids) == nb and x.shape[1] > max(ids):
+            return x[:, list(ids)]
+        return x[:, :nb]
 
 
 def _feet_gravity_in_foot_frame(env: WholeBodyTrackingManager, idxs: List[int]) -> torch.Tensor:

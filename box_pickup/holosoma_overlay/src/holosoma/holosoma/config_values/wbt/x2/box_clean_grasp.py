@@ -380,9 +380,18 @@ x2_31dof_box_grasp_reward = RewardManagerCfg(
                 "margin": 0.04,
                 "cap": 0.20,
                 "contact_force_threshold": 1.0,
+                # A foot has to be on the ground, not merely reporting force, before
+                # it counts towards the polygon -- see ComSupportMarginPenalty.
+                "contact_height": 0.02,
                 "directions": 16,
             },
-            weight=-2.0,
+            # Reward terms are accumulated as weight * value * dt, so -2.0 bought a
+            # penalty of -0.026 an episode against a mean reward of 65 -- unmeasurable.
+            # At -20 the term stays near -0.04 for a policy standing where this one
+            # already stands, and a CoM parked on the edge of the feet costs about a
+            # tenth of everything else the step earns. The cap is only reached 160 mm
+            # outside, which double support never gets near.
+            weight=-20.0,
         ),
         # v31's feet_anchor / foot_not_flat / feet_edge_contact are NOT included.
         # They were three successive attempts to stop ankle-roll edge-standing
