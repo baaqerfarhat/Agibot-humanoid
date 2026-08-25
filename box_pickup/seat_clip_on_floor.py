@@ -26,7 +26,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from scipy.ndimage import gaussian_filter1d
+from scipy.ndimage import gaussian_filter1d, maximum_filter1d, minimum_filter1d
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -43,6 +43,11 @@ FLOOR = 0.011  # m: the contact sphere's radius, i.e. its centre height when res
 RAMP = 40  # frames (0.8 s) to spread the opening reposition over
 SETTLE = 9  # frames of opening transient, for reporting
 FPS = 50.0
+BOX_MIN = np.array([-0.234, -0.230, -0.198])  # the box collision mesh's own bounding box, metres
+BOX_MAX = np.array([0.237, 0.229, 0.210])
+BOX_DOWN = 0.30    # m: above this the box is off the floor and feet under it are fine
+FOOT_MARGIN = 0.006  # m of daylight to leave between a sole sphere and the box
+SPHERE_R = 0.011     # m: the sole contact spheres own radius
 SWING = 0.045  # m of clearance above which a foot is genuinely swinging, not hovering
 STILL = 0.15   # m/s of horizontal speed below which it is not swinging either
 JOINT_SIGMA = 0.8  # frames of smoothing on the leg joints after per-frame IK
@@ -63,6 +68,18 @@ def main():
     n = len(dof)
 
     robot = Robot()
+    # The URDF's real contact spheres, per foot, in that ankle's frame. An earlier
+    # version of the box-clearance pass used a hardcoded five-point sole instead and so
+    # kept clearing points the collision geometry does not have, reporting success while
+    # 91 frames were still inside the box.
+    SOLE_PTS = {
+        b: [
+            np.asarray(FIXED_FRAMES[k][1])
+            for k in FIXED_FRAMES
+            if "sphere" in k and FIXED_FRAMES[k][0] == b
+        ]
+        for b in FEET
+    }
     legs = {b: LegChain(robot.chain, b) for b in FEET}
     lim = {nm: robot.lim[nm] for leg in legs.values() for nm in leg.names}
 
@@ -246,6 +263,96 @@ def main():
     log(f"        opening foot travel {t1[:RAMP].max():.1f} mm/frame worst")
     log(f"        clip lifted by {total.mean()*1000:.1f} mm on average,"
         f" {total.max()*1000:.1f} mm at most")
+
+    # 4. Get the feet out of the box. The retarget stands the robot with its toes inside
+    #    the box footprint -- the forward sole sphere is 24 mm in at frame 0 and the
+    #    overlap runs through the whole approach and the whole set-down, the two phases
+    #    where the box is on the floor. It is geometrically impossible (the box is ON
+    #    that floor, a foot cannot be under it), so the simulator resolves it the only
+    #    way it can, by firing the box away: 145 mm in the first 0.2 s of the rollout.
+    #    Everything after that is the robot chasing a box that is no longer where the
+    #    reference says. It is in the raw mocap too, and the passes above deepened it,
+    #    since dropping a foot onto the floor also drives its toe further under the box.
+    def box_push():
+        """Per-foot horizontal escape from the box footprint, world frame."""
+        out = np.zeros((n, len(FEET), 2))
+        for f in range(n):
+            if box_pos[f, 2] > BOX_DOWN:
+                continue  # carried: the box is overhead, feet underneath are fine
+            Rb = quat_wxyz_to_mat(box_quat[f])[:2, :2]
+            cur = feet(f)
+            for i, b in enumerate(FEET):
+                pts = np.array([cur[b][0] + cur[b][1] @ s for s in SOLE_PTS[b]])
+                loc = (pts[:, :2] - box_pos[f, :2]) @ Rb
+                # Inflate the footprint by the sphere's radius: a centre sitting just
+                # OUTSIDE the box still has the sphere lapping over the face, and testing
+                # centres alone leaves exactly those frames touching.
+                lo, hi = BOX_MIN[:2] - SPHERE_R, BOX_MAX[:2] + SPHERE_R
+                inside = (
+                    (loc[:, 0] > lo[0]) & (loc[:, 0] < hi[0])
+                    & (loc[:, 1] > lo[1]) & (loc[:, 1] < hi[1])
+                )
+                if not inside.any():
+                    continue
+                # Cheapest single direction clearing EVERY sphere of this foot at once.
+                best = None
+                for axis, sign, face in (
+                    (0, -1.0, lo[0]), (0, 1.0, hi[0]),
+                    (1, -1.0, lo[1]), (1, 1.0, hi[1]),
+                ):
+                    dist = float(((face - loc[inside, axis]) * sign).max()) + FOOT_MARGIN
+                    if dist > 0 and (best is None or dist < best[0]):
+                        v = np.zeros(2)
+                        v[axis] = sign * dist
+                        best = (dist, v)
+                if best is not None:
+                    out[f, i] = Rb @ best[1]
+        return out
+
+    moved = stuck = 0
+    biggest = 0.0
+    # Iterate: moving a foot out along its cheapest axis can leave another sphere of the
+    # same foot, or the other foot, still clipping a corner.
+    for _ in range(8):
+        push = box_push()
+        if np.abs(push).max() < 1e-4:
+            break
+        # Dilate BEFORE smoothing. Smoothing a spike halves it, which is exactly the
+        # frames that needed it most -- the first attempt at this left 146 frames still
+        # inside. Widening first means the filter can only ever round the shoulders off
+        # a plateau that is already tall enough.
+        push = gaussian_filter1d(
+            maximum_filter1d(np.abs(push), 13, axis=0, mode="nearest") * np.sign(
+                maximum_filter1d(push, 13, axis=0, mode="nearest")
+                + minimum_filter1d(push, 13, axis=0, mode="nearest")
+            ),
+            3.0, axis=0, mode="nearest",
+        )
+        biggest = max(biggest, float(np.abs(push).max()))
+        for f in range(n):
+            if np.abs(push[f]).max() < 1e-4:
+                continue
+            cur = feet(f)
+            base_f = dof[f].copy()
+            for frac in (1.0, 0.7, 0.4):
+                tgt = {}
+                for i, b in enumerate(FEET):
+                    p = cur[b][0].copy()
+                    p[:2] += frac * push[f, i]
+                    tgt[b] = (p, cur[b][1])
+                dof[f] = leg_ik(
+                    legs, base_f.copy(), jn, root_pos[f],
+                    quat_wxyz_to_mat(root_quat[f]), tgt, lim,
+                )
+                if max(np.linalg.norm(feet(f)[b][0] - tgt[b][0]) for b in FEET) <= 0.003:
+                    moved += 1
+                    break
+            else:
+                dof[f] = base_f
+                stuck += 1
+    dof[:, leg_idx] = gaussian_filter1d(dof[:, leg_idx], 1.0, axis=0, mode="nearest")
+    log(f"        cleared feet out of the box: {moved} frame-moves up to"
+        f" {biggest*1000:.0f} mm; {stuck} the legs could not reach")
 
     from cut_walking import to_training_npz
 
