@@ -144,4 +144,11 @@ if ! MUJOCO_GL=egl "$MJLAB_PY" "$RENDERER" "$NPZ" "$MP4" >"$RENDER_LOG" 2>&1; th
 fi
 [ -f "$MP4" ] || { echo "[video] ERROR: render failed, see $RENDER_LOG"; exit 1; }
 
+# Balance summary from the renderer's support-polygon overlay: worth seeing without
+# opening the log, since it is the whole point of the coloured polygon in the video.
+if [ "$TYPE" = box ]; then
+    sed -n '/margin: min/,$p' "$RENDER_LOG" | grep -vE "^Rendered|^Wrote|^imageio" \
+        | sed 's/^/[video] /' || true
+fi
+
 echo "[video] done: $MP4"
