@@ -73,22 +73,23 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
     The policy is BLIND: it does not perceive the box. The box must be placed
     at the reference start location (see "Box placement" below) before engaging.
 
-    The motion (v25: IN-PLACE pickup + hold + set-down, NO walking) is 8.1 s
-    at 50 Hz, feet planted at the stance position for the ENTIRE motion:
-        0.0 - 0.7 s   hold the default upright pose  <- START THE ROBOT STANDING
-        0.7 - 2.7 s   bend down toward the box
-        2.7 - 3.2 s   two-handed squeeze grasp + lift to chest
-        3.2 - 5.2 s   HOLD: stand still, box at chest (2 s)
-        5.2 - 7.4 s   one continuous set-down directly in front, both feet
-                      planted (the pickup played in reverse), stand back up
-        7.4 - 8.1 s   hold the default upright pose
-    Both the first and last frames of the reference are the robot's exact
-    default standing pose at zero velocity, so the task starts from a normal
-    standing start and finishes standing upright. The box is picked up and
-    set back down at the SAME spot -- no floor clearance needed beyond the
-    box position. (This isolated pickup/set-down is exactly what the hybrid
-    controller `deploy_x2_box_hybrid.py` runs, minus the carry walk it
-    splices into the hold.)
+    THE MOTION WALKS. From v16 (clip sub3_largebox_003_walk_feasible, 511 frames)
+    the robot carries the box 1.6 m rather than setting it down where it found it,
+    so the whole 1.6 m path has to be clear and the handler has to walk with it.
+    Everything below the grasp is unchanged; the carry is new, and it is the part
+    the older in-place notes here did not cover.
+
+    10.22 s at 50 Hz:
+        0.00 - 1.42 s   squat to the box. DEEP: the pelvis drops 0.67 -> 0.34 m,
+                        and unlike the in-place clip it is already descending at
+                        frame 0, so the robot does NOT stand still first
+        1.42 s          two-handed grasp and lift
+        1.42 - 6.32 s   CARRY WALK, box travelling 1.57 m at chest height (peak
+                        0.61 m). Feet are NOT planted -- it takes real steps
+        6.34 - 10.22 s  set the box down at the far end and stand back up
+    The last frame returns the pelvis to 0.656 m, i.e. upright, so the run still
+    finishes standing. The FIRST frame does not: the clip opens mid-descent, so
+    expect the robot to start moving the instant it engages.
 
 #####################################  SAFETY  #####################################
 #  1. First runs: robot SUSPENDED, NO BOX -> verify the motion shape in the air.
@@ -103,13 +104,18 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
 #  7. When done, restart the controller:   aima em start-app mc
 ####################################################################################
 
-Box placement: the reference box start pose (motion frame 0) is ~0.40 m in
-front of the robot's initial pelvis position (box CENTER, i.e. near edge
-~0.17 m from the robot), centered on its heading, resting on the floor
-(45 cm cube, LIGHT: 0.5-1.5 kg; training randomized 0.4-1.6 kg and friction --
-an empty/lightly-filled cardboard box is ideal; do NOT use a heavy box, the
-wrist actuators cannot squeeze-hold much beyond ~2 kg).
-Mark the robot's start feet position and the box position together.
+Box placement, measured off the v16 clip's own frame 0 (the numbers here used to
+say 0.40 m and centred, which is 6 cm too far and misses the offset entirely --
+the policy is blind, so it reaches where the reference says regardless):
+    0.342 m  forward of the robot's start pelvis position (box CENTRE)
+    0.066 m  to the LEFT of its heading
+    near edge therefore ~0.107 m from the pelvis
+    box 47 x 46 x 41 cm, resting on the floor
+Mass ~1 kg (training randomised 0.5-1.3 kg). An empty or lightly filled
+cardboard box is ideal; do NOT use a heavy one, the wrist actuators cannot
+squeeze-hold much beyond ~2 kg.
+Mark the robot's start feet position and the box position together, and leave
+1.6 m of clear floor ahead: the box does not come back to where it started.
 """
 
 from __future__ import annotations
@@ -337,20 +343,22 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--policy",
-                    default="../box_pickup/policy/x2_box_policy_clean_grasp_v5_iter15500.npz",
-                    help="Path to WBT box policy .npz (default: v5, iter 15500). This is the "
-                         "JITTER FIX. The iter-9000 policy it replaces was unrunnable on the "
-                         "robot: its leg targets moved 205 mrad per 50 Hz step and reversed "
-                         "direction on 67% of steps, because action_rate_l2 had been left at the "
-                         "original -0.1 instead of the -1.0 v33 used, and the training-side +-4 "
-                         "clip then squared the resulting zero-crossing oscillation into a full "
-                         "amplitude alternation. Both are fixed here, and in sim this policy is "
-                         "smoother than v33 -- which ran on the robot without jitter -- on every "
-                         "measure: leg |da| 0.085 vs 0.095, leg |dtarget| 17.2 vs 19.7 mrad/step, "
-                         "ankle_roll saturated 43% of the episode vs 67%. It also keeps the "
-                         "hands-off-the-floor grasp (0 of 733 frames in floor contact, vs 103). "
-                         "NOTE it completes about two thirds of the clip before terminating in "
-                         "sim, so expect the pickup to be incomplete.")
+                    default="../box_pickup/policy/x2_box_policy_walk_feasible_v16_iter30500.npz",
+                    help="Path to WBT box policy .npz (default: v16, iter 30500). THIS ONE "
+                         "WALKS -- see the motion notes at the top, the box ends up 1.6 m from "
+                         "where it started. Trained on a reference rebuilt so the robot can "
+                         "actually hold the poses: gripped near the box corners instead of "
+                         "reaching across it (which had been forcing an extreme squat and a "
+                         "saturated waist), feet cleared out of the box volume, and both feet "
+                         "seated on the floor at frame 0 -- the clip used to spawn the robot 5 mm "
+                         "airborne with one foot 24 mm higher, and the policy answered the "
+                         "asymmetric landing by picking that leg up and replanting it. Also caps "
+                         "ankle_roll action scale at 0.02, and adds a torque-saturation and a "
+                         "support-margin penalty. Mean episode 418 of the clip's 511 frames. "
+                         "It fails export_and_verify_waist like every policy before it (12 of 32 "
+                         "frames commanding waist_pitch against the reference, against v33's 13 "
+                         "of 38), but demands far less past the hardware waist stop: 6 "
+                         "overshooting frames against v33's 21.")
     ap.add_argument("--engage", action="store_true",
                     help="ACTUALLY publish commands. Without this it is a dry run.")
     ap.add_argument("--base-imu", default="torso", choices=["torso", "chest"],
