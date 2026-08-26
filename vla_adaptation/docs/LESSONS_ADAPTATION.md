@@ -2424,3 +2424,93 @@ needed changing.
   That is useful for selection and is weaker than "it finds the right layer".
 - The five earlier falsifications of ACE-as-searchability-screen stand untouched. Ranking
   layers and predicting searchability remain different jobs.
+
+## 9i. THE CONFIRMATORY RESULT: ACE discriminates, under a declared protocol
+
+`PREREG_ACE_CONFIRMATORY.md`, written before the run, held-out initial states 10–17, 9 sites
+× 8 draws × 2 arms × 10 episodes = 1440 episodes.
+
+**PRIMARY PASSES: F(8,63) = 35.758, p = 1.33e-20, η² = 0.820.** Against the original screen's
+F(9,70) = 0.294, p = 0.974, η² = 0.036 — same estimator, same model, same two bars — **the
+null was a measurement artifact.** Four faults produced it (§9d, §9g): unpaired scoring, a
+scale below the threshold of behaviour, relative-norm matching, and 78% of each draw spent on
+dims the task discards.
+
+Predictions scored: **P1 holds** (passes). **P2 holds** — interface (+0.048) > expert (+0.002)
+> VLM trunk (−0.006), the ordering the original prereg could not resolve. **P3 holds** —
+`action_out_proj/bias` ranks **5th of 9**; the top site is `action_out_proj/kernel`. **P4
+FAILS against me** — I predicted the first-order secondary would not discriminate and it does
+(p = 0.0017, η² = 0.313), so §9f's estimator comparison was underpowered rather than decisive.
+
+**The limitation that qualifies all of it.** 54% of the between-site variance in ACE is
+explained by how hard each site was actually perturbed (r = −0.738 vs log achieved
+displacement, p = 0.037). Matching used one observation; across 20 observations from real
+rollouts the achieved displacement spans **0.79×–6.24×** target, and the within-site CV runs
+**0.29–0.98** — so **no scalar ρ per layer can equalise it**, because the response depends on
+the observation. Relative-norm matching gave 30×; output-matching cut it to 7.9× and stopped.
+
+Read it as: **ACE separates these layers, and about half of what separates them is
+intervention strength rather than causal importance.** A strong result about measurement; a
+weak one about layer selection.
+
+## 9j. Two modifications that improve ACE, and what they are worth
+
+**Max, not mean.** Adaptability is a *max* over directions; ACE averages over random ones.
+Scoring each site by its best draw instead of its average, on the same episodes:
+
+| statistic | rank of the known-repairable site |
+|---|---|
+| mean (standard ACE) | #5 of 8 |
+| max / top-3 / top-5 / p90 | **#2 of 8** |
+| consistency (§9k) | **#1 of 8** |
+
+Stable across every upper-tail statistic, so not a knife-edge artifact. It is a one-line
+change and it measurably improves the ranking.
+
+**Measure in effect space, not metric space.** The fault here is a *constant* action offset,
+and a layer can implement one only if its parameter change shifts the action the same way
+regardless of input. Score `consistency = ‖mean_obs ΔA‖ / mean_obs‖ΔA‖`, a ratio, hence
+scale-free — the exact defect that made ACE incomparable across layers:
+
+| site | consistency |
+|---|---|
+| `action_out_proj/bias` | **0.906** |
+| `action_in_proj/kernel` | 0.521 |
+| `action_out_proj/kernel` / `expert L0` | 0.516 |
+| `time_mlp_out`, `expert L8` | 0.43 |
+| `img B26`, `llm L0` | 0.33, 0.30 |
+
+It ranks the repairable site #1 with a 1.7× gap, cuts the confound from 54% to 26% of
+variance, and costs forward passes rather than 1440 episodes. **Rule 30. Prefer a ratio of
+measured effects to a difference of task metrics: ratios are scale-free, and scale is what
+does not transfer across layers.**
+
+## 9k. The ground truth that could not be measured — five diagnosed failures
+
+Both claims above are validated against **one** known-repairable site. Selecting an estimator
+by how well it ranks a single known answer is overfitting, so the fix was to measure
+repairability for every site: probe, least-squares the combination pointing along the repair
+direction, apply it, run episodes. It never worked. Each failure was a real defect:
+
+1. Fitted a **unit-norm** target when the required shift is 0.532 — a 1.88× overshoot into
+   the regime already measured as catastrophic (k = 1.5 → 20%). 0/10.
+2. The combo handler **diffed the whole 3.35B tree per probe**, one model copy per term, and
+   exhausted the card.
+3. **Unregularised least squares** reached the right action effect by cancelling large probe
+   coefficients: ‖δ‖ = 13.6 against the oracle's known-good 1.56. Ridge added.
+4. **One-shot rescale assumed linearity.** The ~26× amplification needed sits in the
+   sampler's saturating regime, so the achieved effect is not proportional to the multiplier.
+   Iterative secant calibration converged (gain 2.301 → 0.881 → 1.018) and still scored 0/10.
+5. **Probes rescaled to the repair magnitude** (adaptive c = 135.7 vs 21.2; one probe |ΔA|
+   0.215 vs 0.188 target). Converged in two steps, still 0/10 at ‖δ‖ = 3.35 where the oracle
+   needs 0.78. The mask is not the culprit — `delta_l2` is measured after masking.
+
+**Rule 31. A random probe basis is the wrong instrument for constructing a targeted edit.**
+The analytic repair needs ‖δ‖ = 1.56; the best fit from random probes needs ~4× that for the
+same measured action shift, and the excess drives per-dimension saturation that destroys the
+policy. This is the same lesson §9e was reaching for by a different route: random directions
+are useful for *detecting* that a layer matters, and useless for *building* the edit.
+
+**So the n = 1 limitation stands**, and it bounds §9j: "consistency ranks the repairable site
+first" is one site, not a validated selection rule. Getting real ground truth means running
+the actual search per site — which is a separate experiment, not a patch on this one.
