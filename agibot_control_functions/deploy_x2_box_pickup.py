@@ -337,15 +337,20 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--policy",
-                    default="../box_pickup/policy/x2_box_policy_clean_grasp_iter9000.npz",
-                    help="Path to WBT box policy .npz (default: clean-grasp retrain, iter 9000). "
-                         "Trained with the same +-4 bound on ankle_roll/wrist that --action-clip "
-                         "applies here, so the clip is not imposed after the fact on a policy "
-                         "that had learned to rely on saturation. Waist pitch/yaw, planted feet, "
-                         "and keeping the HANDS OFF THE FLOOR were objectives during training "
-                         "rather than later patches: the previous policy planted both palms on "
-                         "the ground during the grasp and pushed off them, which this one never "
-                         "does (0 of 733 frames in floor contact, vs 103).")
+                    default="../box_pickup/policy/x2_box_policy_clean_grasp_v5_iter15500.npz",
+                    help="Path to WBT box policy .npz (default: v5, iter 15500). This is the "
+                         "JITTER FIX. The iter-9000 policy it replaces was unrunnable on the "
+                         "robot: its leg targets moved 205 mrad per 50 Hz step and reversed "
+                         "direction on 67% of steps, because action_rate_l2 had been left at the "
+                         "original -0.1 instead of the -1.0 v33 used, and the training-side +-4 "
+                         "clip then squared the resulting zero-crossing oscillation into a full "
+                         "amplitude alternation. Both are fixed here, and in sim this policy is "
+                         "smoother than v33 -- which ran on the robot without jitter -- on every "
+                         "measure: leg |da| 0.085 vs 0.095, leg |dtarget| 17.2 vs 19.7 mrad/step, "
+                         "ankle_roll saturated 43% of the episode vs 67%. It also keeps the "
+                         "hands-off-the-floor grasp (0 of 733 frames in floor contact, vs 103). "
+                         "NOTE it completes about two thirds of the clip before terminating in "
+                         "sim, so expect the pickup to be incomplete.")
     ap.add_argument("--engage", action="store_true",
                     help="ACTUALLY publish commands. Without this it is a dry run.")
     ap.add_argument("--base-imu", default="torso", choices=["torso", "chest"],

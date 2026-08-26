@@ -10,6 +10,8 @@ from holosoma.config_values.wbt.g1.experiment import (
     g1_29dof_wbt_fast_sac_w_object,
     g1_29dof_wbt_w_object,
 )
+from holosoma.config_values.wbt.x2.box_clean import x2_31dof_wbt_box_clean
+from holosoma.config_values.wbt.x2.box_clean_grasp import x2_31dof_wbt_box_clean_grasp
 from holosoma.config_values.wbt.x2.experiment import (
     x2_31dof_wbt,
     x2_31dof_wbt_crawl,
@@ -29,6 +31,8 @@ DEFAULTS = {
     "g1_29dof_wbt_fast_sac_w_object": g1_29dof_wbt_fast_sac_w_object,
     "x2_31dof_wbt": x2_31dof_wbt,
     "x2_31dof_wbt_crawl": x2_31dof_wbt_crawl,
+    "x2_31dof_wbt_box_clean": x2_31dof_wbt_box_clean,
+    "x2_31dof_wbt_box_clean_grasp": x2_31dof_wbt_box_clean_grasp,
     "x2_31dof_wbt_w_object": x2_31dof_wbt_w_object,
     "x2_31dof_wbt_fast_sac": x2_31dof_wbt_fast_sac,
     "x2_31dof_wbt_fast_sac_w_object": x2_31dof_wbt_fast_sac_w_object,

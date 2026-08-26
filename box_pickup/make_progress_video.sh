@@ -18,6 +18,7 @@
 # Output: /home/baaqer/baaqer_ws/Agibot-humanoid/box_pickup/videos/x2_<type>_<run>_iter<N>.mp4
 set -euo pipefail
 
+HOLOSOMA=/home/baaqer/baaqer_ws/holosoma
 LOGS=/home/baaqer/baaqer_ws/holosoma/logs/WholeBodyTracking
 VIDEOS=/home/baaqer/baaqer_ws/Agibot-humanoid/box_pickup/videos
 HSSIM_PY=/home/baaqer/.holosoma_deps/miniconda3/envs/hssim/bin/python
@@ -89,11 +90,22 @@ if [[ "$RUN_BASE" == *crawl* ]]; then
 else
     TYPE="box"
     RENDERER="$SCRIPTS_DIR/render_box_rollout.py"
-    # Box runs (v29+) train on THREE speed variants of the clip; without a
-    # motion override the demo recorder plays a RANDOM one. Pin the nominal
-    # clip and record its FULL length (pickup + set-down + 3 s end hold) so
-    # the set-down is never cut off (the old fixed 460 frames truncated it).
-    MOTION=/home/baaqer/baaqer_ws/holosoma/src/holosoma/holosoma/data/motions/x2_31dof/whole_body_tracking/box_multispeed/box_speed100.npz
+    # Pin a motion, because without an override the demo recorder plays a RANDOM
+    # one out of the multi-clip runs. Read it from the run's OWN saved config:
+    # this used to hardcode box_multispeed/box_speed100.npz, which silently scored
+    # every newer run against a clip it had never trained on -- the policy gets
+    # reference targets from a different motion in its observations, tracks
+    # nonsense and falls over, which looks exactly like a broken policy.
+    RUN_CFG="$RUN_DIR/holosoma_config.yaml"
+    MOTION=""
+    if [ -f "$RUN_CFG" ]; then
+        REL="$(sed -nE 's/^[[:space:]]*motion_file:[[:space:]]*(.+)$/\1/p' "$RUN_CFG" | head -1 | tr -d '"'"'"'')"
+        [ -n "$REL" ] && [ -f "$HOLOSOMA/src/holosoma/$REL" ] && MOTION="$HOLOSOMA/src/holosoma/$REL"
+    fi
+    if [ -z "$MOTION" ]; then
+        echo "[video] WARNING: no motion_file in $RUN_CFG, falling back to box_speed100" >&2
+        MOTION="$HOLOSOMA/src/holosoma/holosoma/data/motions/x2_31dof/whole_body_tracking/box_multispeed/box_speed100.npz"
+    fi
     STEPS="$("$HSSIM_PY" -c "import numpy as np; print(np.load('$MOTION')['joint_pos'].shape[0] - 1)")"
 fi
 RUN_NAME="$(echo "$RUN_BASE" | sed -E "s/^x2_(box|crawl)_?//")"
@@ -131,5 +143,12 @@ if ! MUJOCO_GL=egl "$MJLAB_PY" "$RENDERER" "$NPZ" "$MP4" >"$RENDER_LOG" 2>&1; th
     fi
 fi
 [ -f "$MP4" ] || { echo "[video] ERROR: render failed, see $RENDER_LOG"; exit 1; }
+
+# Balance summary from the renderer's support-polygon overlay: worth seeing without
+# opening the log, since it is the whole point of the coloured polygon in the video.
+if [ "$TYPE" = box ]; then
+    sed -n '/margin: min/,$p' "$RENDER_LOG" | grep -vE "^Rendered|^Wrote|^imageio" \
+        | sed 's/^/[video] /' || true
+fi
 
 echo "[video] done: $MP4"
