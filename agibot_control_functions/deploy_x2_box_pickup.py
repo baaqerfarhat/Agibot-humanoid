@@ -390,13 +390,6 @@ def main():
                     help="Comma-separated substrings. Only the joints whose saturated "
                          "torque leans on contact belong here. Clipping every joint "
                          "fails the task on 6/6 Isaac seeds.")
-    ap.add_argument("--max-joint-step", type=float, default=0.0,
-                    help="Max change in a joint target per 20 ms tick (rad); 0 = off "
-                         "(default). Training has no such rate limit, so any value here "
-                         "is pure added lag: on the 2026-08-12 runs 0.15 clipped 6.4%% of "
-                         "ticks and put the knee target up to 0.34 rad behind the "
-                         "policy. Torque is already bounded by the effort limit, which "
-                         "is the actual safety quantity, so this is not needed.")
     ap.add_argument("--roll-abort", type=float, default=0.7,
                     help="Abort if |pelvis roll| exceeds this (rad). Pitch is NOT "
                          "checked: the motion contains a deep forward bend. Watches the "
@@ -404,15 +397,6 @@ def main():
                          "0.49 rad of it -- does not eat the abort margin.")
     ap.add_argument("--hold-end-seconds", type=float, default=3.0,
                     help="Hold the final reference pose after the motion ends.")
-    ap.add_argument("--leg-filter", type=float, default=0.0,
-                    help="EMA smoothing factor on LEG joint targets (0 = off, default). "
-                         "This has no counterpart in training, so it is pure added lag; "
-                         "adaptation/deploy_artifacts_isaac.py measures the cost in sim "
-                         "(3 seeds): 0.0 and 0.2 both give 100%% success, 0.5 drops to "
-                         "67%%, and 0.9 gives 0%%, matching the hardware run that aborted "
-                         "at 0.9 while 0.2 completed the motion. On hardware 0.0 got "
-                         "furthest, and its logged targets sit 0.0008 rad from the raw "
-                         "policy output vs 0.036 rad at 0.9. Arms are never filtered.")
     ap.add_argument("--init-tol-arm", type=float, default=0.12,
                     help="Max |meas-start| (rad) allowed on arm joints before "
                          "the policy is allowed to engage.")
@@ -462,13 +446,14 @@ def main():
     print(f"  torque ff:     {'OFF -- position clipped to limits (OLD, known-bad)' if args.no_torque_ff else 'on (matches training clip_torques)'}")
     print(f"  action clip:   "
           f"{'OFF' if args.action_clip <= 0 else f'+-{args.action_clip:g} on {args.action_clip_joints}'}")
-    print(f"  leg filter:    {args.leg_filter}   max joint step: "
-          f"{'off' if args.max_joint_step <= 0 else f'{args.max_joint_step} rad/tick'}")
+    print("  target path:   raw policy output, no leg filter, no rate limit")
     print(f"  MODE:          {'ENGAGED (publishing!)' if args.engage else 'DRY RUN (no publish)'}")
     print("=" * 78)
-    print("\nBOX PLACEMENT: 45 cm cube, LIGHT (0.5-1.5 kg), on the floor, center")
-    print("~0.40 m in front of the robot, on its heading. Start the robot STANDING")
-    print("UPRIGHT; the motion holds still for ~1 s, then bends down.")
+    print("\nBOX PLACEMENT: 47 x 46 x 41 cm, LIGHT (~1 kg), on the floor, CENTRE")
+    print("0.342 m in front of the robot and 0.066 m to its LEFT. Start the robot")
+    print("STANDING UPRIGHT -- but note the clip opens mid-descent, so it bends down")
+    print("immediately rather than holding still first.")
+    print("THIS MOTION WALKS: it carries the box 1.6 m. Clear the path and walk with it.")
     print("First trials: NO BOX, robot suspended.\n")
 
     rclpy.init()
@@ -564,7 +549,6 @@ def main():
     act_clip_ticks = 0
 
     LEG_JOINTS = [n for n in joint_names if ("hip" in n or "knee" in n or "ankle" in n)]
-    LEG_SET = set(LEG_JOINTS)
     ARM_JOINTS = [n for n in joint_names
                   if any(k in n for k in ("shoulder", "elbow", "wrist"))]
     ARM_SET = set(ARM_JOINTS)
@@ -610,8 +594,10 @@ def main():
     logger = RunLogger(
         joint_names, base_imu=args.base_imu, run_name=run_name,
         meta={"script": "deploy_x2_box_pickup.py", "policy": args.policy,
-              "gain_scale": args.gain_scale, "leg_filter": args.leg_filter,
-              "max_joint_step": args.max_joint_step,
+              "gain_scale": args.gain_scale,
+              # Kept in the log so a run recorded after these were removed is not
+              # mistaken for one recorded before, when they defaulted 0.9 / 0.15.
+              "leg_filter": 0.0, "max_joint_step": 0.0,
               "torque_ff": not args.no_torque_ff,
               "action_clip": args.action_clip,
               "action_clip_joints": args.action_clip_joints,
@@ -721,22 +707,14 @@ def main():
                         act_clip_mask & (np.abs(action) >= args.action_clip - 1e-9)))
                 # Feed back the action actually applied, not the raw one.
                 obs_builder.last_action = action.astype(np.float32)
+                # Straight from the policy. There is deliberately no leg low-pass
+                # and no per-tick step clamp here: neither exists in training, so
+                # either one makes the robot a different plant from the one the
+                # policy was fitted to, and a test of the pair tells you nothing
+                # about the policy. Smoothing belongs in the reward (action_rate_l2),
+                # where the policy can account for it.
                 raw_target = action * action_scale + default
-                target_by_name = {}
-                for i, n in enumerate(joint_names):
-                    tgt = raw_target[i]
-                    # low-pass the LEG targets: damps the jitter loop where a
-                    # small correction -> actuator overshoot -> IMU motion ->
-                    # harder correction. The reference motion itself is slow,
-                    # so mild lag on the legs is harmless.
-                    if args.leg_filter > 0.0 and n in LEG_SET:
-                        tgt = (1.0 - args.leg_filter) * tgt \
-                            + args.leg_filter * prev_target[n]
-                    if args.max_joint_step > 0.0:
-                        tgt = prev_target[n] + float(np.clip(
-                            tgt - prev_target[n],
-                            -args.max_joint_step, args.max_joint_step))
-                    target_by_name[n] = float(tgt)
+                target_by_name = {n: float(raw_target[i]) for i, n in enumerate(joint_names)}
                 if frame >= n_frames + int(args.hold_end_seconds / CONTROL_DT):
                     phase = "done"; phase_t0 = now
                     print("\n[phase] motion complete -> ramping to default\n")
