@@ -215,7 +215,44 @@ def main():
         req = json.loads(a.control.read_text())
         holder["stamp"] = stamp
         holder["pin_rng"] = bool(req.get("pin_rng", False))
-        if req.get("bias_add") is not None:
+        if req.get("combo") is not None:
+            # delta = sum_k coef_k * N(0, rho^2; seed_k), accumulated AT THE SITE ONLY.
+            # Diffing the whole 3.35B-param tree per probe (the obvious implementation)
+            # allocates one full model copy per term and exhausts the card.
+            site = BY_NAME[req["site"]]
+            st = norms[site.name]
+            c = float(req.get("c_rel", C_REL))
+            rho = rho_for(st, c)
+            dims = req.get("dims")
+            combo = [(int(k), float(v)) for k, v in req["combo"]]
+
+            def f(path, v):
+                if path_str(path) != site.path:
+                    return v
+                w32 = jnp.asarray(v, jnp.float32)
+                target = w32[site.index] if site.index is not None else w32
+                acc = jnp.zeros(target.shape, jnp.float32)
+                for seed, coef in combo:
+                    acc = acc + coef * rho * jax.random.normal(
+                        jax.random.key(seed), target.shape, jnp.float32)
+                if dims is not None:
+                    ax = [i for i, n in enumerate(target.shape) if n == 32]
+                    if ax:
+                        m = np.zeros(target.shape, np.float32)
+                        sl = [slice(None)] * target.ndim
+                        sl[ax[0]] = slice(0, dims)
+                        m[tuple(sl)] = 1.0
+                        acc = acc * jnp.asarray(m)
+                applied["l2"] = float(jnp.linalg.norm(acc))
+                out = w32.at[site.index].add(acc) if site.index is not None else w32 + acc
+                return jnp.asarray(out, v.dtype)
+
+            applied = {}
+            holder["state"] = jax.tree_util.tree_map_with_path(f, base_state)
+            ack = dict(site=site.name, draw=req.get("draw"), combo=len(combo),
+                       c_rel=c, rho=rho, delta_l2=applied.get("l2"), ok=True,
+                       applied_rel=0.0, pin_rng=holder["pin_rng"])
+        elif req.get("bias_add") is not None:
             st, ap = bias_edited_state(base_state, req["bias_add"])
             holder["state"] = st
             want = float(np.linalg.norm(np.asarray(req["bias_add"], np.float32)))

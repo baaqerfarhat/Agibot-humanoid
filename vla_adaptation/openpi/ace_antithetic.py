@@ -36,6 +36,8 @@ def main():
     p.add_argument("--draws", type=int, default=3)
     p.add_argument("--episodes", type=int, default=6)
     p.add_argument("--sites", default=None, help="comma-separated subset")
+    p.add_argument("--init-base", type=int, default=8,
+                   help="first LIBERO initial-state index (10 = confirmatory held-out set)")
     p.add_argument("--dims", type=int, default=None,
                    help="restrict the perturbation to the first N task dims")
     a = p.parse_args()
@@ -47,7 +49,7 @@ def main():
         sites = [s for s in sites if s in want]
     pr = Probe(a)
     # 10 tasks at initial state 8, then wrap to state 9 -- disjoint from every earlier run
-    eps = [((i % 10), 8 + i // 10) for i in range(a.episodes)]
+    eps = [((i % 10), a.init_base + i // 10) for i in range(a.episodes)]
 
     state = {"episodes": a.episodes, "draws": a.draws, "baseline": None, "blocks": []}
     if a.out.exists():

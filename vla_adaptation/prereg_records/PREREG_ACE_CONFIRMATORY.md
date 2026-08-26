@@ -76,6 +76,57 @@ unchanged, so the two runs are directly comparable.
 
 ---
 
-## Results
+## Results — run 2026-08-23/24, 72/72 blocks
 
-*(appended after the run)*
+9 sites x 8 draws x 2 arms x 10 episodes, held-out initial states 10-17, deterministic
+baseline 3/10 (reproduced independently by both workers, and again on a second GPU after a
+hardware failure mid-run -- see the note at the end).
+
+| site | tier | ACE | sd |
+|---|---|---|---|
+| `action_out_proj/kernel` | interface | +0.125 | 0.060 |
+| `expert/mlp_1/linear/L0` | expert | +0.125 | 0.065 |
+| `expert/mlp_1/linear/L8` | expert | +0.125 | 0.060 |
+| `action_in_proj/kernel` | interface | +0.088 | 0.052 |
+| `action_out_proj/bias` | interface | +0.081 | 0.084 |
+| `llm/mlp/linear/L0` | VLM trunk | −0.006 | 0.050 |
+| `time_mlp_out/kernel` | interface | −0.100 | 0.144 |
+| `expert/mlp_1/linear/L17` | expert | −0.244 | 0.042 |
+| `img/.../Dense_1/kernel/B26` | vision | −0.256 | 0.056 |
+
+**PRIMARY PASSES: F(8,63) = 35.758, p = 1.33e-20, η² = 0.820.** Both declared bars cleared.
+Against the original screen's F(9,70) = 0.294, p = 0.974, η² = 0.036 on the same estimator
+and the same model, **the null was a measurement artifact.**
+
+### Predictions, scored
+
+1. **P1 holds** — primary passes.
+2. **P2 holds** — interface (+0.048) > expert (+0.002) > VLM trunk (−0.006). Vision sits
+   lowest at −0.256; it was not part of P2's ordering.
+3. **P3 holds** — `action_out_proj/bias` is not uniquely top-ranked. It is **5th of 9**; the
+   top site is `action_out_proj/kernel`. The site with a verified 100% repair sits mid-pack,
+   so **ACE ranks layers but does not identify the repairable one.**
+4. **P4 FAILS, against me.** I predicted the first-order secondary would not discriminate,
+   on the exploratory η² = 0.068. It does: F = 3.593, p = 0.0017, η² = 0.313. The
+   exploratory comparison of the two estimators was underpowered, not decisive.
+
+### The limitation that qualifies all of the above
+
+**54% of the between-site variance in ACE is explained by how hard each site was actually
+perturbed** (r = −0.738 against log achieved displacement, p = 0.037). Perturbations were
+matched to a common |ΔAction| = 0.02 using ONE observation; measured across 20 observations
+from real rollouts the achieved displacement spans **0.79× to 6.24×** the target. Worse, the
+within-site coefficient of variation runs **0.29 to 0.98**, so **no single scalar ρ per layer
+can equalise induced displacement** — the response depends on the observation. Relative-norm
+matching gave a 30× spread; output-matching cut it to 7.9× and did not fix it.
+
+So the primary's verdict should be read as: **ACE separates these layers, and roughly half of
+what separates them is intervention strength rather than causal importance.** That is a real
+result about measurement, and a weak one about layer selection.
+
+### Note on the run
+
+The first attempt died 8 blocks short when a concurrent probe I launched caused
+`RESOURCE_EXHAUSTED` on the serving process; the GPU at `0000:C1:00.0` subsequently fell off
+the bus. The run was completed on the second card, which reproduced the deterministic
+baseline exactly (3/10). Both cards were unreachable by the end of the session.
