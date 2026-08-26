@@ -48,6 +48,15 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
     clipping every joint instead fails the task on 0/9, because the legs genuinely
     need their large commands.
 
+    All of which held while ankle_roll's action scale was 0.25. v16 caps it at 0.02
+    in TRAINING, the same fix applied one layer earlier and a better place for it,
+    and the requests now land inside the mechanical stops unaided: ankle_roll peaks
+    at 0.229 rad against a 0.263 stop, wrist_roll at 0.859 against ~1.57. So
+    --action-clip defaults to 0 from v16 on. Clipping on top of the capped scale
+    binds on 24-80% of frames and would cut the ankle to 0.080 rad and the wrist to
+    0.240, and the wrist roll is what squeezes the box. The passage above is the
+    history, and still says what to look for if a joint pins at a stop again.
+
     Observation layout (164 dims, holosoma concatenates terms ALPHABETICALLY):
         [ prev_action(31),
           base_ang_vel(3),                           <- PELVIS gyro, see below
@@ -380,12 +389,22 @@ def main():
                          "silently discards every saturated-torque request the policy "
                          "makes (ankle roll, wrist pitch, shoulder roll); keep it only "
                          "for A/B testing against the old runs.")
-    ap.add_argument("--action-clip", type=float, default=4.0,
-                    help="Bound |action| on --action-clip-joints. |a|=4 is exactly the "
-                         "effort limit, so this drops only requests for torque the "
-                         "actuator cannot produce. In training those requests are "
-                         "absorbed by contact; on hardware they drive the joint to its "
-                         "mechanical stop. 0 disables (pre-2026-08-12 behaviour).")
+    ap.add_argument("--action-clip", type=float, default=0.0,
+                    help="Bound |action| on --action-clip-joints; 0 = off (default). "
+                         "Training does not clip (action_clip_value 100), so this is a "
+                         "deploy-only transform and the bar for using it is that the "
+                         "raw request is unreachable. It was, once: at the old 0.25 "
+                         "action scale |a|=4 asked ankle_roll for 1.0 rad against a "
+                         "0.263 rad stop, so the servo pinned at max torque, the robot "
+                         "stood on the edges of its feet and toppled at 2.9 s on "
+                         "2026-08-12. v16 fixes that at the source by capping the "
+                         "ankle_roll action SCALE at 0.02, and every request now lands "
+                         "inside the stops -- ankle_roll peaks at 0.229 rad of 0.263, "
+                         "wrist_roll at 0.859 of ~1.57. Re-clipping to 4 on top would "
+                         "bind on 24-80%% of frames and cut the ankle to 0.080 rad and "
+                         "the wrist to 0.240, and the wrist roll is what squeezes the "
+                         "box. Set it back to 4 only if a run shows a joint pinned at a "
+                         "stop again.")
     ap.add_argument("--action-clip-joints", default="ankle_roll,wrist",
                     help="Comma-separated substrings. Only the joints whose saturated "
                          "torque leans on contact belong here. Clipping every joint "
