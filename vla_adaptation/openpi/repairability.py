@@ -39,6 +39,8 @@ def main():
     ap.add_argument("--obs", type=int, default=12)
     ap.add_argument("--episodes", type=int, default=10)
     ap.add_argument("--scales", default="0.5,1.0,1.5")
+    ap.add_argument("--sites-only", default=None,
+                    help="comma-separated subset, to control the episode budget")
     a = ap.parse_args()
     matched = json.loads(a.matched_c.read_text())
     u = repair_direction()          # unit direction
@@ -71,10 +73,28 @@ def main():
     done = {(b["site"], b["scale"]) for b in state["blocks"]}
 
     print(f"{len(els)} obs, {a.probes} probes/site, {a.episodes} episodes/test\n")
+    want = [x.strip() for x in a.sites_only.split(',')] if a.sites_only else None
+    want = [x.strip() for x in a.sites_only.split(',')] if a.sites_only else None
     for s in SITES:
-        if s not in matched:
+        if s not in matched or (want and s not in want):
             continue
+        # Probe at a scale matched to the REPAIR, not to the ACE screen. The screen's c makes
+        # each probe move the action by ~0.02, while the repair needs 0.532 -- so a fit over
+        # that basis must amplify ~26x, which drives the sampler into saturation and then the
+        # calibration adds yet more delta to compensate. Measured cost of getting this wrong:
+        # |delta| = 6.7 to achieve what the oracle does with 0.78, and 0/10 episodes.
+        # Target one probe ~ u_mag/sqrt(K), so the fit needs coefficients of order 1.
         c = matched[s]["c"]
+        want = u_mag / np.sqrt(a.probes)
+        for _ in range(6):
+            pr.control(dict(site=s, seed=3000, c_rel=c, pin_rng=True, dims=7))
+            got = np.array([np.asarray(pr.client.infer(e)["actions"], float)[:, :7].mean(0) - bb
+                            for e, bb in zip(els, base_a)]).mean(0)
+            mag = float(np.linalg.norm(got))
+            if mag <= 0 or abs(mag - want) / want < 0.25:
+                break
+            c = c * min(8.0, max(0.2, want / mag))
+        print(f"{s:<34} probe c -> {c:.2f} (one probe |dA| {mag:.3f} vs target {want:.3f})")
         V = []
         for k in range(a.probes):
             pr.control(dict(site=s, seed=3000 + k, c_rel=c, pin_rng=True, dims=7))
@@ -82,10 +102,38 @@ def main():
                            for e, b in zip(els, base_a)])
             V.append(dA.mean(0))
         V = np.array(V)                                  # (K,7) achievable mean effects
-        coef, *_ = np.linalg.lstsq(V.T, u * u_mag, rcond=None)  # fit the REQUIRED shift
+        # Ridge, not plain lstsq. An unregularised fit reaches the right ACTION effect by
+        # cancelling large probe coefficients against each other, leaving a parameter change
+        # far bigger than necessary -- measured |delta| = 13.6 against the oracle's known-good
+        # 1.56 -- which wrecks the policy away from the probe observations and scored 0/10.
+        lam = 1e-4 * float(np.trace(V @ V.T)) / len(V)
+        coef = np.linalg.solve(V @ V.T + lam * np.eye(len(V)), V @ (u * u_mag))
         pred = V.T @ coef
         cosine = float(pred @ u / (np.linalg.norm(pred) + 1e-12))
-        print(f"{s:<34} directed-fit cos={cosine:+.3f}  |pred|={np.linalg.norm(pred):.4f}")
+        # Calibrate ITERATIVELY. A single measure-and-rescale is wrong here: reaching the
+        # required shift needs ~26x the probe magnitude, which sits deep in the sampler's
+        # saturating regime, so the achieved effect is NOT proportional to the multiplier.
+        # (Measured: one-shot rescale left |delta| = 5.9 where the oracle needs 0.78, and it
+        # scored 0/10.) A few secant steps converge on gain ~ 1 using forward passes only.
+        n_probe = a.probes
+
+        def gain_of(mult):
+            pr.control(dict(site=s, dims=7, c_rel=c, pin_rng=True,
+                            combo=[[3000 + k, float(mult * coef[k])] for k in range(n_probe)]))
+            got = np.array([np.asarray(pr.client.infer(e)["actions"], float)[:, :7].mean(0) - bb
+                            for e, bb in zip(els, base_a)]).mean(0)
+            return float(got @ u) / (u_mag + 1e-12)
+
+        mult, hist = 1.0, []
+        for _ in range(6):
+            g = gain_of(mult)
+            hist.append((round(mult, 4), round(g, 3)))
+            if abs(g - 1.0) < 0.08 or abs(g) < 1e-6:
+                break
+            mult = mult / max(g, 1e-3) if g > 0 else mult * 0.5
+        coef = coef * mult
+        print(f"{s:<34} cos={cosine:+.3f}  calib {hist}  -> x{mult:.3f}")
+
         for sc in scales:
             if (s, sc) in done:
                 continue

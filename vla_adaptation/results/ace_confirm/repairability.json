@@ -1,0 +1,13 @@
+{
+ "blocks": [
+  {
+   "site": "action_out_proj/bias",
+   "scale": 0.5,
+   "cosine": 0.9999949693321369,
+   "successes": 0,
+   "n": 10,
+   "success_rate": 0.0,
+   "wall_s": 480.2
+  }
+ ]
+}
