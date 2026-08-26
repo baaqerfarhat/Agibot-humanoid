@@ -118,6 +118,12 @@ def main():
     ap.add_argument("--motion", default=None)
     ap.add_argument("--out", required=True)
     ap.add_argument("--skip-export", action="store_true")
+    # The hybrid controller freezes the pickup here and splices its own carry walk
+    # in. That only means anything for a clip with a hold phase: 211-311 was the
+    # chest hold of the old in-place motion, and on the walking clip those frames
+    # are mid-stride, so shipping the range would park the robot on one foot.
+    # Absent it, the hybrid controller refuses to start rather than guessing.
+    ap.add_argument("--hold-frames", type=int, nargs=2, default=None, metavar=("H0", "H1"))
     args = ap.parse_args()
 
     # Default to the clip the run ACTUALLY trained on, read from its own config.
@@ -150,10 +156,9 @@ def main():
             args.motion,
             "--out",
             str(out),
-            "--hold-frames",
-            "211",
-            "311",
         ]
+        if args.hold_frames:
+            cmd += ["--hold-frames", str(args.hold_frames[0]), str(args.hold_frames[1])]
         print("Running:", " ".join(cmd))
         subprocess.check_call(cmd)
 

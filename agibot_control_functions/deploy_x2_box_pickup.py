@@ -48,6 +48,15 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
     clipping every joint instead fails the task on 0/9, because the legs genuinely
     need their large commands.
 
+    All of which held while ankle_roll's action scale was 0.25. v16 caps it at 0.02
+    in TRAINING, the same fix applied one layer earlier and a better place for it,
+    and the requests now land inside the mechanical stops unaided: ankle_roll peaks
+    at 0.229 rad against a 0.263 stop, wrist_roll at 0.859 against ~1.57. So
+    --action-clip defaults to 0 from v16 on. Clipping on top of the capped scale
+    binds on 24-80% of frames and would cut the ankle to 0.080 rad and the wrist to
+    0.240, and the wrist roll is what squeezes the box. The passage above is the
+    history, and still says what to look for if a joint pins at a stop again.
+
     Observation layout (164 dims, holosoma concatenates terms ALPHABETICALLY):
         [ prev_action(31),
           base_ang_vel(3),                           <- PELVIS gyro, see below
@@ -73,22 +82,23 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
     The policy is BLIND: it does not perceive the box. The box must be placed
     at the reference start location (see "Box placement" below) before engaging.
 
-    The motion (v25: IN-PLACE pickup + hold + set-down, NO walking) is 8.1 s
-    at 50 Hz, feet planted at the stance position for the ENTIRE motion:
-        0.0 - 0.7 s   hold the default upright pose  <- START THE ROBOT STANDING
-        0.7 - 2.7 s   bend down toward the box
-        2.7 - 3.2 s   two-handed squeeze grasp + lift to chest
-        3.2 - 5.2 s   HOLD: stand still, box at chest (2 s)
-        5.2 - 7.4 s   one continuous set-down directly in front, both feet
-                      planted (the pickup played in reverse), stand back up
-        7.4 - 8.1 s   hold the default upright pose
-    Both the first and last frames of the reference are the robot's exact
-    default standing pose at zero velocity, so the task starts from a normal
-    standing start and finishes standing upright. The box is picked up and
-    set back down at the SAME spot -- no floor clearance needed beyond the
-    box position. (This isolated pickup/set-down is exactly what the hybrid
-    controller `deploy_x2_box_hybrid.py` runs, minus the carry walk it
-    splices into the hold.)
+    THE MOTION WALKS. From v16 (clip sub3_largebox_003_walk_feasible, 511 frames)
+    the robot carries the box 1.6 m rather than setting it down where it found it,
+    so the whole 1.6 m path has to be clear and the handler has to walk with it.
+    Everything below the grasp is unchanged; the carry is new, and it is the part
+    the older in-place notes here did not cover.
+
+    10.22 s at 50 Hz:
+        0.00 - 1.42 s   squat to the box. DEEP: the pelvis drops 0.67 -> 0.34 m,
+                        and unlike the in-place clip it is already descending at
+                        frame 0, so the robot does NOT stand still first
+        1.42 s          two-handed grasp and lift
+        1.42 - 6.32 s   CARRY WALK, box travelling 1.57 m at chest height (peak
+                        0.61 m). Feet are NOT planted -- it takes real steps
+        6.34 - 10.22 s  set the box down at the far end and stand back up
+    The last frame returns the pelvis to 0.656 m, i.e. upright, so the run still
+    finishes standing. The FIRST frame does not: the clip opens mid-descent, so
+    expect the robot to start moving the instant it engages.
 
 #####################################  SAFETY  #####################################
 #  1. First runs: robot SUSPENDED, NO BOX -> verify the motion shape in the air.
@@ -103,13 +113,18 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
 #  7. When done, restart the controller:   aima em start-app mc
 ####################################################################################
 
-Box placement: the reference box start pose (motion frame 0) is ~0.40 m in
-front of the robot's initial pelvis position (box CENTER, i.e. near edge
-~0.17 m from the robot), centered on its heading, resting on the floor
-(45 cm cube, LIGHT: 0.5-1.5 kg; training randomized 0.4-1.6 kg and friction --
-an empty/lightly-filled cardboard box is ideal; do NOT use a heavy box, the
-wrist actuators cannot squeeze-hold much beyond ~2 kg).
-Mark the robot's start feet position and the box position together.
+Box placement, measured off the v16 clip's own frame 0 (the numbers here used to
+say 0.40 m and centred, which is 6 cm too far and misses the offset entirely --
+the policy is blind, so it reaches where the reference says regardless):
+    0.342 m  forward of the robot's start pelvis position (box CENTRE)
+    0.066 m  to the LEFT of its heading
+    near edge therefore ~0.107 m from the pelvis
+    box 47 x 46 x 41 cm, resting on the floor
+Mass ~1 kg (training randomised 0.5-1.3 kg). An empty or lightly filled
+cardboard box is ideal; do NOT use a heavy one, the wrist actuators cannot
+squeeze-hold much beyond ~2 kg.
+Mark the robot's start feet position and the box position together, and leave
+1.6 m of clear floor ahead: the box does not come back to where it started.
 """
 
 from __future__ import annotations
@@ -337,20 +352,22 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--policy",
-                    default="../box_pickup/policy/x2_box_policy_clean_grasp_v5_iter15500.npz",
-                    help="Path to WBT box policy .npz (default: v5, iter 15500). This is the "
-                         "JITTER FIX. The iter-9000 policy it replaces was unrunnable on the "
-                         "robot: its leg targets moved 205 mrad per 50 Hz step and reversed "
-                         "direction on 67% of steps, because action_rate_l2 had been left at the "
-                         "original -0.1 instead of the -1.0 v33 used, and the training-side +-4 "
-                         "clip then squared the resulting zero-crossing oscillation into a full "
-                         "amplitude alternation. Both are fixed here, and in sim this policy is "
-                         "smoother than v33 -- which ran on the robot without jitter -- on every "
-                         "measure: leg |da| 0.085 vs 0.095, leg |dtarget| 17.2 vs 19.7 mrad/step, "
-                         "ankle_roll saturated 43% of the episode vs 67%. It also keeps the "
-                         "hands-off-the-floor grasp (0 of 733 frames in floor contact, vs 103). "
-                         "NOTE it completes about two thirds of the clip before terminating in "
-                         "sim, so expect the pickup to be incomplete.")
+                    default="../box_pickup/policy/x2_box_policy_walk_feasible_v16_iter30500.npz",
+                    help="Path to WBT box policy .npz (default: v16, iter 30500). THIS ONE "
+                         "WALKS -- see the motion notes at the top, the box ends up 1.6 m from "
+                         "where it started. Trained on a reference rebuilt so the robot can "
+                         "actually hold the poses: gripped near the box corners instead of "
+                         "reaching across it (which had been forcing an extreme squat and a "
+                         "saturated waist), feet cleared out of the box volume, and both feet "
+                         "seated on the floor at frame 0 -- the clip used to spawn the robot 5 mm "
+                         "airborne with one foot 24 mm higher, and the policy answered the "
+                         "asymmetric landing by picking that leg up and replanting it. Also caps "
+                         "ankle_roll action scale at 0.02, and adds a torque-saturation and a "
+                         "support-margin penalty. Mean episode 418 of the clip's 511 frames. "
+                         "It fails export_and_verify_waist like every policy before it (12 of 32 "
+                         "frames commanding waist_pitch against the reference, against v33's 13 "
+                         "of 38), but demands far less past the hardware waist stop: 6 "
+                         "overshooting frames against v33's 21.")
     ap.add_argument("--engage", action="store_true",
                     help="ACTUALLY publish commands. Without this it is a dry run.")
     ap.add_argument("--base-imu", default="torso", choices=["torso", "chest"],
@@ -372,23 +389,26 @@ def main():
                          "silently discards every saturated-torque request the policy "
                          "makes (ankle roll, wrist pitch, shoulder roll); keep it only "
                          "for A/B testing against the old runs.")
-    ap.add_argument("--action-clip", type=float, default=4.0,
-                    help="Bound |action| on --action-clip-joints. |a|=4 is exactly the "
-                         "effort limit, so this drops only requests for torque the "
-                         "actuator cannot produce. In training those requests are "
-                         "absorbed by contact; on hardware they drive the joint to its "
-                         "mechanical stop. 0 disables (pre-2026-08-12 behaviour).")
+    ap.add_argument("--action-clip", type=float, default=0.0,
+                    help="Bound |action| on --action-clip-joints; 0 = off (default). "
+                         "Training does not clip (action_clip_value 100), so this is a "
+                         "deploy-only transform and the bar for using it is that the "
+                         "raw request is unreachable. It was, once: at the old 0.25 "
+                         "action scale |a|=4 asked ankle_roll for 1.0 rad against a "
+                         "0.263 rad stop, so the servo pinned at max torque, the robot "
+                         "stood on the edges of its feet and toppled at 2.9 s on "
+                         "2026-08-12. v16 fixes that at the source by capping the "
+                         "ankle_roll action SCALE at 0.02, and every request now lands "
+                         "inside the stops -- ankle_roll peaks at 0.229 rad of 0.263, "
+                         "wrist_roll at 0.859 of ~1.57. Re-clipping to 4 on top would "
+                         "bind on 24-80%% of frames and cut the ankle to 0.080 rad and "
+                         "the wrist to 0.240, and the wrist roll is what squeezes the "
+                         "box. Set it back to 4 only if a run shows a joint pinned at a "
+                         "stop again.")
     ap.add_argument("--action-clip-joints", default="ankle_roll,wrist",
                     help="Comma-separated substrings. Only the joints whose saturated "
                          "torque leans on contact belong here. Clipping every joint "
                          "fails the task on 6/6 Isaac seeds.")
-    ap.add_argument("--max-joint-step", type=float, default=0.0,
-                    help="Max change in a joint target per 20 ms tick (rad); 0 = off "
-                         "(default). Training has no such rate limit, so any value here "
-                         "is pure added lag: on the 2026-08-12 runs 0.15 clipped 6.4%% of "
-                         "ticks and put the knee target up to 0.34 rad behind the "
-                         "policy. Torque is already bounded by the effort limit, which "
-                         "is the actual safety quantity, so this is not needed.")
     ap.add_argument("--roll-abort", type=float, default=0.7,
                     help="Abort if |pelvis roll| exceeds this (rad). Pitch is NOT "
                          "checked: the motion contains a deep forward bend. Watches the "
@@ -396,15 +416,6 @@ def main():
                          "0.49 rad of it -- does not eat the abort margin.")
     ap.add_argument("--hold-end-seconds", type=float, default=3.0,
                     help="Hold the final reference pose after the motion ends.")
-    ap.add_argument("--leg-filter", type=float, default=0.0,
-                    help="EMA smoothing factor on LEG joint targets (0 = off, default). "
-                         "This has no counterpart in training, so it is pure added lag; "
-                         "adaptation/deploy_artifacts_isaac.py measures the cost in sim "
-                         "(3 seeds): 0.0 and 0.2 both give 100%% success, 0.5 drops to "
-                         "67%%, and 0.9 gives 0%%, matching the hardware run that aborted "
-                         "at 0.9 while 0.2 completed the motion. On hardware 0.0 got "
-                         "furthest, and its logged targets sit 0.0008 rad from the raw "
-                         "policy output vs 0.036 rad at 0.9. Arms are never filtered.")
     ap.add_argument("--init-tol-arm", type=float, default=0.12,
                     help="Max |meas-start| (rad) allowed on arm joints before "
                          "the policy is allowed to engage.")
@@ -454,13 +465,14 @@ def main():
     print(f"  torque ff:     {'OFF -- position clipped to limits (OLD, known-bad)' if args.no_torque_ff else 'on (matches training clip_torques)'}")
     print(f"  action clip:   "
           f"{'OFF' if args.action_clip <= 0 else f'+-{args.action_clip:g} on {args.action_clip_joints}'}")
-    print(f"  leg filter:    {args.leg_filter}   max joint step: "
-          f"{'off' if args.max_joint_step <= 0 else f'{args.max_joint_step} rad/tick'}")
+    print("  target path:   raw policy output, no leg filter, no rate limit")
     print(f"  MODE:          {'ENGAGED (publishing!)' if args.engage else 'DRY RUN (no publish)'}")
     print("=" * 78)
-    print("\nBOX PLACEMENT: 45 cm cube, LIGHT (0.5-1.5 kg), on the floor, center")
-    print("~0.40 m in front of the robot, on its heading. Start the robot STANDING")
-    print("UPRIGHT; the motion holds still for ~1 s, then bends down.")
+    print("\nBOX PLACEMENT: 47 x 46 x 41 cm, LIGHT (~1 kg), on the floor, CENTRE")
+    print("0.342 m in front of the robot and 0.066 m to its LEFT. Start the robot")
+    print("STANDING UPRIGHT -- but note the clip opens mid-descent, so it bends down")
+    print("immediately rather than holding still first.")
+    print("THIS MOTION WALKS: it carries the box 1.6 m. Clear the path and walk with it.")
     print("First trials: NO BOX, robot suspended.\n")
 
     rclpy.init()
@@ -556,7 +568,6 @@ def main():
     act_clip_ticks = 0
 
     LEG_JOINTS = [n for n in joint_names if ("hip" in n or "knee" in n or "ankle" in n)]
-    LEG_SET = set(LEG_JOINTS)
     ARM_JOINTS = [n for n in joint_names
                   if any(k in n for k in ("shoulder", "elbow", "wrist"))]
     ARM_SET = set(ARM_JOINTS)
@@ -602,8 +613,10 @@ def main():
     logger = RunLogger(
         joint_names, base_imu=args.base_imu, run_name=run_name,
         meta={"script": "deploy_x2_box_pickup.py", "policy": args.policy,
-              "gain_scale": args.gain_scale, "leg_filter": args.leg_filter,
-              "max_joint_step": args.max_joint_step,
+              "gain_scale": args.gain_scale,
+              # Kept in the log so a run recorded after these were removed is not
+              # mistaken for one recorded before, when they defaulted 0.9 / 0.15.
+              "leg_filter": 0.0, "max_joint_step": 0.0,
               "torque_ff": not args.no_torque_ff,
               "action_clip": args.action_clip,
               "action_clip_joints": args.action_clip_joints,
@@ -713,22 +726,14 @@ def main():
                         act_clip_mask & (np.abs(action) >= args.action_clip - 1e-9)))
                 # Feed back the action actually applied, not the raw one.
                 obs_builder.last_action = action.astype(np.float32)
+                # Straight from the policy. There is deliberately no leg low-pass
+                # and no per-tick step clamp here: neither exists in training, so
+                # either one makes the robot a different plant from the one the
+                # policy was fitted to, and a test of the pair tells you nothing
+                # about the policy. Smoothing belongs in the reward (action_rate_l2),
+                # where the policy can account for it.
                 raw_target = action * action_scale + default
-                target_by_name = {}
-                for i, n in enumerate(joint_names):
-                    tgt = raw_target[i]
-                    # low-pass the LEG targets: damps the jitter loop where a
-                    # small correction -> actuator overshoot -> IMU motion ->
-                    # harder correction. The reference motion itself is slow,
-                    # so mild lag on the legs is harmless.
-                    if args.leg_filter > 0.0 and n in LEG_SET:
-                        tgt = (1.0 - args.leg_filter) * tgt \
-                            + args.leg_filter * prev_target[n]
-                    if args.max_joint_step > 0.0:
-                        tgt = prev_target[n] + float(np.clip(
-                            tgt - prev_target[n],
-                            -args.max_joint_step, args.max_joint_step))
-                    target_by_name[n] = float(tgt)
+                target_by_name = {n: float(raw_target[i]) for i, n in enumerate(joint_names)}
                 if frame >= n_frames + int(args.hold_end_seconds / CONTROL_DT):
                     phase = "done"; phase_t0 = now
                     print("\n[phase] motion complete -> ramping to default\n")

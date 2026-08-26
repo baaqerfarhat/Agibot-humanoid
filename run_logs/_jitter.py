@@ -39,7 +39,14 @@ for f in sorted(glob.glob("2026*_box_pickup_*.meta.json")):
             ph = header.index("phase")
         except ValueError:
             ph = None
-        rows = [r for r in rdr if ph is None or r[ph] == "policy"]
+        # A Ctrl+C can leave the final row truncated mid-write, so require a
+        # row to be long enough to index before trusting any field in it.
+        width = max(cols.values()) + 1
+        rows = [
+            r
+            for r in rdr
+            if len(r) >= width and (ph is None or r[ph] == "policy")
+        ]
 
     if len(rows) < 20:
         continue

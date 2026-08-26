@@ -233,6 +233,14 @@ def publish_pose(commander, pos_by_name, kp_by_name, kd_by_name, gain_scale, eng
 
 # =============================== main ===============================
 def main():
+    raise SystemExit(
+        "This is the frozen 2026-08-07 share-pack copy and it must not be run.\n"
+        "It smooths the leg targets with an EMA of 0.9 and clamps every joint to\n"
+        "0.15 rad/tick unconditionally -- neither exists in training, so it tests\n"
+        "a different plant from the one the policy was fitted to. It also predates\n"
+        "the torque feed-forward and the pelvis angular-velocity reconstruction.\n"
+        "Use agibot_control_functions/deploy_x2_box_pickup.py instead."
+    )
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--policy",
