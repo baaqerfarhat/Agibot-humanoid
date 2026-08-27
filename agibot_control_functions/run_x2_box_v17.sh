@@ -11,10 +11,15 @@
 #   ./run_x2_box_v17.sh                 # dry-run
 #   ./run_x2_box_v17.sh --engage        # publish (after the safety ladder)
 # Extra args are forwarded to deploy_x2_box_pickup.py
-set -euo pipefail
+set -eo pipefail
 
+# ROS's setup.bash reads AMENT_TRACE_SETUP_FILES unguarded, so nounset has to
+# stay off until after it is sourced or the runner exits before the banner.
+set +u
 source /opt/ros/humble/setup.bash
 source ~/aimdk_ws/install/setup.bash
+set -u
+
 export FASTRTPS_DEFAULT_PROFILES_FILE="${FASTRTPS_DEFAULT_PROFILES_FILE:-/agibot/software/entry/cfg/ros_dds_configuration.xml}"
 export RCUTILS_LOGGING_SEVERITY="${RCUTILS_LOGGING_SEVERITY:-WARN}"
 
