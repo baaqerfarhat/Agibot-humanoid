@@ -10,13 +10,36 @@ import argparse, collections, json, pathlib
 import numpy as np
 from PIL import Image, ImageDraw
 
+import pathlib as _pl
 import main as lm
+from libero.libero import get_libero_path
+from libero.libero.envs import OffScreenRenderEnv
 from openpi_client import image_tools
 from paired_probe import Probe
 from gate_faults import apply_action_fault
 from adaptive_law import fit_plant, OUT, K_FIR
 
 BAR = 46
+
+
+def wide_env(task, resolution, seed, rec_cam, fovy):
+    """Env with an EXTRA recording camera, widened.
+
+    The policy must keep seeing the standard `agentview` at its trained fov -- widening that
+    would change the policy's input and invalidate the comparison -- so the video is shot
+    from a separate camera whose fovy we are free to open up.
+    """
+    bddl = _pl.Path(get_libero_path("bddl_files")) / task.problem_folder / task.bddl_file
+    env = OffScreenRenderEnv(bddl_file_name=bddl, camera_heights=resolution,
+                             camera_widths=resolution,
+                             camera_names=["agentview", "robot0_eye_in_hand", rec_cam])
+    env.seed(seed)
+    return env, task.language
+
+
+def set_fovy(env, cam, fovy):
+    sim = env.env.sim if hasattr(env, "env") else env.sim
+    sim.model.cam_fovy[sim.model.camera_name2id(cam)] = fovy
 
 
 def annotate(img, title, colour, lines):
@@ -30,9 +53,13 @@ def annotate(img, title, colour, lines):
     return np.asarray(canvas)
 
 
-def rollout(pr, tid, init, sev, M_inv, W, gamma, adapt, dead, norm_r, clip, max_steps=220):
+def rollout(pr, tid, init, sev, M_inv, W, gamma, adapt, dead, norm_r, clip, max_steps=220,
+            rec_cam="agentview", rec_fovy=None):
     env, desc, inits = pr.env_for(tid)
-    env.reset(); obs = env.set_init_state(inits[init])
+    env.reset()
+    if rec_fovy:
+        set_fovy(env, rec_cam, rec_fovy)          # re-apply: reset can reload the model
+    obs = env.set_init_state(inits[init])
     plan, t = collections.deque(), 0
     hist = collections.deque([np.zeros(6)] * (K_FIR + 1), maxlen=K_FIR + 1)
     f_hat, frames = np.zeros(6), []
@@ -40,7 +67,8 @@ def rollout(pr, tid, init, sev, M_inv, W, gamma, adapt, dead, norm_r, clip, max_
     while t < max_steps + 10:
         if t < 10:
             obs, _, done, _ = env.step(lm.LIBERO_DUMMY_ACTION); t += 1; continue
-        raw = np.ascontiguousarray(obs["agentview_image"][::-1, ::-1])
+        key = f"{rec_cam}_image" if f"{rec_cam}_image" in obs else "agentview_image"
+        raw = np.ascontiguousarray(obs[key][::-1, ::-1])
         img = image_tools.convert_to_uint8(image_tools.resize_with_pad(raw, 224, 224))
         wr = image_tools.convert_to_uint8(image_tools.resize_with_pad(
             np.ascontiguousarray(obs["robot0_eye_in_hand_image"][::-1, ::-1]), 224, 224))
@@ -94,12 +122,25 @@ def main():
     ap.add_argument("--clip", type=float, default=0.15)
     ap.add_argument("--sev", type=float, default=0.05)
     ap.add_argument("--fps", type=int, default=20)
+    ap.add_argument("--rec-cam", default="agentview", help="camera used for the VIDEO only")
+    ap.add_argument("--rec-fovy", type=float, default=None, help="widen it (45 = default)")
+    ap.add_argument("--title", default="")
     a = ap.parse_args()
 
     W = fit_plant(a.log)
     M_inv = np.linalg.pinv(np.array(json.loads(a.openloop.read_text())["M"]))
     pr = Probe(a)
     pr.control(dict(site=None, pin_rng=False))
+    if a.rec_fovy:                      # rebuild envs with the extra recording camera
+        from libero.libero import benchmark as _bm
+        suite = _bm.get_benchmark_dict()["libero_spatial"]()
+        pr._envs = {}
+        for spec in a.episodes.split(","):
+            tid = int(spec.split(":")[0])
+            task = suite.get_task(tid)
+            env, desc = wide_env(task, lm.LIBERO_ENV_RESOLUTION, 7, a.rec_cam, a.rec_fovy)
+            set_fovy(env, a.rec_cam, a.rec_fovy)
+            pr._envs[tid] = (env, desc, suite.get_task_init_states(tid))
 
     import imageio.v2 as iio
     clips = []
@@ -108,7 +149,8 @@ def main():
         out = {}
         for adapt in (False, True):
             out[adapt] = rollout(pr, tid, init, a.sev, M_inv, W, a.gamma, adapt,
-                                 a.dead, a.norm_r, a.clip)
+                                 a.dead, a.norm_r, a.clip,
+                                 rec_cam=a.rec_cam, rec_fovy=a.rec_fovy)
             print(f"  task {tid} init {init}  adapt={adapt}  "
                   f"success={out[adapt][1]}  steps={len(out[adapt][0])}")
         (fL, okL, desc), (fR, okR, _) = out[False], out[True]
@@ -116,10 +158,10 @@ def main():
         for k in range(n + a.fps):                       # hold the last frame ~1 s
             i, j = min(k, len(fL) - 1), min(k, len(fR) - 1)
             imL, _, tL = fL[i]; imR, fh, tR = fR[j]
-            L = annotate(imL, "FROZEN  (fault uncorrected)", (150, 30, 30),
+            L = annotate(imL, f"FROZEN  (uncorrected){a.title}", (150, 30, 30),
                          [f"step {tL}", "SUCCESS" if (okL and k >= len(fL) - 1) else
                           ("FAILED" if (not okL and k >= len(fL) - 1) else "")])
-            R = annotate(imR, "ADAPTIVE  (online correction)", (25, 110, 45),
+            R = annotate(imR, f"ADAPTIVE  (online){a.title}", (25, 110, 45),
                          [f"step {tR}   f_hat = [" + " ".join(f"{v:+.2f}" for v in fh[:3]) + " ...]",
                           "SUCCESS" if (okR and k >= len(fR) - 1) else
                           ("FAILED" if (not okR and k >= len(fR) - 1) else "")])
