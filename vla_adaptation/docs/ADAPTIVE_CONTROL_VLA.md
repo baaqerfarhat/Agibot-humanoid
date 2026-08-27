@@ -2,7 +2,7 @@
 
 **Result in one line.** A fault that halves task success on a frozen 3.35 B vision-language-
 action model is corrected *within a single episode*, from the robot's own motion, with no
-gradients through the task and no search over task success: **47% → 87%**, against a 99%
+gradients through the task and no search over task success: **47% → 93%**, against a 99%
 fault-free ceiling.
 
 Video: `results/phase05/adaptive_vs_frozen.mp4`. Data: `results/phase05/`.
@@ -76,7 +76,7 @@ r_t  =  y_t  -  P̂(a_t + c_t)   ≈   M f
 important property, and the reason this form was chosen over comparing against a
 reference trajectory.
 
-### 2.4 The map, and why it must be a matrix
+### 2.4 The map
 
 `M = ∂(achieved motion)/∂f`, measured **open loop**: a recorded command sequence is replayed
 with and without a fault, so the commands are identical by construction and any difference in
@@ -85,25 +85,47 @@ difference:
 
 ```
               dx       dy       dz      drx      dry      drz   <- fault applied to
-    dx     0.291    0.024   -0.115   -0.025    0.068   -0.004
-    dy     0.006    0.253    0.024   -0.012    0.018    0.005
-    dz     0.027    0.030    0.130   -0.025    0.013   -0.004
-   drx    -0.004   -0.000   -0.001    0.251   -0.001    0.059
-   dry     0.001    0.003   -0.002   -0.024    0.010    0.383
-   drz    -0.013    0.000    0.001    0.014   -0.424    0.009
+    dx     0.297    0.021   -0.112   -0.029    0.081   -0.006
+    dy     0.008    0.272    0.023   -0.034    0.016    0.003
+    dz     0.029    0.032    0.126   -0.037    0.012   -0.003
+   drx    -0.003   -0.001   -0.001    0.253   -0.004    0.002
+   dry     0.013    0.001   -0.001   -0.007    0.276   -0.000
+   drz     0.001    0.004   -0.003    0.011    0.005    0.244
 ```
 
-Three properties decide the design:
+- **Attenuation.** The diagonal is 0.13–0.30 — the plant damps the fault 3–8×, so the law
+  needs roughly 4× gain on the observed error.
+- **Mild coupling.** Off-diagonal mass is **26%** of `|M|`, dominated by a real dx↔dz term
+  (−0.112). `M⁻¹` is worth using, though a diagonal approximation would not be catastrophic.
+- **Well conditioned.** cond(M) = **3.0**.
 
-1. **Attenuation.** The diagonal is 0.13–0.29 — the plant damps the fault 3–8×, so the law
-   needs roughly 4× gain on the observed error.
-2. **The rotation block is a swapped, sign-flipped pair.** `dry` answers a `drz` fault at
-   **+0.383**; `drz` answers `dry` at **−0.424**; their own diagonals are ≈ 0.01. Off-diagonal
-   mass is **59%** of `|M|`. A per-axis law would drive `dry` from `drz`'s error *with the
-   wrong sign* — positive feedback, guaranteed divergence. This is not a subtlety; it is the
-   difference between a law that works and one that destroys the policy.
-3. **It inverts.** cond(M) = **3.6**, so `M⁻¹` is numerically safe and the problem is
-   well-posed.
+> **Retraction (2026-08-27).** An earlier version of this section reported the rotation block
+> as "a swapped, sign-flipped pair" — `dry ← drz` at +0.383, `drz ← dry` at −0.424, own
+> diagonals ≈ 0.01 — and argued that a per-axis law would therefore diverge. **That was
+> wrong.** It was an artifact of measuring orientation change as
+> `axis_angle(q1) − axis_angle(q0)`, a difference of charts rather than a rotation increment
+> (§2.2b). With the correct metric the rotation axes have ordinary diagonal gains of 0.276 and
+> 0.244, off-diagonal mass falls from 0.59 to 0.26, and the divergence argument does not apply.
+> The claim is withdrawn.
+
+### 2.2b Orientation increments
+
+Rotation change must be the **relative rotation**, not a difference of axis-angle vectors:
+
+```
+omega  =  axis_angle( q_t+1  ⊗  conj(q_t) )
+```
+
+Axis-angle is a chart, not a vector space: the same rotation has representations differing by
+2π, and the chart is singular at 0 and π. Over 2000 random increments of 0.05 rad the relative
+rotation recovers the true increment to **1.4e-14**, while the difference of charts errs by up
+to **6.28** — a full wraparound.
+
+Using the wrong one corrupted four separate results before it was found: rotation appeared
+unpredictable (FIR R² 0.11 on `dry`, 0.17 on `drz`), `M` appeared cross-coupled, the gain law's
+rotation estimates were meaningless, and deliberate excitation made performance *worse*. All
+four were the same bug. Corrected fits: **drz 0.168 → 0.972**, dry 0.109 → 0.336, drx 0.489 →
+0.522, translation unchanged.
 
 ### 2.5 The law
 
@@ -136,7 +158,8 @@ The information is there; whether it is extracted depends on the estimator.
 | nominal (no fault) | 99% | ceiling |
 | **oracle** — computed edit on `action_out_proj/bias` | **100%** | knows the answer analytically |
 | frozen, faulted | 7/15 = **47%** | floor |
-| **adaptive** | **13/15 = 87%** | **+40 points**, Fisher p = 0.0502 |
+| **adaptive** | **14/15 = 93%** | **+47 points**, Fisher **p = 0.0142** |
+| adaptive, before the SO(3) fix | 13/15 = 87% | +40 points, p = 0.0502 |
 
 The adaptive arm recovers **~77% of the available headroom** using only proprioception.
 p = 0.0502 is *at* the threshold: suggestive, not significant, and one episode either way
@@ -145,14 +168,14 @@ flips it. n ≈ 40 would settle it.
 **Fault estimates**, mean over 15 episodes, true value 0.05 on every dimension:
 
 ```
-f̂      [0.070  0.038  0.082  0.037  0.017  0.024]
-ratio  [ 1.40   0.76   1.65   0.74   0.34   0.49]
+f̂      [0.048  0.038  0.079  0.041  0.033  0.047]      true 0.050 on every dim
+ratio  [ 0.96   0.76   1.58   0.82   0.66   0.94]
 ```
 
-**Sign correct on 6 of 6.** Translation and `drx` land within about ±65%. `dry` and `drz`
-undershoot badly (0.34, 0.49) — exactly the pair whose plant model does not fit (R² 0.11,
-0.17) and whose sensitivity block is the swapped one. The weakness appears precisely where
-§2.2 and §2.4 predict it.
+**Sign correct on 6 of 6**, and after the SO(3) correction four of six land within ±20% of
+truth. `dz` is the remaining outlier at 1.58 — it has both the weakest sensitivity in `M`
+(0.126) and the largest off-diagonal term (−0.112 from dx), so its estimate absorbs coupling
+the diagonal law does not model.
 
 ## 4. Three failures worth keeping
 
