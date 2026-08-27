@@ -787,6 +787,16 @@ x2_31dof_wbt_box_clean_grasp = ExperimentConfig(
             # offset cost no tracking. Watch the command gap on this clip -- it was
             # 33.3 deg while exploited and 4.6 deg after the cap -- and if it grows,
             # the answer is a tighter scale ONLY down to what the reference needs.
+            #
+            # What makes that worth watching here: +-15.0 deg is not a number the clip
+            # chose, it is ankle_roll's mechanical stop, and the reference sits within
+            # 0.5 deg of it on 6.8% of frames (left) and 10.8% (right). The retarget
+            # is where that comes from -- the raw clip is pinned on 40-49% of frames,
+            # since the human's ankle rolls further than X2's can -- and the refine
+            # pass took it down to this without removing it. So the authority restored
+            # here is authority to drive into a hard stop, which is the same actuator
+            # condition the old exploit created. If the command gap grows, soften the
+            # reference's ankle_roll peaks before touching this number.
             action_scale_overrides={"ankle_roll": 0.06},
         ),
         asset=replace(robot.x2_31dof_w_object.asset, enable_self_collisions=True),
