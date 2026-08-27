@@ -764,19 +764,30 @@ x2_31dof_wbt_box_clean_grasp = ExperimentConfig(
             robot.x2_31dof_w_object.control,
             action_scale=0.25,
             action_scales_by_effort_limit_over_p_gain=True,
-            # ankle_roll auto-scales to 0.06 rad/unit (0.25*24/100), which lets the
-            # policy command +35 deg on a joint whose reference spans -5.2..+4.2 deg.
-            # The foot is in ground contact and cannot follow, so kp*(target-q) pins
-            # at the 24 N-m limit for 99% of the episode. Nothing objected:
-            # action_rate charges for CHANGES and a constant offset has zero rate,
-            # and in sim the exploit PAYS, because a permanently maxed ankle presses
-            # the foot down and buys friction. On hardware it is one actuator held at
-            # max torque with no lateral authority left to balance with. Three reward
-            # penalties failed to price it out (-0.05 gated, -0.01 ungated, -0.10
-            # position-only); removing the authority ends it immediately. 0.02 keeps
-            # the full reference range reachable at |a| ~ 4.5 while putting
-            # saturation out of reach below |a| = 12.
-            action_scale_overrides={"ankle_roll": 0.02},
+            # ankle_roll's scale must be sized to the REFERENCE RANGE, and this clip
+            # walks. 0.02 was derived from the in-place clip, whose ankle_roll spanned
+            # -5.2..+4.2 deg; the walking reference spans -15.0..+15.0, so reaching it
+            # needs |a| = 13.1. Measured on the 2026-08-27 hardware run that played to
+            # the end (115642, gain 0.9): the policy pushed |a| to 12.4 and still only
+            # covered -5.0..+14.3 deg, tracking 0.65 of the reference range on the
+            # right ankle and 0.74 on the left, against 0.85-0.98 for every hip and
+            # knee. ankle_roll is the lateral CoP joint, so a robot that cannot roll
+            # its ankles cannot shift its weight to unload a foot -- which is why the
+            # feet did not step and the robot had to be held up.
+            #
+            # 0.06 puts the full +-15 deg back within |a| ~ 4.4. It is also what
+            # cfg*effort/kp gives, so the override is now documentation rather than a
+            # cap: it records that this number is derived from the clip and MUST be
+            # re-derived whenever the reference changes.
+            #
+            # The cap it replaces existed to stop a sustained unreachable ankle
+            # command (+35 deg held for 99% of the episode, pinning the 24 N-m
+            # actuator, which three reward penalties failed to price out). That
+            # exploit was measured on the in-place clip, where holding a constant
+            # offset cost no tracking. Watch the command gap on this clip -- it was
+            # 33.3 deg while exploited and 4.6 deg after the cap -- and if it grows,
+            # the answer is a tighter scale ONLY down to what the reference needs.
+            action_scale_overrides={"ankle_roll": 0.06},
         ),
         asset=replace(robot.x2_31dof_w_object.asset, enable_self_collisions=True),
         object=replace(
