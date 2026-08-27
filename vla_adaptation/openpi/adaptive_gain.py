@@ -37,13 +37,18 @@ from gate_faults import apply_action_fault
 from adaptive_law import fit_plant, OUT, K_FIR
 
 
-def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220):
+def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220,
+        rls=True, lam=0.999, dither=0.0, dither_dims=(3, 4, 5)):
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
     plan, t = collections.deque(), 0
     hist = collections.deque([np.zeros(6)] * (K_FIR + 1), maxlen=K_FIR + 1)
     beta = np.zeros(6)                      # beta = g - 1, nominal 0
     n_upd = np.zeros(6)
+    # RLS covariance per dim. LMS with a fixed step over-corrects the strongly excited
+    # channels -- dx and dz both saturated the projection bound at 0.8 against a true 0.5 --
+    # because the step does not shrink as evidence accumulates. P_i does exactly that.
+    P = np.full(6, 1e3)
     while t < max_steps + 10:
         if t < 10:
             obs, _, done, _ = env.step(lm.LIBERO_DUMMY_ACTION); t += 1; continue
@@ -61,6 +66,13 @@ def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220
         # c = a (1/g - 1) with g_hat = 1 + beta_hat
         c = -a_cmd[:6] * beta / (1.0 + beta) if adapt else np.zeros(6)
         a_corr = a_cmd.copy(); a_corr[:6] += c
+        if adapt and dither:
+            # Deliberate excitation. A gain is identifiable only where the command moves
+            # that axis, and the policy barely rotates the wrist -- drx/dry/drz received
+            # 0-6 updates per episode against 100+ for translation. A small alternating
+            # probe makes those axes identifiable at the cost of a tiny command perturbation.
+            for j in dither_dims:
+                a_corr[j] += dither * (1.0 if (t // 4) % 2 == 0 else -1.0)
         psi = a_corr[:6].copy()
         a_exec = apply_action_fault(a_corr, "gain", gain, 6)
         x0 = np.array(obs["robot0_eef_pos"], float)
@@ -77,7 +89,13 @@ def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220
             for i in range(6):
                 if abs(psi[i]) < pe_min:        # not excited -> not identifiable -> hold
                     continue
-                beta[i] += gamma * psi[i] * (z[i] - beta[i] * psi[i]) / (1e-6 + psi[i] ** 2)
+                err = z[i] - beta[i] * psi[i]
+                if rls:
+                    k = P[i] * psi[i] / (lam + P[i] * psi[i] ** 2)   # RLS gain, shrinks
+                    beta[i] += k * err
+                    P[i] = (P[i] - k * psi[i] * P[i]) / lam
+                else:
+                    beta[i] += gamma * psi[i] * err / (1e-6 + psi[i] ** 2)
                 n_upd[i] += 1
             beta = np.clip(beta, -clip, clip)
         if done:
@@ -100,6 +118,10 @@ def main():
     p.add_argument("--pe-min", type=float, default=0.15, help="excitation floor on |psi_i|")
     p.add_argument("--clip", type=float, default=0.8)
     p.add_argument("--episodes", type=int, default=10)
+    p.add_argument("--lms", action="store_true", help="plain LMS instead of RLS")
+    p.add_argument("--lam", type=float, default=0.999, help="RLS forgetting")
+    p.add_argument("--dither", type=float, default=0.0,
+                   help="excitation amplitude on the rotation axes")
     a = p.parse_args()
 
     W = fit_plant(a.log)
@@ -115,7 +137,8 @@ def main():
         ok, B, U = 0, [], []
         for tid, init in eps:
             s, beta, n_upd = run(pr, tid, init, a.gain, M_inv, W, a.gamma, adapt,
-                                 a.pe_min, a.clip)
+                                 a.pe_min, a.clip, rls=not a.lms, lam=a.lam,
+                                 dither=a.dither)
             ok += int(s); B.append(beta.tolist()); U.append(n_upd.tolist())
             print(f"  [{tag}] task {tid}: success={s}  beta={np.round(beta,2)}  "
                   f"updates={n_upd.astype(int)}")

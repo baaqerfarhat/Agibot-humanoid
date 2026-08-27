@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse, collections, json, pathlib
 import numpy as np
+import textwrap
 from PIL import Image, ImageDraw
 
 import pathlib as _pl
@@ -19,7 +20,7 @@ from paired_probe import Probe
 from gate_faults import apply_action_fault
 from adaptive_law import fit_plant, OUT, K_FIR
 
-BAR = 46
+BAR = 74
 
 
 def wide_env(task, resolution, seed, rec_cam, fovy):
@@ -42,14 +43,19 @@ def set_fovy(env, cam, fovy):
     sim.model.cam_fovy[sim.model.camera_name2id(cam)] = fovy
 
 
-def annotate(img, title, colour, lines):
+def annotate(img, title, colour, lines, prompt=""):
     im = Image.fromarray(img).resize((384, 384), Image.BILINEAR)
     canvas = Image.new("RGB", (384, 384 + BAR), colour)
     canvas.paste(im, (0, BAR))
     d = ImageDraw.Draw(canvas)
-    d.text((8, 6), title, fill=(255, 255, 255))
-    for i, ln in enumerate(lines):
-        d.text((8, 20 + i * 12), ln, fill=(255, 255, 255))
+    d.text((8, 5), title, fill=(255, 255, 255))
+    y = 18
+    wrapped = textwrap.wrap(prompt, 62)[:2]           # the task the policy was given
+    for j, ln in enumerate(wrapped):                  # quote the phrase, not each line
+        txt = ('"' if j == 0 else " ") + ln + ('"' if j == len(wrapped) - 1 else "")
+        d.text((8, y), txt, fill=(215, 215, 215)); y += 11
+    for ln in lines:
+        d.text((8, y), ln, fill=(255, 255, 255)); y += 12
     return np.asarray(canvas)
 
 
@@ -125,6 +131,8 @@ def main():
     ap.add_argument("--rec-cam", default="agentview", help="camera used for the VIDEO only")
     ap.add_argument("--rec-fovy", type=float, default=None, help="widen it (45 = default)")
     ap.add_argument("--title", default="")
+    ap.add_argument("--only-frozen-fail", action="store_true",
+                    help="skip episodes the frozen arm happens to pass")
     a = ap.parse_args()
 
     W = fit_plant(a.log)
@@ -147,12 +155,21 @@ def main():
     for spec in a.episodes.split(","):
         tid, init = (int(x) for x in spec.split(":"))
         out = {}
-        for adapt in (False, True):
-            out[adapt] = rollout(pr, tid, init, a.sev, M_inv, W, a.gamma, adapt,
-                                 a.dead, a.norm_r, a.clip,
-                                 rec_cam=a.rec_cam, rec_fovy=a.rec_fovy)
-            print(f"  task {tid} init {init}  adapt={adapt}  "
-                  f"success={out[adapt][1]}  steps={len(out[adapt][0])}")
+        out[False] = rollout(pr, tid, init, a.sev, M_inv, W, a.gamma, False,
+                             a.dead, a.norm_r, a.clip,
+                             rec_cam=a.rec_cam, rec_fovy=a.rec_fovy)
+        print(f"  task {tid} init {init}  frozen success={out[False][1]} "
+              f"steps={len(out[False][0])}")
+        if a.only_frozen_fail and out[False][1]:
+            # the policy is stochastic, so a nominally-failing episode can succeed on a
+            # given render. Showing such a clip demonstrates nothing, so skip it.
+            print("    frozen succeeded this run -> skipping (nothing to show)")
+            continue
+        out[True] = rollout(pr, tid, init, a.sev, M_inv, W, a.gamma, True,
+                            a.dead, a.norm_r, a.clip,
+                            rec_cam=a.rec_cam, rec_fovy=a.rec_fovy)
+        print(f"  task {tid} init {init}  adaptive success={out[True][1]} "
+              f"steps={len(out[True][0])}")
         (fL, okL, desc), (fR, okR, _) = out[False], out[True]
         n = max(len(fL), len(fR))
         for k in range(n + a.fps):                       # hold the last frame ~1 s
@@ -160,11 +177,13 @@ def main():
             imL, _, tL = fL[i]; imR, fh, tR = fR[j]
             L = annotate(imL, f"FROZEN  (uncorrected){a.title}", (150, 30, 30),
                          [f"step {tL}", "SUCCESS" if (okL and k >= len(fL) - 1) else
-                          ("FAILED" if (not okL and k >= len(fL) - 1) else "")])
+                          ("FAILED - timeout" if (not okL and k >= len(fL) - 1) else "")],
+                         prompt=desc)
             R = annotate(imR, f"ADAPTIVE  (online){a.title}", (25, 110, 45),
-                         [f"step {tR}   f_hat = [" + " ".join(f"{v:+.2f}" for v in fh[:3]) + " ...]",
+                         [f"step {tR}  f_hat=[" + " ".join(f"{v:+.2f}" for v in fh[:3]) + "...]",
                           "SUCCESS" if (okR and k >= len(fR) - 1) else
-                          ("FAILED" if (not okR and k >= len(fR) - 1) else "")])
+                          ("FAILED - timeout" if (not okR and k >= len(fR) - 1) else "")],
+                         prompt=desc)
             clips.append(np.concatenate([L, R], axis=1))
     a.out.parent.mkdir(parents=True, exist_ok=True)
     iio.mimwrite(a.out, clips, fps=a.fps, quality=8)
