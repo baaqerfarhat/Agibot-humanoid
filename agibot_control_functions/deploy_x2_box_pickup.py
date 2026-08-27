@@ -82,23 +82,23 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
     The policy is BLIND: it does not perceive the box. The box must be placed
     at the reference start location (see "Box placement" below) before engaging.
 
-    THE MOTION WALKS. From v16 (clip sub3_largebox_003_walk_feasible, 511 frames)
-    the robot carries the box 1.6 m rather than setting it down where it found it,
-    so the whole 1.6 m path has to be clear and the handler has to walk with it.
-    Everything below the grasp is unchanged; the carry is new, and it is the part
-    the older in-place notes here did not cover.
+    THE MOTION WALKS. v17 (clip sub3_largebox_003_walk_feasible, 591 frames) is
+    the same carry as v16, plus the upright-start prepend: the robot carries the
+    box ~1.53 m rather than setting it down where it found it, so the whole path
+    has to be clear and the handler has to walk with it.
 
-    10.22 s at 50 Hz:
-        0.00 - 1.42 s   squat to the box. DEEP: the pelvis drops 0.67 -> 0.34 m,
-                        and unlike the in-place clip it is already descending at
-                        frame 0, so the robot does NOT stand still first
-        1.42 s          two-handed grasp and lift
-        1.42 - 6.32 s   CARRY WALK, box travelling 1.57 m at chest height (peak
+    11.8 s at 50 Hz (v17, iter 49000):
+        0.00 - 1.00 s   standing still (pelvis 0.67 m, arms at default, waist 0).
+                        This is the hand-off pose -- unlike v16 it does NOT open
+                        mid-descent
+        1.00 - 3.00 s   squat to the box. DEEP: pelvis 0.67 -> 0.34 m
+        ~3.0 s          two-handed grasp and lift
+        3.5  - 7.5 s    CARRY WALK, box travelling 1.53 m at chest height (peak
                         0.61 m). Feet are NOT planted -- it takes real steps
-        6.34 - 10.22 s  set the box down at the far end and stand back up
-    The last frame returns the pelvis to 0.656 m, i.e. upright, so the run still
-    finishes standing. The FIRST frame does not: the clip opens mid-descent, so
-    expect the robot to start moving the instant it engages.
+        7.5  - 8.2 s    set the box down at the far end (pelvis min 0.30 m)
+        8.2  - 11.8 s   stand back up (pelvis 0.66 m)
+    The last frame is upright, and so is the first. Expect ~1 s of stillness
+    after engage, then the squat.
 
 #####################################  SAFETY  #####################################
 #  1. First runs: robot SUSPENDED, NO BOX -> verify the motion shape in the air.
@@ -113,12 +113,12 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
 #  7. When done, restart the controller:   aima em start-app mc
 ####################################################################################
 
-Box placement, measured off the v16 clip's own frame 0 (the numbers here used to
-say 0.40 m and centred, which is 6 cm too far and misses the offset entirely --
-the policy is blind, so it reaches where the reference says regardless):
-    0.342 m  forward of the robot's start pelvis position (box CENTRE)
-    0.066 m  to the LEFT of its heading
-    near edge therefore ~0.107 m from the pelvis
+Box placement, measured off the v17 clip's own frame 0 (same walk_feasible
+motion, now with the standing prepend; the policy is blind, so it reaches
+where the reference says regardless):
+    0.341 m  forward of the robot's start pelvis position (box CENTRE)
+    0.035 m  to the LEFT of its heading
+    near edge therefore ~0.106 m from the pelvis
     box 47 x 46 x 41 cm, resting on the floor
 Mass ~1 kg (training randomised 0.5-1.3 kg). An empty or lightly filled
 cardboard box is ideal; do NOT use a heavy one, the wrist actuators cannot
@@ -347,27 +347,32 @@ def publish_pose(commander, pos_by_name, kp_by_name, kd_by_name, gain_scale, eng
     return ff
 
 
+def _default_box_policy_path() -> str:
+    """v17 iter 49000: prefer the robot-side policies/ copy, else the repo path."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    name = "x2_box_policy_walk_feasible_v17_iter49000.npz"
+    candidates = (
+        os.path.join(here, "policies", name),
+        os.path.join(here, "..", "box_pickup", "policy", name),
+    )
+    for p in candidates:
+        if os.path.isfile(p):
+            return os.path.normpath(p)
+    return os.path.normpath(candidates[1])
+
+
 # =============================== main ===============================
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--policy",
-                    default="../box_pickup/policy/x2_box_policy_walk_feasible_v16_iter30500.npz",
-                    help="Path to WBT box policy .npz (default: v16, iter 30500). THIS ONE "
-                         "WALKS -- see the motion notes at the top, the box ends up 1.6 m from "
-                         "where it started. Trained on a reference rebuilt so the robot can "
-                         "actually hold the poses: gripped near the box corners instead of "
-                         "reaching across it (which had been forcing an extreme squat and a "
-                         "saturated waist), feet cleared out of the box volume, and both feet "
-                         "seated on the floor at frame 0 -- the clip used to spawn the robot 5 mm "
-                         "airborne with one foot 24 mm higher, and the policy answered the "
-                         "asymmetric landing by picking that leg up and replanting it. Also caps "
-                         "ankle_roll action scale at 0.02, and adds a torque-saturation and a "
-                         "support-margin penalty. Mean episode 418 of the clip's 511 frames. "
-                         "It fails export_and_verify_waist like every policy before it (12 of 32 "
-                         "frames commanding waist_pitch against the reference, against v33's 13 "
-                         "of 38), but demands far less past the hardware waist stop: 6 "
-                         "overshooting frames against v33's 21.")
+                    default=_default_box_policy_path(),
+                    help="Path to WBT box policy .npz (default: v17, iter 49000). THIS ONE "
+                         "WALKS -- see the motion notes at the top, the box ends up ~1.53 m from "
+                         "where it started. Same walk_feasible clip as v16 plus the upright-start "
+                         "prepend, so engage hands off from a standing pose (~1 s still) instead "
+                         "of mid-squat. Ankle_roll action scale is still capped at 0.02. 591 "
+                         "frames at 50 Hz (11.8 s).")
     ap.add_argument("--engage", action="store_true",
                     help="ACTUALLY publish commands. Without this it is a dry run.")
     ap.add_argument("--base-imu", default="torso", choices=["torso", "chest"],
@@ -469,10 +474,9 @@ def main():
     print(f"  MODE:          {'ENGAGED (publishing!)' if args.engage else 'DRY RUN (no publish)'}")
     print("=" * 78)
     print("\nBOX PLACEMENT: 47 x 46 x 41 cm, LIGHT (~1 kg), on the floor, CENTRE")
-    print("0.342 m in front of the robot and 0.066 m to its LEFT. Start the robot")
-    print("STANDING UPRIGHT -- but note the clip opens mid-descent, so it bends down")
-    print("immediately rather than holding still first.")
-    print("THIS MOTION WALKS: it carries the box 1.6 m. Clear the path and walk with it.")
+    print("0.341 m in front of the robot and 0.035 m to its LEFT. Start the robot")
+    print("STANDING UPRIGHT -- v17 opens standing; it holds ~1 s then squats.")
+    print("THIS MOTION WALKS: it carries the box ~1.53 m. Clear the path and walk with it.")
     print("First trials: NO BOX, robot suspended.\n")
 
     rclpy.init()
