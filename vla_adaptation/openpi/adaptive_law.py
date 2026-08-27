@@ -34,20 +34,43 @@ OUT = np.array([0.05, 0.05, 0.05, 0.5, 0.5, 0.5])
 K_FIR = 6
 
 
-def fit_plant(log_path):
-    """FIR plant per output dim, identified on the NOMINAL episodes only."""
+def fit_plant(log_path, lam=1e-2, mimo=False):
+    """MIMO FIR plant, identified on the NOMINAL episodes only.
+
+    Each output dim is regressed on the last K_FIR+1 commands of ALL SIX inputs, not just its
+    own. The plant is coupled -- wrist rotation is driven substantially by the translation
+    commands, since moving the arm drags the wrist -- and a per-axis model cannot represent
+    that. Leave-one-episode-out cross-validation, held-out R^2:
+
+        dry  0.107 (per-axis) -> 0.615 (coupled + ridge)
+        drx  0.214            -> 0.376
+        translation unchanged at ~0.97
+
+    Ridge because 43 parameters against ~270 samples overfits without it.
+
+    DEFAULT OFF, because the better fit does not survive contact with the closed loop. With
+    mimo=True the offset law scores 13/15 and estimates dy at -0.043 against a true +0.050 --
+    a sign error the per-axis model never makes -- versus 14/15 and +0.038 with mimo=False.
+    The coupled model has 43 parameters fitted on three nominal episodes, and the adaptive law
+    runs precisely OUT of that distribution: the correction it applies moves the executed
+    command away from the data the plant was identified on. The simpler model fits worse and
+    extrapolates better, and extrapolation is what the law depends on.
+    """
     d = json.loads(pathlib.Path(log_path).read_text())
     A = np.array(d[0]["raw_a"]); D = np.array(d[0]["raw_d"]); lens = d[0]["ep_len"]
     W = []
     for i in range(6):
         X, Y, o = [], [], 0
         for L in lens:
-            a, y = A[o:o+L, i], D[o:o+L, i] / OUT[i]; o += L
+            a, y = A[o:o+L], D[o:o+L, i] / OUT[i]; o += L
             for t in range(K_FIR, L):
-                X.append(np.concatenate([a[t-K_FIR:t+1][::-1], [1.0]])); Y.append(y[t])
-        w, *_ = np.linalg.lstsq(np.array(X), np.array(Y), rcond=None)
-        W.append(w)
-    return np.array(W)                       # (6, K_FIR+2)
+                win = a[t-K_FIR:t+1][::-1]
+                feat = win.reshape(-1) if mimo else win[:, i]
+                X.append(np.concatenate([feat, [1.0]]))
+                Y.append(y[t])
+        X, Y = np.array(X), np.array(Y)
+        W.append(np.linalg.solve(X.T @ X + lam * np.eye(X.shape[1]), X.T @ Y))
+    return np.array(W)                       # (6, 6*(K_FIR+1)+1)
 
 
 def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220,
@@ -85,7 +108,9 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220,
         u = a_corr[:6]                       # what we believe we sent (fault unknown to us)
         hist.appendleft(u)
         H = np.array(hist)                                          # (K+1, 6), newest first
-        pred = np.array([W[i, :K_FIR+1] @ H[:, i] + W[i, -1] for i in range(6)])
+        feat = H.reshape(-1) if W.shape[1] > K_FIR + 2 else None
+        pred = (W[:, :-1] @ feat + W[:, -1]) if feat is not None else np.array(
+            [W[i, :K_FIR + 1] @ H[:, i] + W[i, -1] for i in range(6)])
         r = y - pred
         if adapt:
             # Robustness, because the bare law drifts. P is identified on NOMINAL data, so
@@ -120,6 +145,8 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--gamma", type=float, default=0.05)
+    p.add_argument("--mimo", action="store_true",
+                   help="coupled plant: fits better, extrapolates worse (see fit_plant)")
     p.add_argument("--dead", type=float, default=0.05, help="residual deadzone")
     p.add_argument("--norm-r", type=float, default=0.5, help="update normalisation")
     p.add_argument("--clip", type=float, default=0.15, help="projection box on f_hat")
@@ -127,7 +154,7 @@ def main():
     p.add_argument("--sev", type=float, default=0.05)
     a = p.parse_args()
 
-    W = fit_plant(a.log)
+    W = fit_plant(a.log, mimo=a.mimo)
     M = np.array(json.loads(a.openloop.read_text())["M"])
     M_inv = np.linalg.pinv(M)
     print(f"plant identified; cond(M) = {np.linalg.cond(M):.1f}, gamma = {a.gamma}\n")
