@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse, json, pathlib
 import numpy as np
 import main as lm
+from so3 import rot_delta
 from libero.libero import benchmark
 
 OUT = np.array([0.05, 0.05, 0.05, 0.5, 0.5, 0.5])
@@ -34,12 +35,12 @@ def replay(env, inits, init_idx, cmds, f):
         a = np.concatenate([np.asarray(a, float)[:6], [-1.0]])
         a[:6] += f
         x0 = np.array(obs["robot0_eef_pos"], float)
-        r0 = lm._quat2axisangle(np.array(obs["robot0_eef_quat"], float))
+        q0 = np.array(obs["robot0_eef_quat"], float)
         obs, _, done, _ = env.step(a.tolist())
         x1 = np.array(obs["robot0_eef_pos"], float)
-        r1 = lm._quat2axisangle(np.array(obs["robot0_eef_quat"], float))
-        D.append(np.concatenate([x1 - x0, r1 - r0]))
-        X.append(np.concatenate([x1, r1]))
+        q1 = np.array(obs["robot0_eef_quat"], float)
+        D.append(np.concatenate([x1 - x0, rot_delta(q0, q1)]))
+        X.append(np.concatenate([x1, lm._quat2axisangle(q1)]))
         if done:
             break
     return np.array(D), np.array(X)

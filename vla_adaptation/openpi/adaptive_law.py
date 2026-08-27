@@ -25,6 +25,7 @@ import argparse, collections, json, pathlib
 import numpy as np
 
 import main as lm
+from so3 import rot_delta
 from openpi_client import image_tools
 from paired_probe import Probe
 from gate_faults import apply_action_fault
@@ -75,11 +76,11 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220,
         a_corr = a_cmd.copy(); a_corr[:6] += c                      # our correction
         a_exec = apply_action_fault(a_corr, "offset", sev, 6)       # then the world's fault
         x0 = np.array(obs["robot0_eef_pos"], float)
-        r0 = lm._quat2axisangle(np.array(obs["robot0_eef_quat"], float))
+        q0 = np.array(obs["robot0_eef_quat"], float)
         obs, _, done, _ = env.step(a_exec.tolist())
         x1 = np.array(obs["robot0_eef_pos"], float)
-        r1 = lm._quat2axisangle(np.array(obs["robot0_eef_quat"], float))
-        y = np.concatenate([x1 - x0, r1 - r0]) / OUT
+        q1 = np.array(obs["robot0_eef_quat"], float)
+        y = np.concatenate([x1 - x0, rot_delta(q0, q1)]) / OUT
 
         u = a_corr[:6]                       # what we believe we sent (fault unknown to us)
         hist.appendleft(u)

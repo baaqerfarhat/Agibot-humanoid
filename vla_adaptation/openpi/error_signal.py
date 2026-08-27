@@ -20,6 +20,7 @@ import argparse, collections, json, pathlib
 import numpy as np
 
 import main as lm
+from so3 import rot_delta
 from openpi_client import image_tools
 from paired_probe import Probe
 from gate_faults import apply_action_fault
@@ -49,12 +50,12 @@ def log_episode(pr, tid, init, sev, max_steps=220):
         a_cmd = np.asarray(plan.popleft(), float)
         a_exec = apply_action_fault(a_cmd, FAULT, sev, DIMS)
         x0 = np.array(obs["robot0_eef_pos"], float)
-        r0 = lm._quat2axisangle(np.array(obs["robot0_eef_quat"], float))
+        q0 = np.array(obs["robot0_eef_quat"], float)
         obs, _, done, _ = env.step(a_exec.tolist())
         x1 = np.array(obs["robot0_eef_pos"], float)
-        r1 = lm._quat2axisangle(np.array(obs["robot0_eef_quat"], float))
+        q1 = np.array(obs["robot0_eef_quat"], float)
         rec.append(dict(a_cmd=a_cmd[:6].tolist(), a_exec=a_exec[:6].tolist(),
-                        dx=(x1 - x0).tolist(), dr=(r1 - r0).tolist()))
+                        dx=(x1 - x0).tolist(), dr=rot_delta(q0, q1).tolist()))
         if done:
             break
         t += 1

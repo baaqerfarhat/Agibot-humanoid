@@ -31,6 +31,7 @@ import argparse, collections, json, pathlib
 import numpy as np
 
 import main as lm
+from so3 import rot_delta
 from openpi_client import image_tools
 from paired_probe import Probe
 from gate_faults import apply_action_fault
@@ -76,11 +77,11 @@ def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220
         psi = a_corr[:6].copy()
         a_exec = apply_action_fault(a_corr, "gain", gain, 6)
         x0 = np.array(obs["robot0_eef_pos"], float)
-        r0 = lm._quat2axisangle(np.array(obs["robot0_eef_quat"], float))
+        q0 = np.array(obs["robot0_eef_quat"], float)
         obs, _, done, _ = env.step(a_exec.tolist())
         x1 = np.array(obs["robot0_eef_pos"], float)
-        r1 = lm._quat2axisangle(np.array(obs["robot0_eef_quat"], float))
-        y = np.concatenate([x1 - x0, r1 - r0]) / OUT
+        q1 = np.array(obs["robot0_eef_quat"], float)
+        y = np.concatenate([x1 - x0, rot_delta(q0, q1)]) / OUT
         hist.appendleft(psi)
         H = np.array(hist)
         pred = np.array([W[i, :K_FIR + 1] @ H[:, i] + W[i, -1] for i in range(6)])
