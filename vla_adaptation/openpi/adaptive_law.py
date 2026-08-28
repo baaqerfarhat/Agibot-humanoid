@@ -74,7 +74,7 @@ def fit_plant(log_path, lam=1e-2, mimo=False):
 
 
 def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220,
-        dead=0.05, norm_r=0.5, clip=0.15):
+        dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True):
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
     plan, t = collections.deque(), 0
@@ -95,7 +95,11 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220,
                     lm._quat2axisangle(obs["robot0_eef_quat"]), obs["robot0_gripper_qpos"])),
                 "prompt": str(desc)})["actions"][: pr.a.replan_steps])
         a_cmd = np.asarray(plan.popleft(), float)
-        c = -f_hat if adapt else np.zeros(6)
+        # apply_corr=False estimates but does NOT act. r = M f + eps(a+c): with an
+        # imperfect plant the residual carries the model error evaluated at the operating
+        # point, so once c moves that point the estimate chases its own correction. Freezing
+        # c at zero separates open-loop model bias from that feedback.
+        c = -f_hat if (adapt and apply_corr) else np.zeros(6)
         a_corr = a_cmd.copy(); a_corr[:6] += c                      # our correction
         a_exec = apply_action_fault(a_corr, "offset", sev, 6)       # then the world's fault
         x0 = np.array(obs["robot0_eef_pos"], float)
@@ -145,6 +149,8 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--gamma", type=float, default=0.05)
+    p.add_argument("--estimate-only", action="store_true",
+                   help="update f_hat but never apply it; isolates estimator feedback")
     p.add_argument("--mimo", action="store_true",
                    help="coupled plant: fits better, extrapolates worse (see fit_plant)")
     p.add_argument("--dead", type=float, default=0.05, help="residual deadzone")
@@ -167,7 +173,8 @@ def main():
         ok, fh = 0, []
         for tid, init in eps:
             s, f_hat, traj = run(pr, tid, init, a.sev, M_inv, W, a.gamma, adapt,
-                                 dead=a.dead, norm_r=a.norm_r, clip=a.clip)
+                                 dead=a.dead, norm_r=a.norm_r, clip=a.clip,
+                                 apply_corr=not a.estimate_only)
             ok += int(s); fh.append(f_hat.tolist())
             print(f"  [{tag}] task {tid} init {init}: success={s}  "
                   f"f_hat={np.round(f_hat, 3)}")

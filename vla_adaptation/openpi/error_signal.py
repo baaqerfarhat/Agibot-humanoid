@@ -96,6 +96,8 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--episodes", type=int, default=3)
+    p.add_argument("--init-base", type=int, default=45,
+                   help="first initial state; keep DISJOINT from evaluation states")
     a = p.parse_args()
     pr = Probe(a)
     pr.control(dict(site=None, pin_rng=False))     # frozen policy, no weight edit
@@ -103,7 +105,7 @@ def main():
     for sev, lbl in ((0.0, "NOMINAL (no fault)"), (0.05, "FAULTED (+0.05 on arm dims)")):
         recs = []
         for k in range(a.episodes):
-            r, ok = log_episode(pr, k % 10, 45 + k, sev)
+            r, ok = log_episode(pr, k % 10, a.init_base + k // 10, sev)
             recs.append(r)
             print(f"  {lbl}: episode {k} -> {len(r)} steps, success={ok}")
         out.append(analyse(recs, sev, lbl))
