@@ -20,6 +20,7 @@ This script re-authors the clip:
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -33,7 +34,13 @@ from scipy.spatial.transform import Slerp
 sys.path.insert(0, str(Path(__file__).parent))
 from urdf_fk import UrdfChain, axis_angle_to_mat, mat_to_quat_wxyz, quat_wxyz_to_mat
 
-WS = Path("/home/baaqer/baaqer_ws")
+# Workspace root: env override, then the checkout this file lives in, then the
+# original author's absolute path. Without this every tool that imports this
+# module (diagnose_clip, refine_reference_motion, ...) dies on another machine.
+WS = Path(os.environ.get("X2_WS", ""))
+if not WS or not (WS / "holosoma").exists():
+    _here = Path(__file__).resolve().parents[2]   # <ws>/Agibot-humanoid/box_pickup -> <ws>
+    WS = _here if (_here / "holosoma").exists() else Path("/home/baaqer/baaqer_ws")
 MOTIONS = WS / "holosoma/src/holosoma/holosoma/data/motions/x2_31dof/whole_body_tracking"
 SRC = MOTIONS / "sub3_largebox_003_nowalk.npz"
 DST = MOTIONS / "sub3_largebox_003_mj_w_obj_FIXED.npz"
