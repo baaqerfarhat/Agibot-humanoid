@@ -74,7 +74,7 @@ def fit_plant(log_path, lam=1e-2, mimo=False):
 
 
 def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220,
-        dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True):
+        dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None):
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
     plan, t = collections.deque(), 0
@@ -127,6 +127,13 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220,
             #                  residual is already at the plant's own fit error
             #   projection     keeps f_hat inside a physically plausible box
             est = M_inv @ r
+            if bias is not None:
+                # Zero the estimator against known-healthy data. On a fault-free run f_hat
+                # settles at [+0.022 +0.007 +0.042 -0.006 +0.008 +0.001] instead of zero --
+                # plant-model error that M^-1 maps into a phantom fault. It is measurable
+                # offline on healthy rollouts, so it is subtracted here, exactly as one
+                # zeroes a sensor before trusting its readings.
+                est = est - bias
             nr = float(np.linalg.norm(r))
             if nr < dead:
                 est = np.zeros(6)
@@ -149,6 +156,8 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--gamma", type=float, default=0.05)
+    p.add_argument("--bias", default=None,
+                   help="6 comma-separated values: the estimator bias measured on healthy runs")
     p.add_argument("--estimate-only", action="store_true",
                    help="update f_hat but never apply it; isolates estimator feedback")
     p.add_argument("--mimo", action="store_true",
@@ -165,6 +174,9 @@ def main():
     M_inv = np.linalg.pinv(M)
     print(f"plant identified; cond(M) = {np.linalg.cond(M):.1f}, gamma = {a.gamma}\n")
 
+    bias = np.array([float(x) for x in a.bias.split(",")]) if a.bias else None
+    if bias is not None:
+        print(f"estimator zeroed against healthy-run bias {np.round(bias,3)}")
     pr = Probe(a)
     pr.control(dict(site=None, pin_rng=False))
     res = {"gamma": a.gamma, "arms": {}}
@@ -174,7 +186,7 @@ def main():
         for tid, init in eps:
             s, f_hat, traj = run(pr, tid, init, a.sev, M_inv, W, a.gamma, adapt,
                                  dead=a.dead, norm_r=a.norm_r, clip=a.clip,
-                                 apply_corr=not a.estimate_only)
+                                 apply_corr=not a.estimate_only, bias=bias)
             ok += int(s); fh.append(f_hat.tolist())
             print(f"  [{tag}] task {tid} init {init}: success={s}  "
                   f"f_hat={np.round(f_hat, 3)}")
