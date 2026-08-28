@@ -73,7 +73,7 @@ def fit_plant(log_path, lam=1e-2, mimo=False):
     return np.array(W)                       # (6, 6*(K_FIR+1)+1)
 
 
-def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220, fvec=None,
+def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220, fvec=None, onset=0,
         dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None, corr_dims=None):
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
@@ -108,13 +108,18 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220, fvec=None,
             m = np.zeros(6); m[list(corr_dims)] = 1.0
             c = c * m
         a_corr = a_cmd.copy(); a_corr[:6] += c                      # our correction
+        # onset > 0: the fault appears mid-episode. This is the deployment case -- a robot
+        # that degrades while running -- and it tests the estimator as a TRACKER rather than
+        # just asking whether it converges from step 1.
+        live = (t >= onset)
         if fvec is not None:
             # A structured fault: per-dim values instead of one scalar on every axis. The law
             # was built and tuned on a uniform +0.05, so recovering a pattern it has never
             # seen is the real generalisation test.
-            a_exec = a_corr.copy(); a_exec[:6] += fvec
+            a_exec = a_corr.copy()
+            if live: a_exec[:6] += fvec
         else:
-            a_exec = apply_action_fault(a_corr, "offset", sev, 6)       # then the world's fault
+            a_exec = apply_action_fault(a_corr, "offset", sev if live else 0.0, 6)       # then the world's fault
         x0 = np.array(obs["robot0_eef_pos"], float)
         q0 = np.array(obs["robot0_eef_quat"], float)
         obs, _, done, _ = env.step(a_exec.tolist())
@@ -152,7 +157,7 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220, fvec=None,
                 est = np.zeros(6)
             est = est / (1.0 + (nr / norm_r) ** 2)
             f_hat = np.clip(f_hat + gamma * (est - f_hat), -clip, clip)
-        traj.append(dict(t=t, f_hat=f_hat.tolist(), r=r.tolist()))
+        traj.append(dict(t=t, f_hat=f_hat.tolist(), r=r.tolist(), live=bool(live)))
         if done:
             return True, f_hat, traj
         t += 1
@@ -169,6 +174,8 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--gamma", type=float, default=0.05)
+    p.add_argument("--onset", type=int, default=0,
+                   help="control step at which the fault appears (0 = from the start)")
     p.add_argument("--eval-init", type=int, default=45,
                    help="first evaluation initial state (keep fresh per run)")
     p.add_argument("--fault-vec", default=None,
@@ -207,16 +214,18 @@ def main():
     res = {"gamma": a.gamma, "arms": {}}
     eps = [((i % 10), a.eval_init + i // 10) for i in range(a.episodes)]
     for tag, adapt in (("frozen_faulted", False), ("adaptive", True)):
-        ok, fh = 0, []
+        ok, fh, trajs = 0, [], []
         for tid, init in eps:
             s, f_hat, traj = run(pr, tid, init, a.sev, M_inv, W, a.gamma, adapt,
                                  dead=a.dead, norm_r=a.norm_r, clip=a.clip,
                                  apply_corr=not a.estimate_only, bias=bias,
-                                 corr_dims=cdims, fvec=fvec)
+                                 corr_dims=cdims, fvec=fvec, onset=a.onset)
             ok += int(s); fh.append(f_hat.tolist())
+            trajs.append(traj)
             print(f"  [{tag}] task {tid} init {init}: success={s}  "
                   f"f_hat={np.round(f_hat, 3)}")
-        res["arms"][tag] = dict(successes=ok, n=len(eps), f_hat=fh)
+        res["arms"][tag] = dict(successes=ok, n=len(eps), f_hat=fh,
+                                traj=[[st["f_hat"] for st in tr] for tr in trajs])
         a.out.parent.mkdir(parents=True, exist_ok=True)
         a.out.write_text(json.dumps(res, indent=1))
         print(f"{tag}: {ok}/{len(eps)} = {100*ok/len(eps):.0f}%\n")
