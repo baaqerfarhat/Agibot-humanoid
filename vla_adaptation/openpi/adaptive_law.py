@@ -74,7 +74,7 @@ def fit_plant(log_path, lam=1e-2, mimo=False):
 
 
 def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220,
-        dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None):
+        dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None, corr_dims=None):
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
     plan, t = collections.deque(), 0
@@ -100,6 +100,13 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220,
         # point, so once c moves that point the estimate chases its own correction. Freezing
         # c at zero separates open-loop model bias from that feedback.
         c = -f_hat if (adapt and apply_corr) else np.zeros(6)
+        if corr_dims is not None:
+            # Apply the correction on a SUBSET of axes. The separation test says the
+            # estimator identifies the fault on rotation (0.047-0.049 against a true 0.050)
+            # and not at all on translation (-0.013, -0.005). If the benefit really comes
+            # from the channels that are identified, rotation-only should retain it.
+            m = np.zeros(6); m[list(corr_dims)] = 1.0
+            c = c * m
         a_corr = a_cmd.copy(); a_corr[:6] += c                      # our correction
         a_exec = apply_action_fault(a_corr, "offset", sev, 6)       # then the world's fault
         x0 = np.array(obs["robot0_eef_pos"], float)
@@ -156,6 +163,8 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--gamma", type=float, default=0.05)
+    p.add_argument("--corr-dims", default=None,
+                   help="comma-separated dims to correct, e.g. 3,4,5 for rotation only")
     p.add_argument("--bias", default=None,
                    help="6 comma-separated values: the estimator bias measured on healthy runs")
     p.add_argument("--estimate-only", action="store_true",
@@ -177,6 +186,9 @@ def main():
     bias = np.array([float(x) for x in a.bias.split(",")]) if a.bias else None
     if bias is not None:
         print(f"estimator zeroed against healthy-run bias {np.round(bias,3)}")
+    cdims = [int(x) for x in a.corr_dims.split(",")] if a.corr_dims else None
+    if cdims is not None:
+        print(f"correction applied only on dims {cdims}")
     pr = Probe(a)
     pr.control(dict(site=None, pin_rng=False))
     res = {"gamma": a.gamma, "arms": {}}
@@ -186,7 +198,8 @@ def main():
         for tid, init in eps:
             s, f_hat, traj = run(pr, tid, init, a.sev, M_inv, W, a.gamma, adapt,
                                  dead=a.dead, norm_r=a.norm_r, clip=a.clip,
-                                 apply_corr=not a.estimate_only, bias=bias)
+                                 apply_corr=not a.estimate_only, bias=bias,
+                                 corr_dims=cdims)
             ok += int(s); fh.append(f_hat.tolist())
             print(f"  [{tag}] task {tid} init {init}: success={s}  "
                   f"f_hat={np.round(f_hat, 3)}")
