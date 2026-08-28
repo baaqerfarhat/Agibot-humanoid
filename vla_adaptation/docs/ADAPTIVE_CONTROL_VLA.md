@@ -212,3 +212,76 @@ took the result from 70% to 87%.
   compensates and the arm visits different states. Not verified.
 - The oracle reaches 100% and the adaptive law 87%, so ~13 points remain on the table —
   consistent with the undershoot in §3.
+
+---
+
+## 6. What the correction is actually doing (added 2026-08-27)
+
+§3 reports 47% → 93% and implies all six axes contribute. They do not. A matched **no-fault
+control** plus an **axis ablation** pin the mechanism down, and the claim needs restating.
+
+### 6.1 `f̂` alone cannot tell identification from bias
+
+Running the law with **no fault at all**, `f̂` does not go to zero — it settles at
+`[+0.045, +0.014, +0.073, −0.009, +0.017, −0.001]`, which on `dz` is 146% of the magnitude of
+the real fault. The estimator reports a large offset where there is nothing to correct.
+
+The diagnostic that separates the two is the **separation**: the same estimate under a fault,
+minus the estimate with no fault.
+
+| dim | no fault | fault 0.05 | **separation** | true |
+|---|---|---|---|---|
+| dx | +0.045 | +0.048 | **+0.003** | 0.050 |
+| dy | +0.014 | +0.038 | +0.023 | 0.050 |
+| dz | +0.073 | +0.079 | **+0.006** | 0.050 |
+| **drx** | −0.009 | +0.041 | **+0.049** | 0.050 |
+| dry | +0.017 | +0.033 | +0.016 | 0.050 |
+| **drz** | −0.001 | +0.047 | **+0.048** | 0.050 |
+
+**Rotation identifies the fault almost exactly. Translation does not identify it at all.**
+
+### 6.2 Where the phantom comes from
+
+Two mechanisms, measured separately with `--estimate-only` (update `f̂` but never apply it):
+
+| | mean \|phantom\| |
+|---|---|
+| open loop (correction never applied) | 0.0143 |
+| closed loop (correction applied) | 0.0266 |
+
+**Half is plant-model error**, and it is not task-specific: identifying the plant on 10 tasks
+instead of 3 made the phantom *worse* (0.027 → 0.034).
+
+**Half is estimator feedback, and it corrects a claim made in §2.3.** `r_t` is independent of
+`c_t` only when `P̂ = P` exactly. With model error `r = M·f + ε(a+c)`: the residual carries
+the model error *at the shifted operating point*, so `f̂` converges to `f + M⁻¹ε(a+c)` — it
+chases its own correction. Measured amplification: **1.9×**.
+
+**This is an identifiability limit, not a tuning failure.** Within one episode a constant
+input fault contributes `(Σh_k)·f` to the output and a constant output model bias contributes
+`b`; both are constant and `M` is full rank, so the two cannot be separated from one signal.
+It has to be calibrated externally. Subtracting the healthy-run bias fixes `dz` (0.079 →
+0.046 against a true 0.050) and changes task performance not at all — it buys estimator
+honesty, not success.
+
+### 6.3 The ablation
+
+Correcting **rotation only** (dims 3–5): **14/15 = 93%**, identical to correcting all six.
+
+So the mechanism is:
+
+1. The fault does its damage through rotation — a uniform env-space offset is 3% of the
+   action range on translation and **19.5%** on `drx` (§2.3), 6.6× larger.
+2. The estimator identifies rotation (separation 0.047–0.049 against 0.050) and not
+   translation (−0.013, −0.005).
+3. Correcting rotation alone recovers the entire benefit; the translation correction does no
+   work.
+
+**The restated claim.** Online identification and correction of a fault in a frozen VLA works
+**on the channels where the plant model is good enough to separate a fault from model error**
+— and here those are exactly the channels carrying the damage. The 47% → 93% result is
+unchanged; what it means is now pinned down rather than assumed.
+
+**Method note worth carrying forward.** No estimate of a fault parameter should be believed
+without a matched no-fault control. `f̂` looked convincing on all six axes for weeks of
+runs; only the separation revealed that half of it was bias.
