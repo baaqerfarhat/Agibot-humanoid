@@ -43,12 +43,47 @@ one foot to unload the other. Capped, it cannot make that shift, so it cannot st
 to catch itself. Reported from the robot: the feet were not moving to keep it
 stable, and it fell whenever it was not held.
 
-## Fix
+## It is the command that is short, not the torque
 
-`action_scale_overrides={"ankle_roll": 0.06}` — puts +-15 deg back within |a| ~ 4.4.
-That is also what `cfg * effort / kp` gives, so the override becomes documentation:
-this number is derived from the clip and must be re-derived whenever the reference
-changes.
+Ruled out on the same run. Over the ticks where the robot is more than 5 deg off the
+reference (64% of the clip left, 69% right):
+
+| | left | right |
+|---|---|---|
+| the COMMAND was also off-reference | 93.9% | 92.9% |
+| torque >= 90% of the 24 N-m limit | 0.5% | 0.2% |
+| mean torque during the shortfall | 5.5 N-m | 5.4 N-m (of 24) |
+
+The ankle was using 23% of its torque while failing to reach the reference. It was
+not saturated — the policy was not asking for the angle. Reaching the reference
+needs |a| = 13.1; the policy output up to 12.4 right and 10.6 left, far out in a
+distribution that normally sits near +-3-4, and still fell short.
+
+## Two candidate fixes, and the choice is not settled
+
+**1. Raise the scale to 0.06.** Puts +-15 deg back within |a| ~ 4.4. That is also
+what `cfg * effort / kp` gives, so the override becomes documentation: the number is
+derived from the clip and must be re-derived whenever the reference changes.
+
+**REQUIRES RETRAINING.** The scale is part of the interface the policy learned
+against: a policy trained at 0.02 that is deployed at 0.06 commands 3x the ankle
+angle it intends. This cannot be applied to v17 or any existing checkpoint — it only
+takes effect for a policy trained with the new value. A warm start may not absorb it
+either; changing kd by 3x (a comparable interface change) left a warm-started policy
+unable to recover the task in 3000 iterations.
+
+**2. Question the reference instead.** The clip asks for a median |ankle_roll| of
+8.1/7.7 deg, with 34-36% of frames above 10 deg and 25% above 12, in four blocks
+spread through the motion. For a squat-lift-carry that is high — a human uses a few
+degrees, and walking is typically 5-10. The recent passes manipulate the feet
+directly (`seat_opening_frames`, the foot-box clearance passes, `level the feet
+individually`, `balance_opening_stance`), and ankle_roll is exactly the joint they
+move. The 30 deg span may be an artifact of levelling a retargeted human foot onto
+robot foot geometry rather than motion the task needs.
+
+If it is an artifact, fixing the reference is the real fix and raising the scale
+just trains a policy to chase it. The check is what the source motion asks versus
+what the refinement passes added.
 
 ## Why 0.02 was there, and what to watch
 
