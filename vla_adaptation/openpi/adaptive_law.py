@@ -169,6 +169,8 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--gamma", type=float, default=0.05)
+    p.add_argument("--eval-init", type=int, default=45,
+                   help="first evaluation initial state (keep fresh per run)")
     p.add_argument("--fault-vec", default=None,
                    help="6 comma-separated per-dim fault values (overrides --sev)")
     p.add_argument("--corr-dims", default=None,
@@ -203,7 +205,7 @@ def main():
     pr = Probe(a)
     pr.control(dict(site=None, pin_rng=False))
     res = {"gamma": a.gamma, "arms": {}}
-    eps = [((i % 10), 45 + i // 10) for i in range(a.episodes)]
+    eps = [((i % 10), a.eval_init + i // 10) for i in range(a.episodes)]
     for tag, adapt in (("frozen_faulted", False), ("adaptive", True)):
         ok, fh = 0, []
         for tid, init in eps:
