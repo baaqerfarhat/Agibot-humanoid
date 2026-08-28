@@ -73,7 +73,7 @@ def fit_plant(log_path, lam=1e-2, mimo=False):
     return np.array(W)                       # (6, 6*(K_FIR+1)+1)
 
 
-def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220,
+def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220, fvec=None,
         dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None, corr_dims=None):
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
@@ -108,7 +108,13 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220,
             m = np.zeros(6); m[list(corr_dims)] = 1.0
             c = c * m
         a_corr = a_cmd.copy(); a_corr[:6] += c                      # our correction
-        a_exec = apply_action_fault(a_corr, "offset", sev, 6)       # then the world's fault
+        if fvec is not None:
+            # A structured fault: per-dim values instead of one scalar on every axis. The law
+            # was built and tuned on a uniform +0.05, so recovering a pattern it has never
+            # seen is the real generalisation test.
+            a_exec = a_corr.copy(); a_exec[:6] += fvec
+        else:
+            a_exec = apply_action_fault(a_corr, "offset", sev, 6)       # then the world's fault
         x0 = np.array(obs["robot0_eef_pos"], float)
         q0 = np.array(obs["robot0_eef_quat"], float)
         obs, _, done, _ = env.step(a_exec.tolist())
@@ -163,6 +169,8 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--gamma", type=float, default=0.05)
+    p.add_argument("--fault-vec", default=None,
+                   help="6 comma-separated per-dim fault values (overrides --sev)")
     p.add_argument("--corr-dims", default=None,
                    help="comma-separated dims to correct, e.g. 3,4,5 for rotation only")
     p.add_argument("--bias", default=None,
@@ -187,6 +195,9 @@ def main():
     if bias is not None:
         print(f"estimator zeroed against healthy-run bias {np.round(bias,3)}")
     cdims = [int(x) for x in a.corr_dims.split(",")] if a.corr_dims else None
+    fvec = np.array([float(x) for x in a.fault_vec.split(",")]) if a.fault_vec else None
+    if fvec is not None:
+        print(f"structured fault: {fvec}")
     if cdims is not None:
         print(f"correction applied only on dims {cdims}")
     pr = Probe(a)
@@ -199,7 +210,7 @@ def main():
             s, f_hat, traj = run(pr, tid, init, a.sev, M_inv, W, a.gamma, adapt,
                                  dead=a.dead, norm_r=a.norm_r, clip=a.clip,
                                  apply_corr=not a.estimate_only, bias=bias,
-                                 corr_dims=cdims)
+                                 corr_dims=cdims, fvec=fvec)
             ok += int(s); fh.append(f_hat.tolist())
             print(f"  [{tag}] task {tid} init {init}: success={s}  "
                   f"f_hat={np.round(f_hat, 3)}")
@@ -207,7 +218,7 @@ def main():
         a.out.parent.mkdir(parents=True, exist_ok=True)
         a.out.write_text(json.dumps(res, indent=1))
         print(f"{tag}: {ok}/{len(eps)} = {100*ok/len(eps):.0f}%\n")
-    print("true fault = +0.05 on all six arm dims")
+    print(f"true fault = {fvec if fvec is not None else [a.sev]*6}")
 
 
 if __name__ == "__main__":
