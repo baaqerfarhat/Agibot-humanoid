@@ -1,4 +1,43 @@
-# The ankle_roll scale is sized to the wrong clip
+# The reference commands the ankles into their joint stops
+
+**Do not retrain against this clip, and do not raise the ankle_roll scale.** The
+earlier version of this document recommended `action_scale_overrides={"ankle_roll":
+0.06}` so the policy could follow the reference. That was wrong: the reference is
+asking for angles the robot physically cannot reach, so no scale makes it trackable.
+
+`ankle_roll`'s joint limit is +-15.0 deg. Frames sitting at a stop:
+
+| clip | joint | limit | at the stop | span |
+|---|---|---|---|---|
+| raw retarget | left_ankle_roll | +-15 | **49.5%** at +15 | +2.4 .. +15.0 |
+| raw retarget | right_ankle_roll | +-15 | **40.6%** at -15 | -15.0 .. +1.4 |
+| refined | left_ankle_roll | +-15 | 6.8% at +15 | -8.7 .. +15.0 |
+| refined | right_ankle_roll | +-15 | 5.4% / 5.4% both | -15.0 .. +15.0 |
+| refined | left_ankle_pitch | -46..+26 | 1.7% at **-46** | -46.0 .. -2.3 |
+| refined | right_hip_roll | -13.5..+166 | **16.9% past -13.5** | **-21.9** .. +6.7 |
+
+In the raw retarget both ankles are rolled to one side and held there — left never
+negative, right never positive, median |roll| 14.5 and 13.3 deg. That is a static
+splay from mapping human ankle geometry onto the X2 foot, not gait. A squat-lift
+does not need 30 deg of ankle roll; the question that exposed this was simply "why
+would it?".
+
+The refinement passes reduce it (median 14.5 -> 8.1 deg, time at the stop 49.5% ->
+6.8%) but do not remove it, and they make ankle_pitch worse: raw span -31.1 deg,
+refined -46.0, which is exactly its lower stop. That is the likely cause of the one
+joint that exceeds its torque limit on hardware -- ankle_pitch at 112% in the
+complete run -- since the PD is pushing against a mechanical stop.
+
+**The fix belongs in the retargeting**, not in the action scale and not in the
+reward. Until the clip keeps the ankles inside their travel, a policy trained on it
+is being asked to track the impossible.
+
+The rest of this document records how the shortfall was found and is still accurate
+as measurement; the recommendation in "Two candidate fixes" is superseded by the
+above.
+
+---
+
 
 **Finding:** `ankle_roll`'s action scale of 0.02 rad/unit was derived from the
 in-place reference. The walking reference needs three times that range, so on
