@@ -1,40 +1,67 @@
-# The reference commands the ankles into their joint stops
+# ankle_roll cannot be commanded far enough on the walking clip
 
-**Do not retrain against this clip, and do not raise the ankle_roll scale.** The
-earlier version of this document recommended `action_scale_overrides={"ankle_roll":
-0.06}` so the policy could follow the reference. That was wrong: the reference is
-asking for angles the robot physically cannot reach, so no scale makes it trackable.
+**Correction, and what this document previously got wrong.** An earlier revision
+claimed the reference commands joints past their limits and that it should not be
+trained on. That was my error: I keyed joint limits by substring and applied the
+LEFT hip_roll range (-13.5..+166.5) to the RIGHT hip_roll, which is mirrored
+(-166.5..+13.5). Checked properly, **no joint in either clip goes beyond its limit
+-- 0.0% of frames, every joint.** The reference is feasible. That matches what the
+clip looks like in sim and in the reference video.
 
-`ankle_roll`'s joint limit is +-15.0 deg. Frames sitting at a stop:
+What is measured and stands:
 
-| clip | joint | limit | at the stop | span |
+**1. The ankles are the only joints that cannot follow.** On `20260827_115642`
+(v17 iter49000, gain 0.9 -- the first hardware run to play a clip to the end),
+range of motion measured/reference over the 591 frames inside the clip:
+
+| joint | ratio | | joint | ratio |
 |---|---|---|---|---|
-| raw retarget | left_ankle_roll | +-15 | **49.5%** at +15 | +2.4 .. +15.0 |
-| raw retarget | right_ankle_roll | +-15 | **40.6%** at -15 | -15.0 .. +1.4 |
-| refined | left_ankle_roll | +-15 | 6.8% at +15 | -8.7 .. +15.0 |
-| refined | right_ankle_roll | +-15 | 5.4% / 5.4% both | -15.0 .. +15.0 |
-| refined | left_ankle_pitch | -46..+26 | 1.7% at **-46** | -46.0 .. -2.3 |
-| refined | right_hip_roll | -13.5..+166 | **16.9% past -13.5** | **-21.9** .. +6.7 |
+| left_hip_pitch | 0.85 | | left_ankle_pitch | 0.79 |
+| right_hip_pitch | 0.91 | | **left_ankle_roll** | **0.74** |
+| left_knee | 0.97 | | **right_ankle_roll** | **0.65** |
+| right_knee | 0.98 | | | |
 
-In the raw retarget both ankles are rolled to one side and held there — left never
-negative, right never positive, median |roll| 14.5 and 13.3 deg. That is a static
-splay from mapping human ankle geometry onto the X2 foot, not gait. A squat-lift
-does not need 30 deg of ankle roll; the question that exposed this was simply "why
-would it?".
+**2. It is the command that is short, not the torque.** Over the ticks where the
+robot is >5 deg off the reference (64% left, 69% right): the command was also off in
+93% of them; torque was >=90% of the 24 N-m limit in 0.2-0.5%; mean torque during
+the shortfall was 5.4-5.5 N-m, 23% of what was available.
 
-The refinement passes reduce it (median 14.5 -> 8.1 deg, time at the stop 49.5% ->
-6.8%) but do not remove it, and they make ankle_pitch worse: raw span -31.1 deg,
-refined -46.0, which is exactly its lower stop. That is the likely cause of the one
-joint that exceeds its torque limit on hardware -- ankle_pitch at 112% in the
-complete run -- since the PD is pushing against a mechanical stop.
+**3. The scale is the binding constraint.** `commanded angle = action x scale`, and
+ankle_roll's scale is 0.02 rad/unit. The walking reference spans +-15.0 deg, so
+commanding it needs |a| = 13.1. The policy output up to 12.4 (right) and 10.6
+(left) -- far out in a distribution that normally sits near +-3-4 -- and still
+covered only -5.0..+14.3 deg.
 
-**The fix belongs in the retargeting**, not in the action scale and not in the
-reward. Until the clip keeps the ankles inside their travel, a policy trained on it
-is being asked to track the impossible.
+0.02 was derived from the in-place clip, whose ankle_roll spanned -5.2..+4.2 deg.
+The reference was replaced with a walking one and nothing re-derived the number.
 
-The rest of this document records how the shortfall was found and is still accurate
-as measurement; the recommendation in "Two candidate fixes" is superseded by the
-above.
+## Fix
+
+`action_scale_overrides={"ankle_roll": 0.06}` puts +-15 deg back within |a| ~ 4.4.
+That is also what `cfg * effort / kp` gives, so the override becomes documentation:
+this number is derived from the clip and must be re-derived when the reference
+changes.
+
+**REQUIRES RETRAINING.** The scale is part of the interface the policy learned
+against: a policy trained at 0.02 and deployed at 0.06 commands 3x the ankle angle
+it intends. It cannot be applied to v17 or any existing checkpoint. A warm start may
+not absorb it either -- changing kd by 3x, a comparable interface change, left a
+warm-started policy unable to recover the task in 3000 iterations.
+
+## Two open questions this does not settle
+
+**Is 8 deg of median ankle roll right for a squat-lift?** The refined clip has a
+median |ankle_roll| of 8.1/7.7 deg, a third of frames above 10, and touches the
++-15 deg mechanical stop (6.8% and 5.4% of frames). That is feasible but has no
+margin. The raw retarget is stronger still -- median 14.5/13.3 deg, at the stop for
+49.5% and 40.6% of frames, each ankle rolled to one side and never crossing zero.
+The refinement passes reduce it substantially. Whether the task needs this much
+lateral ankle travel is a design question worth asking, not a defect.
+
+**ankle_pitch.** It is the only joint over its TORQUE limit on hardware -- 112% in
+the complete run, and over 36 N-m in 4 of 7 engaged v17 runs, up to 46.0 N-m (128%)
+at gain 1.1. It has no scale override, and the refined clip takes it to -46.0 deg,
+exactly its lower stop, against -31.1 in the raw retarget.
 
 ---
 
