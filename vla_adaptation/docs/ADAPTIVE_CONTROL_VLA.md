@@ -2,8 +2,10 @@
 
 **Result in one line.** A fault that halves task success on a frozen 3.35 B vision-language-
 action model is corrected *within a single episode*, from the robot's own motion, with no
-gradients through the task and no search over task success: **47% → 93%**, against a 99%
-fault-free ceiling.
+gradients through the task and no search over task success: **45% → 95%, p = 1.1×10⁻⁶**
+(n = 40 per arm), against a 99% fault-free ceiling. It generalises to a fault pattern it was
+never tuned on (17% → 83%), tracks a fault that appears mid-episode within 0.75 s, and costs
+nothing when no fault is present.
 
 Video: `results/phase05/adaptive_vs_frozen.mp4`. Data: `results/phase05/`.
 Code: `openpi/{error_signal,openloop_id,adaptive_law,compare_video}.py`.
@@ -63,6 +65,25 @@ y_t  =  sum_{k=0..K} h_k a_{t-k}  +  c            (per output dimension)
 Translation is well identified. **Rotation is not**, and that limitation propagates to every
 result below.
 
+### 2.2b Orientation increments
+
+Rotation change must be the **relative rotation**, not a difference of axis-angle vectors:
+
+```
+omega  =  axis_angle( q_t+1  ⊗  conj(q_t) )
+```
+
+Axis-angle is a chart, not a vector space: the same rotation has representations differing by
+2π, and the chart is singular at 0 and π. Over 2000 random increments of 0.05 rad the relative
+rotation recovers the true increment to **1.4e-14**, while the difference of charts errs by up
+to **6.28** — a full wraparound.
+
+Using the wrong one corrupted four separate results before it was found: rotation appeared
+unpredictable (FIR R² 0.11 on `dry`, 0.17 on `drz`), `M` appeared cross-coupled, the gain law's
+rotation estimates were meaningless, and deliberate excitation made performance *worse*. All
+four were the same bug. Corrected fits: **drz 0.168 → 0.972**, dry 0.109 → 0.336, drx 0.489 →
+0.522, translation unchanged.
+
 ### 2.3 Error
 
 With `u_t = a_t + c_t + f` the executed action (policy command, our correction, the unknown
@@ -108,25 +129,6 @@ difference:
 > 0.244, off-diagonal mass falls from 0.59 to 0.26, and the divergence argument does not apply.
 > The claim is withdrawn.
 
-### 2.2b Orientation increments
-
-Rotation change must be the **relative rotation**, not a difference of axis-angle vectors:
-
-```
-omega  =  axis_angle( q_t+1  ⊗  conj(q_t) )
-```
-
-Axis-angle is a chart, not a vector space: the same rotation has representations differing by
-2π, and the chart is singular at 0 and π. Over 2000 random increments of 0.05 rad the relative
-rotation recovers the true increment to **1.4e-14**, while the difference of charts errs by up
-to **6.28** — a full wraparound.
-
-Using the wrong one corrupted four separate results before it was found: rotation appeared
-unpredictable (FIR R² 0.11 on `dry`, 0.17 on `drz`), `M` appeared cross-coupled, the gain law's
-rotation estimates were meaningless, and deliberate excitation made performance *worse*. All
-four were the same bug. Corrected fits: **drz 0.168 → 0.972**, dry 0.109 → 0.336, drx 0.489 →
-0.522, translation unchanged.
-
 ### 2.5 The law
 
 ```
@@ -153,29 +155,78 @@ The information is there; whether it is extracted depends on the estimator.
 
 ## 3. Results
 
-| arm | success | note |
+All faults are injected client-side between the policy and `env.step`; the model is never
+modified. Frozen and adaptive arms share task, initial state, policy and fault — the only
+difference is whether the law runs.
+
+### 3.1 Headline, confirmatory
+
+| arm | success | 95% CI |
 |---|---|---|
-| nominal (no fault) | 99% | ceiling |
-| **oracle** — computed edit on `action_out_proj/bias` | **100%** | knows the answer analytically |
-| frozen, faulted | 7/15 = **47%** | floor |
-| **adaptive** | **14/15 = 93%** | **+47 points**, Fisher **p = 0.0142** |
-| adaptive, before the SO(3) fix | 13/15 = 87% | +40 points, p = 0.0502 |
+| nominal (no fault) | 99% | — |
+| frozen, faulted | **18/40 = 45%** | [31, 60] |
+| **adaptive** | **38/40 = 95%** | [83, 99] |
 
-The adaptive arm recovers **~77% of the available headroom** using only proprioception.
-p = 0.0502 is *at* the threshold: suggestive, not significant, and one episode either way
-flips it. n ≈ 40 would settle it.
+**+50 points, Fisher p = 1.1×10⁻⁶**, on initial states 40–43 that no earlier run touched.
+The earlier n=15 estimate (47% → 93%, p = 0.014) did not shrink under retest — it grew
+slightly, and the estimates reproduced within ±0.004 on all six axes across the two
+independent runs.
 
-**Fault estimates**, mean over 15 episodes, true value 0.05 on every dimension:
+### 3.2 The full condition set
+
+| condition | frozen | adaptive | note |
+|---|---|---|---|
+| offset 0.05, from step 1 (n=40) | 45% | **95%** | p = 1.1e-06 |
+| offset 0.10, near-lethal (n=8) | 0% | 38% | frozen fails every episode |
+| **structured `[0,0,0,+.06,−.06,+.03]`** (n=12) | 17% | **83%** | fault shape never tuned on |
+| **onset at step 15** (n=20) | 60% | **90%** | p = 0.065; tracking, see §3.4 |
+| onset at step 45 (n=15) | 73% | 80% | little headroom by design |
+| **no fault** (n=15) | 100% | **100%** | safe to leave running |
+| gain 0.5, multiplicative (n=10) | 50–70% | 70–90% | noise-dominated at this n |
+
+### 3.3 Generalisation
+
+The structured fault `[0, 0, 0, +0.06, −0.06, +0.03]` — mixed signs, rotation only, unseen
+magnitudes — is recovered as a *pattern*, not a scalar:
+
+| dim | true | separation | error |
+|---|---|---|---|
+| drx | +0.060 | +0.053 | −0.007 |
+| dry | −0.060 | −0.038 | +0.022 |
+| drz | +0.030 | +0.029 | −0.001 |
+| dx, dy, dz | 0.000 | −0.003, −0.024, −0.006 | ≈0 |
+
+Sign correct on 3/3 including the negative axis, and correctly ≈0 where the fault is zero.
+This rules out the obvious objection that the method was fitted to one fault shape.
+
+### 3.4 Tracking a fault that appears mid-episode
+
+The deployment case: a healthy robot that breaks while running. Fault injected at control
+step 15, mean `f̂` on the identifiable rotation channels over 20 episodes:
+
+| window | f̂ |
+|---|---|
+| steps 0–14, before onset | **+0.009** |
+| steps 15–30, just after | +0.035 |
+| steps 30–50, settling | +0.041 |
+| steps 50–78, late | **+0.042** (true 0.050) |
+
+Quiet before the fault exists, **70% of truth within 15 control steps (0.75 s)**, settling at
+84% and holding flat — no post-convergence drift. This is also the cleanest control in the
+whole set: **the episode is its own baseline**, so the estimator bias of §6 cancels without
+needing a separate matched run.
+
+### 3.5 Fault estimates
+
+Mean over the n=40 run, true value 0.050 on every dim:
 
 ```
-f̂      [0.048  0.038  0.079  0.041  0.033  0.047]      true 0.050 on every dim
-ratio  [ 0.96   0.76   1.58   0.82   0.66   0.94]
+f̂      [0.050  0.035  0.075  0.038  0.030  0.046]
 ```
 
-**Sign correct on 6 of 6**, and after the SO(3) correction four of six land within ±20% of
-truth. `dz` is the remaining outlier at 1.58 — it has both the weakest sensitivity in `M`
-(0.126) and the largest off-diagonal term (−0.112 from dx), so its estimate absorbs coupling
-the diagonal law does not model.
+Reproducible to ±0.004 against the independent n=15 run. **But see §6** — the raw values
+overstate identification, and only the separation against a matched no-fault control is
+evidence.
 
 ## 4. Three failures worth keeping
 
@@ -200,20 +251,28 @@ took the result from 70% to 87%.
 
 ## 5. Limits
 
-- **p = 0.0502 at n = 15.** Suggestive. Not significant.
-- **Rotation is poorly identified** (R² 0.11–0.49), and `dry`/`drz` estimates undershoot by
-  half. The likely cause is the error metric: orientation deltas are taken as differences of
-  axis-angle vectors, which is not a valid metric on SO(3). Fixing that is the first thing to
-  try next.
-- **One fault type, one suite.** A constant additive offset is the easiest case — it is
-  constant, so a constant correction cancels it. A state-dependent fault (a gain error) needs
-  a regressor, not a single vector.
-- **`M` is identified open loop** and assumed valid in closed loop, where the policy
-  compensates and the arm visits different states. Not verified.
-- The oracle reaches 100% and the adaptive law 87%, so ~13 points remain on the table —
-  consistent with the undershoot in §3.
-
----
+- **Identification is channel-dependent, and which channels work depends on the fault type.**
+  An additive fault has regressor `I` and is loudest where the quantile scale is small —
+  rotation, where a uniform env-space offset is 19.5% of the action range against 3% on
+  translation. A multiplicative fault has regressor `diag(ψ)` and is loudest where the command
+  is large — translation, commanded at sd 0.32–0.55 against rotation's 0.02–0.055. Measured
+  recovery: offset 21% translation / 75% rotation; gain 86% translation / 40% rotation. The
+  two fault types are identifiable on **complementary** channels, and neither is universal.
+- **Raw estimates overstate identification** (§6). Only the separation against a matched
+  no-fault control is evidence.
+- **A constant input fault and a constant output model bias are not separable within one
+  episode.** The bias must be calibrated externally, or removed by a within-episode control
+  such as the mid-episode onset design (§3.4).
+- **`dry` remains the weakest channel** — worst plant fit (R² 0.336 per-axis) and worst
+  recovery (63% on the structured fault). Its motion is driven substantially by the
+  *translation* commands; a coupled model fixes the fit (held-out R² 0.615) but **hurts the
+  closed loop** (§4), so it is left uncorrected.
+- **One task suite, one robot, injected faults.** `libero_spatial`, a MountedPanda under
+  OSC_POSE. Not observed hardware degradation.
+- **The failure boundary is unmapped.** Every fault tested lives in the action space, which is
+  exactly what the regressor is built for. A fault whose signature is absent from the
+  command–motion residual — a perception fault, say — has not been tried, so it is not known
+  where the method stops working.
 
 ## 6. What the correction is actually doing (added 2026-08-27)
 
