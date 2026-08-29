@@ -6,7 +6,29 @@ every claim below traces to a pre-registration in `prereg_records/` and raw data
 Subject: **π0.5-LIBERO**, 3.35 B parameters, frozen — no fine-tuning, no gradients through
 the task. Benchmark: `libero_spatial`, nominal 99.0% over 500 episodes.
 
-## 1. The headline: a frozen VLA is repairable online, and the ceiling is total
+## 0. Online adaptive correction — the main result
+
+**A fault that halves task success is identified and corrected within a single episode, from
+the robot's own proprioception.** No gradients through the task, no search over task success,
+no retraining.
+
+| condition | frozen | adaptive | |
+|---|---|---|---|
+| offset 0.05, n=40/arm | 45% | **95%** | +50 pts, **p = 1.1×10⁻⁶** |
+| structured fault, never tuned on | 17% | **83%** | recovers the 3-component pattern |
+| fault appears mid-episode | 60% | **90%** | detected within 0.75 s |
+| **no fault** | 100% | **100%** | safe to leave running |
+
+How: the error is commanded-vs-achieved end-effector motion (observable every step); the plant
+is identified by FIR on fault-free rollouts; the map `M = ∂motion/∂fault` is measured
+open-loop. Then `f̂ ← f̂ + γ(M⁻¹r − f̂)`, `c = −f̂`.
+
+**The qualification that matters:** identification is genuine only on channels where the plant
+model separates a fault from model error — rotation for additive faults, translation for
+multiplicative ones, on complementary sides. Raw `f̂` carries a bias that only a matched
+no-fault control exposes. Details: `docs/ADAPTIVE_CONTROL_VLA.md`.
+
+## 1. The earlier result: a frozen VLA is repairable by a computed edit
 
 A fault that costs half the task — a constant +0.05 offset on the arm action, 99% → 46.7% —
 is **fully repaired by adding a fixed 6-vector to `action_out_proj/bias`**: 15/15 = **100%**.
