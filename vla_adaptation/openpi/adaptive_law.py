@@ -74,6 +74,7 @@ def fit_plant(log_path, lam=1e-2, mimo=False):
 
 
 def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220, fvec=None, onset=0,
+        obs_off=None,
         dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None, corr_dims=None):
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
@@ -91,7 +92,12 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220, fvec=None, on
         if not plan:
             plan.extend(pr.client.infer({
                 "observation/image": img, "observation/wrist_image": wr,
-                "observation/state": np.concatenate((obs["robot0_eef_pos"],
+                # obs_off: a constant bias on the POSITION SENSOR. The policy is misled about
+                # where the arm is. Crucially the residual is built from dx, a DIFFERENCE, so
+                # a constant sensor offset cancels exactly and is invisible to it -- this is a
+                # fault the method should be structurally unable to see.
+                "observation/state": np.concatenate((
+                    np.array(obs["robot0_eef_pos"], float) + (obs_off if obs_off is not None else 0.0),
                     lm._quat2axisangle(obs["robot0_eef_quat"]), obs["robot0_gripper_qpos"])),
                 "prompt": str(desc)})["actions"][: pr.a.replan_steps])
         a_cmd = np.asarray(plan.popleft(), float)
@@ -174,6 +180,8 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--gamma", type=float, default=0.05)
+    p.add_argument("--obs-offset", default=None,
+                   help="x,y,z bias on the position SENSOR -- a fault the residual cannot see")
     p.add_argument("--onset", type=int, default=0,
                    help="control step at which the fault appears (0 = from the start)")
     p.add_argument("--eval-init", type=int, default=45,
@@ -204,6 +212,10 @@ def main():
     if bias is not None:
         print(f"estimator zeroed against healthy-run bias {np.round(bias,3)}")
     cdims = [int(x) for x in a.corr_dims.split(",")] if a.corr_dims else None
+    obs_off = np.array([float(x) for x in a.obs_offset.split(",")]) if a.obs_offset else None
+    if obs_off is not None:
+        print(f"SENSOR fault: position observation biased by {obs_off} m "
+              f"(invisible to a difference-based residual)")
     fvec = np.array([float(x) for x in a.fault_vec.split(",")]) if a.fault_vec else None
     if fvec is not None:
         print(f"structured fault: {fvec}")
@@ -219,7 +231,8 @@ def main():
             s, f_hat, traj = run(pr, tid, init, a.sev, M_inv, W, a.gamma, adapt,
                                  dead=a.dead, norm_r=a.norm_r, clip=a.clip,
                                  apply_corr=not a.estimate_only, bias=bias,
-                                 corr_dims=cdims, fvec=fvec, onset=a.onset)
+                                 corr_dims=cdims, fvec=fvec, onset=a.onset,
+                                 obs_off=obs_off)
             ok += int(s); fh.append(f_hat.tolist())
             trajs.append(traj)
             print(f"  [{tag}] task {tid} init {init}: success={s}  "
