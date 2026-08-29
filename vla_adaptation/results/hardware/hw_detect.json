@@ -1,0 +1,102 @@
+{
+ "0.1": {
+  "n": 1,
+  "mean": {
+   "left_hip_pitch_joint": 0.0606498399063608,
+   "right_hip_pitch_joint": -0.05715187356569958,
+   "left_knee_joint": 0.6468898600506768,
+   "right_knee_joint": 0.7357494464422548,
+   "left_hip_yaw_joint": -0.16476124646734336
+  }
+ },
+ "0.5": {
+  "n": 1,
+  "mean": {
+   "left_hip_pitch_joint": 0.1977820124870428,
+   "right_hip_pitch_joint": 0.06877065904256847,
+   "left_knee_joint": 0.1583703404815825,
+   "right_knee_joint": 0.10887379456331289,
+   "left_hip_yaw_joint": 0.04111605789174401
+  }
+ },
+ "0.7": {
+  "n": 2,
+  "mean": {
+   "left_hip_pitch_joint": 0.231604472230531,
+   "right_hip_pitch_joint": 0.18362373626354,
+   "left_knee_joint": -0.03624685173892405,
+   "right_knee_joint": 0.003225823137012883,
+   "left_hip_yaw_joint": -0.1378404556494218
+  }
+ },
+ "0.8": {
+  "n": 7,
+  "mean": {
+   "left_hip_pitch_joint": 0.2159922988242609,
+   "right_hip_pitch_joint": 0.17884920912804958,
+   "left_knee_joint": -0.028639528907706525,
+   "right_knee_joint": 0.005350169960597632,
+   "left_hip_yaw_joint": -0.10856689200392257
+  }
+ },
+ "0.85": {
+  "n": 3,
+  "mean": {
+   "left_hip_pitch_joint": 0.24504025902319024,
+   "right_hip_pitch_joint": 0.14909537220456245,
+   "left_knee_joint": -0.039737095150612196,
+   "right_knee_joint": -0.048578970696401734,
+   "left_hip_yaw_joint": -0.07668808051050768
+  }
+ },
+ "0.9": {
+  "n": 8,
+  "mean": {
+   "left_hip_pitch_joint": 0.20784296102998062,
+   "right_hip_pitch_joint": 0.1670673024339095,
+   "left_knee_joint": -0.015961702170129155,
+   "right_knee_joint": 0.008849792529666962,
+   "left_hip_yaw_joint": -0.09036899275283179
+  }
+ },
+ "1.0": {
+  "n": 47,
+  "mean": {
+   "left_hip_pitch_joint": 0.12558649655044074,
+   "right_hip_pitch_joint": 0.044615171665370136,
+   "left_knee_joint": -0.0658956749418971,
+   "right_knee_joint": -0.02450867584736556,
+   "left_hip_yaw_joint": -0.11885329873319166
+  }
+ },
+ "1.1": {
+  "n": 3,
+  "mean": {
+   "left_hip_pitch_joint": 0.22441896432778619,
+   "right_hip_pitch_joint": 0.1477287985684876,
+   "left_knee_joint": -0.04359691537830954,
+   "right_knee_joint": -0.03578866354857558,
+   "left_hip_yaw_joint": -0.06759479549709584
+  }
+ },
+ "1.2": {
+  "n": 9,
+  "mean": {
+   "left_hip_pitch_joint": 0.19471941982337665,
+   "right_hip_pitch_joint": 0.15602605056459123,
+   "left_knee_joint": -0.04189627758802764,
+   "right_knee_joint": -0.04395437890554368,
+   "left_hip_yaw_joint": -0.03408409897937316
+  }
+ },
+ "1.3": {
+  "n": 3,
+  "mean": {
+   "left_hip_pitch_joint": 0.22616217759992982,
+   "right_hip_pitch_joint": 0.13453051098137028,
+   "left_knee_joint": -0.030667433805072086,
+   "right_knee_joint": -0.0671651204658229,
+   "left_hip_yaw_joint": -0.04591223891386804
+  }
+ }
+}
