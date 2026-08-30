@@ -74,7 +74,7 @@ def fit_plant(log_path, lam=1e-2, mimo=False):
 
 
 def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220, fvec=None, onset=0,
-        obs_off=None,
+        obs_off=None, wrist_shift=0,
         dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None, corr_dims=None):
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
@@ -89,6 +89,11 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220, fvec=None, on
             np.ascontiguousarray(obs["agentview_image"][::-1, ::-1]), 224, 224))
         wr = image_tools.convert_to_uint8(image_tools.resize_with_pad(
             np.ascontiguousarray(obs["robot0_eye_in_hand_image"][::-1, ::-1]), 224, 224))
+        if wrist_shift:
+            # A misaligned wrist camera. This fault damages the POLICY's input while leaving
+            # the plant untouched, so the command-motion residual stays clean -- the quadrant
+            # the sensor-bias test could not reach, because that one did no damage.
+            wr = np.roll(wr, wrist_shift, axis=1)
         if not plan:
             plan.extend(pr.client.infer({
                 "observation/image": img, "observation/wrist_image": wr,
@@ -180,6 +185,8 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--gamma", type=float, default=0.05)
+    p.add_argument("--wrist-shift", type=int, default=0,
+                   help="pixels to roll the wrist camera -- a fault the plant never sees")
     p.add_argument("--obs-offset", default=None,
                    help="x,y,z bias on the position SENSOR -- a fault the residual cannot see")
     p.add_argument("--onset", type=int, default=0,
@@ -232,7 +239,7 @@ def main():
                                  dead=a.dead, norm_r=a.norm_r, clip=a.clip,
                                  apply_corr=not a.estimate_only, bias=bias,
                                  corr_dims=cdims, fvec=fvec, onset=a.onset,
-                                 obs_off=obs_off)
+                                 obs_off=obs_off, wrist_shift=a.wrist_shift)
             ok += int(s); fh.append(f_hat.tolist())
             trajs.append(traj)
             print(f"  [{tag}] task {tid} init {init}: success={s}  "
