@@ -29,7 +29,9 @@ OUT_MAX = np.array([0.05, 0.05, 0.05, 0.5, 0.5, 0.5])
 FAULT, DIMS = "offset", 6
 
 
-def log_episode(pr, tid, init, sev, max_steps=220):
+def log_episode(pr, tid, init, sev, max_steps=None):
+    import paired_probe as _pp
+    max_steps = max_steps or _pp.MAXS
     env, desc, inits = pr.env_for(tid)
     env.reset()
     obs = env.set_init_state(inits[init])
@@ -95,6 +97,7 @@ def main():
     p.add_argument("--out", type=pathlib.Path, required=True)
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
+    p.add_argument("--suite", default="libero_spatial")
     p.add_argument("--episodes", type=int, default=3)
     p.add_argument("--init-base", type=int, default=45,
                    help="first initial state; keep DISJOINT from evaluation states")

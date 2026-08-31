@@ -50,12 +50,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--log", type=pathlib.Path, required=True)
     ap.add_argument("--out", type=pathlib.Path, required=True)
+    ap.add_argument("--suite", default="libero_spatial")
     ap.add_argument("--steps", type=int, default=80)
     a = ap.parse_args()
 
     d = json.loads(a.log.read_text())
     cmds = np.array(d[0]["raw_a"])[: a.steps]        # a nominal episode's commands
-    suite = benchmark.get_benchmark_dict()["libero_spatial"]()
+    suite = benchmark.get_benchmark_dict()[a.suite]()
     task = suite.get_task(0)
     env, desc = lm._get_libero_env(task, lm.LIBERO_ENV_RESOLUTION, 7)
     inits = suite.get_task_init_states(0)

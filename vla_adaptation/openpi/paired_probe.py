@@ -17,12 +17,20 @@ import main as libero_main
 from gate_faults import apply_action_fault
 
 FAULT, SEV, DIMS, MAXS = "offset", 0.05, 6, 220
+# Episode caps differ per suite; libero_10 is long-horizon (520 vs 220), which is the real
+# stress test for an estimator that has to hold a correction for the whole episode.
+SUITE_MAX = {"libero_spatial": 220, "libero_object": 280, "libero_goal": 300,
+             "libero_10": 520, "libero_90": 400}
 
 
 class Probe:
     def __init__(self, a):
         self.a = a
-        self.suite = benchmark.get_benchmark_dict()["libero_spatial"]()
+        name = getattr(a, "suite", None) or "libero_spatial"
+        self.suite_name = name
+        self.suite = benchmark.get_benchmark_dict()[name]()
+        global MAXS
+        MAXS = SUITE_MAX.get(name, 220)
         self.client = _wc.WebsocketClientPolicy(a.host, a.port)
         self._envs = {}
 
