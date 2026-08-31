@@ -73,9 +73,11 @@ def fit_plant(log_path, lam=1e-2, mimo=False):
     return np.array(W)                       # (6, 6*(K_FIR+1)+1)
 
 
-def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220, fvec=None, onset=0,
+def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, onset=0,
         obs_off=None, wrist_shift=0, static_c=None,
         dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None, corr_dims=None):
+    import paired_probe as _pp
+    max_steps = max_steps or _pp.MAXS
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
     plan, t = collections.deque(), 0
@@ -191,6 +193,7 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--gamma", type=float, default=0.05)
+    p.add_argument("--suite", default="libero_spatial")
     p.add_argument("--static-corr", default=None,
                    help="fixed 6-vector correction; the no-estimation baseline")
     p.add_argument("--wrist-shift", type=int, default=0,
