@@ -74,7 +74,7 @@ def fit_plant(log_path, lam=1e-2, mimo=False):
 
 
 def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220, fvec=None, onset=0,
-        obs_off=None, wrist_shift=0,
+        obs_off=None, wrist_shift=0, static_c=None,
         dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None, corr_dims=None):
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
@@ -110,7 +110,13 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=220, fvec=None, on
         # imperfect plant the residual carries the model error evaluated at the operating
         # point, so once c moves that point the estimate chases its own correction. Freezing
         # c at zero separates open-loop model bias from that feedback.
-        c = -f_hat if (adapt and apply_corr) else np.zeros(6)
+        if static_c is not None:
+            # Baseline: a FIXED correction, tuned offline for one known fault and applied
+            # always. It needs the fault to be known in advance and to never change -- the
+            # two assumptions the online law exists to drop.
+            c = static_c.copy() if adapt else np.zeros(6)
+        else:
+            c = -f_hat if (adapt and apply_corr) else np.zeros(6)
         if corr_dims is not None:
             # Apply the correction on a SUBSET of axes. The separation test says the
             # estimator identifies the fault on rotation (0.047-0.049 against a true 0.050)
@@ -185,6 +191,8 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--gamma", type=float, default=0.05)
+    p.add_argument("--static-corr", default=None,
+                   help="fixed 6-vector correction; the no-estimation baseline")
     p.add_argument("--wrist-shift", type=int, default=0,
                    help="pixels to roll the wrist camera -- a fault the plant never sees")
     p.add_argument("--obs-offset", default=None,
@@ -219,6 +227,9 @@ def main():
     if bias is not None:
         print(f"estimator zeroed against healthy-run bias {np.round(bias,3)}")
     cdims = [int(x) for x in a.corr_dims.split(",")] if a.corr_dims else None
+    static_c = np.array([float(x) for x in a.static_corr.split(",")]) if a.static_corr else None
+    if static_c is not None:
+        print(f"STATIC baseline: fixed correction {static_c} (no online estimation)")
     obs_off = np.array([float(x) for x in a.obs_offset.split(",")]) if a.obs_offset else None
     if obs_off is not None:
         print(f"SENSOR fault: position observation biased by {obs_off} m "
@@ -239,7 +250,8 @@ def main():
                                  dead=a.dead, norm_r=a.norm_r, clip=a.clip,
                                  apply_corr=not a.estimate_only, bias=bias,
                                  corr_dims=cdims, fvec=fvec, onset=a.onset,
-                                 obs_off=obs_off, wrist_shift=a.wrist_shift)
+                                 obs_off=obs_off, wrist_shift=a.wrist_shift,
+                                 static_c=static_c)
             ok += int(s); fh.append(f_hat.tolist())
             trajs.append(traj)
             print(f"  [{tag}] task {tid} init {init}: success={s}  "
