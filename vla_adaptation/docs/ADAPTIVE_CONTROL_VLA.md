@@ -896,3 +896,67 @@ both directions it was tested. Its *ordering* remains weakly consistent with the
 suites, 26% → 65%, `p = 9.3×10⁻¹⁰`, zero regressions. That result never depended on Prop 2
 being the right explanation, only on the empirical separation test that selected the
 channels.
+
+## 13. Decomposing the fault: rotation carries the damage (added 2026-09-01)
+
+§11 and §12 removed both explanations offered for the scope condition. This section tests a
+simpler one by splitting the uniform fault into its halves at the same magnitude, on
+`libero_spatial`, n = 20.
+
+### 13.1 Damage
+
+| fault | frozen success | damage vs healthy |
+|---|---|---|
+| none | ~100% (10/10) | — |
+| translation half `[.05,.05,.05,0,0,0]` | 18/20 = 90% | **−10** |
+| rotation half `[0,0,0,.05,.05,.05]` | 13/20 = 65% | **−35** |
+| uniform six-axis `[.05]×6` | 8/20 = 40% | **−60** |
+
+**Rotation does 3.5× the damage of translation at equal magnitude.** This is the simplest
+explanation yet for why rotation-only correction captures the whole benefit: rotation is
+where the damage is. It requires no claim about quantile scales (§8, refuted in §11) and no
+claim about which channels identify.
+
+**The halves are also super-additive.** Independent damage would predict
+`100 − 10 − 35 = 55%`; the measured combination is 40%. The missing 15 points are the
+interaction, and they are consistent with §11: six axes faulted together drive the arm into
+contacts and limits that neither half reaches alone. So §11's superposition failure shows up
+in task success, not only in the sensitivity measurement.
+
+### 13.2 Repair
+
+| condition | frozen | corrected | McNemar |
+|---|---|---|---|
+| translation fault, translation correction | 18/20 | 18/20 | 1.0 |
+| rotation fault, rotation correction | 13/20 | **18/20** | 0.0625 |
+
+Correcting rotation on a rotation fault recovers 5 of the 7 lost episodes, with zero
+regressions, at the exact test's floor for 5 discordant pairs.
+
+Correcting translation on a **purely translational** fault does nothing — 1 episode fixed, 1
+broken. This is the third independent time translation correction has contributed exactly
+zero (§7.3 on `libero_object`, the uniform-fault ablation, and now a fault that is *only*
+translation).
+
+**The honest caveat:** with frozen already at 18/20, this test has almost no power. Only 2
+episodes were available to fix, so "does nothing" here is weak evidence taken alone. It is
+the *consistency* across three different setups that carries the claim, not this run.
+
+### 13.3 What this replaces
+
+The scope condition survives, with its third and simplest mechanism:
+
+> Correct rotation because rotation is where this policy's damage comes from — 3.5× the
+> translation half at equal magnitude — and because translation correction has never, in
+> three separate tests, contributed anything.
+
+This makes no appeal to quantile scales or channel identifiability. It is a statement about
+**this policy's sensitivity**, measurable directly by faulting each half and reading the
+frozen success rate, and it should be checked per policy rather than assumed.
+
+### 13.4 Open
+
+Whether a *large* translation fault is both damaging and repairable is untested: at 0.05 the
+policy barely notices, and the single-axis sweep (§11) found no damage at all. A translation
+fault big enough to hurt would settle whether translation correction is useless or merely
+untested against a ceiling.

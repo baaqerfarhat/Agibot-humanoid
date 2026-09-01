@@ -8,7 +8,7 @@ before the perturbation moves the trajectory, let alone the outcome.
 """
 from __future__ import annotations
 
-import argparse, collections, json, pathlib, time
+import argparse, atexit, collections, json, pathlib, time
 import numpy as np
 from libero.libero import benchmark
 from openpi_client import image_tools
@@ -33,6 +33,21 @@ class Probe:
         MAXS = SUITE_MAX.get(name, 220)
         self.client = _wc.WebsocketClientPolicy(a.host, a.port)
         self._envs = {}
+        # Close envs while EGL is still alive. Without this they are collected during
+        # interpreter shutdown, after the EGL display is gone, and mujoco's context release
+        # calls eglMakeCurrent on a dead display -> EGL_NOT_INITIALIZED. The results are
+        # already written by then, so it is harmless, but it makes every completed run print
+        # a traceback and look like a crash.
+        atexit.register(self.close)
+
+
+    def close(self):
+        for env, _, _ in self._envs.values():
+            try:
+                env.close()
+            except Exception:
+                pass
+        self._envs.clear()
 
     def env_for(self, tid):
         if tid not in self._envs:
