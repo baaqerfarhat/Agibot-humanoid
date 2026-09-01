@@ -52,6 +52,11 @@ def main():
     ap.add_argument("--out", type=pathlib.Path, required=True)
     ap.add_argument("--suite", default="libero_spatial")
     ap.add_argument("--steps", type=int, default=80)
+    ap.add_argument("--probe", type=float, default=0.02,
+                    help="central-difference magnitude for M. The default 0.02 sits in "
+                         "the linear region; the experiments inject 0.05, where "
+                         "translation does not respond linearly. Setting this to the "
+                         "operating point measures M where it is actually used.")
     a = ap.parse_args()
 
     d = json.loads(a.log.read_text())
@@ -79,15 +84,15 @@ def main():
     # The rows above perturb ALL six dims at once, so each column is a SUM over inputs, not
     # a sensitivity. The map an adaptive law needs is the 6x6 matrix: perturb one input axis
     # at a time and read the whole output response.
-    print("\nSENSITIVITY MATRIX  M[out, in] = d(motion_out)/d(fault_in), f = +-0.02, central:")
+    print(f"\nSENSITIVITY MATRIX  M[out, in] = d(motion_out)/d(fault_in), f = +-{a.probe}, central:")
     M = np.zeros((6, 6))
     for j in range(6):
         acc = []
         for sgn in (+1.0, -1.0):
-            f = np.zeros(6); f[j] = sgn * 0.02
+            f = np.zeros(6); f[j] = sgn * a.probe
             D, _ = replay(env, inits, 45, cmds, f)
             n = min(len(D), len(base))
-            acc.append((D[:n] - base[:n]).mean(0) / OUT / (sgn * 0.02))
+            acc.append((D[:n] - base[:n]).mean(0) / OUT / (sgn * a.probe))
         M[:, j] = np.mean(acc, axis=0)
     hdr = ["dx", "dy", "dz", "drx", "dry", "drz"]
     print("        " + " ".join(f"{h:>8}" for h in hdr) + "   <- fault applied to")
@@ -97,7 +102,7 @@ def main():
     print(f"\noff-diagonal share of |M| = {off:.2f}   (0 = decoupled, per-axis gains suffice)")
     print(f"diagonal: {np.round(np.diag(M), 3)}")
     print(f"condition number of M = {np.linalg.cond(M):.1f}   (large = ill-posed to invert)")
-    a.out.write_text(json.dumps({"rows": rows, "M": M.tolist()}, indent=1))
+    a.out.write_text(json.dumps({"rows": rows, "M": M.tolist(), "probe": a.probe}, indent=1))
 
 
 if __name__ == "__main__":

@@ -419,6 +419,13 @@ identifiable are all measurable on healthy data:
 leave the rest alone.** The four-suite result in §7.1 is the ablation showing what it costs
 to ignore this.
 
+> **Superseded, 2026-09-01.** §11 refutes the mechanism claimed here. Translation is not
+> structurally quiet — it identifies a single-axis fault at 79% of truth. What actually
+> decides identifiability is the fault's *shape* relative to the robot's reachable set, not
+> the quantile scale, and that is not readable from healthy action statistics alone. The
+> empirical recommendation (correct rotation only) is unchanged and still works; the
+> prediction recipe in this subsection is withdrawn. Read §11 before using §7.4.
+
 ## 8. Identifiability, stated properly (added 2026-09-01)
 
 §7 gives the empirical rule. This section states what it rests on, including one degeneracy
@@ -482,6 +489,10 @@ the `pi05_libero` checkpoint:
 | **rotation mean** | | **0.291** | 0.198 |
 
 Additive favours rotation **5.0:1**; multiplicative favours translation **4.7:1**.
+
+> **Partly superseded, 2026-09-01.** The ordering below is real (rotation identifies at
+> 101% against translation's 79% on matched single-axis faults), but the *cliff* this
+> subsection implies is not: translation is not structurally unidentifiable. See §11.
 
 **One caveat, stated so nobody mistakes it for a result:** with these two proxies the product
 `(2δ/R)·(R/R_max)` is identically `2δ/R_max` for every channel. That constancy is algebra, not
@@ -604,76 +615,84 @@ Two things this does establish, both from the estimates rather than the successe
 (§8.5); repair is not demonstrated. The barrier is compensator conditioning (§8.6)
 compounded by a reproducible bias on one channel, not the choice of regressor.
 
-## 9. M is only valid where the plant is linear, and that is rotation (added 2026-09-01)
+## 9. Superposition, not curvature: a correction to this section (rewritten 2026-09-01)
 
-Chasing the reproducible `β̂_z = −0.797` (§8.7) turned up something larger than the bug it
-was looking for.
+**This section originally claimed that `M` was fitted across a range over which the plant is
+nonlinear, and that translation is nonlinear in fault magnitude. Both claims were wrong, and
+the measurement that refutes them is below. The corrected finding is narrower, and has a
+different mechanism and a different fix.**
 
-### 9.1 The plant is linear on rotation and not on translation
+### 9.1 What was wrong
 
-`M` is a single linear map, fitted from uniform-fault probes at four magnitudes. A linear
-plant returns the same sensitivity at every probe magnitude. It does not:
+`M` is not fitted from the four uniform-magnitude probe rows. `openloop_id.py` builds it from
+**per-axis central differences at ±0.02** — one axis at a time. The four-magnitude `rows` are
+a separate diagnostic that never enters `M`. The original §9.1 read the CV of those rows as
+evidence of per-axis nonlinearity; they measure something else entirely.
 
-| probe `f` | x | y | z | rx | ry | rz |
-|---|---|---|---|---|---|---|
-| +0.01 | 0.243 | 0.238 | 0.143 | 0.250 | 0.278 | 0.266 |
-| +0.02 | 0.223 | 0.223 | 0.135 | 0.255 | 0.268 | 0.268 |
-| +0.05 | **0.019** | 0.262 | 0.080 | 0.260 | 0.188 | 0.234 |
-| −0.05 | 0.195 | 0.315 | **0.043** | 0.215 | 0.313 | 0.243 |
-| **CV** | **0.52** | 0.14 | **0.41** | 0.07 | 0.17 | 0.06 |
-
-Rotation is essentially linear (mean CV 0.10). Translation is not (mean CV 0.36, 3.5× worse;
-x spans 13× between its extreme probes).
-
-### 9.2 At the magnitude the experiments actually use, M is wrong on translation
-
-Every headline experiment injects `sev = 0.05`. Comparing what `M` predicts for a uniform
-fault against what was measured at exactly that magnitude:
+Measuring `M` directly at the operating point settles it. `--probe 0.05` against `--probe
+0.02`, per-axis diagonals:
 
 | | x | y | z | rx | ry | rz |
 |---|---|---|---|---|---|---|
-| M predicts | 0.252 | 0.287 | 0.160 | 0.245 | 0.281 | 0.262 |
-| measured at 0.05 | 0.107 | 0.289 | 0.062 | 0.238 | 0.250 | 0.238 |
-| ratio | **0.42** | 1.00 | **0.38** | 0.97 | 0.89 | 0.91 |
+| M @ 0.02 | 0.297 | 0.272 | 0.126 | 0.253 | 0.276 | 0.244 |
+| M @ 0.05 | 0.295 | 0.251 | 0.144 | 0.251 | 0.251 | 0.240 |
+| ratio | 0.99 | 0.92 | **1.14** | 0.99 | 0.91 | 0.99 |
 
-**On all three rotation channels `M` is accurate to within 11%. On x and z it over-predicts
-the response by 2.4× and 2.6×.** So `M⁻¹` applied to a translation residual is not an
-estimate of anything, and the fitted `M_zz = 0.126` — 0.47× the mean of the other five
-diagonal entries — is the worst-conditioned direction in the matrix.
+Every channel agrees within 14%, and `cond(M)` *improves* at the larger probe (3.0 → 2.2).
+**Per axis, the plant is linear to 0.05, and translation is no worse than rotation.** The
+claim that `M` over-predicts translation by 2.4× is withdrawn.
 
-### 9.3 This is a confound for the scope condition, and it must be reported as one
+### 9.2 What is actually true: superposition fails on translation
 
-§7 and §8 explain the rotation-only result through Proposition 2: additive faults are loud
-where the quantile scale is small, which is rotation. §9.2 offers a **second, independent
-and sufficient** explanation: `M` is simply a valid map on rotation and an invalid one on
-translation. Both predict the same headline result, and the current data **cannot separate
-them**. The report should say so rather than let Prop 2 take credit it has not earned.
+The 2.4× came from comparing `M`'s **row sums** against the **uniform six-axis** probe. That
+is a test of superposition, not of magnitude linearity. Measured uniform-fault sensitivity
+divided by the sum of the single-axis columns:
 
-One piece of evidence does bear on the split, and it cuts against the pure-nonlinearity
-story: in the gain experiment, x and y recovered the fault accurately (−0.463, −0.490
-against a true −0.500) *despite* x being the most nonlinear channel of all. If a bad `M`
-were the whole explanation, x should have failed there too. So Prop 2 is not merely a
-restatement of "M is bad on translation" — but neither is it established as the operative
-mechanism.
+| probe `f` | x | y | z | rx | ry | rz |
+|---|---|---|---|---|---|---|
+| +0.01 | 0.96 | 0.83 | 0.89 | 1.02 | 0.99 | 1.01 |
+| +0.02 | 0.88 | 0.77 | 0.84 | 1.04 | 0.95 | 1.02 |
+| +0.05 | **0.07** | 0.91 | **0.50** | 1.06 | 0.67 | 0.89 |
+| −0.05 | **0.78** | 1.10 | **0.27** | 0.88 | 1.11 | 0.93 |
 
-**Distinguishing experiment:** refit `M` from the small-magnitude probes only (±0.01, ±0.02),
-where the plant is linear, and re-run the offset experiment with translation correction
-enabled. Prop 2 predicts translation still fails (the quantile scale is unchanged);
-the nonlinearity account predicts it should now work.
+At ±0.01 and ±0.02 superposition holds everywhere (0.77–1.04). At ±0.05 it collapses on
+translation and **asymmetrically**: x gives 0.07 in one direction and 0.78 in the other; z
+gives 0.50 and 0.27. Rotation superposes at every magnitude tested (0.67–1.11).
 
-### 9.4 What this does not explain
+**Direction-dependence is the signature of a contact or a joint limit, not smooth
+curvature.** A uniform +0.05 on all six axes drives the arm into something that a uniform
+−0.05 does not. Each axis alone is linear; all six together at 0.05 are not, because the
+combination puts the arm somewhere the individual probes never reach.
 
-It does not explain `β̂_z = −0.797`. If `M` over-predicts the z response by 2.6×, the
-measured residual is *smaller* than `M f` implies, so the estimate should come out too
-**small**. The observed z error is too **large**, in the opposite direction. That bias
-remains open, and it is not the same defect as §9.2.
+### 9.3 What survives, and what it means
 
-### 9.5 Immediate consequence
+The practical conclusion from the original §9 stands, for a different reason: **`M⁻¹` applied
+to the translation residual of a uniform six-axis fault at 0.05 is not measuring what it
+claims to.** But the cause is the fault *shape and operating point*, not a defect in `M`, and
+the proposed fix — refit `M` on the linear region — is moot, because `M` was already fitted
+there and does not change when refitted at 0.05.
 
-`M` was fitted across a range over which the plant it describes is not linear, and one probe
-row (`f = +0.05`, where `sens_x` collapses to 0.019 from 0.243) is doing real damage to the
-fit. Refitting on the linear region is cheap and should precede any further gain work. Until
-then, translation estimates from `M⁻¹` should not be treated as measurements.
+It remains a confound for the scope condition (§7, §8), now with a concrete mechanism:
+translation correction may fail because superposition fails for this fault, not because the
+quantile scale makes translation quiet.
+
+### 9.4 The distinguishing experiment, corrected
+
+Since `M` is magnitude-independent, refitting proves nothing. The two accounts separate on a
+**single-axis translation fault at 0.02**, where superposition cannot fail (one axis) and `M`
+is valid:
+
+- **Proposition 2** predicts translation still fails to identify — the quantile scale is
+  unchanged, so the SNR argument is untouched.
+- **The superposition account** predicts translation should now identify cleanly, since the
+  only reason it failed has been removed.
+
+This is an estimation test and needs no task rollouts.
+
+### 9.5 Still unexplained
+
+`β̂_z = −0.797` remains open. Neither account explains it: the z diagonal is *larger* at the
+0.05 probe (0.144 vs 0.126), which would push the estimate down, not up.
 
 ## 10. The paired analysis, finally computable (added 2026-09-01)
 
@@ -734,3 +753,68 @@ pooled effect is what survives: 26% → 65%, p = 9.3×10⁻¹⁰, with zero regr
 The paired permutation test reports `p = 5×10⁻⁶` pooled, which is its own resolution floor at
 200 000 iterations (`1/(N+1)`), not a disagreement with McNemar. With 31 discordant pairs all
 in one direction, exact McNemar is the accurate figure.
+
+## 11. The scope condition is about fault shape, not the quantile scale (added 2026-09-01)
+
+§9.4 set up a test that separates two explanations for why translation never identified.
+It has run, with the magnitude control, and it comes down against Proposition 2.
+
+### 11.1 The measurement
+
+Separation test (faulted estimate minus matched no-fault estimate) on the x axis:
+
+| fault | separation on x | % of truth | largest off-axis leak |
+|---|---|---|---|
+| uniform six-axis @ 0.05 | −0.013 | **sign-wrong** | — |
+| **single-axis @ 0.05** | **+0.0244** | **49%** | 0.0189 |
+| **single-axis @ 0.02** | **+0.0158** | **79%** | 0.0089 |
+| rotation `rx`, single-axis @ 0.02 | +0.0201 | 101% | 0.0040 |
+
+### 11.2 What it says
+
+**Fault shape dominates.** At the *same* magnitude 0.05, a single-axis fault identifies at
+49% with the right sign while the uniform six-axis fault is sign-wrong. Nothing about the
+quantile scale differs between those two conditions — only whether the other five axes are
+also faulted. This is the superposition/contact mechanism of §9.2, and it is the primary
+cause of the translation failure.
+
+**Magnitude matters secondarily.** Single-axis degrades 79% → 49% going from 0.02 to 0.05,
+so there is real saturation on top of the superposition effect.
+
+**Proposition 2's cliff is refuted; its ordering survives.** §8 predicted translation would
+be structurally quiet because its quantile range is 5× larger. Translation is not
+structurally quiet — it recovers 79% of a single-axis fault. Rotation is still better (101%
+vs 79%, and less than half the off-axis leak), so the *ordering* Prop 2 predicts is real, but
+it is a graded effect, not the on/off distinction §7 and §8 built on.
+
+### 11.3 What this costs, and what it does not
+
+**It does not touch the headline result.** Rotation-only correction still gives 26% → 65%
+pooled, `p = 9.3×10⁻¹⁰`, with zero regressions (§10). The recommendation to correct rotation
+only is unchanged and still correct *for this fault*. What changes is why.
+
+**It substantially weakens §7.4.** That section claims identifiability is predictable before
+deployment from three healthy-data quantities, of which the quantile scale is the first. The
+quantile scale is not the operative mechanism, so the prediction recipe is not established.
+The honest replacement: identifiability depends on the *fault's shape relative to the
+robot's reachable set* — whether the perturbed command drives the arm into contacts or
+limits — and that is not readable from action statistics alone. It needs the fault, or at
+least a fault class, plus the plant.
+
+**§8.5 needs re-reading in this light.** Prop 2 predicted the gain fault would identify on
+translation, and it did. That remains a correct prediction made in advance. But it now has a
+competing explanation — the gain fault is multiplicative, so it perturbs each axis in
+proportion to its own command rather than uniformly, which is a gentler excursion than the
+uniform offset. The gain result no longer uniquely supports Prop 2.
+
+### 11.4 Standing summary
+
+| claim | status |
+|---|---|
+| Rotation-only correction recovers the fault across four suites | **holds**, p = 9.3×10⁻¹⁰, 0 regressions |
+| The correction never breaks a working episode | **holds**, 0/80 paired |
+| Translation is structurally unidentifiable | **refuted** — 79% at single-axis 0.02 |
+| Quantile scale explains which channels identify | **not established** — shape dominates |
+| Identifiability is predictable from healthy data alone | **withdrawn** — needs the fault class |
+| `M` is unreliable / nonlinear on translation | **withdrawn** (§9.1) — M is magnitude-independent |
+| `β̂_z = −0.797` | still unexplained |
