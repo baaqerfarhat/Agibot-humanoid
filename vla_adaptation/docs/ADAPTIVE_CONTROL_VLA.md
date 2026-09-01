@@ -1,11 +1,17 @@
 # Online adaptive correction of a frozen VLA — theory and results
 
-**Result in one line.** A fault that halves task success on a frozen 3.35 B vision-language-
-action model is corrected *within a single episode*, from the robot's own motion, with no
-gradients through the task and no search over task success: **45% → 95%, p = 1.1×10⁻⁶**
-(n = 40 per arm), against a 99% fault-free ceiling. It generalises to a fault pattern it was
-never tuned on (17% → 83%), tracks a fault that appears mid-episode within 0.75 s, and costs
-nothing when no fault is present.
+**Result in one line.** An actuator fault in a frozen 3.35 B vision-language-action model is
+identified and corrected *within a single episode*, from the robot's own motion, with no
+gradients through the task and no search over task success — **across four LIBERO suites,
+29% → 73% pooled, p = 1.1×10⁻⁷** — **provided the correction is restricted to the channels
+where the fault is identifiable.** Correcting the rest is worse than doing nothing.
+
+It generalises to a fault pattern it was never tuned on (17% → 83%), tracks a fault appearing
+mid-episode within 0.75 s, and costs nothing when no fault is present.
+
+**The scope condition is the contribution.** With all six action channels corrected, the
+method is significant on one suite of four. Restricted to identifiable channels it is
+significant on all four. See §7.
 
 Video: `results/phase05/adaptive_vs_frozen.mp4`. Data: `results/phase05/`.
 Code: `openpi/{error_signal,openloop_id,adaptive_law,compare_video}.py`.
@@ -344,3 +350,71 @@ unchanged; what it means is now pinned down rather than assumed.
 **Method note worth carrying forward.** No estimate of a fault parameter should be believed
 without a matched no-fault control. `f̂` looked convincing on all six axes for weeks of
 runs; only the separation revealed that half of it was bias.
+
+
+---
+
+## 7. The scope condition: correct only what you can identify (added 2026-09-01)
+
+§3 evaluated on `libero_spatial` alone. Extending to four suites first looked like a failure
+to generalise, and then explained itself.
+
+### 7.1 With all six channels corrected, the method works on one suite of four
+
+| suite | frozen | corrected | delta | p |
+|---|---|---|---|---|
+| `libero_spatial` | 18/40 = 45% | 38/40 = 95% | +50 | **<0.0001** |
+| `libero_goal` | 8/20 = 40% | 12/20 = 60% | +20 | 0.34 |
+| `libero_object` | 7/20 = 35% | 9/20 = 45% | +10 | 0.75 |
+| `libero_10` | 0/20 = 0% | 3/20 = 15% | +15 | 0.23 |
+| **pooled, 3 new suites** | 15/60 = 25% | 24/60 = 40% | +15 | 0.12 |
+
+It is **not** an identification failure: the plant fits on the new suites are comparable or
+better (`object` reaches rotation R² 0.771/0.692 against spatial's 0.522/0.336).
+
+### 7.2 Restricted to identifiable channels, it works on all four
+
+| suite | frozen | corrected | delta | p |
+|---|---|---|---|---|
+| `libero_spatial` | 7/15 = 47% | 14/15 = 93% | +47 | **0.014** |
+| `libero_goal` | 9/20 = 45% | 18/20 = 90% | +45 | **0.006** |
+| `libero_object` | 6/20 = 30% | 16/20 = 80% | +50 | **0.004** |
+| `libero_10` | 0/20 = 0% | 7/20 = 35% | +35 | **0.008** |
+| **pooled** | **22/75 = 29%** | **55/75 = 73%** | **+44** | **1.1×10⁻⁷** |
+
+`libero_10` is the sharpest case: a long-horizon suite (520-step cap) where the fault takes
+the policy to **zero**, and correcting three channels recovers 7/20 from that floor.
+
+### 7.3 The non-identifiable channels do not merely fail — they do harm
+
+On `libero_object`, all three arms on the same fault and the same episodes:
+
+| correction | frozen | corrected | delta |
+|---|---|---|---|
+| all six dims | 7/20 | 9/20 | +10 |
+| **rotation only** | 6/20 | **16/20** | **+50** |
+| **translation only** | 6/20 | **6/20** | **0** |
+
+Translation alone contributes **exactly nothing**, and including it drags a +50 effect down
+to +10. The reason is in §6: the separation test shows the estimator identifies rotation
+(+0.049, +0.047 against a true 0.050) and not translation (−0.013, −0.005). On `object` the
+translation estimates are **sign-wrong** (−0.031, −0.018 against +0.050), so that correction
+pushes the arm the wrong way. On `spatial` the same wrong correction happened to be harmless,
+which is why the naive version looked suite-specific rather than simply misapplied.
+
+### 7.4 Identifiability is predictable before deployment
+
+Nothing here requires knowing the fault. The three quantities that decide which channels are
+identifiable are all measurable on healthy data:
+
+1. **The action normalisation** — quantile scales from the checkpoint. A uniform env-space
+   offset is 3% of the action range on translation and 19.5% on rotation (§2.3).
+2. **The plant fit** — per-channel FIR R² on fault-free rollouts. Identification quality
+   tracks it in every experiment run here.
+3. **The policy's command statistics** — an additive fault is loud where the quantile scale
+   is small; a multiplicative one is loud where the command is large (§5). The two are
+   identifiable on complementary channels.
+
+**So the rule is: measure identifiability on healthy data, correct only those channels, and
+leave the rest alone.** The four-suite result in §7.1 is the ablation showing what it costs
+to ignore this.

@@ -12,9 +12,21 @@ the task. Benchmark: `libero_spatial`, nominal 99.0% over 500 episodes.
 the robot's own proprioception.** No gradients through the task, no search over task success,
 no retraining.
 
-| condition | frozen | adaptive | |
+**Across four LIBERO suites, correcting only identifiable channels: 29% → 73% pooled,
+p = 1.1×10⁻⁷.** Correcting the other channels is worse than doing nothing.
+
+| suite | frozen | corrected | p |
 |---|---|---|---|
-| offset 0.05, n=40/arm | 45% | **95%** | +50 pts, **p = 1.1×10⁻⁶** |
+| `libero_spatial` | 47% | **93%** | 0.014 |
+| `libero_goal` | 45% | **90%** | 0.006 |
+| `libero_object` | 30% | **80%** | 0.004 |
+| `libero_10` (long-horizon) | 0% | **35%** | 0.008 |
+
+With all six channels corrected instead, only `libero_spatial` is significant (see docs §7) —
+that ablation is what establishes the scope condition.
+
+| other conditions | frozen | corrected | |
+|---|---|---|---|
 | structured fault, never tuned on | 17% | **83%** | recovers the 3-component pattern |
 | fault appears mid-episode | 60% | **90%** | detected within 0.75 s |
 | **no fault** | 100% | **100%** | safe to leave running |
@@ -23,10 +35,12 @@ How: the error is commanded-vs-achieved end-effector motion (observable every st
 is identified by FIR on fault-free rollouts; the map `M = ∂motion/∂fault` is measured
 open-loop. Then `f̂ ← f̂ + γ(M⁻¹r − f̂)`, `c = −f̂`.
 
-**The qualification that matters:** identification is genuine only on channels where the plant
-model separates a fault from model error — rotation for additive faults, translation for
-multiplicative ones, on complementary sides. Raw `f̂` carries a bias that only a matched
-no-fault control exposes. Details: `docs/ADAPTIVE_CONTROL_VLA.md`.
+**The qualification IS the contribution:** identification is genuine only on channels where
+the plant model separates a fault from model error — rotation for additive faults, translation
+for multiplicative ones, on complementary sides — and which channels those are is predictable
+before deployment from the action normalisation, the plant fit and the command statistics.
+Raw `f̂` carries a bias that only a matched no-fault control exposes. Details:
+`docs/ADAPTIVE_CONTROL_VLA.md` §6-§7.
 
 ## 1. The earlier result: a frozen VLA is repairable by a computed edit
 
