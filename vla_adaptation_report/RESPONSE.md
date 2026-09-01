@@ -148,8 +148,14 @@ the cited work exists and says what the review reports.
 
 ## What is still owed
 
-1. Rerun the headline conditions with `per_ep` and report paired p-values. Until then no
-   p-value in the report is the one the design earned.
+1. ~~Rerun the headline conditions with `per_ep`~~ — **done.** All four suites rerun with
+   per-episode records. Pooled 21/80 → 52/80, exact McNemar **p = 9.3e-10**. The review was
+   right that pairing was the correct analysis, and it paid: **frozen-only wins = 0 across
+   all 80 paired episodes** — the correction fixed 31 episodes and broke none. That claim
+   was not available from unpaired totals at all. `goal` and `libero_10` sit at p = 0.0625,
+   which is the exact test's *floor* for 5 one-way discordant pairs, so they are
+   power-limited rather than weak; n ≈ 30–40 would settle them. See
+   ADAPTIVE_CONTROL_VLA.md §10.
 2. `--law innov` head-to-head against legacy on a fixed condition set.
 3. ~~Projection result for the gain fault~~ — **done, and it is a null.** `--g-min 0.35`
    capped the vertical overcommand at 2.86x (from 4.93x, correct 2.00x), and success went

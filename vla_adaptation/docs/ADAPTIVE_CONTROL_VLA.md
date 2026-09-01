@@ -674,3 +674,63 @@ remains open, and it is not the same defect as §9.2.
 row (`f = +0.05`, where `sens_x` collapses to 0.019 from 0.243) is doing real damage to the
 fit. Refitting on the linear region is cheap and should precede any further gain work. Until
 then, translation estimates from `M⁻¹` should not be treated as measurements.
+
+## 10. The paired analysis, finally computable (added 2026-09-01)
+
+Every p-value previously reported was Fisher's exact, which treats the two arms as
+independent samples. They are not: both run the same `(task, init)` episodes with the same
+policy and seeds. The runs that produced those numbers stored only per-arm totals, so the
+pairing was unrecoverable. These are fresh runs with per-episode records.
+
+Rotation-only correction, `sev = 0.05`, n = 20 per suite.
+
+| suite | frozen | adaptive | adaptive-only | frozen-only | exact McNemar |
+|---|---|---|---|---|---|
+| `libero_spatial` | 8/20 = 40% | 18/20 = 90% | 10 | 0 | **0.0020** |
+| `libero_goal` | 8/20 = 40% | 13/20 = 65% | 5 | 0 | 0.0625 |
+| `libero_object` | 5/20 = 25% | 16/20 = 80% | 11 | 0 | **0.00098** |
+| `libero_10` | 0/20 = 0% | 5/20 = 25% | 5 | 0 | 0.0625 |
+| **pooled** | **21/80 = 26%** | **52/80 = 65%** | **31** | **0** | **9.3×10⁻¹⁰** |
+
+### 10.1 The result that only paired data could show
+
+**`frozen-only wins = 0`, in all four suites, across 80 paired episodes.** Every episode the
+frozen policy solved, the corrected policy also solved. The correction never broke a working
+episode.
+
+This could not be seen in any earlier analysis. Unpaired totals are consistent with a method
+that fixes fifteen episodes and breaks four; the paired record shows it fixed thirty-one and
+broke none. For a method meant to run continuously on hardware, "never makes things worse"
+is a stronger and more useful claim than the success delta, and it was invisible until the
+pairing was kept.
+
+### 10.2 Two suites do not reach significance, and the reason is power, not weakness
+
+`goal` and `libero_10` both land at exactly `p = 0.0625`. That is not marginal evidence —
+**it is the floor of the exact test.** With 5 discordant pairs all favouring the correction,
+`2⁻⁵ × 2 = 0.0625` is the smallest p-value attainable; a perfect result cannot do better. The
+test is saturated, not equivocal:
+
+| discordant pairs, all one way | best attainable p |
+|---|---|
+| 4 | 0.125 |
+| 5 | **0.0625** |
+| 6 | 0.031 |
+| 7 | 0.016 |
+
+Reaching `p < 0.05` on these suites requires ≥6 discordant pairs, which at these effect sizes
+means n ≈ 30–40. That is a sample-size decision, not a result.
+
+### 10.3 Effect sizes moved, as §8.7 warned they would
+
+Against the earlier Fisher-tested runs, `goal` came in at +25 where it previously showed
++45, and `libero_10` at +25 against +35. `spatial` (+50) and `object` (+55) held. This is
+consistent with the ±10-point run-to-run variation measured in §8.7 and is the reason the
+per-suite numbers should be quoted with intervals rather than as point estimates. **The
+pooled effect is what survives: 26% → 65%, p = 9.3×10⁻¹⁰, with zero regressions.**
+
+### 10.4 A note on the permutation test
+
+The paired permutation test reports `p = 5×10⁻⁶` pooled, which is its own resolution floor at
+200 000 iterations (`1/(N+1)`), not a disagreement with McNemar. With 31 discordant pairs all
+in one direction, exact McNemar is the accurate figure.

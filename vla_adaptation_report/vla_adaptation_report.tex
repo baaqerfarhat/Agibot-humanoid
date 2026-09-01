@@ -539,8 +539,8 @@ these numbers are expected to be conservative rather than optimistic --- but tha
 expectation, not a result. The runs that produced the tables above recorded only per-arm
 totals, not per-episode outcomes, so \textbf{the pairing cannot be recovered from the
 stored files and the paired tests cannot be computed retrospectively}. Per-episode logging
-is now in place; the headline conditions must be rerun before any paired $p$-value is
-claimed.
+was added, and the headline conditions \textbf{have now been rerun}; the paired
+results are in \S\ref{sec:paired}, and they change the headline claim for the better.
 
 \subsection{The full condition set}
 
@@ -674,6 +674,52 @@ runs through the integrator and is only approximately affine. The report's estim
 consistent with a near-affine mapping, but this has not been measured directly, and an
 external adapter applied after unnormalisation would make the mapping exact and
 architecture-independent. That is the recommended construction going forward.
+
+%==========================================================================
+\section{The paired analysis}
+\label{sec:paired}
+
+Fresh runs carrying per-episode records, rotation-only correction, $\mathrm{sev} = 0.05$,
+$n = 20$ per suite.
+
+\begin{center}
+\begin{tabular}{lccccc}
+\toprule
+suite & frozen & adaptive & adaptive-only & frozen-only & exact McNemar \\
+\midrule
+\code{libero\_spatial} & 8/20 & 18/20 & 10 & 0 & $\mathbf{0.0020}$ \\
+\code{libero\_goal}    & 8/20 & 13/20 &  5 & 0 & 0.0625 \\
+\code{libero\_object}  & 5/20 & 16/20 & 11 & 0 & $\mathbf{0.00098}$ \\
+\code{libero\_10}      & 0/20 &  5/20 &  5 & 0 & 0.0625 \\
+\midrule
+\textbf{pooled} & \textbf{21/80 = 26\%} & \textbf{52/80 = 65\%} & \textbf{31} & \textbf{0}
+  & $\mathbf{9.3\times 10^{-10}}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{The result only paired data could show.}
+\textbf{Frozen-only wins $= 0$}, in all four suites, across 80 paired episodes. Every
+episode the frozen policy solved, the corrected policy also solved: the correction fixed
+thirty-one episodes and broke none. Unpaired totals are equally consistent with a method
+that fixes fifteen and breaks four. For a method intended to run continuously on hardware,
+``never makes things worse'' is a stronger claim than the success delta, and it was
+invisible until the pairing was kept.
+
+\paragraph{Two suites are power-limited, not weak.}
+\code{goal} and \code{libero\_10} both land at exactly $p = 0.0625$. That is the
+\emph{floor} of the exact test: with 5 discordant pairs all favouring the correction,
+$2^{-5}\times 2 = 0.0625$ is the smallest attainable value, and a perfect result cannot do
+better. Reaching $p < 0.05$ needs $\geq 6$ discordant pairs, i.e.\ $n \approx 30$--$40$ at
+these effect sizes. That is a sample-size decision, not a finding.
+
+\paragraph{Effect sizes moved.}
+Against the earlier Fisher-tested runs, \code{goal} came in at $+25$ where it showed $+45$,
+and \code{libero\_10} at $+25$ against $+35$; \code{spatial} and \code{object} held. This is
+the $\pm 10$-point run-to-run variation of \S\ref{sec:bias} territory --- the frozen arm
+alone scored 13/20, 13/20, 15/20 on three runs of one identical condition --- and it is why
+per-suite numbers belong with intervals rather than as point estimates. The pooled effect is
+what survives.
 
 %==========================================================================
 \section{Negative results worth keeping}
