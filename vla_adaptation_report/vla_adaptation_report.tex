@@ -1,0 +1,706 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black,
+            citecolor=blue!50!black]{hyperref}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+
+\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\fhat}{\hat{f}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small Online adaptive correction of a frozen VLA}
+\lhead{\small Internal report}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\title{\textbf{Online Adaptive Correction of a Frozen\\Vision--Language--Action Model}\\[0.4em]
+\large Theory, method, and results}
+\author{Taheri et al.}
+\date{1 September 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{tcolorbox}[colback=blue!4,colframe=blue!45!black,title=\textbf{Result in one line}]
+An actuator fault in a frozen 3.35\,B vision--language--action model is
+identified and corrected \emph{within a single episode}, from the robot's own
+motion, with no gradients through the task and no search over task success ---
+\textbf{across four LIBERO suites, 29\% $\rightarrow$ 73\% pooled,
+$p = 1.1\times 10^{-7}$} --- \textbf{provided the correction is restricted to
+the channels on which the fault is identifiable.} Correcting the rest is worse
+than doing nothing.
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=gray!6,colframe=gray!55!black]
+\textbf{The scope condition is the contribution.} With all six action channels
+corrected, the method is significant on \emph{one suite of four}. Restricted to
+identifiable channels it is significant on \emph{all four}. Identifiability is
+predictable before deployment from healthy data alone.
+\end{tcolorbox}
+
+\vspace{0.4em}
+\noindent\textbf{Artifacts.} Video: \code{results/phase05/adaptive\_vs\_frozen.mp4}.
+Data: \code{results/}. Code: \code{openpi/\{error\_signal, openloop\_id,
+adaptive\_law, compare\_video\}.py}. Full theory:
+\code{docs/ADAPTIVE\_CONTROL\_VLA.md}.
+
+\noindent\textbf{Status.} Simulation; hardware validation in progress.
+Section~\ref{sec:limits} states what this does not establish.
+
+\tableofcontents
+
+%==========================================================================
+\section{The problem}
+
+A vision--language--action (VLA) policy deployed on a robot degrades when the
+hardware does: an actuator develops a constant offset, a joint loses gain, a
+sensor drifts. The policy was trained on healthy hardware and systematically
+commands the wrong thing.
+
+Retraining a 3.35\,B-parameter policy is not possible mid-deployment, and often
+not possible at all --- the operator typically owns neither the weights nor the
+training data. Black-box search over task success avoids retraining but discards
+everything known about the plant and pays for it in episodes.
+
+The observation this rests on: \emph{the robot measures its own end-effector
+pose every control step.} If the fault is observable there it can be identified
+directly, inside one episode, without consulting the task reward.
+
+The finding that organises everything below is that ``observable there'' is
+\textbf{channel-dependent}, decidable in advance, and that acting on channels
+which fail the test is actively harmful.
+
+%==========================================================================
+\section{Setting}
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item \textbf{Model.} $\pi_{0.5}$-LIBERO, frozen: 3.35\,B parameters, no
+        fine-tuning, no backpropagation through the environment. Faults are
+        injected client-side between the policy and \code{env.step}; the model is
+        never modified.
+  \item \textbf{Benchmarks.} \code{libero\_spatial} (nominal \textbf{99.0\%} over
+        500 episodes), plus \code{libero\_goal}, \code{libero\_object},
+        \code{libero\_10}.
+  \item \textbf{Controller.} OSC\_POSE at 20\,Hz, \code{control\_delta = True},
+        \code{output\_max} $= [0.05,0.05,0.05,0.5,0.5,0.5]$ (m, m, m, rad, rad, rad).
+  \item \textbf{Controls.} Frozen and adaptive arms share task, initial state,
+        policy and fault; the only difference is whether the law runs.
+\end{itemize}
+
+%==========================================================================
+\section{Fault screening}
+\label{sec:screen}
+
+Nine conditions screened (20 episodes each) for one that hurts enough to matter
+and leaves the robot recoverable.
+
+\begin{center}
+\begin{tabular}{llr>{\raggedright\arraybackslash}p{5.0cm}}
+\toprule
+\textbf{Fault} & \textbf{Severity} & \textbf{Success} & \textbf{Verdict} \\
+\midrule
+nominal      & ---   & 95\,\%  & reference \\
+brightness   & 0.1 / 0.2 / 0.4 & 100\,\% & no effect at any level \\
+gain         & 0.7   & 95\,\%  & no effect \\
+gain         & 0.5   & 75\,\%  & mild \\
+gain         & 0.3   & 0\,\%   & catastrophic \\
+\textbf{offset} & \textbf{0.05} & \textbf{55\,\%} & \textbf{degraded, recoverable} \\
+offset       & 0.10  & 5\,\%   & near-lethal \\
+offset       & 0.20  & 0\,\%   & catastrophic \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Visual perturbation does nothing at any level tested; actuator faults show a
+sharp cliff. Offset $0.05$ --- a constant $f = +0.05$ added to the six arm
+dimensions of every action, i.e.\ a miscalibrated actuator --- is the primary
+condition throughout.
+
+%==========================================================================
+\section{Is the fault class reachable? The oracle}
+\label{sec:oracle}
+
+Before attempting online adaptation we established that the fault is repairable
+in principle by an edit at one site. A six-vector computed analytically was
+added to \code{action\_out\_proj/bias}, scaled by $k$ (15 episodes per condition).
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Condition} & \textbf{Success} & \textbf{vs.\ floor} \\
+\midrule
+$k = -1.0$ (wrong sign), faulted            & 0.0\,\% (0/15)  & $-46.7$ \\
+$k = 0.0$ (no edit), faulted \emph{(floor)} & 46.7\,\% (7/15) & --- \\
+$k = 0.5$, faulted                          & 86.7\,\% (13/15) & $+40.0$ \\
+\textbf{$k = 1.0$ (computed oracle), faulted} & \textbf{100.0\,\% (15/15)} & $\mathbf{+53.3}$ \\
+$k = 1.5$, faulted                          & 20.0\,\% (3/15) & $-26.7$ \\
+$k = 1.0$ on the \emph{healthy} policy      & 6.7\,\% (1/15)  & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{description}[leftmargin=1.2em,style=nextline,itemsep=3pt]
+\item[Complete.] $46.7\% \rightarrow 100\%$ against a 99.0\% nominal --- the
+entire deficit, from a fixed six-vector on one bias. No gradient, no fine-tuning.
+\item[Specific, not a general improvement.] The same edit on the \emph{healthy}
+policy collapses it from 99\% to 6.7\%; sign-flipped it annihilates the faulted
+one (0\%). A compensating inverse, not a tonic.
+\item[Narrow basin.] $k = 1.5$ scores 20\% --- \emph{worse than not repairing}.
+Any search over this class must be scaled to $k \in [0.4, 1.2]$.
+\end{description}
+
+\paragraph{Why the edit must be computed per dimension.} ``Cancel a $+0.05$
+offset with a $-0.05$ edit'' is wrong, and would have read as the class being
+unreachable. $\pi_{0.5}$ emits \emph{normalised} actions;
+\code{Unnormalize} runs afterwards, so with
+$\mathrm{env} = \tfrac{\mathrm{norm}+1}{2}(q_{99}-q_{01}) + q_{01}$ each channel
+carries its own scale, and those scales differ by \textbf{7$\times$}. A uniform
+fault in environment space is wildly \textbf{anisotropic} in the model's units.
+This same anisotropy turns out to decide the whole scope condition
+(\S\ref{sec:scope}).
+
+%==========================================================================
+\section{Theory of the online law}
+
+\subsection{The three objects}
+
+An adaptive law needs an \textbf{error} to drive to zero, a \textbf{plant model}
+predicting error-free behaviour, and the \textbf{map} from the unknown parameter
+to that error. Get any wrong and the law diverges. All three failure modes were
+observed here before being fixed (\S\ref{sec:failures}).
+
+\subsection{Plant}
+
+One action unit \emph{commands} 0.05\,m of translation. \textbf{It does not
+achieve it}: regressing achieved on commanded displacement over fault-free
+rollouts gives a static gain of \textbf{0.21--0.25}. The arm covers about a fifth
+of the commanded delta inside one 50\,ms period, so using \code{output\_max} as
+the plant is wrong by $5\times$ and an adaptive law built on it mistakes ordinary
+controller lag for a fault. An FIR model over the last $K=6$ commands captures it:
+\begin{equation}
+y_t \;=\; \sum_{k=0}^{K} h_k\, a_{t-k} \;+\; c .
+\end{equation}
+
+\begin{center}
+\begin{tabular}{lcccccc}
+\toprule
+$R^2$ & $dx$ & $dy$ & $dz$ & $d r_x$ & $d r_y$ & $d r_z$ \\
+\midrule
+static ($K=0$)       & 0.885 & 0.961 & 0.978 & 0.416 & 0.091 & 0.077 \\
+FIR ($K=6$)          & 0.975 & 0.982 & 0.982 & 0.489 & 0.109 & 0.168 \\
+\textbf{FIR, after SO(3) fix} & \textbf{0.975} & \textbf{0.982} & \textbf{0.982} & 0.522 & 0.336 & \textbf{0.972} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Error signal}
+
+With $u_t = a_t + c_t + f$ the executed action (policy command, our correction,
+unknown fault) and $\hat P$ the identified fault-free plant,
+\begin{equation}
+r_t \;=\; y_t - \hat P(a_t + c_t) \;\approx\; M f .
+\end{equation}
+$r_t$ is independent of $c_t$ \emph{when $\hat P = P$ exactly}, so the estimator
+does not chase its own correction. \S\ref{sec:phantom} shows what happens when
+that condition fails, and corrects this claim.
+
+\subsection{The map}
+
+$M = \partial(\text{achieved motion})/\partial f$, measured \textbf{open loop}: a
+recorded command sequence replayed with and without a fault, so commands are
+identical by construction and any motion difference is the fault propagating.
+One axis at a time, $\pm 0.02$ central difference:
+
+\begin{center}
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+ & \multicolumn{6}{c}{\textbf{fault applied to}} \\
+\cmidrule(l){2-7}
+\textbf{observed} & $dx$ & $dy$ & $dz$ & $d r_x$ & $d r_y$ & $d r_z$ \\
+\midrule
+$dx$    & $\mathbf{0.297}$ & 0.021 & $-0.112$ & $-0.029$ & 0.081 & $-0.006$ \\
+$dy$    & 0.008 & $\mathbf{0.272}$ & 0.023 & $-0.034$ & 0.016 & 0.003 \\
+$dz$    & 0.029 & 0.032 & $\mathbf{0.126}$ & $-0.037$ & 0.012 & $-0.003$ \\
+$d r_x$ & $-0.003$ & $-0.001$ & $-0.001$ & $\mathbf{0.253}$ & $-0.004$ & 0.002 \\
+$d r_y$ & 0.013 & 0.001 & $-0.001$ & $-0.007$ & $\mathbf{0.276}$ & $-0.000$ \\
+$d r_z$ & 0.001 & 0.004 & $-0.003$ & 0.011 & 0.005 & $\mathbf{0.244}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Diagonal 0.13--0.30 (the plant damps the fault 3--8$\times$, so the law needs
+$\approx 4\times$ gain); off-diagonal mass 26\% of $|M|$, dominated by a real
+$dx \!\leftrightarrow\! dz$ term; $\mathrm{cond}(M) = 3.0$.
+
+\subsection{Orientation increments: a metric bug that corrupted four results}
+\label{sec:so3}
+
+Rotation change must be the \textbf{relative rotation}, not a difference of
+axis--angle vectors:
+$\omega = \mathrm{axis\_angle}(q_{t+1} \otimes \mathrm{conj}(q_t))$.
+Axis--angle is a \emph{chart}, not a vector space: the same rotation has
+representations differing by $2\pi$ and the chart is singular at $0$ and $\pi$.
+Over 2000 random 0.05\,rad increments the relative rotation recovers truth to
+$1.4\times 10^{-14}$; the difference of charts errs by up to \textbf{6.28} --- a
+full wraparound.
+
+\begin{tcolorbox}[colback=red!3,colframe=red!45!black,title=\textbf{Retraction (2026-08-27)}]
+An earlier version reported the rotation block of $M$ as ``a swapped,
+sign-flipped pair'' and argued a per-axis law would therefore diverge.
+\textbf{That was wrong} --- an artifact of the chart difference. With the correct
+metric the rotation axes have ordinary diagonal gains of 0.276 and 0.244,
+off-diagonal mass falls from 0.59 to 0.26, and the divergence argument does not
+apply. Withdrawn.
+\end{tcolorbox}
+
+The wrong metric corrupted \textbf{four separate results}: rotation appeared
+unpredictable, $M$ appeared cross-coupled, the gain law's rotation estimates were
+meaningless, and deliberate excitation made performance \emph{worse}. One bug.
+
+\subsection{The law}
+
+\begin{equation}
+\fhat \leftarrow \mathrm{clip}\!\left(
+  \fhat + \gamma\!\left( \frac{M^{-1} r_t}{1 + \|r_t\|^2/\rho^2} - \fhat \right),
+  \pm 0.15 \right), \qquad c_t = -\fhat
+\end{equation}
+with a deadzone for $\|r_t\| < \delta$; $\gamma = 0.08$, $\rho = 0.15$,
+$\delta = 0.008$. Each robustness term earned its place by fixing an observed
+failure (\S\ref{sec:failures}), not by assumption.
+
+%==========================================================================
+\section{What the correction is actually doing}
+\label{sec:phantom}
+
+\subsection{\texorpdfstring{$\fhat$}{f-hat} alone cannot distinguish identification from bias}
+
+Run the law with \textbf{no fault at all} and $\fhat$ does not go to zero. It
+settles at $[+0.045, +0.014, +0.073, -0.009, +0.017, -0.001]$ --- on $dz$ that is
+146\% of the magnitude of the real fault. The estimator reports a large offset
+where there is nothing to correct.
+
+The diagnostic that separates them is the \textbf{separation}: the estimate under
+a fault minus the estimate with no fault, on matched episodes.
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+ & \textbf{no fault} & \textbf{fault 0.05} & \textbf{separation} & \textbf{true} \\
+\midrule
+$dx$    & $+0.045$ & $+0.048$ & $\mathbf{+0.003}$ & 0.050 \\
+$dy$    & $+0.014$ & $+0.038$ & $+0.023$ & 0.050 \\
+$dz$    & $+0.073$ & $+0.079$ & $\mathbf{+0.006}$ & 0.050 \\
+$\mathbf{d r_x}$ & $-0.009$ & $+0.041$ & $\mathbf{+0.049}$ & 0.050 \\
+$d r_y$ & $+0.017$ & $+0.033$ & $+0.016$ & 0.050 \\
+$\mathbf{d r_z}$ & $-0.001$ & $+0.047$ & $\mathbf{+0.048}$ & 0.050 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Rotation identifies the fault almost exactly. Translation does not
+identify it at all.}
+
+\begin{tcolorbox}[colback=gray!6,colframe=gray!55!black]
+\textbf{Method note.} No estimate of a fault parameter should be believed without
+a matched no-fault control. $\fhat$ looked convincing on all six axes for weeks
+of runs; only the separation revealed that half of it was bias.
+\end{tcolorbox}
+
+\subsection{Where the phantom comes from}
+
+Measured separately with \code{--estimate-only} (update $\fhat$, never apply it):
+mean $|$phantom$|$ is \textbf{0.0143} open loop and \textbf{0.0266} closed loop.
+
+\emph{Half is plant-model error}, and it is not task-specific --- identifying the
+plant on 10 tasks instead of 3 made the phantom \emph{worse} ($0.027 \to 0.034$).
+\emph{Half is estimator feedback, which corrects the claim in \S5.3}: $r_t$ is
+independent of $c_t$ only when $\hat P = P$ exactly. With model error
+$r = Mf + \varepsilon(a+c)$, so $\fhat$ converges to $f + M^{-1}\varepsilon(a+c)$
+--- it does chase its own correction. Measured amplification: \textbf{1.9$\times$}.
+
+%==========================================================================
+\section{The scope condition: correct only what you can identify}
+\label{sec:scope}
+
+\subsection{With all six channels corrected, the method works on one suite of four}
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Suite} & \textbf{frozen} & \textbf{corrected} & $\Delta$ & $p$ \\
+\midrule
+\code{libero\_spatial} & 18/40 = 45\% & 38/40 = 95\% & $+50$ & $\mathbf{<0.0001}$ \\
+\code{libero\_goal}    & 8/20 = 40\%  & 12/20 = 60\% & $+20$ & 0.34 \\
+\code{libero\_object}  & 7/20 = 35\%  & 9/20 = 45\%  & $+10$ & 0.75 \\
+\code{libero\_10}      & 0/20 = 0\%   & 3/20 = 15\%  & $+15$ & 0.23 \\
+\midrule
+pooled, 3 new suites   & 15/60 = 25\% & 24/60 = 40\% & $+15$ & 0.12 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+It is \textbf{not} an identification failure: plant fits on the new suites are
+comparable or better (\code{object} reaches rotation $R^2$ 0.771/0.692 against
+spatial's 0.522/0.336). The estimator still works; the \emph{task} does not
+recover.
+
+\subsection{Restricted to identifiable channels, it works on all four}
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Suite} & \textbf{frozen} & \textbf{corrected} & $\Delta$ & $p$ \\
+\midrule
+\code{libero\_spatial} & 7/15 = 47\%  & 14/15 = 93\% & $+47$ & \textbf{0.014} \\
+\code{libero\_goal}    & 9/20 = 45\%  & 18/20 = 90\% & $+45$ & \textbf{0.006} \\
+\code{libero\_object}  & 6/20 = 30\%  & 16/20 = 80\% & $+50$ & \textbf{0.004} \\
+\code{libero\_10}      & 0/20 = 0\%   & 7/20 = 35\%  & $+35$ & \textbf{0.008} \\
+\midrule
+\textbf{pooled} & \textbf{22/75 = 29\%} & \textbf{55/75 = 73\%} & $\mathbf{+44}$ & $\mathbf{1.1\times 10^{-7}}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\code{libero\_10} is the sharpest case: a long-horizon suite (520-step cap) where
+the fault takes the policy to \textbf{zero}, and correcting three channels
+recovers 7/20 from that floor.
+
+\subsection{Non-identifiable channels do not merely fail --- they do harm}
+
+On \code{libero\_object}, three arms on the same fault and the same episodes:
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Correction} & \textbf{frozen} & \textbf{corrected} & $\Delta$ \\
+\midrule
+all six dims          & 7/20 & 9/20  & $+10$ \\
+\textbf{rotation only} & 6/20 & \textbf{16/20} & $\mathbf{+50}$ \\
+\textbf{translation only} & 6/20 & \textbf{6/20} & $\mathbf{0}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Translation alone contributes \textbf{exactly nothing}, and including it drags a
+$+50$ effect down to $+10$. On \code{object} the translation estimates are
+\textbf{sign-wrong} ($-0.031, -0.018$ against $+0.050$), so that correction pushes
+the arm the wrong way. On \code{spatial} the same wrong correction happened to be
+harmless --- which is why the naive version looked suite-specific rather than
+simply misapplied.
+
+\subsection{Identifiability is predictable before deployment}
+
+Nothing here requires knowing the fault. Three quantities, all measurable on
+\emph{healthy} data, decide which channels are identifiable:
+
+\begin{enumerate}[leftmargin=1.5em,itemsep=2pt]
+  \item \textbf{The action normalisation} --- quantile scales from the checkpoint.
+        A uniform env-space offset is 3\% of the action range on translation and
+        \textbf{19.5\%} on rotation, $6.6\times$ larger.
+  \item \textbf{The plant fit} --- per-channel FIR $R^2$ on fault-free rollouts.
+        Identification quality tracks it in every experiment run.
+  \item \textbf{The policy's command statistics} --- an additive fault is loud
+        where the quantile scale is small; a multiplicative one is loud where the
+        command is large.
+\end{enumerate}
+
+\begin{tcolorbox}[colback=blue!4,colframe=blue!45!black]
+\textbf{The rule.} Measure identifiability on healthy data, correct only those
+channels, leave the rest alone. The all-channel table is the ablation showing
+what it costs to ignore this.
+\end{tcolorbox}
+
+%==========================================================================
+\section{Identifiability, stated properly}
+
+\subsection{Proposition 1 --- a constant input fault and a constant output bias are not separable}
+
+Suppose the measurement carries an unknown constant bias $b$:
+$y_t = M(a_t + f) + b + \text{noise}$.
+Within one episode $f$ and $b$ are both constant, so they enter only through the
+sum $Mf + b$. $M$ is square and full rank, so for \emph{any} $b'$ the alternative
+fault $f' = f + M^{-1}(b - b')$ reproduces every observation exactly. The pair
+$(f, b)$ is unidentifiable; only $Mf + b$ is. \textbf{The bias must come from
+outside the episode} --- it is not a nuisance parameter one can fit.
+
+\paragraph{Corollary (onset breaks the degeneracy).} If the fault switches on at
+$t_0$, with $f = 0$ for $t < t_0$, then $b$ is identified on the pre-onset window
+and $f$ on the post-onset window. \textbf{Mid-episode onset is not a robustness
+flourish --- it is what makes the problem well-posed}, and it is the honest
+deployment story: the estimator needs to have seen the healthy plant.
+
+\subsection{Proposition 2 --- the two fault classes are loud on complementary channels}
+
+With quantile normalisation and $R_i = (q_{99}-q_{01})_i$: an \textbf{additive}
+env-space offset $\delta$ appears in normalised units as $2\delta/R_i$, so its
+signal \emph{falls} with $R_i$. A \textbf{multiplicative} fault has information
+matrix $\sum_t \phi^\top\phi = \mathrm{diag}(\sum_t a_{t,i}^2)$, so its signal
+\emph{rises} with command magnitude, and command spread is what $R_i$ measures.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{ch} & $q_{99}-q_{01}$ & \textbf{additive signal} & \textbf{multiplicative signal} \\
+\midrule
+$x$  & 1.685 & 0.059 & 0.899 \\
+$y$  & 1.656 & 0.060 & 0.883 \\
+$z$  & 1.875 & 0.053 & 1.000 \\
+$r_x$ & 0.256 & \textbf{0.391} & 0.137 \\
+$r_y$ & 0.351 & \textbf{0.285} & 0.187 \\
+$r_z$ & 0.506 & \textbf{0.198} & 0.270 \\
+\midrule
+translation mean & & 0.058 & \textbf{0.927} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{The same quantity that makes a channel quiet for an offset makes it loud
+for a gain.} This is a prediction, not a fit: it says an offset fault should be
+correctable on rotation and a gain fault on translation, which is what
+\S\ref{sec:scope} and \S\ref{sec:gain} find.
+
+%==========================================================================
+\section{Results}
+\label{sec:results}
+
+\subsection{Headline, confirmatory}
+
+\begin{center}
+\begin{tabular}{lrl}
+\toprule
+\textbf{Arm} & \textbf{Success} & \textbf{95\% CI} \\
+\midrule
+nominal (no fault) & 99\,\% & --- \\
+frozen, faulted    & \textbf{18/40 = 45\,\%} & [31, 60] \\
+\textbf{adaptive}  & \textbf{38/40 = 95\,\%} & [83, 99] \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+$+50$ points, Fisher $p = 1.1\times 10^{-6}$, on initial states 40--43 that no
+earlier run touched. The earlier $n{=}15$ estimate ($47\% \to 93\%$, $p = 0.014$)
+did not shrink under retest --- it grew slightly, and the estimates reproduced
+within $\pm 0.004$ on all six axes across two independent runs.
+
+\subsection{The full condition set}
+
+\begin{center}
+\begin{tabular}{lrrl}
+\toprule
+\textbf{Condition} & \textbf{frozen} & \textbf{adaptive} & \textbf{note} \\
+\midrule
+offset 0.05, from step 1 ($n{=}40$) & 45\% & \textbf{95\%} & $p = 1.1\text{e-}6$ \\
+offset 0.10, near-lethal ($n{=}8$)  & 0\%  & 38\% & frozen fails every episode \\
+\textbf{structured} $[0,0,0,{+}.06,{-}.06,{+}.03]$ ($n{=}12$) & 17\% & \textbf{83\%} & shape never tuned on \\
+\textbf{onset at step 15} ($n{=}20$) & 60\% & \textbf{90\%} & $p = 0.065$; tracking \\
+onset at step 45 ($n{=}15$) & 73\% & 80\% & little headroom by design \\
+\textbf{no fault} ($n{=}15$) & 100\% & \textbf{100\%} & safe to leave running \\
+gain 0.5, multiplicative ($n{=}10$) & 50--70\% & 70--90\% & noise-dominated \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Generalisation to an untuned fault shape}
+
+The structured fault $[0,0,0,+0.06,-0.06,+0.03]$ --- mixed signs, rotation only,
+unseen magnitudes --- is recovered as a \emph{pattern}, not a scalar:
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{dim} & \textbf{true} & \textbf{separation} & \textbf{error} \\
+\midrule
+$d r_x$ & $+0.060$ & $+0.053$ & $-0.007$ \\
+$d r_y$ & $-0.060$ & $-0.038$ & $+0.022$ \\
+$d r_z$ & $+0.030$ & $+0.029$ & $-0.001$ \\
+$dx, dy, dz$ & $0.000$ & $-0.003, -0.024, -0.006$ & $\approx 0$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Sign correct on 3/3 including the negative axis, and correctly $\approx 0$ where
+the fault is zero. This rules out the objection that the method was fitted to one
+fault shape.
+
+\subsection{Tracking a fault that appears mid-episode}
+
+The deployment case --- a healthy robot that breaks while running. Fault injected
+at control step 15; mean $\fhat$ on identifiable rotation channels over 20
+episodes:
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+\textbf{window} & $\fhat$ \\
+\midrule
+steps 0--14, before onset & $\mathbf{+0.009}$ \\
+steps 15--30, just after  & $+0.035$ \\
+steps 30--50, settling    & $+0.041$ \\
+steps 50--78, late        & $\mathbf{+0.042}$ (true 0.050) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Quiet before the fault exists, \textbf{70\% of truth within 15 control steps
+(0.75\,s)}, settling at 84\% and holding flat with no post-convergence drift.
+This is also the cleanest control in the set: \textbf{the episode is its own
+baseline}, so the estimator bias of \S\ref{sec:phantom} cancels without a
+separate matched run.
+
+%==========================================================================
+\section{The gain fault: a state-dependent fault needs a regressor}
+\label{sec:gain}
+
+A constant offset is the easy case --- constant, so a constant correction cancels
+it. A gain error $u = g\,a$ is state-dependent and needs a regressor: with
+$\beta = g-1$, $z = M^{-1} r \approx \beta \odot \psi$, $\psi = a + c$.
+
+Gain fault $g = 0.5$ (true $\beta = -0.50$), 10 episodes:
+
+\begin{center}
+\begin{tabular}{lccrrr}
+\toprule
+\textbf{Variant} & \textbf{Adaptive} & \textbf{Frozen} & \textbf{transl.\ $\beta$} & \textbf{rot.\ $\beta$} & \textbf{rot upd/ep} \\
+\midrule
+LMS, old metric            & 7/10 & 6/10 & $-0.589$ & $+0.016$ & 2 \\
+RLS + dither, old metric   & 5/10 & 7/10 & $-0.617$ & $+0.051$ & 136 \\
+\textbf{RLS + dither, SO(3) fix} & \textbf{7/10} & 5/10 & $-0.636$ & $-0.169$ & 30 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Per-dimension $\beta$ after the fix: $dx\ {-}0.62$, $dy\ {-}0.49$, $dz\ {-}0.80$,
+$d r_x\ {-}0.20$, $d r_y\ {+}0.08$, $d r_z\ {-}0.38$. The metric fix does for the
+gain law what it did for the offset law: $d r_z$ flips from $+0.363$ ---
+confidently the \emph{wrong sign} --- to $-0.384$; $dy$ lands at $-0.49$ against
+$-0.50$. Four of six carry the right sign and a sensible magnitude.
+
+\begin{tcolorbox}[colback=orange!5,colframe=orange!55!black,title=\textbf{Honest reading}]
+Frozen scored 5, 6, and 7 of 10 across these three runs. \textbf{None of the
+adaptive-vs-frozen success differences at $n{=}10$ are resolvable.} The $\beta$
+columns carry the signal; the success columns are noise at this sample size.
+\end{tcolorbox}
+
+Consistent with Proposition 2, the gain fault is identified best on
+\emph{translation} --- the complement of the offset fault's rotation channels.
+
+%==========================================================================
+\section{Negative results worth keeping}
+\label{sec:failures}
+
+\paragraph{Naive error signal, no plant model.} Using
+$\Delta x/\code{output\_max} - a$ gives a nominal error of $-0.175$ on $dx$ when
+it should be $0$. Differencing faulted against nominal recovered ratios of
+$0.39$, $2.46$, $-2.85$ --- noise. \emph{Controller lag reads as a fault unless
+the plant is modelled.}
+
+\paragraph{Robustness constants set without measuring.} The bare law drifted ---
+$dz$ reached $0.642$, \textbf{13$\times$ truth}. The first fix made it
+\emph{worse}: a deadzone of $0.05$ against a typical residual norm of $0.034$
+suppressed nearly every update, ending several episodes at $\fhat = 0$ exactly.
+Rescaling to the measured residual fixed both; raising the normalisation constant
+($0.05 \to 0.15$, cutting a systematic 32\% attenuation to $\approx 5\%$) took the
+result from 70\% to 87\%.
+
+\paragraph{A coupled MIMO plant: better fit, worse extrapolation.} Wrist rotation
+is driven substantially by \emph{translation} commands, which a per-axis model
+cannot represent. A coupled plant improves leave-one-episode-out held-out $R^2$
+from $0.107 \to 0.615$ on $d r_y$. \textbf{And it made the closed loop worse}:
+13/15 ($p = 0.109$) with $dy$ estimated at $-0.043$ against a true $+0.050$ --- a
+sign error the per-axis model never makes --- versus 14/15 ($p = 0.014$). Forty-three
+parameters fitted on three nominal episodes extrapolate badly once the correction
+moves the executed command off that distribution, and \emph{the adaptive law lives
+out of distribution by construction}. Kept as \code{--mimo}, default off.
+
+\paragraph{Excitation is not the limiting factor for rotation.} The policy
+essentially never commands rotation: translation command sd is 0.32--0.55 with
+49--74\% of steps above 0.15, while all three rotation axes sit at sd 0.02--0.055
+with \textbf{0.0\%} above 0.15. But excitation alone does not explain $d r_y$: it
+has the most rotation excitation and the worst fit, while $d r_z$ has less and
+fits at 0.972. Coupling, not excitation, is the cause.
+
+\begin{tcolorbox}[colback=gray!6,colframe=gray!55!black]
+\textbf{The recurring lesson.} An improvement measured in one regime --- open-loop
+fit, or excitation --- can cost you in the regime that actually matters. The MIMO
+plant and the dither result have the same shape.
+\end{tcolorbox}
+
+%==========================================================================
+\section{The video}
+
+\code{results/phase05/adaptive\_vs\_frozen.mp4} shows two runs side by side: the
+same frozen model, the same task, the same injected offset fault. The only
+difference is whether the online repair is active. One run is the frozen policy
+--- the fault has shifted its actions and it fails the task. The other is the same
+weights with the adaptive law running: it identifies the fault from the robot's
+own motion within the first steps and cancels it, and the task completes normally.
+Nothing is retrained between the two runs.
+
+A companion clip, \code{adaptive\_vs\_frozen\_offset010.mp4}, shows the harder
+severity (offset 0.10), where frozen success is 0/8.
+
+%==========================================================================
+\section{Limits and what this does not establish}
+\label{sec:limits}
+
+\begin{itemize}[leftmargin=1.4em,itemsep=3pt]
+  \item \textbf{Simulation.} Four LIBERO suites; hardware validation is in
+        progress and has already produced one negative --- the hardware plant is
+        run-varying on the load-bearing joints, so the offline identification
+        recipe will not port unchanged.
+  \item \textbf{The law is blind to sensor bias.} $\pi_{0.5}$ ignores
+        proprioception entirely, so a proprioceptive fault produces no change in
+        the policy's behaviour for the estimator to detect.
+  \item \textbf{Gain faults are not settled.} One severity, $n{=}10$, no
+        resolvable success difference; only the $\beta$ estimates carry signal.
+  \item \textbf{Rotation remains partly unidentified.} $d r_y$ still carries the
+        wrong sign in the gain law and fits at $R^2 = 0.336$.
+  \item \textbf{$M$ is identified open loop} and assumed valid in closed loop,
+        where the policy compensates and the arm visits different states.
+  \item \textbf{A gap to the oracle remains.} The oracle reaches 100\%, the
+        adaptive law 95\% on \code{spatial} and 73\% pooled.
+  \item \textbf{The site screen does not separate sites} at the sample size run;
+        \code{action\_out\_proj/bias} was chosen structurally.
+\end{itemize}
+
+%==========================================================================
+\section{Summary}
+
+\begin{enumerate}[leftmargin=1.6em,itemsep=3pt]
+  \item A frozen 3.35\,B VLA under a miscalibrated-actuator fault drops from 99\%
+        to 45\% task success.
+  \item The fault is \textbf{exactly repairable} by a six-number edit to one
+        layer's bias ($47\% \to 100\%$), provided the edit is computed
+        \emph{per dimension in the model's normalised coordinates}, where a
+        uniform physical fault is anisotropic by $7\times$.
+  \item The repair can be \textbf{identified online from proprioception alone},
+        within a single episode, with no gradients and no search over task
+        success --- and it tracks a fault that appears mid-episode to 70\% of
+        truth in 0.75\,s.
+  \item \textbf{The contribution is a scope condition.} Across four suites the
+        method is significant on one of four when all channels are corrected, and
+        on \emph{all four} ($29\% \to 73\%$, $p = 1.1\times10^{-7}$) when
+        restricted to identifiable channels. Correcting a non-identifiable
+        channel is \emph{worse than not correcting at all}.
+  \item \textbf{Identifiability is decidable in advance} from healthy data ---
+        action normalisation, plant fit, and command statistics --- and the theory
+        predicts that additive and multiplicative faults are identifiable on
+        \emph{complementary} channels, which the experiments bear out.
+  \item Getting there required a metric bug on SO(3) that had silently corrupted
+        four results, and a matched no-fault control that revealed half of a
+        convincing-looking estimate was bias.
+\end{enumerate}
+
+\end{document}
