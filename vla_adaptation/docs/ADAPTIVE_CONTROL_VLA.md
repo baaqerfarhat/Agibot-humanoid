@@ -498,3 +498,73 @@ restricting the correction to rotation should do little or nothing.
 
 That test is `adaptive_gain.py --corr-dims`, and its result is §8.5. Whichever way it comes
 out, it is a prediction registered before the run, not a restriction chosen after it.
+
+### 8.5 The prediction, resolved: right about identification, wrong about repair
+
+Run on 2026-09-01, `gain = 0.5` (a 50% loss of effectiveness on all six axes), n = 20 paired
+episodes per arm, correction restricted to one channel group at a time.
+
+**Identification — the prediction holds, decisively.**
+
+| run | `β̂` translation | `β̂` rotation | true |
+|---|---|---|---|
+| correcting translation | −0.616, −0.498, −0.800 | −0.029, −0.019, −0.071 | −0.50 |
+| correcting rotation | −0.463, −0.490, −0.797 | −0.017, +0.020, −0.151 | −0.50 |
+
+In both runs translation recovers the fault and rotation returns essentially zero (3–30% of
+truth). This is the exact mirror of the offset fault, which identified on rotation
+(+0.047…+0.049 against 0.050) and not on translation. Proposition 2 predicted the reversal
+before the run, and §8 was committed while it was still computing. **Which channels carry a
+fault is predictable from healthy statistics alone, and the prediction transfers across
+fault classes.**
+
+**Task success — the prediction fails.**
+
+| arm | success |
+|---|---|
+| frozen, faulted | 13/20 = 65% |
+| correcting translation (identifiable) | 12/20 = 60% |
+| correcting rotation (non-identifiable) | 14/20 = 70% |
+
+Neither is distinguishable from frozen at n = 20. Correcting the *identifiable* channels did
+not help. So the offset chain — identify, cancel, recover — **does not transfer to a gain
+fault**, and it is worth being precise about why, because the obvious explanation is wrong.
+
+### 8.6 Why: the gain compensator amplifies its own estimation error
+
+An external review proposed that the compensator is a first-order subtraction that
+undercompensates at `g = 0.5`. It is not. The implemented correction is
+
+```
+c = a·(1/ĝ − 1),   ĝ = 1 + β̂   ⟹   a_corr = a + c = a/ĝ
+```
+
+which is the **exact** certainty-equivalent inverse gain: at `β̂ = −0.5` it commands `2.00×`
+and the plant executes `0.5 × 2.00a = a` exactly. Verified symbolically and numerically.
+
+The problem is the opposite of undercompensation. The applied factor `1/(1+β̂)` has
+derivative `−1/(1+β)² = −4` at the true `β = −0.5`, so **the compensator amplifies estimation
+error fourfold**, and it does so nonlinearly, blowing up as `ĝ → 0`:
+
+| channel | `β̂` | applies | correct | error |
+|---|---|---|---|---|
+| dx | −0.463 | 1.86× | 2.00× | −7% |
+| dy | −0.490 | 1.96× | 2.00× | −2% |
+| **dz** | **−0.797** | **4.93×** | **2.00×** | **+146%** |
+
+A 0.30 error in `β̂_z` — modest, and *better* than what several offset channels tolerate
+fine — becomes a 2.9× excess command on the vertical axis. That is enough to wreck the
+episode on its own, and it explains how identification can be good while repair is not.
+
+**The structural point, which is not specific to this implementation:** an additive fault's
+compensator is *linear* in the estimate, so estimate error passes through at unity gain. A
+multiplicative fault's compensator *inverts* the estimate, so error passes through at
+`1/ĝ²`. **Identification accuracy sufficient for an additive fault is not sufficient for a
+multiplicative one, and the gap grows as authority is lost — exactly when repair matters
+most.** Identifiability (§8.3) is necessary but not sufficient; the compensator's
+conditioning is a second, independent requirement.
+
+The implied fix is projection rather than a better regressor: refuse to invert a gain we do
+not believe. `--g-min` floors `ĝ` at a physical prior (below it, decline to repair rather
+than command a large multiple). It is a prior on the robot, not on the answer, and is not
+centred on the true 0.50.

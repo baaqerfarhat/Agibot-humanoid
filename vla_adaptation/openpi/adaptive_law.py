@@ -75,7 +75,8 @@ def fit_plant(log_path, lam=1e-2, mimo=False):
 
 def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, onset=0,
         obs_off=None, wrist_shift=0, static_c=None,
-        dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None, corr_dims=None):
+        dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None, corr_dims=None,
+        law="legacy", M=None):
     import paired_probe as _pp
     max_steps = max_steps or _pp.MAXS
     env, desc, inits = pr.env_for(tid)
@@ -163,6 +164,29 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
             #   deadzone       stops model noise from integrating into drift when the
             #                  residual is already at the plant's own fit error
             #   projection     keeps f_hat inside a physically plausible box
+            # --law innov: normalise the STEP, not the target (review, 2026-09-01).
+            # The legacy line divides the estimate itself, so with r ~= M f constant the
+            # fixed point is f/(1+|r|^2/rho^2) -- biased LOW by 4.9% at the measured
+            # |r|=0.034, rho=0.15, which matches the separation test landing at 0.049
+            # against a true 0.050. Driving the innovation e = r - M f_hat to zero puts
+            # the fixed point back at f exactly, and gives the estimate a way home: if the
+            # fault clears, e = -M f_hat is still non-zero, so f_hat decays instead of
+            # freezing a correction that is no longer needed.
+            if law == "innov":
+                e = r - (M @ f_hat if M is not None else np.linalg.solve(M_inv, f_hat))
+                if bias is not None:
+                    e = e - (M @ bias if M is not None else np.linalg.solve(M_inv, bias))
+                ne = float(np.linalg.norm(e))
+                if ne < dead:
+                    step = np.zeros(6)
+                else:
+                    step = (M_inv @ e) / (1.0 + (ne / norm_r) ** 2)
+                f_hat = np.clip(f_hat + gamma * step, -clip, clip)
+                traj.append(dict(t=t, f_hat=f_hat.tolist(), r=r.tolist(), live=bool(live)))
+                if done:
+                    return True, f_hat, traj
+                t += 1
+                continue
             est = M_inv @ r
             if bias is not None:
                 # Zero the estimator against known-healthy data. On a fault-free run f_hat
@@ -193,6 +217,9 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--gamma", type=float, default=0.05)
+    p.add_argument("--law", choices=["legacy", "innov"], default="legacy",
+                   help="legacy: normalise the estimate (biased low ~5%). "
+                        "innov: normalise the step, unbiased fixed point.")
     p.add_argument("--suite", default="libero_spatial")
     p.add_argument("--static-corr", default=None,
                    help="fixed 6-vector correction; the no-estimation baseline")
@@ -247,19 +274,23 @@ def main():
     res = {"gamma": a.gamma, "arms": {}}
     eps = [((i % 10), a.eval_init + i // 10) for i in range(a.episodes)]
     for tag, adapt in (("frozen_faulted", False), ("adaptive", True)):
-        ok, fh, trajs = 0, [], []
+        ok, fh, trajs, per_ep = 0, [], [], []
         for tid, init in eps:
             s, f_hat, traj = run(pr, tid, init, a.sev, M_inv, W, a.gamma, adapt,
                                  dead=a.dead, norm_r=a.norm_r, clip=a.clip,
                                  apply_corr=not a.estimate_only, bias=bias,
                                  corr_dims=cdims, fvec=fvec, onset=a.onset,
                                  obs_off=obs_off, wrist_shift=a.wrist_shift,
-                                 static_c=static_c)
+                                 static_c=static_c, law=a.law, M=M)
             ok += int(s); fh.append(f_hat.tolist())
+            # Per-episode outcome, keyed by (task, init). The arms run on the SAME episode
+            # list, so these pair up -- which is what McNemar needs and what the earlier
+            # runs threw away by only accumulating a total. See mcnemar.py.
+            per_ep.append(dict(task=int(tid), init=int(init), ok=bool(s)))
             trajs.append(traj)
             print(f"  [{tag}] task {tid} init {init}: success={s}  "
                   f"f_hat={np.round(f_hat, 3)}")
-        res["arms"][tag] = dict(successes=ok, n=len(eps), f_hat=fh,
+        res["arms"][tag] = dict(successes=ok, n=len(eps), f_hat=fh, per_ep=per_ep,
                                 traj=[[st["f_hat"] for st in tr] for tr in trajs])
         a.out.parent.mkdir(parents=True, exist_ok=True)
         a.out.write_text(json.dumps(res, indent=1))

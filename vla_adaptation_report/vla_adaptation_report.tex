@@ -33,7 +33,7 @@
 \thispagestyle{fancy}
 
 \begin{tcolorbox}[colback=blue!4,colframe=blue!45!black,title=\textbf{Result in one line}]
-An actuator fault in a frozen 3.35\,B vision--language--action model is
+A fault at the Cartesian action interface of a frozen 3.35\,B vision--language--action model is
 identified and corrected \emph{within a single episode}, from the robot's own
 motion, with no gradients through the task and no search over task success ---
 \textbf{across four LIBERO suites, 29\% $\rightarrow$ 73\% pooled,
@@ -280,6 +280,40 @@ with a deadzone for $\|r_t\| < \delta$; $\gamma = 0.08$, $\rho = 0.15$,
 $\delta = 0.008$. Each robustness term earned its place by fixing an observed
 failure (\S\ref{sec:failures}), not by assumption.
 
+\subsection{The fixed point of (4) is biased, and by how much}
+\label{sec:bias}
+
+Equation~(4) divides the \emph{estimate} rather than the \emph{step}. Because the FIR
+history is built from $u = a_t + c_t$, the command we believe we sent, while the world
+executes $a_t + c_t + f$, the residual is $r_t \approx M f$ --- independent of $\fhat$.
+The normaliser is then a constant attenuation, and the fixed point of (4) is
+%
+\begin{equation}
+\fhat^{\,\star} = \frac{f}{1 + \|Mf\|^2/\rho^2} \;\neq\; f .
+\end{equation}
+%
+This is a real defect, and it is measurable rather than rhetorical. At the observed
+$\|r\| = 0.034$ with $\rho = 0.15$ the attenuation is $1/1.051$, i.e.\ the estimate should
+land \textbf{4.9\,\% low}. The separation test measures $+0.049$ against a true $0.050$,
+\textbf{2\,\% low} --- same sign, same order. The bias is real and small, and it does
+\emph{not} account for the gain-fault result, which \S\ref{sec:gain} attributes to
+excitation instead.
+
+The fix is to drive the innovation $e_t = r_t - M\fhat$ to zero and normalise the step:
+%
+\begin{equation}
+\fhat \leftarrow \mathrm{clip}\!\left(
+  \fhat + \gamma\,\frac{M^{-1} e_t}{1 + \|e_t\|^2/\rho^2}, \pm 0.15 \right),
+  \qquad e_t = r_t - M\fhat .
+\end{equation}
+%
+Its fixed point is $\fhat = M^{-1} r = f$ exactly. It also gives the estimate a way home:
+if the fault clears, $e_t = -M\fhat$ is still non-zero, so $\fhat$ decays, whereas a
+deadzone on raw $r_t$ can freeze a correction that is no longer needed. This is available
+as \code{--law innov}; the legacy law remains the default so that every number in this
+report stays reproducible, and the two are to be compared head-to-head rather than
+swapped on the strength of the algebra alone.
+
 %==========================================================================
 \section{What the correction is actually doing}
 \label{sec:phantom}
@@ -494,6 +528,20 @@ earlier run touched. The earlier $n{=}15$ estimate ($47\% \to 93\%$, $p = 0.014$
 did not shrink under retest --- it grew slightly, and the estimates reproduced
 within $\pm 0.004$ on all six axes across two independent runs.
 
+\paragraph{A caveat on every $p$-value in this report.}
+The arms are \emph{paired}: both run the same $(\text{task}, \text{init})$ episodes with
+the same policy and seeds, differing only in whether the correction is applied. Fisher's
+exact test treats them as independent samples and therefore discards that pairing, so the
+$p$-values quoted here answer a weaker question than the design supports. The correct
+tests are exact McNemar on the discordant pairs, or a paired permutation test
+(\code{openpi/mcnemar.py}). Conditioning on the pairs normally \emph{increases} power, so
+these numbers are expected to be conservative rather than optimistic --- but that is an
+expectation, not a result. The runs that produced the tables above recorded only per-arm
+totals, not per-episode outcomes, so \textbf{the pairing cannot be recovered from the
+stored files and the paired tests cannot be computed retrospectively}. Per-episode logging
+is now in place; the headline conditions must be rerun before any paired $p$-value is
+claimed.
+
 \subsection{The full condition set}
 
 \begin{center}
@@ -585,7 +633,12 @@ Per-dimension $\beta$ after the fix: $dx\ {-}0.62$, $dy\ {-}0.49$, $dz\ {-}0.80$
 $d r_x\ {-}0.20$, $d r_y\ {+}0.08$, $d r_z\ {-}0.38$. The metric fix does for the
 gain law what it did for the offset law: $d r_z$ flips from $+0.363$ ---
 confidently the \emph{wrong sign} --- to $-0.384$; $dy$ lands at $-0.49$ against
-$-0.50$. Four of six carry the right sign and a sensible magnitude.
+$-0.50$. Stated precisely, because the looser phrasing conflated two
+different criteria: \textbf{five of six carry the right sign} ($d r_y$ at $+0.08$ is
+the exception), but \textbf{only one of six, $dy$, is within $\pm 20\,\%$ of the true
+$-0.50$}. The ratios $\hat\beta/\beta^\star$ are $1.24$, $0.98$, $1.60$, $0.40$,
+$-0.16$, $0.76$. Sign recovery is not magnitude recovery, and only the sign claim
+survives at this sample size.
 
 \begin{tcolorbox}[colback=orange!5,colframe=orange!55!black,title=\textbf{Honest reading}]
 Frozen scored 5, 6, and 7 of 10 across these three runs. \textbf{None of the
@@ -595,6 +648,32 @@ columns carry the signal; the success columns are noise at this sample size.
 
 Consistent with Proposition 2, the gain fault is identified best on
 \emph{translation} --- the complement of the offset fault's rotation channels.
+
+%==========================================================================
+\section{What this fault is, and what it is not}
+\label{sec:whatfault}
+
+The injected fault adds a constant to the six Cartesian action dimensions the policy
+emits, upstream of the OSC controller. It is therefore a \textbf{Cartesian
+action-interface bias}. It is a faithful model of anything that corrupts the commanded
+end-effector increment --- a miscalibrated tool frame, a wrist-mount offset, a stale
+hand--eye calibration --- and the recovery result is genuine for that class.
+
+It is \emph{not} a demonstrated recovery from an actuator or joint-level hardware fault.
+Such a fault would enter \emph{below} the OSC, in joint dynamics, where the controller
+partially absorbs it and the map from fault to observed motion is state-dependent rather
+than constant. The hardware work in this report shows exactly that gap: a joint stiffness
+fault is invisible in position and recoverable only in effort. Claiming actuator-fault
+recovery requires injecting the fault in joint space and rerunning; until then the honest
+scope is the action interface, and language throughout has been changed accordingly.
+
+A second scoping point. The correction is applied by editing \code{action\_out\_proj/bias}
+inside the network. Because $\pi_{0.5}$ generates actions by flow-matching integration,
+that edit is \emph{not} identically an addition of $c_t$ to the final action; the mapping
+runs through the integrator and is only approximately affine. The report's estimates are
+consistent with a near-affine mapping, but this has not been measured directly, and an
+external adapter applied after unnormalisation would make the mapping exact and
+architecture-independent. That is the recommended construction going forward.
 
 %==========================================================================
 \section{Negative results worth keeping}

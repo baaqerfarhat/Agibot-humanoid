@@ -39,7 +39,8 @@ from adaptive_law import fit_plant, OUT, K_FIR
 
 
 def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220,
-        rls=True, lam=0.999, dither=0.0, dither_dims=(3, 4, 5), corr_dims=None):
+        rls=True, lam=0.999, dither=0.0, dither_dims=(3, 4, 5), corr_dims=None,
+        g_min=0.05, g_max=3.0):
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
     plan, t = collections.deque(), 0
@@ -65,7 +66,17 @@ def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220
                 "prompt": str(desc)})["actions"][: pr.a.replan_steps])
         a_cmd = np.asarray(plan.popleft(), float)
         # c = a (1/g - 1) with g_hat = 1 + beta_hat
-        c = -a_cmd[:6] * beta / (1.0 + beta) if adapt else np.zeros(6)
+        # a_corr = a + c = a/(1+beta_hat): the EXACT certainty-equivalent inverse gain,
+        # not a first-order approximation. That exactness is the problem. The applied factor
+        # 1/(1+beta_hat) has derivative -1/(1+beta)^2 = -4 at the true beta = -0.5, so
+        # estimation error is AMPLIFIED fourfold by the compensator. Measured: beta_hat_z =
+        # -0.797 applies 4.93x where 2.00x is correct (+146%). An additive fault's
+        # compensator is linear in the estimate and forgives that error; a gain fault's
+        # inverts it and does not. Hence projection: refuse to invert a gain we do not
+        # believe. g_min is a PHYSICAL prior -- below it we decline to repair rather than
+        # command a large multiple -- and is not centred on the true value.
+        g_hat = np.clip(1.0 + beta, g_min, g_max)
+        c = a_cmd[:6] * (1.0 / g_hat - 1.0) if adapt else np.zeros(6)
         if corr_dims is not None:
             # Restrict the correction to nominated channels. For an OFFSET fault the theory
             # says rotation is identifiable; for a GAIN fault, regressor diag(psi), it says
@@ -129,6 +140,11 @@ def main():
     p.add_argument("--suite", default="libero_spatial")
     p.add_argument("--lms", action="store_true", help="plain LMS instead of RLS")
     p.add_argument("--lam", type=float, default=0.999, help="RLS forgetting")
+    p.add_argument("--g-min", type=float, default=0.05,
+                   help="floor on the estimated gain before inverting it. 0.05 = "
+                        "effectively off (20x authority); 0.35 = decline to repair "
+                        "below 35%% remaining authority.")
+    p.add_argument("--g-max", type=float, default=3.0)
     p.add_argument("--corr-dims", default=None,
                    help="dims to correct; 0,1,2 = translation, 3,4,5 = rotation")
     p.add_argument("--dither", type=float, default=0.0,
@@ -152,7 +168,8 @@ def main():
         for tid, init in eps:
             s, beta, n_upd = run(pr, tid, init, a.gain, M_inv, W, a.gamma, adapt,
                                  a.pe_min, a.clip, rls=not a.lms, lam=a.lam,
-                                 dither=a.dither, corr_dims=cdims)
+                                 dither=a.dither, corr_dims=cdims,
+                                 g_min=a.g_min, g_max=a.g_max)
             ok += int(s); B.append(beta.tolist()); U.append(n_upd.tolist())
             print(f"  [{tag}] task {tid}: success={s}  beta={np.round(beta,2)}  "
                   f"updates={n_upd.astype(int)}")
