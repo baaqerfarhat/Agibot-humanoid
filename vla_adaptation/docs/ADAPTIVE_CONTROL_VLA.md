@@ -396,7 +396,12 @@ On `libero_object`, all three arms on the same fault and the same episodes:
 | **translation only** | 6/20 | **6/20** | **0** |
 
 Translation alone contributes **exactly nothing**, and including it drags a +50 effect down
-to +10. The reason is in §6: the separation test shows the estimator identifies rotation
+to +10.
+
+> **Read with §14 (2026-09-01).** This is measured at the uniform six-axis fault at 0.05,
+> where the translation component barely damages the policy. It is a fact about *that fault*,
+> not about the translation channel: on a translation-only fault at 0.15 the same correction
+> takes 20% → 95%. The reason is in §6: the separation test shows the estimator identifies rotation
 (+0.049, +0.047 against a true 0.050) and not translation (−0.013, −0.005). On `object` the
 translation estimates are **sign-wrong** (−0.031, −0.018 against +0.050), so that correction
 pushes the arm the wrong way. On `spatial` the same wrong correction happened to be harmless,
@@ -942,6 +947,11 @@ translation).
 episodes were available to fix, so "does nothing" here is weak evidence taken alone. It is
 the *consistency* across three different setups that carries the claim, not this run.
 
+> **Superseded, 2026-09-01 (§14).** The mechanism below rests on translation correction
+> contributing nothing. At a fault magnitude the policy actually notices, it contributes a
+> great deal: 20% → 95% at 0.15, p = 6.1×10⁻⁵. §13.2's own caveat about the ceiling was
+> correct and this subsection ignored it. Read §14.
+
 ### 13.3 What this replaces
 
 The scope condition survives, with its third and simplest mechanism:
@@ -960,3 +970,74 @@ Whether a *large* translation fault is both damaging and repairable is untested:
 policy barely notices, and the single-axis sweep (§11) found no damage at all. A translation
 fault big enough to hurt would settle whether translation correction is useless or merely
 untested against a ceiling.
+
+## 14. Translation correction works. §13.3 was a ceiling artifact (added 2026-09-01)
+
+§13.4 flagged that a translation fault large enough to hurt had never been tried. It has now,
+and the result overturns the central framing of §7.3, §13.2 and §13.3.
+
+### 14.1 The measurement
+
+Translation-only fault on x, y, z; translation-only correction; `libero_spatial`, n = 20
+paired, `--clip 0.30` so the estimator is not capped below its own target (the §12.1 lesson).
+
+| fault magnitude | frozen | corrected | fixed | broken | exact McNemar |
+|---|---|---|---|---|---|
+| 0.05 | 18/20 = 90% | 18/20 = 90% | 1 | 1 | 1.0 |
+| **0.10** | 13/20 = 65% | **19/20 = 95%** | **6** | **0** | **0.031** |
+| **0.15** | 4/20 = 20% | **19/20 = 95%** | **15** | **0** | **6.1×10⁻⁵** |
+
+At 0.15 the fault destroys the policy — 20% — and translation correction recovers **15 of the
+16 lost episodes**, breaking none.
+
+### 14.2 The claim that is now withdrawn
+
+Three times this document asserted that translation correction "contributes exactly zero",
+and §13.3 built a mechanism on it: *correct rotation because that is where the damage is.*
+
+**That was an artifact of fault magnitude, not a property of the channel.** Every test of
+translation correction had been run at 0.05, where a translation fault leaves the policy at
+90% and there are at most two episodes available to fix. §13.2 stated this caveat and then
+§13.3 drew the conclusion anyway. The caveat was right and the conclusion was wrong.
+
+The method is **more** general than the last three sections claimed, not less. It repairs
+translation faults, rotation faults, and mixed-sign structured faults, each when that fault
+is what is present and large enough to matter.
+
+### 14.3 The corrected account
+
+Nothing in the data requires a channel to be privileged. What the results say:
+
+1. **A single-family fault is identified and repaired**, translation or rotation alike —
+   translation at 0.10 (+30, p = 0.031) and 0.15 (+75, p = 6.1×10⁻⁵), rotation at 0.05 (+25),
+   structured mixed-sign rotation at 0.06 (+66).
+2. **The uniform six-axis fault is the pathological case.** It drives the arm into contacts
+   where superposition fails (§11, §13.1 super-additivity), the translation estimates go
+   sign-wrong, and correcting translation then hurts. Rotation-only is the right restriction
+   **for that fault**, and §10's four-suite result stands exactly as measured.
+3. So the scope condition is a statement about **the fault**, not about the channel: restrict
+   the correction when the fault drives the plant out of the regime where the residual is
+   informative. For faults inside that regime, correct the channels the fault is on.
+
+### 14.4 The safety property, across everything run
+
+Aggregating every paired run to date — 200 episodes, ten conditions, both fault families and
+all four suites:
+
+| | |
+|---|---|
+| episodes fixed | **61** |
+| episodes broken | **3** |
+| regression rate | **1.5%** |
+
+All three regressions occur in runs where the frozen policy was already at 18–19 of 20, i.e.
+where there was nothing to gain and only noise to lose. In the four-suite headline (80
+episodes) and in both translation-magnitude runs (40 episodes) the correction broke
+**nothing**.
+
+### 14.5 Method note
+
+This is the second time today a "does nothing" conclusion came from a condition with no
+headroom, and the second time the fix was to raise the fault until the frozen policy actually
+fails. **A null result against a ceiling is not a null result.** Any future "channel X
+contributes nothing" claim needs the frozen arm below roughly 70% before it means anything.
