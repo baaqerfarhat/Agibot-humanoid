@@ -45,8 +45,14 @@ than doing nothing.
 \begin{tcolorbox}[colback=gray!6,colframe=gray!55!black]
 \textbf{The scope condition is the contribution.} With all six action channels
 corrected, the method is significant on \emph{one suite of four}. Restricted to
-identifiable channels it is significant on \emph{all four}. Identifiability is
-predictable before deployment from healthy data alone.
+identifiable channels it is significant on \emph{all four}: pooled $26\% \to 65\%$,
+exact McNemar $p = 9.3\times 10^{-10}$, and \textbf{zero regressions} --- across 80
+paired episodes the correction never broke an episode the frozen policy solved.
+
+Which channels are identifiable is determined \emph{empirically}, by a separation
+test against matched fault-free runs. An earlier draft claimed it was predictable
+in advance from healthy action statistics; \S\ref{sec:shape} refutes that and the
+claim is withdrawn.
 \end{tcolorbox}
 
 \vspace{0.4em}
@@ -434,7 +440,21 @@ the arm the wrong way. On \code{spatial} the same wrong correction happened to b
 harmless --- which is why the naive version looked suite-specific rather than
 simply misapplied.
 
-\subsection{Identifiability is predictable before deployment}
+\subsection{Identifiability is predictable before deployment --- \textbf{withdrawn}}
+\label{sec:predictable}
+
+\begin{tcolorbox}[colback=red!4,colframe=red!45!black]
+\textbf{This subsection is withdrawn (2026-09-01).} It claimed identifiability is
+readable from healthy action statistics, chiefly the quantile scale.
+\S\ref{sec:shape} shows the quantile scale is not the operative mechanism:
+translation is not structurally quiet, and recovers 79\,\% of a single-axis fault.
+What decides identifiability is the fault's \emph{shape} relative to the robot's
+reachable set --- whether the perturbed command drives the arm into contacts or
+limits --- which is not readable from action statistics alone. The argument is
+retained below for the record; the ordering it predicts is real but graded, not the
+on/off distinction claimed. The empirical recommendation (correct rotation only for
+this fault) is unaffected.
+\end{tcolorbox}
 
 Nothing here requires knowing the fault. Three quantities, all measurable on
 \emph{healthy} data, decide which channels are identifiable:
@@ -720,6 +740,60 @@ the $\pm 10$-point run-to-run variation of \S\ref{sec:bias} territory --- the fr
 alone scored 13/20, 13/20, 15/20 on three runs of one identical condition --- and it is why
 per-suite numbers belong with intervals rather than as point estimates. The pooled effect is
 what survives.
+
+%==========================================================================
+\section{What decides identifiability: fault shape}
+\label{sec:shape}
+
+Two mechanisms could explain why translation never identified. The quantile-scale
+argument (\S\ref{sec:predictable}) says translation is structurally quiet. The
+alternative is that the \emph{uniform six-axis} fault used throughout drives the arm
+into contacts and limits, so the responses stop superposing --- a property of the
+fault's shape, not of the channel.
+
+\paragraph{M is not the problem.}
+\code{openloop\_id.py} builds $M$ from per-axis central differences at $\pm 0.02$.
+Re-measuring at the operating point ($\pm 0.05$) changes no diagonal by more than
+14\,\% (ratios $0.99$, $0.92$, $1.14$, $0.99$, $0.91$, $0.99$) and \emph{improves}
+$\mathrm{cond}(M)$ from $3.0$ to $2.2$. Per axis, the plant is linear across the
+range used.
+
+\paragraph{Superposition is.}
+Measured uniform-fault sensitivity divided by the sum of the single-axis columns
+holds at $0.77$--$1.04$ for $\pm 0.01$ and $\pm 0.02$, then collapses on
+translation at $\pm 0.05$ and \emph{asymmetrically}: $x$ gives $0.07$ in one
+direction and $0.78$ in the other, $z$ gives $0.50$ and $0.27$. Rotation superposes
+at every magnitude ($0.67$--$1.11$). Direction-dependence is the signature of a
+contact or joint limit, not curvature.
+
+\paragraph{The decisive test.}
+Separation test on $x$, with the magnitude control that isolates shape from size:
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+fault & separation on $x$ & \% of truth \\
+\midrule
+uniform six-axis @ $0.05$ & $-0.013$ & \textbf{sign-wrong} \\
+single-axis @ $0.05$      & $+0.0244$ & \textbf{49\,\%} \\
+single-axis @ $0.02$      & $+0.0158$ & \textbf{79\,\%} \\
+rotation $r_x$, single-axis @ $0.02$ & $+0.0201$ & 101\,\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+At the \emph{same} magnitude, a single-axis fault identifies at 49\,\% with the
+right sign while the six-axis fault is sign-wrong. The quantile scale is identical
+across those two conditions; only the fault's shape differs. \textbf{Fault shape dominates}, magnitude is secondary ($79\,\% \to 49\,\%$), and translation is not
+structurally unidentifiable. Rotation remains better ($101\,\%$ vs $79\,\%$, and
+less than half the off-axis leak), so the ordering of \S\ref{sec:predictable} is
+real --- but graded, not on/off.
+
+\paragraph{Consequence.}
+The headline is untouched: rotation-only correction still gives $26\% \to 65\%$
+pooled with zero regressions, and remains the right prescription \emph{for this
+fault}. What changes is the explanation, and the loss of the claim that
+identifiability can be predicted before deployment from healthy data alone.
 
 %==========================================================================
 \section{Negative results worth keeping}
