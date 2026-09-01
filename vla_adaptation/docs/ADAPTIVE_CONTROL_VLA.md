@@ -515,6 +515,11 @@ out, it is a prediction registered before the run, not a restriction chosen afte
 Run on 2026-09-01, `gain = 0.5` (a 50% loss of effectiveness on all six axes), n = 20 paired
 episodes per arm, correction restricted to one channel group at a time.
 
+> **Superseded, 2026-09-01 (§12).** The table below reports *raw* `β̂` against truth, with
+> no matched no-fault control — the exact error §6 of this document warns against. With the
+> control applied, x does not identify (1.4σ) and `ry` does (5.1σ), so the clean
+> complementary split claimed here does not survive. Read §12 before using this subsection.
+
 **Identification — the prediction holds, decisively.**
 
 | run | `β̂` translation | `β̂` rotation | true |
@@ -600,11 +605,9 @@ this as a +10 improvement would be reading noise.
 
 Two things this does establish, both from the estimates rather than the successes:
 
-1. **`β̂_z = −0.797` in all three runs, to three decimals.** Perfectly reproducible, so it is
-   a *systematic* error, not sampling noise: the vertical estimate is 60% too large. That is
-   the concrete defect to chase, and it is diagnosable offline against the plant fit — no
-   task rollouts needed. A systematically biased estimate fed to an inverting compensator is
-   the worst combination available.
+1. ~~**`β̂_z = −0.797` in all three runs, to three decimals.**~~ **Resolved in §12.1: this is
+   the `--clip 0.8` projection bound, not an estimate.** It reproduces to three decimals
+   because it is a constant. The estimator is diverging on z and being held by the clip.
 2. **n = 20 cannot resolve what is being asked of it.** With ±10 points of free variation, a
    real repair effect would need to be very large to show. This is precisely why the paired
    record matters (§8.4 of RESPONSE.md): McNemar conditions on the discordant pairs and
@@ -818,3 +821,78 @@ uniform offset. The gain result no longer uniquely supports Prop 2.
 | Identifiability is predictable from healthy data alone | **withdrawn** — needs the fault class |
 | `M` is unreliable / nonlinear on translation | **withdrawn** (§9.1) — M is magnitude-independent |
 | `β̂_z = −0.797` | still unexplained |
+
+## 12. The gain law: β̂_z was a clip, and §8.5 was missing its control (added 2026-09-01)
+
+Two corrections, both to claims made earlier today in this same document.
+
+### 12.1 `β̂_z = −0.797` is not an estimate, it is the projection bound
+
+§8.7 flagged this as a reproducible systematic 60% overestimate and called it "the concrete
+defect to chase, diagnosable offline". It was diagnosable offline, and the answer is that
+**`--clip` defaults to 0.8 and `β` is clipped to `±clip`**. In 17 of 20 episodes `β̂_z` is
+exactly −0.800, sd 0.007. It reproduces to three decimals because it is a *constant*, not
+because it is a stable estimate.
+
+An estimator whose true target is −0.5 should never reach a bound at 0.8. Reaching it means
+**`β_z` is diverging and being held by the projection**, which is a different and worse fault
+than bias.
+
+### 12.2 The estimator diverges on a healthy robot
+
+The no-fault control (`gain = 1.0`, true `β = 0`) had been run and never analysed this way:
+
+| | x | y | z | rx | ry | rz |
+|---|---|---|---|---|---|---|
+| mean `β̂`, **healthy robot** | **−0.327** | 0.043 | **−0.337** | 0.082 | 0.156 | −0.138 |
+| clip-rail rate | 10% | 0% | **40%** | 0% | 0% | 0% |
+
+On a robot with no fault at all, the estimator reports a 33% loss of effectiveness on x and
+z, and rails `β_z` at the bound in 40% of episodes. Fed to the inverse-gain compensator this
+commands **1.49× on x and 1.51× on z on a healthy robot**. The measured cost is 10/10 → 9/10
+on the no-fault arm — small at n = 10, but in the wrong direction, and the mechanism is
+plainly unsafe.
+
+This is the sharpest available contrast with the offset law, which broke **zero** of 80
+paired episodes (§10). The two laws are not comparable in maturity, and the report should
+stop presenting them as parallel results.
+
+### 12.3 §8.5's confirmation of Proposition 2 lacked its control
+
+§6 of this document establishes that a raw `f̂` cannot distinguish identification from plant
+bias, and that only the separation test — faulted estimate minus **matched no-fault
+estimate** — is evidence. That standard was applied to the offset law and **not** to the gain
+law. §8.5 compared raw `β̂` against truth directly.
+
+With the control applied (true `β = −0.5`):
+
+| | x | y | z | rx | ry | rz |
+|---|---|---|---|---|---|---|
+| raw `β̂` (what §8.5 reported) | −0.487 | −0.481 | −0.797 | 0.000 | −0.094 | −0.120 |
+| healthy `β̂` | −0.327 | 0.043 | −0.337 | 0.082 | 0.156 | −0.138 |
+| **separation** | −0.160 | **−0.525** | **−0.460** | −0.082 | **−0.250** | +0.018 |
+| % of truth | 32% | 105% | 92% | 16% | **50%** | −4% |
+| `|sep|/se` | 1.4 | **13.5** | **3.8** | 1.9 | **5.1** | 0.3 |
+
+The clean mirror image §8.5 claimed — all translation identifies, rotation is essentially
+zero — **does not survive its own control**:
+
+- **x does not identify** (1.4σ), though its raw `β̂` of −0.487 looked like a near-perfect
+  recovery of −0.5. It was mostly the healthy-robot phantom of −0.327.
+- **`ry` does identify** (50% of truth, 5.1σ), though its raw `β̂` of −0.094 looked like
+  nothing. Against a healthy baseline of +0.156 it is a −0.250 shift.
+
+So the measured pattern is two of three translation channels and one of three rotation
+channels, not 3/0. Proposition 2 predicted a clean complementary split and did not get one.
+
+### 12.4 Standing on Proposition 2
+
+Combined with §11, which refuted the cliff for the offset fault, Prop 2 is now unsupported in
+both directions it was tested. Its *ordering* remains weakly consistent with the data
+(translation carries more of the gain fault than rotation: y and z at 105% and 92% against
+`ry` at 50%), but the sharp complementarity claim should be dropped rather than defended.
+
+**What survives untouched:** the offset result of §10 — rotation-only correction, four
+suites, 26% → 65%, `p = 9.3×10⁻¹⁰`, zero regressions. That result never depended on Prop 2
+being the right explanation, only on the empirical separation test that selected the
+channels.
