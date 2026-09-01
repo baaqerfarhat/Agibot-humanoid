@@ -164,16 +164,17 @@ def main():
     eps = [((i % 10), 45 + i // 10) for i in range(a.episodes)]
     res = {"gain": a.gain, "true_beta": true_beta, "arms": {}}
     for tag, adapt in (("frozen_faulted", False), ("adaptive_gain", True)):
-        ok, B, U = 0, [], []
+        ok, B, U, per_ep = 0, [], [], []
         for tid, init in eps:
             s, beta, n_upd = run(pr, tid, init, a.gain, M_inv, W, a.gamma, adapt,
                                  a.pe_min, a.clip, rls=not a.lms, lam=a.lam,
                                  dither=a.dither, corr_dims=cdims,
                                  g_min=a.g_min, g_max=a.g_max)
-            ok += int(s); B.append(beta.tolist()); U.append(n_upd.tolist())
+            ok += int(s)
+            per_ep.append(dict(task=int(tid), init=int(init), ok=bool(s))); B.append(beta.tolist()); U.append(n_upd.tolist())
             print(f"  [{tag}] task {tid}: success={s}  beta={np.round(beta,2)}  "
                   f"updates={n_upd.astype(int)}")
-        res["arms"][tag] = dict(successes=ok, n=len(eps), beta=B, updates=U)
+        res["arms"][tag] = dict(successes=ok, per_ep=per_ep, n=len(eps), beta=B, updates=U)
         a.out.parent.mkdir(parents=True, exist_ok=True)
         a.out.write_text(json.dumps(res, indent=1))
         print(f"{tag}: {ok}/{len(eps)} = {100*ok/len(eps):.0f}%\n")

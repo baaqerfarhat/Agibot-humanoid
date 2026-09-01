@@ -151,5 +151,12 @@ the cited work exists and says what the review reports.
 1. Rerun the headline conditions with `per_ep` and report paired p-values. Until then no
    p-value in the report is the one the design earned.
 2. `--law innov` head-to-head against legacy on a fixed condition set.
-3. Projection result for the gain fault (running at time of writing).
+3. ~~Projection result for the gain fault~~ — **done, and it is a null.** `--g-min 0.35`
+   capped the vertical overcommand at 2.86x (from 4.93x, correct 2.00x), and success went
+   15/20 -> 17/20. That +10 is **not evidence**: the identical frozen condition scored
+   13/20, 13/20, 15/20 across three runs, so +-10 points is free variation. The gain fault
+   remains unrepaired. Two real findings fell out: `beta_hat_z = -0.797` reproduces to three
+   decimals across all three runs, so the vertical estimate is *systematically* 60% too
+   large and is diagnosable offline; and n=20 cannot resolve this question at all, which is
+   the strongest argument yet for the paired record. See ADAPTIVE_CONTROL_VLA.md 8.7.
 4. Decide the scope items above.

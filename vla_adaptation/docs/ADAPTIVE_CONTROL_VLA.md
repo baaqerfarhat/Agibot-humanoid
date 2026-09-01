@@ -568,3 +568,38 @@ The implied fix is projection rather than a better regressor: refuse to invert a
 not believe. `--g-min` floors `ĝ` at a physical prior (below it, decline to repair rather
 than command a large multiple). It is a prior on the robot, not on the answer, and is not
 centred on the true 0.50.
+
+### 8.7 Projection helps the mechanism and does not rescue the task
+
+`--g-min 0.35`, correcting translation only, `gain = 0.5`, n = 20:
+
+| arm | success | `β̂` translation |
+|---|---|---|
+| frozen, faulted | 15/20 = 75% | — |
+| corrected, projected | 17/20 = 85% | −0.487, −0.481, −0.797 |
+
+Projection does what it was built to do: `ĝ_z = clip(0.203, 0.35)` caps the vertical
+overcommand at **2.86×** instead of 4.93×, against a correct 2.00×. The mechanism improved.
+
+**The +10 points are not evidence.** Across three runs of the *identical* frozen condition —
+same fault, same flags — the frozen arm scored **13/20, 13/20, 15/20**. The harness is
+nondeterministic (π0.5 samples its flow), so ±2/20 = ±10 points is free variation, and the
+corrected arm's margin here sits inside it. **The gain fault is not repaired.** Reporting
+this as a +10 improvement would be reading noise.
+
+Two things this does establish, both from the estimates rather than the successes:
+
+1. **`β̂_z = −0.797` in all three runs, to three decimals.** Perfectly reproducible, so it is
+   a *systematic* error, not sampling noise: the vertical estimate is 60% too large. That is
+   the concrete defect to chase, and it is diagnosable offline against the plant fit — no
+   task rollouts needed. A systematically biased estimate fed to an inverting compensator is
+   the worst combination available.
+2. **n = 20 cannot resolve what is being asked of it.** With ±10 points of free variation, a
+   real repair effect would need to be very large to show. This is precisely why the paired
+   record matters (§8.4 of RESPONSE.md): McNemar conditions on the discordant pairs and
+   removes the shared episode-difficulty variance that is drowning the signal here. The
+   gain runs still lack `per_ep`.
+
+**Standing conclusion on the gain fault:** identification is solved and predicted
+(§8.5); repair is not demonstrated. The barrier is compensator conditioning (§8.6)
+compounded by a reproducible bias on one channel, not the choice of regressor.
