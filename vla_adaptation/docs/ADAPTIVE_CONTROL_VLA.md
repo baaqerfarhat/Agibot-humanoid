@@ -603,3 +603,74 @@ Two things this does establish, both from the estimates rather than the successe
 **Standing conclusion on the gain fault:** identification is solved and predicted
 (§8.5); repair is not demonstrated. The barrier is compensator conditioning (§8.6)
 compounded by a reproducible bias on one channel, not the choice of regressor.
+
+## 9. M is only valid where the plant is linear, and that is rotation (added 2026-09-01)
+
+Chasing the reproducible `β̂_z = −0.797` (§8.7) turned up something larger than the bug it
+was looking for.
+
+### 9.1 The plant is linear on rotation and not on translation
+
+`M` is a single linear map, fitted from uniform-fault probes at four magnitudes. A linear
+plant returns the same sensitivity at every probe magnitude. It does not:
+
+| probe `f` | x | y | z | rx | ry | rz |
+|---|---|---|---|---|---|---|
+| +0.01 | 0.243 | 0.238 | 0.143 | 0.250 | 0.278 | 0.266 |
+| +0.02 | 0.223 | 0.223 | 0.135 | 0.255 | 0.268 | 0.268 |
+| +0.05 | **0.019** | 0.262 | 0.080 | 0.260 | 0.188 | 0.234 |
+| −0.05 | 0.195 | 0.315 | **0.043** | 0.215 | 0.313 | 0.243 |
+| **CV** | **0.52** | 0.14 | **0.41** | 0.07 | 0.17 | 0.06 |
+
+Rotation is essentially linear (mean CV 0.10). Translation is not (mean CV 0.36, 3.5× worse;
+x spans 13× between its extreme probes).
+
+### 9.2 At the magnitude the experiments actually use, M is wrong on translation
+
+Every headline experiment injects `sev = 0.05`. Comparing what `M` predicts for a uniform
+fault against what was measured at exactly that magnitude:
+
+| | x | y | z | rx | ry | rz |
+|---|---|---|---|---|---|---|
+| M predicts | 0.252 | 0.287 | 0.160 | 0.245 | 0.281 | 0.262 |
+| measured at 0.05 | 0.107 | 0.289 | 0.062 | 0.238 | 0.250 | 0.238 |
+| ratio | **0.42** | 1.00 | **0.38** | 0.97 | 0.89 | 0.91 |
+
+**On all three rotation channels `M` is accurate to within 11%. On x and z it over-predicts
+the response by 2.4× and 2.6×.** So `M⁻¹` applied to a translation residual is not an
+estimate of anything, and the fitted `M_zz = 0.126` — 0.47× the mean of the other five
+diagonal entries — is the worst-conditioned direction in the matrix.
+
+### 9.3 This is a confound for the scope condition, and it must be reported as one
+
+§7 and §8 explain the rotation-only result through Proposition 2: additive faults are loud
+where the quantile scale is small, which is rotation. §9.2 offers a **second, independent
+and sufficient** explanation: `M` is simply a valid map on rotation and an invalid one on
+translation. Both predict the same headline result, and the current data **cannot separate
+them**. The report should say so rather than let Prop 2 take credit it has not earned.
+
+One piece of evidence does bear on the split, and it cuts against the pure-nonlinearity
+story: in the gain experiment, x and y recovered the fault accurately (−0.463, −0.490
+against a true −0.500) *despite* x being the most nonlinear channel of all. If a bad `M`
+were the whole explanation, x should have failed there too. So Prop 2 is not merely a
+restatement of "M is bad on translation" — but neither is it established as the operative
+mechanism.
+
+**Distinguishing experiment:** refit `M` from the small-magnitude probes only (±0.01, ±0.02),
+where the plant is linear, and re-run the offset experiment with translation correction
+enabled. Prop 2 predicts translation still fails (the quantile scale is unchanged);
+the nonlinearity account predicts it should now work.
+
+### 9.4 What this does not explain
+
+It does not explain `β̂_z = −0.797`. If `M` over-predicts the z response by 2.6×, the
+measured residual is *smaller* than `M f` implies, so the estimate should come out too
+**small**. The observed z error is too **large**, in the opposite direction. That bias
+remains open, and it is not the same defect as §9.2.
+
+### 9.5 Immediate consequence
+
+`M` was fitted across a range over which the plant it describes is not linear, and one probe
+row (`f = +0.05`, where `sens_x` collapses to 0.019 from 0.243) is doing real damage to the
+fit. Refitting on the linear region is cheap and should precede any further gain work. Until
+then, translation estimates from `M⁻¹` should not be treated as measurements.
