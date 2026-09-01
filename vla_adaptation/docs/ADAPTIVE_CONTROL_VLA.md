@@ -418,3 +418,83 @@ identifiable are all measurable on healthy data:
 **So the rule is: measure identifiability on healthy data, correct only those channels, and
 leave the rest alone.** The four-suite result in §7.1 is the ablation showing what it costs
 to ignore this.
+
+## 8. Identifiability, stated properly (added 2026-09-01)
+
+§7 gives the empirical rule. This section states what it rests on, including one degeneracy
+that no amount of data inside a single episode can break.
+
+### 8.1 Setup
+
+Let `a_t ∈ R⁶` be the commanded env-space action (3 translation, 3 rotation increments) and
+`y_t` the measured state increment. Over the identification horizon the plant is the FIR map
+`M` fitted in §2.4, so the nominal prediction is `ŷ_t = M a_t`. Two fault classes:
+
+- **additive** `a_actual = a_t + f`, `f` constant — regressor `φ = I`
+- **multiplicative** `a_actual = diag(g) a_t`, so the error is `diag(θ) a_t` with `θ = g − 1`
+  — regressor `φ = diag(a_t)`
+
+### 8.2 Proposition 1 — a constant input fault and a constant output bias are not separable
+
+Suppose the measurement carries an unknown constant bias `b`:
+
+```
+y_t = M (a_t + f) + b + noise
+```
+
+Within one episode `f` and `b` are both constant, so they enter only through the sum
+`M f + b`. `M` is square and full rank (verified, §2.4), so for **any** `b′` the alternative
+fault `f′ = f + M⁻¹(b − b′)` reproduces every observation exactly. The pair `(f, b)` is
+unidentifiable; only `M f + b` is.
+
+**This is why `--bias` exists and why it is not a nuisance parameter you can fit.** It has to
+come from somewhere outside the episode.
+
+**Corollary (onset breaks the degeneracy).** If the fault switches on at `t₀`, with `f = 0`
+for `t < t₀`, then `b` is identified on the pre-onset window and `f` on the post-onset window.
+Mid-episode onset is not a robustness flourish — it is what makes the problem well-posed.
+This is what `--onset` implements, and it is the honest deployment story: the estimator needs
+to have seen the healthy plant, not to have been told the bias.
+
+### 8.3 Proposition 2 — the two fault classes are loud on complementary channels
+
+Actions are quantile-normalised, `a_norm = 2(a_env − q01)/(q99 − q01) − 1`. Write
+`R_i = (q99 − q01)_i` for channel `i`.
+
+- An **additive** env-space offset `δ` appears in normalised units as `2δ/R_i`. Its
+  signal **falls** with `R_i`.
+- A **multiplicative** fault has information matrix `Σ_t φᵀφ = diag(Σ_t a_{t,i}²)`. Its signal
+  **rises** with the command magnitude on channel `i`, and command spread is what `R_i`
+  measures.
+
+So the same quantity that makes a channel quiet for an offset makes it loud for a gain. From
+the `pi05_libero` checkpoint:
+
+| ch | `q99−q01` | additive signal `2·0.05/R` | multiplicative signal `R/R_max` |
+|---|---|---|---|
+| x | 1.685 | 0.059 | 0.899 |
+| y | 1.656 | 0.060 | 0.883 |
+| z | 1.875 | 0.053 | 1.000 |
+| rx | 0.256 | **0.391** | 0.137 |
+| ry | 0.351 | **0.285** | 0.187 |
+| rz | 0.506 | **0.198** | 0.270 |
+| **translation mean** | | 0.058 | **0.927** |
+| **rotation mean** | | **0.291** | 0.198 |
+
+Additive favours rotation **5.0:1**; multiplicative favours translation **4.7:1**.
+
+**One caveat, stated so nobody mistakes it for a result:** with these two proxies the product
+`(2δ/R)·(R/R_max)` is identically `2δ/R_max` for every channel. That constancy is algebra, not
+evidence — it follows from having written one proxy as `∝1/R` and the other as `∝R`. The
+content of the table is the *ordering* and the *ratio*, both of which are checkable against
+measured separation, not the fact that a product of reciprocals is flat.
+
+### 8.4 What makes this a prediction rather than a fit
+
+§7 restricted the offset correction to rotation *after* seeing that rotation identified. On its
+own that is post-hoc. Proposition 2 makes the complementary claim testable in the opposite
+direction: for a **gain** fault the identifiable channels should be **translation**, and
+restricting the correction to rotation should do little or nothing.
+
+That test is `adaptive_gain.py --corr-dims`, and its result is §8.5. Whichever way it comes
+out, it is a prediction registered before the run, not a restriction chosen after it.

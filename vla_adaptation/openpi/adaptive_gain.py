@@ -39,7 +39,7 @@ from adaptive_law import fit_plant, OUT, K_FIR
 
 
 def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220,
-        rls=True, lam=0.999, dither=0.0, dither_dims=(3, 4, 5)):
+        rls=True, lam=0.999, dither=0.0, dither_dims=(3, 4, 5), corr_dims=None):
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
     plan, t = collections.deque(), 0
@@ -66,6 +66,13 @@ def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220
         a_cmd = np.asarray(plan.popleft(), float)
         # c = a (1/g - 1) with g_hat = 1 + beta_hat
         c = -a_cmd[:6] * beta / (1.0 + beta) if adapt else np.zeros(6)
+        if corr_dims is not None:
+            # Restrict the correction to nominated channels. For an OFFSET fault the theory
+            # says rotation is identifiable; for a GAIN fault, regressor diag(psi), it says
+            # TRANSLATION -- loud where the command is large. That is a prediction, and this
+            # flag is what tests it rather than fitting the restriction after the fact.
+            m = np.zeros(6); m[list(corr_dims)] = 1.0
+            c = c * m
         a_corr = a_cmd.copy(); a_corr[:6] += c
         if adapt and dither:
             # Deliberate excitation. A gain is identifiable only where the command moves
@@ -119,14 +126,20 @@ def main():
     p.add_argument("--pe-min", type=float, default=0.15, help="excitation floor on |psi_i|")
     p.add_argument("--clip", type=float, default=0.8)
     p.add_argument("--episodes", type=int, default=10)
+    p.add_argument("--suite", default="libero_spatial")
     p.add_argument("--lms", action="store_true", help="plain LMS instead of RLS")
     p.add_argument("--lam", type=float, default=0.999, help="RLS forgetting")
+    p.add_argument("--corr-dims", default=None,
+                   help="dims to correct; 0,1,2 = translation, 3,4,5 = rotation")
     p.add_argument("--dither", type=float, default=0.0,
                    help="excitation amplitude on the rotation axes")
     a = p.parse_args()
 
     W = fit_plant(a.log)
     M_inv = np.linalg.pinv(np.array(json.loads(a.openloop.read_text())["M"]))
+    cdims = [int(x) for x in a.corr_dims.split(',')] if a.corr_dims else None
+    if cdims is not None:
+        print(f'correction restricted to dims {cdims}')
     pr = Probe(a); pr.control(dict(site=None, pin_rng=False))
     true_beta = a.gain - 1.0
     print(f"gain fault g = {a.gain}  -> true beta = {true_beta:+.2f}; gamma={a.gamma}, "
@@ -139,7 +152,7 @@ def main():
         for tid, init in eps:
             s, beta, n_upd = run(pr, tid, init, a.gain, M_inv, W, a.gamma, adapt,
                                  a.pe_min, a.clip, rls=not a.lms, lam=a.lam,
-                                 dither=a.dither)
+                                 dither=a.dither, corr_dims=cdims)
             ok += int(s); B.append(beta.tolist()); U.append(n_upd.tolist())
             print(f"  [{tag}] task {tid}: success={s}  beta={np.round(beta,2)}  "
                   f"updates={n_upd.astype(int)}")
