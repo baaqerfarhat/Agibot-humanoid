@@ -1041,3 +1041,47 @@ This is the second time today a "does nothing" conclusion came from a condition 
 headroom, and the second time the fix was to raise the fault until the frozen policy actually
 fails. **A null result against a ceiling is not a null result.** Any future "channel X
 contributes nothing" claim needs the frozen arm below roughly 70% before it means anything.
+
+## 15. `--law innov` does not measurably help (added 2026-09-01)
+
+§8/§12 shipped `--law innov` as the fix for the biased fixed point the external review
+identified. It had never been tested. It has now, and the honest result is a null on my own
+fix.
+
+### 15.1 Design
+
+The bias is `1/(1 + ‖r‖²/ρ²)`, so it only becomes visible when the residual is large. At the
+0.05 fault it is ~5% — unresolvable at n = 10, which is why testing there would have wasted
+the GPU. A 0.15 translation fault makes the residual roughly 3× larger. Each law was run with
+its **own** matched no-fault control, because the plant-bias phantom differs between them,
+and with `--estimate-only` so the comparison is of estimators rather than closed loops.
+
+### 15.2 Result
+
+Separation against each law's own control, true fault +0.15 on x, y, z:
+
+| law | mean translation separation | % of truth | per-channel se |
+|---|---|---|---|
+| legacy | 0.1387 ± 0.0137 | 92% | 0.020, 0.016, 0.023 |
+| innov | 0.1429 ± 0.0334 | 95% | 0.037, 0.041, 0.051 |
+
+**Difference: +0.0042 ± 0.0361, i.e. 0.12σ.** The two laws are indistinguishable.
+
+Two things worth keeping:
+
+1. **The predicted bias did not appear.** I forecast ~31% attenuation from an assumed
+   `‖r‖ ≈ 0.10`. The actual `‖Mf‖` at this fault is **0.0617**, which predicts 86%, and the
+   measured legacy value is 92%. My own prediction was wrong because I guessed the residual
+   norm instead of computing it from `M f` — which took one line.
+2. **`innov` is ~2.2× noisier per channel.** The innovation form carries an extra `M f̂` term
+   and its variance with it. It buys an unbiased fixed point at a real cost in variance, and
+   at these residual magnitudes there is no bias worth buying.
+
+### 15.3 Standing
+
+`legacy` remains the default. `innov` stays available and documented, and would matter if the
+residual ever approached `ρ` — but on this plant, at faults up to 0.15, it does not.
+
+**On the review's criticism:** the algebra was correct and I confirmed it. The practical
+magnitude is ~8%, not the 31% I estimated, and correcting it changes no result. That is worth
+stating plainly rather than shipping a fix and implying it mattered.
