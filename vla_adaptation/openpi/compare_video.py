@@ -60,7 +60,7 @@ def annotate(img, title, colour, lines, prompt=""):
 
 
 def rollout(pr, tid, init, sev, M_inv, W, gamma, adapt, dead, norm_r, clip, max_steps=220,
-            rec_cam="agentview", rec_fovy=None):
+            rec_cam="agentview", rec_fovy=None, corr_dims=None):
     env, desc, inits = pr.env_for(tid)
     env.reset()
     if rec_fovy:
@@ -86,6 +86,9 @@ def rollout(pr, tid, init, sev, M_inv, W, gamma, adapt, dead, norm_r, clip, max_
                 "prompt": str(desc)})["actions"][: pr.a.replan_steps])
         a_cmd = np.asarray(plan.popleft(), float)
         c = -f_hat if adapt else np.zeros(6)
+        if corr_dims is not None:
+            m = np.zeros(6); m[list(corr_dims)] = 1.0
+            c = c * m
         a_corr = a_cmd.copy(); a_corr[:6] += c
         a_exec = apply_action_fault(a_corr, "offset", sev, 6)
         x0 = np.array(obs["robot0_eef_pos"], float)
@@ -131,17 +134,25 @@ def main():
     ap.add_argument("--rec-cam", default="agentview", help="camera used for the VIDEO only")
     ap.add_argument("--rec-fovy", type=float, default=None, help="widen it (45 = default)")
     ap.add_argument("--title", default="")
+    ap.add_argument("--suite", default="libero_spatial")
+    ap.add_argument("--corr-dims", default=None,
+                    help="channels to correct, e.g. 3,4,5 for rotation only. The "
+                         "earlier videos corrected all six, the configuration Sec 7.3 "
+                         "shows is wrong for a uniform fault.")
     ap.add_argument("--only-frozen-fail", action="store_true",
                     help="skip episodes the frozen arm happens to pass")
     a = ap.parse_args()
 
     W = fit_plant(a.log)
     M_inv = np.linalg.pinv(np.array(json.loads(a.openloop.read_text())["M"]))
+    cdims = [int(x) for x in a.corr_dims.split(',')] if a.corr_dims else None
+    if cdims is not None:
+        print(f'correction restricted to dims {cdims}')
     pr = Probe(a)
     pr.control(dict(site=None, pin_rng=False))
     if a.rec_fovy:                      # rebuild envs with the extra recording camera
         from libero.libero import benchmark as _bm
-        suite = _bm.get_benchmark_dict()["libero_spatial"]()
+        suite = _bm.get_benchmark_dict()[a.suite]()
         pr._envs = {}
         for spec in a.episodes.split(","):
             tid = int(spec.split(":")[0])
@@ -167,20 +178,27 @@ def main():
             continue
         out[True] = rollout(pr, tid, init, a.sev, M_inv, W, a.gamma, True,
                             a.dead, a.norm_r, a.clip,
-                            rec_cam=a.rec_cam, rec_fovy=a.rec_fovy)
+                            rec_cam=a.rec_cam, rec_fovy=a.rec_fovy, corr_dims=cdims)
         print(f"  task {tid} init {init}  adaptive success={out[True][1]} "
               f"steps={len(out[True][0])}")
         (fL, okL, desc), (fR, okR, _) = out[False], out[True]
+        # show the channels the correction actually applies, not the first three:
+        # with --corr-dims 3,4,5 the translation estimates are computed but never used,
+        # and displaying them would misrepresent what the method is doing.
+        shown = cdims if cdims is not None else [0, 1, 2]
+        shown_lbl = ','.join(['x','y','z','rx','ry','rz'][d] for d in shown)
         n = max(len(fL), len(fR))
         for k in range(n + a.fps):                       # hold the last frame ~1 s
             i, j = min(k, len(fL) - 1), min(k, len(fR) - 1)
             imL, _, tL = fL[i]; imR, fh, tR = fR[j]
-            L = annotate(imL, f"FROZEN  (uncorrected){a.title}", (150, 30, 30),
-                         [f"step {tL}", "SUCCESS" if (okL and k >= len(fL) - 1) else
+            L = annotate(imL, "FROZEN  (uncorrected)", (150, 30, 30),
+                         [a.title, f"step {tL}", "SUCCESS" if (okL and k >= len(fL) - 1) else
                           ("FAILED - timeout" if (not okL and k >= len(fL) - 1) else "")],
                          prompt=desc)
-            R = annotate(imR, f"ADAPTIVE  (online){a.title}", (25, 110, 45),
-                         [f"step {tR}  f_hat=[" + " ".join(f"{v:+.2f}" for v in fh[:3]) + "...]",
+            R = annotate(imR, "ADAPTIVE  (online)", (25, 110, 45),
+                         [a.title,
+                          f"step {tR}   f_hat[{shown_lbl}] = "
+                          + " ".join(f"{fh[d]:+.3f}" for d in shown),
                           "SUCCESS" if (okR and k >= len(fR) - 1) else
                           ("FAILED - timeout" if (not okR and k >= len(fR) - 1) else "")],
                          prompt=desc)
