@@ -1210,3 +1210,72 @@ Task outcome under a matched control is the metric that has survived every test 
 | intermittent | inconclusive — underpowered |
 | multiplicative (loss of effectiveness) | **not solved** (§16) |
 | sensor bias, camera shift | structurally invisible (§4) |
+
+## 18. The integral baseline: the plant model is load-bearing (added 2026-09-02)
+
+The paper claims that identifying a plant model on healthy data and measuring a sensitivity
+matrix `M` is what makes single-episode repair possible. Nothing in §1–§17 tested that claim.
+A control engineer's first move needs neither: integrate the raw motion error.
+
+```
+e_t = y_t − a_t        (achieved minus commanded, in action units)
+f̂ ← clip(f̂ + kᵢ·e_t)   no FIR plant, no M
+```
+
+Same fault (translation 0.15), same episodes, same corrected channels, `--clip 0.30`.
+
+### 18.1 The gain sweep, in full
+
+| `kᵢ` | frozen | integral baseline | Δ | McNemar |
+|---|---|---|---|---|
+| 0.001 | 4/20 | 5/20 | +5 | 1.0 |
+| **0.005** | 3/20 | **7/20** | **+20** | 0.125 |
+| 0.02 | 5/20 | **0/20** | −25 | — |
+| 0.05 | 2/20 | 1/20 | −5 | — |
+| 0.15 | 4/20 | 1/20 | −15 | — |
+| **ours** | **4/20** | **19/20** | **+75** | **6.1×10⁻⁵** |
+
+The baseline is **not** useless. At `kᵢ = 0.005` it recovers 4 of the 17 lost episodes
+(+20 points, though `p = 0.125` — not significant at n = 20). Above that it is actively
+harmful, taking the policy to zero at `kᵢ = 0.02`.
+
+**Correction to an earlier draft of this section.** Having seen only `kᵢ ≥ 0.02` fail, I wrote
+that the baseline's best attainable result is a *tie* with frozen, on the argument that
+`kᵢ → 0` reduces it to the frozen policy. The low-gain runs refute that: at 0.005 it is
+clearly better than frozen. The argument was wrong because the plant-gain phantom is
+proportional to the **command**, which changes sign through an episode, while the fault is
+constant. A slow integrator low-passes the phantom toward zero and accumulates the fault. It
+is a bad estimator, not a structurally incapable one.
+
+### 18.2 Why it is bad: the raw error is dominated by the plant gain
+
+The baseline implicitly assumes achieved motion ≈ commanded action. The measured translation
+DC gain is **0.23**, so with **no fault at all**
+
+```
+e = y − a = (0.23 − 1)·a = −0.77·a
+```
+
+At a command magnitude of 0.5 that phantom is **0.384** against a real fault of **0.150** —
+more than twice as large, and opposite in sign. The estimator's job is then to average away a
+disturbance 2.5× the size of its target, which is why it needs a gain small enough to be
+nearly inert, and why it saturates and oscillates as soon as the gain is large enough to move.
+
+The trajectories, on a true fault of **+0.15**:
+
+| | first 40 steps of `f̂ₓ` | final | sign flips | episode |
+|---|---|---|---|---|
+| `kᵢ`=0.02 | +0.001, **−0.104, −0.277, −0.283** | +0.300 (railed) | 2 | 220 (timeout) |
+| `kᵢ`=0.15 | +0.004, **−0.300, −0.300**, −0.175 | −0.300 (railed) | 5 | 220 (timeout) |
+| **ours** | +0.006, **+0.080, +0.117, +0.157** | +0.178 | **0** | **74 (success)** |
+
+### 18.3 What the plant model buys
+
+Against the **best** baseline gain, tuned in its favour: **35% versus 95%**. Predicting
+`y ≈ 0.23a` instead of `y ≈ a` is the entire difference, and it converts a correction that
+must creep to avoid instability into one that converges to the truth in ~15 steps with no
+sign changes.
+
+**This is the ablation the method needed**, and it is a real comparison rather than a
+strawman: the baseline was swept over five gains across two orders of magnitude and is
+reported at its best.

@@ -76,7 +76,8 @@ def fit_plant(log_path, lam=1e-2, mimo=False):
 def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, onset=0,
         obs_off=None, wrist_shift=0, static_c=None,
         dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None, corr_dims=None,
-        law="legacy", M=None, profile="step", prof_p=60.0):
+        law="legacy", M=None, profile="step", prof_p=60.0,
+        baseline="none", ki=0.05):
     import paired_probe as _pp
     max_steps = max_steps or _pp.MAXS
     env, desc, inits = pr.env_for(tid)
@@ -203,6 +204,20 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
                     return True, f_hat, traj
                 t += 1
                 continue
+            if baseline == "integral":
+                # BASELINE: textbook integral action on the RAW motion error, with no plant
+                # model and no M. e = achieved - commanded, in action units; the correction
+                # integrates it away. This is what a control engineer would write first, and
+                # it is the honest test of whether the FIR plant and the sensitivity matrix
+                # earn their place. If this matches the full law, the machinery is decoration.
+                e_raw = y - a_corr[:6]
+                f_hat = np.clip(f_hat + ki * e_raw, -clip, clip)
+                traj.append(dict(t=t, f_hat=f_hat.tolist(), r=r.tolist(), live=bool(live),
+                                 f_true=f_true_now.tolist()))
+                if done:
+                    return True, f_hat, traj
+                t += 1
+                continue
             est = M_inv @ r
             if bias is not None:
                 # Zero the estimator against known-healthy data. On a fault-free run f_hat
@@ -234,6 +249,12 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--gamma", type=float, default=0.05)
+    p.add_argument("--baseline", choices=["none", "integral"], default="none",
+                   help="integral: plain integral action on the raw motion error, "
+                        "no plant model and no M. The ablation that asks whether "
+                        "the identification machinery is doing any work.")
+    p.add_argument("--ki", type=float, default=0.05,
+                   help="integral gain for --baseline integral")
     p.add_argument("--profile", choices=["step", "ramp", "sine", "intermittent"],
                    default="step", help="how the fault varies in time")
     p.add_argument("--prof-p", type=float, default=60.0,
@@ -303,7 +324,8 @@ def main():
                                  corr_dims=cdims, fvec=fvec, onset=a.onset,
                                  obs_off=obs_off, wrist_shift=a.wrist_shift,
                                  static_c=static_c, law=a.law, M=M,
-                                 profile=a.profile, prof_p=a.prof_p)
+                                 profile=a.profile, prof_p=a.prof_p,
+                                 baseline=a.baseline, ki=a.ki)
             ok += int(s); fh.append(f_hat.tolist())
             # Per-episode outcome, keyed by (task, init). The arms run on the SAME episode
             # list, so these pair up -- which is what McNemar needs and what the earlier
