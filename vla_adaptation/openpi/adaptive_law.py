@@ -313,7 +313,8 @@ def main():
             print(f"  [{tag}] task {tid} init {init}: success={s}  "
                   f"f_hat={np.round(f_hat, 3)}")
         res["arms"][tag] = dict(successes=ok, n=len(eps), f_hat=fh, per_ep=per_ep,
-                                traj=[[st["f_hat"] for st in tr] for tr in trajs])
+                                traj=[[st["f_hat"] for st in tr] for tr in trajs],
+                                f_true=[[st["f_true"] for st in tr] for tr in trajs])
         a.out.parent.mkdir(parents=True, exist_ok=True)
         a.out.write_text(json.dumps(res, indent=1))
         print(f"{tag}: {ok}/{len(eps)} = {100*ok/len(eps):.0f}%\n")

@@ -1151,3 +1151,62 @@ no-fault control shows harm, so the honest summary is:
 > translation channels, is structurally impossible on rotation for this policy (§16.4), and
 > the estimator still hallucinates faults on healthy hardware. It should be presented as an
 > open problem with a diagnosed cause, not as a second result.
+
+## 17. Time-varying faults: repair without accurate tracking (added 2026-09-02)
+
+Three profiles at amplitude 0.10 on translation, n = 20 paired, `libero_spatial`.
+
+### 17.1 Task outcome
+
+| profile | frozen | corrected | fixed | broken | McNemar |
+|---|---|---|---|---|---|
+| **ramp** (0 → full over 60 steps) | 12/20 = 60% | **18/20 = 90%** | 6 | 0 | **0.031** |
+| sine (period 80) | 20/20 = 100% | 19/20 = 95% | 0 | 1 | 1.0 |
+| intermittent (50 on, 50 off) | 17/20 = 85% | 20/20 = 100% | 3 | 0 | 0.25 |
+
+**Only the ramp is a real test.** A zero-mean sine averages out over an episode and does not
+damage the policy at all (frozen 20/20), and the intermittent fault leaves only 3 episodes to
+recover. Both are ceilings — the mistake §14.5 warned about, made again. A proper oscillatory
+test needs a **non-zero-mean** sine (bias plus oscillation), and the intermittent case needs a
+larger amplitude.
+
+On the one condition with headroom, the estimator handles a gradually degrading fault:
++30 points, `p = 0.031`, zero regressions.
+
+### 17.2 Tracking is poor, and it does not matter much
+
+The estimate was compared against the analytic ground truth per step:
+
+| profile | RMS tracking error | as % of amplitude | after best lag correction |
+|---|---|---|---|
+| ramp | 0.0446 | 45% | 44% (lag 5) |
+| sine | 0.0789 | 79% | 69% (lag 5) |
+| intermittent | 0.0718 | 72% | 64% (lag 10) |
+
+Shifting the estimate in time barely helps, so **the error is not lag** — with `γ = 0.08` the
+EMA time constant is ~12.5 steps and a pure lag would have been removed by the shift. The
+estimator is genuinely failing to follow the waveform, and is capturing something closer to
+its running average.
+
+**And yet the ramp condition still recovers 6 of 8 lost episodes.** This matches §15, where a
+92%-accurate estimate and a 95%-accurate one were indistinguishable in outcome: **the task
+tolerates a lot of estimator error.** The correction has to be roughly right in direction and
+scale; it does not have to be a good tracker.
+
+That is a useful property to state plainly — it is why a six-parameter, CPU-side update is
+enough — but it also means **tracking accuracy is the wrong headline metric** for this method.
+Task outcome under a matched control is the metric that has survived every test today.
+
+### 17.3 What is now covered
+
+| fault type | status |
+|---|---|
+| constant additive, uniform 6-axis | solved, 4 suites, p = 9.3×10⁻¹⁰ |
+| constant additive, single-family, 0.05–0.15 | solved, up to 20% → 95% |
+| structured mixed-sign | solved, +66 |
+| mid-episode onset (step) | solved (§3) |
+| **ramp / gradual degradation** | **solved, +30, p = 0.031** |
+| oscillatory | **untested** — the sine chosen did no damage |
+| intermittent | inconclusive — underpowered |
+| multiplicative (loss of effectiveness) | **not solved** (§16) |
+| sensor bias, camera shift | structurally invisible (§4) |
