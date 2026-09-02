@@ -1279,3 +1279,64 @@ sign changes.
 **This is the ablation the method needed**, and it is a real comparison rather than a
 strawman: the baseline was swept over five gains across two orders of magnitude and is
 reported at its best.
+
+## 19. The recoverability map (added 2026-09-02)
+
+Fault family × severity, `libero_spatial`, n = 20 paired per cell, correction applied to the
+channels each family's evidence supports (rotation faults and uniform faults both on
+rotation, per §14.3).
+
+| fault | 0.05 | 0.10 | 0.15 |
+|---|---|---|---|
+| **translation** | 18/20 → 18/20 (ceiling) | 13/20 → **19/20**, p=0.031 | 4/20 → **19/20**, p=6.1×10⁻⁵ |
+| **rotation** | 13/20 → 18/20, p=0.063 | 0/20 → **17/20**, p=1.5×10⁻⁵ | 0/20 → **9/20**, p=0.0039 |
+| **uniform 6-axis** | 8/20 → 18/20, p=0.0020 | 2/20 → 11/20, p=0.0039 | 0/20 → 2/20, p=0.50 |
+
+**Zero regressions in every cell.**
+
+### 19.1 Rotation is where the policy breaks
+
+At 0.10 and 0.15 a rotation-only fault takes the frozen policy to **exactly zero**, while a
+translation fault of the same magnitude leaves it at 13/20 and 4/20. This is §13.1's 3.5×
+damage ratio holding across severities, and it is the clearest single statement of the
+policy's sensitivity: **π0.5-LIBERO tolerates translation error and does not tolerate
+rotation error.**
+
+Recovery from that floor is the strongest result in the table — `0/20 → 17/20` at 0.10, from
+a policy that never once succeeds unaided.
+
+### 19.2 Single-family faults degrade gracefully; the uniform fault falls off a cliff
+
+Reading down the severity axis:
+
+- translation: −, 95%, 95% — no degradation at all up to 0.15
+- rotation: 90%, 85%, 45% — graceful
+- **uniform: 90%, 55%, 10%** — collapse
+
+### 19.3 The collapse is the translation component, and it is not a correction failure
+
+The sharpest comparison in the table is `rotation 0.15` against `uniform 0.15`. **Both are
+corrected identically — rotation only.** The uniform fault is the rotation fault plus a
+translation component that the correction never touches:
+
+| | frozen | corrected |
+|---|---|---|
+| rotation 0.15, corrected on rotation | 0/20 | **9/20 = 45%** |
+| uniform 0.15, corrected on rotation | 0/20 | **2/20 = 10%** |
+
+Adding an *uncorrected* translation component drops recovery from 45% to 10%. Since the
+correction is the same in both rows, the loss cannot be an estimation or correction failure
+on rotation. It is the translation component **destroying recoverability by driving the arm
+into contacts and limits** — §11's superposition failure and §13.1's super-additive damage,
+now visible directly in task outcome.
+
+**This is the method's boundary, and it is a property of the plant, not the estimator.** Once
+a fault is large enough and spread across enough axes to put the arm outside the regime where
+its own motion is informative, no amount of correction on the identifiable channels recovers
+the task.
+
+### 19.4 Safety, over everything
+
+Across **340 paired episodes** — four suites, three fault families, three severities, four
+time profiles: **107 fixed, 4 broken, a 1.2% regression rate.** Every regression occurs where
+the frozen policy was already at 18–19 of 20.
