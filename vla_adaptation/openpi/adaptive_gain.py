@@ -40,7 +40,7 @@ from adaptive_law import fit_plant, OUT, K_FIR
 
 def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220,
         rls=True, lam=0.999, dither=0.0, dither_dims=(3, 4, 5), corr_dims=None,
-        g_min=0.05, g_max=3.0):
+        g_min=0.05, g_max=3.0, intercept=False):
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
     plan, t = collections.deque(), 0
@@ -51,6 +51,8 @@ def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220
     # channels -- dx and dz both saturated the projection bound at 0.8 against a true 0.5 --
     # because the step does not shrink as evidence accumulates. P_i does exactly that.
     P = np.full(6, 1e3)
+    theta = np.zeros((6, 2))                # [b_i, beta_i] per channel
+    Pm = np.array([np.diag([1e3, 1e3]) for _ in range(6)])
     while t < max_steps + 10:
         if t < 10:
             obs, _, done, _ = env.step(lm.LIBERO_DUMMY_ACTION); t += 1; continue
@@ -108,15 +110,36 @@ def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220
             for i in range(6):
                 if abs(psi[i]) < pe_min:        # not excited -> not identifiable -> hold
                     continue
-                err = z[i] - beta[i] * psi[i]
-                if rls:
-                    k = P[i] * psi[i] / (lam + P[i] * psi[i] ** 2)   # RLS gain, shrinks
-                    beta[i] += k * err
-                    P[i] = (P[i] - k * psi[i] * P[i]) / lam
+                if intercept:
+                    # Regress z_i = b_i + beta_i * psi_i, estimating BOTH.
+                    #
+                    # Without b_i this fits a line through the origin to data that does not
+                    # pass through it: the plant model carries a constant bias (the same
+                    # phantom the offset law subtracts via --bias, +0.042 on z). With no
+                    # intercept beta must absorb b/psi, which diverges as psi -> 0. Measured:
+                    # on a HEALTHY robot the no-intercept law reports beta_x = -0.327,
+                    # beta_z = -0.337 and rails the clip in 40% of episodes (Sec 12.2).
+                    # The intercept gives that bias somewhere to go.
+                    phi = np.array([1.0, psi[i]])
+                    th = theta[i]
+                    Pi = Pm[i]
+                    err = z[i] - phi @ th
+                    k = Pi @ phi / (lam + phi @ Pi @ phi)
+                    theta[i] = th + k * err
+                    Pm[i] = (Pi - np.outer(k, phi @ Pi)) / lam
+                    beta[i] = theta[i][1]
                 else:
-                    beta[i] += gamma * psi[i] * err / (1e-6 + psi[i] ** 2)
+                    err = z[i] - beta[i] * psi[i]
+                    if rls:
+                        k = P[i] * psi[i] / (lam + P[i] * psi[i] ** 2)   # RLS gain, shrinks
+                        beta[i] += k * err
+                        P[i] = (P[i] - k * psi[i] * P[i]) / lam
+                    else:
+                        beta[i] += gamma * psi[i] * err / (1e-6 + psi[i] ** 2)
                 n_upd[i] += 1
             beta = np.clip(beta, -clip, clip)
+            if intercept:
+                theta[:, 1] = beta
         if done:
             return True, beta, n_upd
         t += 1
@@ -145,6 +168,10 @@ def main():
                         "effectively off (20x authority); 0.35 = decline to repair "
                         "below 35%% remaining authority.")
     p.add_argument("--g-max", type=float, default=3.0)
+    p.add_argument("--intercept", action="store_true",
+                   help="estimate a per-channel offset alongside the gain. Without it "
+                        "beta absorbs the plant-model bias and diverges as the command "
+                        "goes to zero -- on a HEALTHY robot it reports a 33%% gain loss.")
     p.add_argument("--corr-dims", default=None,
                    help="dims to correct; 0,1,2 = translation, 3,4,5 = rotation")
     p.add_argument("--dither", type=float, default=0.0,
@@ -169,7 +196,8 @@ def main():
             s, beta, n_upd = run(pr, tid, init, a.gain, M_inv, W, a.gamma, adapt,
                                  a.pe_min, a.clip, rls=not a.lms, lam=a.lam,
                                  dither=a.dither, corr_dims=cdims,
-                                 g_min=a.g_min, g_max=a.g_max)
+                                 g_min=a.g_min, g_max=a.g_max,
+                                 intercept=a.intercept)
             ok += int(s)
             per_ep.append(dict(task=int(tid), init=int(init), ok=bool(s))); B.append(beta.tolist()); U.append(n_upd.tolist())
             print(f"  [{tag}] task {tid}: success={s}  beta={np.round(beta,2)}  "

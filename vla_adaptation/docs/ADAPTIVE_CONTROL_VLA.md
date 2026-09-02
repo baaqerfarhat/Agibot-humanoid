@@ -1085,3 +1085,69 @@ residual ever approached `ρ` — but on this plant, at faults up to 0.15, it do
 **On the review's criticism:** the algebra was correct and I confirmed it. The practical
 magnitude is ~8%, not the 31% I estimated, and correcting it changes no result. That is worth
 stating plainly rather than shipping a fix and implying it mattered.
+
+## 16. Loss of effectiveness: the intercept fix failed, and the law remains unsafe (added 2026-09-01)
+
+§12 showed the gain law reports a 33% loss of effectiveness on a healthy robot. This section
+attempts a fix, fails, and records both the failure and one solid finding that came out of it.
+
+### 16.1 The attempted fix
+
+The model was `z_i ≈ β_i·ψ_i` with no intercept, while the residual carries a constant
+plant-model bias `b` (the phantom the offset law subtracts via `--bias`). With no home for
+`b`, β absorbs `b/ψ`. Synthetically this reproduces exactly: with a **one-sided** command the
+no-intercept law converges to a phantom (+0.10 where truth is 0) and the intercept form
+returns 0.000. With symmetric commands both are fine, so the one-sidedness is essential —
+and a reach is one-sided.
+
+### 16.2 It made things worse on the real robot
+
+| | healthy phantom (mean \|β̂\|) | healthy task success | sep on x | sep on z |
+|---|---|---|---|---|
+| no intercept | 0.181 | 9/10 | −0.160 | −0.460 |
+| **with intercept** | **0.224** | **7/10** | **−0.045** | **−0.299** |
+
+Worse on every measure. `--intercept` stays **off by default** and is retained only as a
+documented negative result.
+
+### 16.3 The obvious explanation is ruled out
+
+The natural diagnosis is collinearity: if `ψ` barely varies within an episode, `[1, ψ]` are
+nearly the same direction and `b` cannot be separated from `β·ψ`. Measured on the recorded
+commands, restricted to steps that pass the PE gate:
+
+| ch | mean\|ψ\| | sd(ψ) | sd/\|mean\| | cond([1,ψ]) |
+|---|---|---|---|---|
+| x | 0.515 | 0.468 | 0.91 | **2.4** |
+| y | 0.423 | 0.405 | 0.96 | **2.6** |
+| z | 0.644 | 0.660 | 1.02 | **1.6** |
+| ry | 0.169 | 0.011 | 0.06 | 93.6 |
+| rx, rz | — | — | — | **no episodes pass the gate** |
+
+Translation is well conditioned (1.6–2.6). **The collinearity explanation is false for the
+channels that got worse**, and I do not have a confirmed mechanism for why the intercept
+hurt. Recorded as an open failure rather than given a story.
+
+### 16.4 The finding that does hold: rotation gain faults are unidentifiable here
+
+`rx` and `rz` have **no episodes at all** in which the command exceeds the PE gate, and `ry`
+has sd 0.011 about a mean of 0.169. The policy simply does not rotate the wrist enough to
+excite a multiplicative fault. This is direct measurement of the persistency-of-excitation
+argument, and it is a property of **the policy's behaviour**, not of the estimator: no gain
+law, however constructed, can identify a rotation gain fault from data with no rotational
+excitation. It would need deliberate dither, which perturbs the task.
+
+### 16.5 Status: loss of effectiveness is not solved
+
+The faulted run looks good in isolation — frozen 14/20 → corrected **20/20** — and it must
+not be reported that way. The matched healthy control is **10/10 → 7/10**: the same law
+damages a robot with nothing wrong with it. A repair number is not meaningful while the
+no-fault control shows harm, so the honest summary is:
+
+> **Additive faults: solved.** 61 fixed / 3 broken over 200 paired episodes, four suites,
+> both fault families, magnitudes 0.05–0.15.
+>
+> **Multiplicative (loss of effectiveness): not solved.** Identification works on 2 of 3
+> translation channels, is structurally impossible on rotation for this policy (§16.4), and
+> the estimator still hallucinates faults on healthy hardware. It should be presented as an
+> open problem with a diagnosed cause, not as a second result.

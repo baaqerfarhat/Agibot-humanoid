@@ -76,7 +76,7 @@ def fit_plant(log_path, lam=1e-2, mimo=False):
 def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, onset=0,
         obs_off=None, wrist_shift=0, static_c=None,
         dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None, corr_dims=None,
-        law="legacy", M=None):
+        law="legacy", M=None, profile="step", prof_p=60.0):
     import paired_probe as _pp
     max_steps = max_steps or _pp.MAXS
     env, desc, inits = pr.env_for(tid)
@@ -132,12 +132,27 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
         # that degrades while running -- and it tests the estimator as a TRACKER rather than
         # just asking whether it converges from step 1.
         live = (t >= onset)
-        if fvec is not None:
+        # Time-varying faults. A constant fault only asks whether the estimator CONVERGES;
+        # a moving one asks whether it TRACKS, which is the deployment question -- hardware
+        # degrades gradually (ramp), oscillates with load or temperature (sine), or drops in
+        # and out with a loose connection (intermittent).
+        scale = 1.0
+        if live and profile != "step":
+            u = t - onset
+            if profile == "ramp":
+                scale = min(1.0, u / max(prof_p, 1e-9))          # linear drift to full
+            elif profile == "sine":
+                scale = float(np.sin(2.0 * np.pi * u / max(prof_p, 1e-9)))
+            elif profile == "intermittent":
+                scale = 1.0 if (int(u // max(prof_p, 1)) % 2 == 0) else 0.0
+        f_true_now = (np.asarray(fvec, float) if fvec is not None
+                      else np.full(6, sev)) * (scale if live else 0.0)
+        if fvec is not None or profile != "step":
             # A structured fault: per-dim values instead of one scalar on every axis. The law
             # was built and tuned on a uniform +0.05, so recovering a pattern it has never
             # seen is the real generalisation test.
             a_exec = a_corr.copy()
-            if live: a_exec[:6] += fvec
+            a_exec[:6] += f_true_now
         else:
             a_exec = apply_action_fault(a_corr, "offset", sev if live else 0.0, 6)       # then the world's fault
         x0 = np.array(obs["robot0_eef_pos"], float)
@@ -182,7 +197,8 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
                 else:
                     step = (M_inv @ e) / (1.0 + (ne / norm_r) ** 2)
                 f_hat = np.clip(f_hat + gamma * step, -clip, clip)
-                traj.append(dict(t=t, f_hat=f_hat.tolist(), r=r.tolist(), live=bool(live)))
+                traj.append(dict(t=t, f_hat=f_hat.tolist(), r=r.tolist(), live=bool(live),
+                         f_true=f_true_now.tolist()))
                 if done:
                     return True, f_hat, traj
                 t += 1
@@ -200,7 +216,8 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
                 est = np.zeros(6)
             est = est / (1.0 + (nr / norm_r) ** 2)
             f_hat = np.clip(f_hat + gamma * (est - f_hat), -clip, clip)
-        traj.append(dict(t=t, f_hat=f_hat.tolist(), r=r.tolist(), live=bool(live)))
+        traj.append(dict(t=t, f_hat=f_hat.tolist(), r=r.tolist(), live=bool(live),
+                         f_true=f_true_now.tolist()))
         if done:
             return True, f_hat, traj
         t += 1
@@ -217,6 +234,10 @@ def main():
     p.add_argument("--host", default="0.0.0.0"); p.add_argument("--port", type=int, default=8000)
     p.add_argument("--replan-steps", type=int, default=5)
     p.add_argument("--gamma", type=float, default=0.05)
+    p.add_argument("--profile", choices=["step", "ramp", "sine", "intermittent"],
+                   default="step", help="how the fault varies in time")
+    p.add_argument("--prof-p", type=float, default=60.0,
+                   help="ramp length / sine period / intermittent half-period, in steps")
     p.add_argument("--law", choices=["legacy", "innov"], default="legacy",
                    help="legacy: normalise the estimate (biased low ~5%). "
                         "innov: normalise the step, unbiased fixed point.")
@@ -281,7 +302,8 @@ def main():
                                  apply_corr=not a.estimate_only, bias=bias,
                                  corr_dims=cdims, fvec=fvec, onset=a.onset,
                                  obs_off=obs_off, wrist_shift=a.wrist_shift,
-                                 static_c=static_c, law=a.law, M=M)
+                                 static_c=static_c, law=a.law, M=M,
+                                 profile=a.profile, prof_p=a.prof_p)
             ok += int(s); fh.append(f_hat.tolist())
             # Per-episode outcome, keyed by (task, init). The arms run on the SAME episode
             # list, so these pair up -- which is what McNemar needs and what the earlier
