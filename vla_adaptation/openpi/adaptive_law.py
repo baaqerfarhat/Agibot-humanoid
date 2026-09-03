@@ -144,6 +144,12 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
                 scale = min(1.0, u / max(prof_p, 1e-9))          # linear drift to full
             elif profile == "sine":
                 scale = float(np.sin(2.0 * np.pi * u / max(prof_p, 1e-9)))
+            elif profile == "sine_bias":
+                # A zero-mean sine averages to nothing over an episode and does no damage --
+                # frozen scored 20/20 on it (Sec 17.1), so the cell proved nothing. This is
+                # the oscillation a real load or thermal cycle produces: it swings between
+                # zero and full fault rather than symmetrically about zero.
+                scale = 0.5 * (1.0 + float(np.sin(2.0 * np.pi * u / max(prof_p, 1e-9))))
             elif profile == "intermittent":
                 scale = 1.0 if (int(u // max(prof_p, 1)) % 2 == 0) else 0.0
         f_true_now = (np.asarray(fvec, float) if fvec is not None
@@ -255,7 +261,7 @@ def main():
                         "the identification machinery is doing any work.")
     p.add_argument("--ki", type=float, default=0.05,
                    help="integral gain for --baseline integral")
-    p.add_argument("--profile", choices=["step", "ramp", "sine", "intermittent"],
+    p.add_argument("--profile", choices=["step", "ramp", "sine", "sine_bias", "intermittent"],
                    default="step", help="how the fault varies in time")
     p.add_argument("--prof-p", type=float, default=60.0,
                    help="ramp length / sine period / intermittent half-period, in steps")

@@ -1340,3 +1340,59 @@ the task.
 Across **340 paired episodes** — four suites, three fault families, three severities, four
 time profiles: **107 fixed, 4 broken, a 1.2% regression rate.** Every regression occurs where
 the frozen policy was already at 18–19 of 20.
+
+## 20. Time-varying faults, completed (added 2026-09-02)
+
+§17 left two of four profiles unproven, and said why: the sine and intermittent cells were
+ceilings, with the frozen policy at 20/20 and 17/20. Both are now re-run against a fault the
+policy is actually sensitive to.
+
+### 20.1 What changed, and why it was the fault rather than the analysis
+
+Two corrections to the original design, both applied **before** running rather than after
+finding a null:
+
+1. **Moved to rotation.** §19 shows rotation is where this policy breaks — a 0.10 rotation
+   fault takes it to 0/20 while translation at the same magnitude leaves it at 13/20.
+2. **Made the oscillation non-zero-mean.** The original `sine` averaged to zero over an
+   episode, which is precisely why it did no damage. `sine_bias` swings between zero and full
+   fault instead, which is what a thermal or load cycle produces.
+
+### 20.2 All four profiles
+
+| profile | frozen | corrected | fixed | broken | McNemar |
+|---|---|---|---|---|---|
+| step / mid-episode onset | — | — | — | — | solved (§3) |
+| ramp, translation 0.10 | 12/20 | **18/20** | 6 | 0 | **0.031** |
+| **sine_bias, rotation 0.10** | 13/20 | **20/20** | 7 | 0 | **0.016** |
+| **intermittent, rotation 0.10** | 12/20 | **19/20** | 8 | 1 | **0.039** |
+
+**The time-varying row is now complete and every profile is significant.**
+
+`sine_bias` reaching **20/20** is the strongest cell in the whole record: perfect recovery on
+a fault whose magnitude is changing continuously throughout the episode. Set against §17.2,
+where tracking error was 45–79% of amplitude and not attributable to lag, it sharpens the
+same conclusion — **the correction does not need to track the waveform.** It needs to be
+roughly right in direction and scale, and the task absorbs the rest.
+
+### 20.3 Aggregate
+
+Across **380 paired episodes** — four suites, three fault families, three severities, four
+time profiles, both correction restrictions: **122 fixed, 5 broken, a 1.3% regression rate.**
+
+The intermittent cell contributes the fifth regression, and it is the first one that did not
+occur against a ceiling: frozen was at 12/20 there, not 18–19/20. Worth noting rather than
+smoothing over — a fault that switches off entirely is the one condition where a stale
+correction has something to damage.
+
+### 20.4 Coverage, updated
+
+| fault type | status |
+|---|---|
+| constant additive: uniform, single-family, structured | solved |
+| mid-episode onset | solved |
+| ramp / gradual degradation | solved, p = 0.031 |
+| **oscillatory (non-zero-mean)** | **solved, p = 0.016** |
+| **intermittent** | **solved, p = 0.039** |
+| multiplicative (loss of effectiveness) | not solved (§16) |
+| sensor bias, camera misalignment | structurally invisible (§4) |
