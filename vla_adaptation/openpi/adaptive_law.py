@@ -115,6 +115,8 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
         if not plan:
             plan.extend(pr.client.infer({
                 "observation/image": img, "observation/wrist_image": wr,
+                "observation/image_raw": np.ascontiguousarray(obs["agentview_image"][::-1, ::-1]),
+                "observation/wrist_image_raw": np.ascontiguousarray(obs["robot0_eye_in_hand_image"][::-1, ::-1]),
                 # obs_off: a constant bias on the POSITION SENSOR. The policy is misled about
                 # where the arm is. Crucially the residual is built from dx, a DIFFERENCE, so
                 # a constant sensor offset cancels exactly and is invisible to it -- this is a

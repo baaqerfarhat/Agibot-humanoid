@@ -82,6 +82,8 @@ class Probe:
             wr = image_tools.convert_to_uint8(image_tools.resize_with_pad(
                 np.ascontiguousarray(obs["robot0_eye_in_hand_image"][::-1, ::-1]), 224, 224))
             el = {"observation/image": img, "observation/wrist_image": wr,
+                "observation/image_raw": np.ascontiguousarray(obs["agentview_image"][::-1, ::-1]),
+                "observation/wrist_image_raw": np.ascontiguousarray(obs["robot0_eye_in_hand_image"][::-1, ::-1]),
                   "observation/state": np.concatenate((
                       obs["robot0_eef_pos"], libero_main._quat2axisangle(obs["robot0_eef_quat"]),
                       obs["robot0_gripper_qpos"])), "prompt": str(desc)}
