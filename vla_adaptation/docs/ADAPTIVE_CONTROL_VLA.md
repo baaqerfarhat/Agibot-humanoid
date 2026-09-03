@@ -1546,3 +1546,58 @@ estimator, and no gain law can recover it without deliberate dither.
 **450 paired episodes** — four suites, three additive fault families, three severities each,
 four time profiles, and a multiplicative severity sweep: **158 fixed, 5 broken, 1.1%
 regression.**
+
+## 23. Second suite: all three fault families replicate (added 2026-09-03)
+
+The map, the baseline and the gain sweep all ran on `libero_spatial`. These are the three
+headline cells — one per fault family, each at the severity where spatial showed the largest
+effect — repeated on `libero_object`, n = 20 paired.
+
+**The plant model `W` and the sensitivity matrix `M` were not re-identified.** Both are the
+ones fitted on `libero_spatial` healthy rollouts, so this tests calibration transfer as well
+as replication.
+
+### 23.1 Result
+
+| cell | `libero_spatial` | `libero_object` | McNemar (object) |
+|---|---|---|---|
+| rotation 0.10 | 0/20 → 17/20 (85%) | **0/20 → 10/20 (50%)** | **0.0020** |
+| translation 0.15 | 4/20 → 19/20 (95%) | **0/20 → 15/20 (75%)** | **6.1×10⁻⁵** |
+| gain 0.20 | 0/20 → 17/20 (85%) | **0/20 → 19/20 (95%)** | **3.8×10⁻⁶** |
+
+**Zero regressions in all three.** The frozen policy scores **0/20 in every cell** — at these
+severities `libero_object` is destroyed by all three fault families.
+
+All three replicate, and **the offline calibration transfers**: a plant model and sensitivity
+matrix identified on one task suite repair faults on another without re-identification. That
+matters for deployment, because it means the healthy-data calibration is a property of the
+robot rather than of the task distribution.
+
+### 23.2 What does not transfer cleanly, stated honestly
+
+Recovery on the two additive cells is lower than on spatial — 50% against 85%, 75% against
+95%. Two explanations push the same way and **this design cannot separate them**:
+
+1. `libero_object` is the harder suite; its unfaulted baseline is lower.
+2. The calibration is foreign to it.
+
+The gain cell argues against (2) being dominant — it *exceeded* spatial (95% vs 85%) on the
+same foreign calibration — but that is one cell, not a control. Separating the two needs `W`
+and `M` re-identified on `object` healthy rollouts, which is cheap: open-loop replay is CPU
+and takes seconds. **Until that is run, the transfer claim should be stated as "works without
+re-identification", not as "loses nothing".**
+
+### 23.3 The clip confound, again
+
+`gain = 0.20` on object gives `β̂ = −0.798, −0.797, −0.791` against a true −0.800, and
+`--clip` is again 0.8. Per-episode: **x is pinned at the bound in 45% of episodes**; y and z
+are clean at 0%. So y and z are genuine measurements here (0.4% and 1.1% error) and x is not.
+
+This is the fourth time an estimate has read approximately its own projection bound. The
+lesson has been learned repeatedly and not yet acted on: **the clip should be set from the
+expected fault magnitude at run time, not left at a default that can coincide with truth.**
+
+### 23.4 Aggregate
+
+**510 paired episodes** across two suites, four fault families, three severities, four time
+profiles: **202 fixed, 5 broken, 1.0% regression.**
