@@ -78,6 +78,28 @@ def main() -> None:
         # Drop early-termination so the rollout plays the full motion in one
         # continuous take (only the timeout term remains).
         saved_cfg.termination.terms.pop("bad_tracking", None)
+        # Same intent, for terms whose implementation is not in this checkout:
+        # the v17/v18 configs reference
+        # holosoma.managers.termination.terms.wbt:HandGroundSupport, which is not in
+        # the overlay, so the env cannot be built at all without dropping it. The
+        # comment above already says only the timeout term should remain, so this
+        # completes that rather than changing it -- but it is printed so a missing
+        # implementation never passes unnoticed.
+        import importlib as _il
+        for _n in list(saved_cfg.termination.terms):
+            _t = saved_cfg.termination.terms[_n]
+            _f = _t.get("func") if isinstance(_t, dict) else getattr(_t, "func", "")
+            if not isinstance(_f, str) or ":" not in _f:
+                continue
+            _m, _a = _f.split(":", 1)
+            try:
+                _ok = hasattr(_il.import_module(_m), _a)
+            except Exception:
+                _ok = True
+            if not _ok:
+                print(f"[record] DROPPING termination term {_n!r} -> {_f} "
+                      f"(not available in this checkout)", flush=True)
+                saved_cfg.termination.terms.pop(_n, None)
 
     eval_cfg = saved_cfg.get_eval_config()
     # Force headless (no RTX viewer -> no crash on this GPU), single env, finite rollout.

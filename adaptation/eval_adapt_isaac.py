@@ -41,7 +41,7 @@ def _leg_idx(names: list[str]) -> list[int]:
 
 
 def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: float,
-             on_reset=None, obs_hook=None, action_hook=None):
+             on_reset=None, obs_hook=None, action_hook=None, motion_path=None):
     """One closed-loop Isaac rollout. adapter=None => frozen torch policy.
 
     `on_reset` runs immediately after the reset, before the first action. Fault
@@ -131,10 +131,21 @@ def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: 
         leg_err = float(np.degrees(np.abs(err_vec)[legs]).mean())
         errs.append(leg_err)
 
+        root = sim.robot_root_states[0].detach().cpu().numpy()
         if adapter is not None:
+            # Hand the adapter the raw state so a stability-driven variant can compute
+            # its own error (CoM over stance foot) instead of using joint tracking
+            # error. Adapters that do not implement set_context ignore this.
+            if hasattr(adapter, "set_context"):
+                x, y, z, w = root[3:7]
+                adapter.set_context(
+                    dof_pos=q, dof_vel=sim.dof_vel[0].detach().cpu().numpy(),
+                    dof_names=list(sim.dof_names), root_pos=root[:3],
+                    root_quat_wxyz=np.array([w, x, y, z]), frame=frame,
+                    ref_clip=motion_path, dt=ctrl_dt,
+                )
             adapter.update(err_vec, ctrl_dt)
 
-        root = sim.robot_root_states[0].detach().cpu().numpy()
         records["dof_pos"].append(q.copy())
         records["dof_vel"].append(sim.dof_vel[0].detach().cpu().numpy().copy())
         records["actions"].append(actions[0].detach().cpu().numpy().copy())
@@ -162,6 +173,13 @@ def _rollout(algo, task, adapter, max_steps: int, ref_pos: np.ndarray, ctrl_dt: 
         actor_state["obs"] = actor_state.get("obs", actor_state["obs"])
 
     mean_err = float(np.mean(errs)) if errs else float("nan")
+    # Expose the adaptive law's internal magnitudes so they can be checked against
+    # what is physically plausible, rather than inferred from the outcome.
+    for _t in ('theta_trace', 's_trace', 'ejoint_trace'):
+        _v = getattr(adapter, _t, None)
+        if _v:
+            records[_t] = list(_v)
+
     drift = adapter.weight_drift if adapter is not None else 0.0
     diverged = bool(adapter.diverged) if adapter is not None else False
     return {
@@ -306,7 +324,7 @@ def main() -> None:
 
     if not args.skip_frozen:
         print("\n=== FROZEN (torch policy, Isaac + box) ===")
-        r = _rollout(algo, task, None, args.steps, ref_pos, ctrl_dt)
+        r = _rollout(algo, task, None, args.steps, ref_pos, ctrl_dt, motion_path=args.motion)
         print(
             f"  survival {r['survival']:4d} ({r['survival']*ctrl_dt:5.2f}s)  "
             f"tracked {r['tracked']:4d}  legErr {r['leg_err']:6.2f} deg  "
@@ -382,7 +400,7 @@ def main() -> None:
             cfg = AdaptConfig(layer=2, gain=gain, leak=1e-2, gx_level=1,
                               error_joints=("hip", "knee", "ankle", "waist"), engage_step=0)
             adapter = _Adapter(pol, cfg, joint_names=pol.meta["joint_names"])
-            r = _rollout(algo, task, adapter, args.steps, ref_pos, ctrl_dt)
+            r = _rollout(algo, task, adapter, args.steps, ref_pos, ctrl_dt, motion_path=args.motion)
             print(
                 f"  survival {r['survival']:4d} ({r['survival']*ctrl_dt:5.2f}s)  "
                 f"tracked {r['tracked']:4d}  legErr {r['leg_err']:6.2f} deg  "

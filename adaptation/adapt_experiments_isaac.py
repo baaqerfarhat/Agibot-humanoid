@@ -30,6 +30,9 @@ import paths  # noqa: E402
 from ace_adapt import AdaptConfig, ExportedPolicy, LayerAdapter  # noqa: E402
 
 import eval_adapt_isaac as base  # noqa: E402
+from paper_adapter import (  # noqa: E402
+    ComSlidingAdapter, PreemptiveStanceAdapter, StabilityAdapter,
+)
 
 N_DOF = 31
 
@@ -283,6 +286,20 @@ SAGITTAL = ("knee", "hip_pitch", "ankle_pitch")
 VARIANTS = [
     # name,                  gain,   gx,  error_joints, cls
     ("frozen",               None,   None, None,        None),
+    # Drives on the CoM-over-stance-foot violation instead of joint tracking error.
+    # Gamma 1e-4 is the value already shown harmless on a healthy policy.
+    ("stability_g1e-4",      1e-4,   1,    LEGS_WAIST,  StabilityAdapter),
+    ("stability_g3e-4",      3e-4,   1,    LEGS_WAIST,  StabilityAdapter),
+    ("stability_g1e-3",      1e-3,   1,    LEGS_WAIST,  StabilityAdapter),
+    ("stability_g1e-2",      1e-2,   1,    LEGS_WAIST,  StabilityAdapter),
+    # Gates on the REFERENCE being infeasible ahead, and drives the swing foot down
+    # rather than the CoM back -- acts before commitment instead of after it.
+    ("preempt_g1e-3",        1e-3,   1,    LEGS_WAIST,  PreemptiveStanceAdapter),
+    ("preempt_g1e-2",        1e-2,   1,    LEGS_WAIST,  PreemptiveStanceAdapter),
+    # Sliding variable s = e_dot + lambda*e on the lateral CoM offset, with an
+    # adaptive residual estimate theta_hat (m/s^2) mapped through the CoM Jacobian.
+    ("comslide_g1e-3",       1e-3,   1,    LEGS_WAIST,  ComSlidingAdapter),
+    ("comslide_g1e-2",       1e-2,   1,    LEGS_WAIST,  ComSlidingAdapter),
     ("frozen_npz",           0.0,    1,    LEGS_WAIST,  W0LeakAdapter),
     ("his_g3e-4_gx1",        3e-4,   1,    LEGS_WAIST,  LayerAdapter),
     ("his_g1e-5_gx1",        1e-5,   1,    LEGS_WAIST,  LayerAdapter),
@@ -398,6 +415,28 @@ def main() -> None:
             motion_dir="",
         )
     saved_cfg.termination.terms.pop("bad_tracking", None)
+    # Drop termination terms whose implementation is not in this checkout. The v18/v17
+    # configs reference holosoma.managers.termination.terms.wbt:HandGroundSupport,
+    # which lives only in the training author's holosoma and is not in the overlay, so
+    # the env cannot be built without this. Dropping it is consistent with how the
+    # reference sim rollouts were recorded ("demo mode: clean, from t=0, no noise, no
+    # early termination"), but it IS a change to the environment and is printed so it
+    # never happens silently.
+    import importlib as _il
+    for _name in list(saved_cfg.termination.terms):
+        _f = saved_cfg.termination.terms[_name]
+        _func = _f.get("func") if isinstance(_f, dict) else getattr(_f, "func", "")
+        if not isinstance(_func, str) or ":" not in _func:
+            continue
+        _mod, _attr = _func.split(":", 1)
+        try:
+            _ok = hasattr(_il.import_module(_mod), _attr)
+        except Exception:
+            _ok = True   # import-time failure (e.g. Isaac not up yet) is not absence
+        if not _ok:
+            print(f"[setup] DROPPING termination term {_name!r} -> {_func} "
+                  f"(not available in this checkout)", flush=True)
+            saved_cfg.termination.terms.pop(_name, None)
 
     if args.obs_noise == "off":
         for group_name, group in saved_cfg.observation.groups.items():
@@ -492,10 +531,10 @@ def main() -> None:
                                         tuple(s for s in args.action_clip_joints.split(",") if s))
                          if args.action_clip > 0 else None)
             r = base._rollout(algo, task, adapter, args.steps, ref_pos, ctrl_dt,
-                              on_reset=fault_fn, action_hook=clip_hook)
+                              on_reset=fault_fn, action_hook=clip_hook, motion_path=args.motion)
             r.update(box_metrics(r["records"], ctrl_dt))
             rows.append(r)
-            if args.record_seed is not None and s == args.record_seed:
+            if args.record_seed is not None and (args.record_seed < 0 or s == args.record_seed):
                 base._save_npz(
                     Path(args.record_dir) / f"isaac_{name}_seed{s}.npz", r,
                     {"mode": name, "seed": s, "ckpt": args.ckpt, "gain": gain,
