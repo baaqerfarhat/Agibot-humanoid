@@ -1,10 +1,13 @@
 # v19: what changed, and what it did and did not fix
 
-Follow-up to `WHAT_WE_NEED_FROM_YOU.md` / `ANSWERS_WHAT_WE_NEED_FROM_YOU.md`. Short
-version: the reference's infeasible single-support spells were the target, the clip
-now asks for meaningfully less of them, and **on your own survival metric v19 moves
-the right way — but by the mechanism you identified, not by fixing the motion.** It
-refuses single support harder than v18 does, and that is why it saturates less.
+Follow-up to `WHAT_WE_NEED_FROM_YOU.md` / `ANSWERS_WHAT_WE_NEED_FROM_YOU.md`.
+
+Short version: the reference's infeasible single-support spells were the target, the
+clip now asks for meaningfully less of them, and every sim metric improved — ankle
+saturation roughly halved. **On hardware it made no difference: v19 completed 0 of 7
+runs against v18's 2 of 9.** Section 5 has the numbers and our reading of why the sim
+improvement did not transfer, which is that chatter, not ankle saturation, appears to
+govern survival, and the two policies are identical on it.
 
 ## 1. The artifacts
 
@@ -114,11 +117,31 @@ And the foot-asymmetry metric that ordered your hardware runs, over frames 179�
 
 So v19 is the most conservative policy of the three by every one of these measures.
 On the monotonic line you found — less single support, more survival — that predicts
-it should survive hardware better than v18, and the halved ankle duty cycle is the
-mechanism. **But it is still not doing the motion**, and it is doing less of it than
-v18 was. We are not claiming the walk is fixed; we are claiming the reference now
-demands less of what cannot be done, and the policy has taken the slack as more
-shuffle.
+it should survive hardware better than v18.
+
+**It did not, and the hardware runs in `96c1448` settle it: v19 completed 0 of 7,
+v18 completed 2 of 9.** Best v19 was 655 of the 741 ticks a full clip needs, at gain
+0.95. So the prediction above is falsified, and the survival line does not extend from
+sim onto hardware the way the sim-internal ordering suggested it would.
+
+The chatter numbers say why the sim comparison was not predictive. Same metric, same
+twelve leg joints, hardware against sim:
+
+| | sim | hardware, mean over runs | ratio |
+|---|---|---|---|
+| v18 | 33.1 mrad | 49.7 mrad (9 runs) | 1.50× |
+| v19 | 34.7 mrad | 52.3 mrad (6 runs) | 1.51× |
+
+Reversal rate is 22.0% on hardware for **both**. The two policies are
+indistinguishable on the axis that appears to govern whether a run survives, and v19
+is very slightly worse on it — which tracks the sim ordering (34.7 against 33.1) far
+better than the ankle duty cycle does. Halving ankle saturation bought nothing
+measurable on hardware; the ~1.5× chatter amplification did not change either.
+
+**But it is still not doing the motion**, and it is doing less of it than v18 was. We
+are not claiming the walk is fixed. The reference now demands less of what cannot be
+done, the policy has taken the slack as more shuffle, and on hardware that was not
+worth anything.
 
 ## 6. What we ruled out, with numbers
 
