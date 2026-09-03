@@ -1601,3 +1601,60 @@ expected fault magnitude at run time, not left at a default that can coincide wi
 
 **510 paired episodes** across two suites, four fault families, three severities, four time
 profiles: **202 fixed, 5 broken, 1.0% regression.**
+
+## 24. `libero_90`: a floor, not a repair result (added 2026-09-03)
+
+The four-suite headline was extended to `libero_90` — 90 tasks, sampled every 4th, same
+configuration (uniform +0.05, rotation-only), same spatial-identified `W` and `M`. The
+faulted run came back **4/20 → 5/20, p = 1**, with 15 episodes where neither arm succeeded.
+
+That number cannot be read without knowing what the policy can do *unfaulted*. The same 20
+episodes, three conditions:
+
+| condition | success |
+|---|---|
+| healthy, frozen | **6/20** |
+| faulted, frozen | 4/20 |
+| faulted, corrected | 5/20 |
+| healthy, with the law running | 5/20 |
+
+**The policy fails 14 of these 20 tasks with no fault present.** There is nothing for a
+correction to restore on them. Of the 6 it can do, the fault breaks 4 and the correction
+recovers 1 — too few episodes to say anything about repair, and within the ±10-point
+run-to-run noise (tasks 28 and 44 succeeded *faulted* but not *healthy*).
+
+### 24.1 Why: these tasks are outside the checkpoint's competence
+
+openpi's LIBERO fine-tune ingests exactly four raw datasets — `libero_10`, `goal`, `object`,
+`spatial` — and the converted set on the Hub has 40 tasks, all from those suites. **`libero_90`
+is not in it.** π0.5-LIBERO has never seen these tasks, and 6/20 is what an
+out-of-distribution suite looks like for it. The keyword overlap with `goal`/`10` tasks
+("open the top drawer...", "turn on the stove...") is vocabulary, not training coverage.
+
+The estimator is not implicated: rotation `f̂` converged to `[0.040, 0.020, 0.044]` here
+against `[0.040, 0.030, 0.045]` on spatial, and the trajectory on the longest episode climbs
+cleanly to 0.051. The correction was applied correctly to a policy that could not complete
+the task either way.
+
+### 24.2 What this is, and is not
+
+It is **a fact about the policy**: this checkpoint does not generalise to `libero_90`. That is
+worth one sentence in the paper and no more. It is **not** a fault-repair result, positive or
+negative, and it must not be tabulated as one — the faulted and corrected arms are both
+sitting on the floor.
+
+Safety on the healthy robot: 5/20 against 6/20 frozen, one regression, inside the noise.
+
+### 24.3 The design rule, completed
+
+§14.5 said a null against a *ceiling* is not a null. This is the same rule from the other
+side: **a null against a floor is not a null either.** Before any repair experiment, the
+frozen policy's unfaulted success on the exact episodes must be measured and must sit well
+away from both 0 and 20. Three of today's cells were ceilings; this one is a floor; all four
+were avoidable with a healthy-frozen control run first. That control is now a prerequisite,
+not an afterthought.
+
+### 24.4 Aggregate, unchanged in substance
+
+530 paired episodes, 203 fixed, 5 broken (0.9%). `libero_90` contributes one fix and no
+regressions, and is listed for completeness rather than as evidence.
