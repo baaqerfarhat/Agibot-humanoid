@@ -59,8 +59,10 @@ def annotate(img, title, colour, lines, prompt=""):
     return np.asarray(canvas)
 
 
-def rollout(pr, tid, init, sev, M_inv, W, gamma, adapt, dead, norm_r, clip, max_steps=220,
+def rollout(pr, tid, init, sev, M_inv, W, gamma, adapt, dead, norm_r, clip, max_steps=None,
             rec_cam="agentview", rec_fovy=None, corr_dims=None):
+    import paired_probe as _pp
+    max_steps = max_steps or _pp.MAXS      # the suite's cap, not a spatial-only 220
     env, desc, inits = pr.env_for(tid)
     env.reset()
     if rec_fovy:

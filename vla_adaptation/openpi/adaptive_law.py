@@ -73,6 +73,20 @@ def fit_plant(log_path, lam=1e-2, mimo=False):
     return np.array(W)                       # (6, 6*(K_FIR+1)+1)
 
 
+def clip_report(vals, clip, name):
+    """Warn when estimates sit on the projection bound: a value AT the clip is not a
+    measurement, it is saturation, and four times so far it was nearly reported as one."""
+    v = np.abs(np.asarray(vals, float))
+    if v.size == 0:
+        return
+    rail = (np.abs(v - clip) < 1e-6).mean(axis=0)
+    if np.any(rail > 0.2):
+        ch = ["x", "y", "z", "rx", "ry", "rz"]
+        hit = ", ".join(f"{ch[i]} {100*rail[i]:.0f}%" for i in range(len(rail)) if rail[i] > 0.2)
+        print(f"  !! {name}: at the clip (+-{clip}) in >20% of episodes on [{hit}] -- "
+              f"those channels are SATURATED, not estimated. Raise --clip above the expected fault.")
+
+
 def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, onset=0,
         obs_off=None, wrist_shift=0, static_c=None,
         dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None, corr_dims=None,
@@ -293,6 +307,8 @@ def main():
     p.add_argument("--norm-r", type=float, default=0.5, help="update normalisation")
     p.add_argument("--clip", type=float, default=0.15, help="projection box on f_hat")
     p.add_argument("--episodes", type=int, default=6)
+    p.add_argument("--task-stride", type=int, default=1,
+                   help="step between task ids; >1 samples a large suite evenly")
     p.add_argument("--sev", type=float, default=0.05)
     a = p.parse_args()
 
@@ -320,7 +336,12 @@ def main():
     pr = Probe(a)
     pr.control(dict(site=None, pin_rng=False))
     res = {"gamma": a.gamma, "arms": {}}
-    eps = [((i % 10), a.eval_init + i // 10) for i in range(a.episodes)]
+    # Spread episodes across the WHOLE suite. The old form, i % 10, silently confined a
+    # libero_90 run to its first ten tasks. With --task-stride 4 on 90 tasks, 20 episodes
+    # land on tasks 0, 4, 8, ... 76 -- a sample of the suite rather than a corner of it.
+    n_tasks = pr.suite.n_tasks
+    eps = [(((i * a.task_stride) % n_tasks), a.eval_init + (i * a.task_stride) // n_tasks)
+           for i in range(a.episodes)]
     for tag, adapt in (("frozen_faulted", False), ("adaptive", True)):
         ok, fh, trajs, per_ep = 0, [], [], []
         for tid, init in eps:
@@ -345,6 +366,7 @@ def main():
                                 f_true=[[st["f_true"] for st in tr] for tr in trajs])
         a.out.parent.mkdir(parents=True, exist_ok=True)
         a.out.write_text(json.dumps(res, indent=1))
+        clip_report(fh, a.clip, tag)
         print(f"{tag}: {ok}/{len(eps)} = {100*ok/len(eps):.0f}%\n")
     print(f"true fault = {fvec if fvec is not None else [a.sev]*6}")
 

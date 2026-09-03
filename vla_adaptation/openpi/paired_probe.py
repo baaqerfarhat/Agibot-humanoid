@@ -19,6 +19,7 @@ from gate_faults import apply_action_fault
 FAULT, SEV, DIMS, MAXS = "offset", 0.05, 6, 220
 # Episode caps differ per suite; libero_10 is long-horizon (520 vs 220), which is the real
 # stress test for an estimator that has to hold a correction for the whole episode.
+MAXS = 220   # overwritten per suite in Probe.__init__
 SUITE_MAX = {"libero_spatial": 220, "libero_object": 280, "libero_goal": 300,
              "libero_10": 520, "libero_90": 400}
 

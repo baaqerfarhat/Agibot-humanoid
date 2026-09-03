@@ -38,6 +38,20 @@ from gate_faults import apply_action_fault
 from adaptive_law import fit_plant, OUT, K_FIR
 
 
+def clip_report(vals, clip, name):
+    """Warn when estimates sit on the projection bound: a value AT the clip is not a
+    measurement, it is saturation, and four times so far it was nearly reported as one."""
+    v = np.abs(np.asarray(vals, float))
+    if v.size == 0:
+        return
+    rail = (np.abs(v - clip) < 1e-6).mean(axis=0)
+    if np.any(rail > 0.2):
+        ch = ["x", "y", "z", "rx", "ry", "rz"]
+        hit = ", ".join(f"{ch[i]} {100*rail[i]:.0f}%" for i in range(len(rail)) if rail[i] > 0.2)
+        print(f"  !! {name}: at the clip (+-{clip}) in >20% of episodes on [{hit}] -- "
+              f"those channels are SATURATED, not estimated. Raise --clip above the expected fault.")
+
+
 def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220,
         rls=True, lam=0.999, dither=0.0, dither_dims=(3, 4, 5), corr_dims=None,
         g_min=0.05, g_max=3.0, intercept=False, regressor="cmd"):
@@ -231,6 +245,7 @@ def main():
         res["arms"][tag] = dict(successes=ok, per_ep=per_ep, n=len(eps), beta=B, updates=U)
         a.out.parent.mkdir(parents=True, exist_ok=True)
         a.out.write_text(json.dumps(res, indent=1))
+        clip_report(B, a.clip, tag)
         print(f"{tag}: {ok}/{len(eps)} = {100*ok/len(eps):.0f}%\n")
     B = np.array(res["arms"]["adaptive_gain"]["beta"])
     print(f"beta_hat mean = {np.round(B.mean(0),3)}   true = {true_beta:+.2f}")
