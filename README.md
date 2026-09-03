@@ -30,6 +30,8 @@ Agibot-humanoid/
 │   └── src/mjlab/
 │       ├── asset_zoo/robots/x2/            # X2 MJCF, meshes, actuators, keyframe
 │       └── tasks/velocity/config/x2/       # X2 velocity-walk task + deploy variant
+├── squat/                      # Same 40% squat npz in mjlab vs Isaac Sim
+│   └── MJLAB_VS_ISAAC.md                   # videos, plots, and what still differs
 ├── box_pickup/                 # Box-pickup task (holosoma whole-body tracking)
 │   ├── policy/x2_box_policy_v31.npz        # deployable policy (numpy-only inference)
 │   ├── holosoma_overlay/                   # all holosoma changes for the X2 task
@@ -184,7 +186,9 @@ Useful flags: `--gain-scale 0.9`, `--hold-seconds 1.5`, `--base-ang-vel {pelvis,
 Default `--base-ang-vel pelvis` reconstructs the training IMU from the torso IMU +
 waist joints.
 
-Sim video: `squat/videos/x2_squat_40pct_iter16499.mp4`.
+Sim video: `squat/videos/x2_squat_40pct_iter16499.mp4`. Same npz on the Holosoma
+Isaac Sim X2 plant: mjlab completes, Isaac falls — write-up, videos, and canvas in
+[`squat/MJLAB_VS_ISAAC.md`](squat/MJLAB_VS_ISAAC.md).
 
 To re-export after retraining (mjlab uv env):
 
