@@ -82,12 +82,14 @@ produced by `export_box_policy_npz.py`, so the only runtime dependency is
     The policy is BLIND: it does not perceive the box. The box must be placed
     at the reference start location (see "Box placement" below) before engaging.
 
-    THE MOTION WALKS. v18 (clip sub3_largebox_003_walk_feasible, 591 frames) is
+    THE MOTION WALKS. v19 (clip sub3_largebox_003_walk_feasible, 591 frames) is
     the same carry as v16, plus the upright-start prepend: the robot carries the
     box ~1.53 m rather than setting it down where it found it, so the whole path
-    has to be clear and the handler has to walk with it.
+    has to be clear and the handler has to walk with it. The clip is v18's with
+    the six swings retimed -- shorter, and placed where the body's own sway
+    already is -- so the walk keeps both feet down longer than v18's did.
 
-    11.8 s at 50 Hz (v18, iter 81499):
+    11.8 s at 50 Hz (v19, iter 85500):
         0.00 - 1.00 s   standing still (pelvis 0.67 m, arms at default, waist 0).
                         This is the hand-off pose -- unlike v16 it does NOT open
                         mid-descent
@@ -348,9 +350,9 @@ def publish_pose(commander, pos_by_name, kp_by_name, kd_by_name, gain_scale, eng
 
 
 def _default_box_policy_path() -> str:
-    """v18 iter 81499: prefer the robot-side policies/ copy, else the repo path."""
+    """v19 iter 85500: prefer the robot-side policies/ copy, else the repo path."""
     here = os.path.dirname(os.path.abspath(__file__))
-    name = "x2_box_policy_ankle_scale_v18_iter81499.npz"
+    name = "x2_box_policy_walk_retimed_v19_iter85500.npz"
     candidates = (
         os.path.join(here, "policies", name),
         os.path.join(here, "..", "box_pickup", "policy", name),
@@ -367,18 +369,27 @@ def main():
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--policy",
                     default=_default_box_policy_path(),
-                    help="Path to WBT box policy .npz (default: v18, iter 81499). THIS ONE "
+                    help="Path to WBT box policy .npz (default: v19, iter 85500). THIS ONE "
                          "WALKS -- see the motion notes at the top, the box ends up ~1.53 m from "
-                         "where it started. Same walk_feasible clip as v16 plus the upright-start "
-                         "prepend, so engage hands off from a standing pose (~1 s still) instead "
-                         "of mid-squat. Ankle_roll action scale is now 0.06, up from the 0.02 v17 "
-                         "shipped with: 0.02 was sized on the in-place clip and could not command "
-                         "this one's +-15 deg range. 591 frames at 50 Hz (11.8 s). KNOWN, "
-                         "MEASURED, UNFIXED: both ankles sit at their effort limit for most of "
-                         "the run (ankle_roll 64/70% of substeps, ankle_pitch 51/31%) because the "
-                         "clip's single-support phases put the CoM up to 300 mm outside the "
-                         "stance foot, asking 127 N-m of a foot that can only ever deliver 21. "
-                         "Expect no balance headroom during the walk and be ready to catch it.")
+                         "where it started. Same walk_feasible clip as v16-v18 plus the "
+                         "upright-start prepend, so engage hands off from a standing pose (~1 s "
+                         "still) instead of mid-squat. 591 frames at 50 Hz (11.8 s). "
+                         "WHAT CHANGED FROM v18: the clip's six swings were shortened and slid "
+                         "onto the sub-window where the CoM is already nearest the foot about to "
+                         "carry, which is what v18 lacked -- its sway was the right size but out "
+                         "of phase, on the WRONG side of the stance foot for 98 of 199 "
+                         "single-support frames. Frames over the ankle_roll limit 134 -> 94, peak "
+                         "moment 127 -> 88 N-m. In sim that halves the time the ankles spend "
+                         "pinned at their effort limit: ankle_roll 64/70% -> 53/37%, ankle_pitch "
+                         "51/31% -> 35/21%. It also lifts the box 13 mm higher and tracks the "
+                         "waist marginally better (1.5 vs 1.6 deg mean error, 0/304 frames "
+                         "inverted). STILL TRUE: 94 frames of the walk remain over the ankle "
+                         "limit and the worst is 88 N-m against a foot that can only transmit "
+                         "21, because closing the rest needs the footsteps replanned (the clip "
+                         "steps 812 mm on a 600 mm leg). Expect less of the v18 flailing but "
+                         "still no real balance headroom during the walk -- stay ready to catch "
+                         "it. Leg target chatter is 34.7 mrad RMS against v18's 33.1, so the "
+                         "jitter is not fixed either.")
     ap.add_argument("--engage", action="store_true",
                     help="ACTUALLY publish commands. Without this it is a dry run.")
     ap.add_argument("--base-imu", default="torso", choices=["torso", "chest"],

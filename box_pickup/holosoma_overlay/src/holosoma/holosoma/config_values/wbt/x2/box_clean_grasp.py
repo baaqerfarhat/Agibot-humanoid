@@ -447,11 +447,23 @@ x2_31dof_box_grasp_reward = RewardManagerCfg(
             func="holosoma.managers.reward.terms.wbt:penalty_joint_torque_saturation",
             params={
                 "joints": "waist_pitch,ankle_pitch,ankle_roll",
-                "ramp_steps": 24_000,
+                # 24k was sized for a from-scratch run, where the policy needs to
+                # learn the motion before being charged for how it powers it. On a
+                # warm start the counter restarts too, so the term spent the whole
+                # of v18 at a few thousandths of its value -- it read 0.0026 against
+                # a full-ramp 8.85 and never actually applied. The behaviour it is
+                # meant to correct is already learned here, so it fades in over 4k.
+                "ramp_steps": 4_000,
                 "require_lifted_z": 0.0,
                 "position_term_only": True,
             },
-            weight=-0.10,
+            # Raised 50x from -0.10. At that weight the term was worth -0.0178 of a
+            # ~65 point reward, 0.02%, while both ankles sat at their effort limit for
+            # 51-70% of every rollout and the robot had to be caught by hand on
+            # hardware. A penalty that cannot be heard over the tracking reward does
+            # not change behaviour, and saturated ankles are the failure mode, so it
+            # is the one term that should be loud.
+            weight=-5.0,
         ),
         "limits_dof_pos": RewardTermCfg(
             func="holosoma.managers.reward.terms.wbt:limits_dof_pos",

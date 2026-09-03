@@ -10,7 +10,10 @@ Two tasks are included, each with simulation training setup, a trained policy, a
 on-robot deployment script over the ROS 2 control interface:
 
 1. **Velocity walking** — trained in MuJoCo / [mjlab](https://github.com/mujocolab/mjlab).
-2. **Box pickup (retargeted whole-body tracking)** — from an upright standing start,
+2. **In-place squat** — same mjlab PPO stack as walking. One 5 s stand-squat-stand cycle
+   to 40% of standing pelvis height (~0.28 m), then holds upright. Policy:
+   `agibot_control_functions/policies/x2_squat_policy_40pct_iter16499.npz`.
+3. **Box pickup (retargeted whole-body tracking)** — from an upright standing start,
    bends to a 45 cm box, two-handed squeeze grasp, lifts it to chest height, carries
    it ~1.4 m straight ahead (feet pointing forward), sets it down directly in front
    over planted feet, and returns upright (8.7 s). Trained in IsaacLab /
@@ -41,16 +44,19 @@ Agibot-humanoid/
 ├── x2_box_policy_share.tar.gz  # v31 checkpoint + exported policies + deploy scripts
 └── agibot_control_functions/   # Real-robot deployment (run this on the robot)
     ├── deploy_x2_walk.py       # Walking: loads policy, reads state, walks (50 Hz)
+    ├── deploy_x2_squat.py      # Squat: one 5 s cycle then hold standing (50 Hz)
     ├── deploy_x2_box_pickup.py # Box pickup: plays the 8.7 s pickup motion (50 Hz)
     ├── release_joints.py       # Ramp all joint gains to zero so the robot can be moved by hand
     ├── export_policy_npz.py    # Walking: trained .onnx -> self-contained .npz
+    ├── export_squat_policy_npz.py # Squat: mjlab .pt -> self-contained .npz
     ├── export_box_policy_npz.py# Box pickup: holosoma .pt -> self-contained .npz
     ├── robot_states_control.py # ROS 2 RobotStateClient + WholeBodyCommander (provided API)
     ├── robot_states_control.cpp
     ├── README.md               # The robot's state/command API reference
     └── policies/
         ├── x2_policy_original.npz   # Trained walking policy (numpy-only inference)
-        └── x2_policy_original.onnx  # Same policy in ONNX form
+        ├── x2_policy_original.onnx  # Same policy in ONNX form
+        └── x2_squat_policy_40pct_iter16499.npz  # In-place 40% squat (mjlab PPO)
 ```
 
 ---
@@ -101,6 +107,7 @@ Useful flags: `--base-imu {torso,chest}`, `--vx/--vy/--wz` (command), `--gain-sc
 |--------|-----|--------|-------|
 | `x2_policy_original.npz` | 105-dim (**includes `base_lin_vel`**) | trained 10k iters | Ready to run. The robot cannot measure base linear velocity, so the script feeds **zeros** for it — valid while suspended/near-stationary, degraded for free ground walking. |
 | `x2_policy.npz` (deploy) | 102-dim (**no `base_lin_vel`**) | trained 10k iters | **Recommended for ground walking.** Depends only on on-board sensing (ang vel, projected gravity, joint state, command). |
+| `x2_squat_policy_40pct_iter16499.npz` | 102-dim (command = squat phase + height) | mjlab PPO iter 16499 | In-place 40% squat, one cycle then hold. Not domain-randomized. First runs suspended. |
 
 The deploy variant removes `base_lin_vel` from the *actor* observation (keeping it in the
 critic), so the policy depends only on on-board sensing — the standard sim-to-real fix.
@@ -151,9 +158,48 @@ Then deploy with `--policy policies/x2_policy.npz`.
 
 ---
 
-## 4. Box pickup (retargeted whole-body tracking)
+## 4. In-place squat (mjlab PPO)
 
-The second task: a single policy that tracks a retargeted human demonstration of a full
+Same robot, PD, 50 Hz, and 102-D actor obs as the walking *deploy* policy (no
+`base_lin_vel`). The 3-D command is `[sin(2πφ), cos(2πφ), target_pelvis_height]` for
+one 5 s cycle (stand 0.5 → down 1.5 → bottom 0.5 → up 1.5 → stand 1.0), then the
+command freezes standing so it does **not** start a second squat.
+
+```bash
+# On a laptop that can reach the robot (this training box cannot):
+./agibot_control_functions/push_x2_squat_to_robot.sh
+# Windows:  .\agibot_control_functions\push_x2_squat_to_robot.ps1
+
+# On the robot:
+cd ~/agibot_control_functions
+./run_x2_squat.sh                 # dry-run
+./run_x2_squat.sh --engage        # first time: SUSPENDED, MC stopped
+```
+
+Safety is the same ladder as walking: dry-run → suspended `--engage` → harness on
+the ground. The policy was **not** domain-randomized. Bottom of the squat is ~0.28 m
+pelvis height. Keep a hand on the e-stop.
+
+Useful flags: `--gain-scale 0.9`, `--hold-seconds 1.5`, `--base-ang-vel {pelvis,torso}`.
+Default `--base-ang-vel pelvis` reconstructs the training IMU from the torso IMU +
+waist joints.
+
+Sim video: `squat/videos/x2_squat_40pct_iter16499.mp4`.
+
+To re-export after retraining (mjlab uv env):
+
+```bash
+cd ~/baaqer_ws/mjlab
+uv run python ~/baaqer_ws/Agibot-humanoid/agibot_control_functions/export_squat_policy_npz.py \
+    --checkpoint logs/rsl_rl/x2_squat/2026-08-26_23-04-28_deeper/model_16499.pt \
+    --out ~/baaqer_ws/Agibot-humanoid/agibot_control_functions/policies/x2_squat_policy_40pct_iter16499.npz
+```
+
+---
+
+## 5. Box pickup (retargeted whole-body tracking)
+
+The box-pickup task: a single policy that tracks a retargeted human demonstration of a full
 box pickup — walk up, deep bend, two-handed squeeze grasp (the X2 has rigid fingerless
 palms, so it hugs the box between them), lift to chest, short carry, controlled set-down.
 Trained with holosoma's whole-body tracking PPO on IsaacLab, 30k iterations, with domain
