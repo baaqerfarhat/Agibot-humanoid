@@ -1088,6 +1088,12 @@ stating plainly rather than shipping a fix and implying it mattered.
 
 ## 16. Loss of effectiveness: the intercept fix failed, and the law remains unsafe (added 2026-09-01)
 
+> **Superseded, 2026-09-02 (§21).** The diagnosis here was incomplete. The problem was not
+> a missing parameter but a wrong regressor: the law regressed on the instantaneous command
+> when the plant model says the residual is proportional to the FIR-weighted command
+> history. Correcting that shrinks the healthy-robot phantom 9× and takes x from 1.4σ to
+> 18.1σ. §16.4 (rotation is unexcitable) survives unchanged and was re-confirmed.
+
 §12 showed the gain law reports a 33% loss of effectiveness on a healthy robot. This section
 attempts a fix, fails, and records both the failure and one solid finding that came out of it.
 
@@ -1396,3 +1402,85 @@ correction has something to damage.
 | **intermittent** | **solved, p = 0.039** |
 | multiplicative (loss of effectiveness) | not solved (§16) |
 | sensor bias, camera misalignment | structurally invisible (§4) |
+
+## 21. Loss of effectiveness, solved: the regressor was wrong (added 2026-09-02)
+
+§16 left multiplicative faults unsolved with a diagnosed cause, and recorded a failed fix.
+The diagnosis was incomplete: the problem was not a missing parameter but a **wrong
+regressor**, and the intercept patch added a parameter to a model that was mis-specified.
+
+### 21.1 The derivation
+
+The world executes `g·u`, and the FIR plant responds to what it is given:
+
+```
+y_i = Σ_ℓ W[i,ℓ]·(g·u_{k−ℓ,i}) + W[i,−1] = g·(pred_i − W[i,−1]) + W[i,−1]
+```
+
+so
+
+```
+y_i − pred_i = β_i · φ_i        with   φ_i = pred_i − W[i,−1]
+```
+
+The regressor is the **FIR-weighted command history**, not the instantaneous command `ψ_i`
+the law had been using, and the regression lives in motion units with **no `M⁻¹` at all**.
+Two mismatches, both removed by deriving the regressor instead of assuming it.
+
+### 21.2 Sizing the gate before running
+
+`φ` is the command scaled by the plant gain (~0.25), so it is ~4× smaller than `ψ`. The
+inherited `pe_min = 0.15` would have gated out 77% of usable steps on x and 91% on y.
+Measured on healthy rollouts:
+
+| `pe_min` | x | y | z | rx | ry | rz |
+|---|---|---|---|---|---|---|
+| 0.15 (inherited) | 23% | 9% | 46% | 0% | 0% | 0% |
+| **0.04** | **74%** | **46%** | **78%** | 0% | 0% | 0% |
+
+0.04 restores the coverage `ψ` had. Rotation passes **0% at every threshold from 0.15 down to
+0.02** — §16.4 confirmed independently, and not a tuning problem.
+
+### 21.3 Safety: the phantom is gone
+
+The failure that made §16 declare this unsolved was a 33% hallucinated gain loss on a healthy
+robot. With the corrected regressor, on `gain = 1.0`, true `β = 0`:
+
+| | mean \|β̂\| | task success |
+|---|---|---|
+| `cmd` (old) | 0.181 | 10/10 → **9/10** |
+| **`fir` (new)** | **0.020** | **10/10 → 10/10** |
+
+**A 9× smaller phantom, and no episodes lost on a healthy robot.**
+
+### 21.4 Identification: all three translation channels, against the control
+
+Separation (faulted minus matched healthy), true `β = −0.500`:
+
+| | x | y | z | rz |
+|---|---|---|---|---|
+| `cmd` (old) | −0.160 (32%, 1.4σ) | −0.525 (105%) | −0.460 (92%) | +0.018 (0.3σ) |
+| **`fir` (new)** | **−0.515 (103%, 18.1σ)** | **−0.500 (100%, 60.6σ)** | **−0.457 (91%, 9.1σ)** | −0.122 (2.5σ) |
+
+x went from **not identifying at all** (1.4σ, 32% of truth) to **103% at 18σ**. All three
+translation channels now recover the fault to within 9%.
+
+### 21.5 Task outcome, and what is still owed
+
+Frozen 15/20 → corrected **18/20**, 3 fixed, 0 broken, `p = 0.25`.
+
+**Not significant**, and it should not be presented as though it were: with frozen at 15/20
+there were only 5 episodes available to fix. This is the ceiling problem of §14.5 again, and
+the honest next step is the one that worked for translation — raise the severity until the
+frozen policy actually fails, then measure.
+
+**What is established** is the part that was actually broken: the estimator is now safe on
+healthy hardware and identifies the fault on every excited channel. Whether that converts to
+task repair at a severity with headroom is untested.
+
+| | before (§16) | now |
+|---|---|---|
+| phantom on healthy robot | 0.181, costs an episode | **0.020, costs nothing** |
+| channels identified | 1 of 3 translation | **3 of 3** |
+| x separation | 1.4σ | **18.1σ** |
+| task repair | uninterpretable | +15, `p` = 0.25, needs headroom |

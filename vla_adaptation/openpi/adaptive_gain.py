@@ -40,7 +40,7 @@ from adaptive_law import fit_plant, OUT, K_FIR
 
 def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220,
         rls=True, lam=0.999, dither=0.0, dither_dims=(3, 4, 5), corr_dims=None,
-        g_min=0.05, g_max=3.0, intercept=False):
+        g_min=0.05, g_max=3.0, intercept=False, regressor="cmd"):
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
     plan, t = collections.deque(), 0
@@ -106,9 +106,31 @@ def run(pr, tid, init, gain, M_inv, W, gamma, adapt, pe_min, clip, max_steps=220
         H = np.array(hist)
         pred = np.array([W[i, :K_FIR + 1] @ H[:, i] + W[i, -1] for i in range(6)])
         z = M_inv @ (y - pred)
+        if regressor == "fir":
+            # The regressor derived from the plant model rather than assumed.
+            #
+            # The world executes g*u, and the FIR plant responds to what it is given:
+            #   y_i = sum_l W[i,l] (g u_{k-l,i}) + W[i,-1] = g (pred_i - W[i,-1]) + W[i,-1]
+            # so   y_i - pred_i = beta_i * phi_i   with   phi_i = pred_i - W[i,-1].
+            #
+            # The regressor is therefore the FIR-WEIGHTED COMMAND HISTORY, not the
+            # instantaneous command psi_i the original law used, and the regression lives in
+            # motion units with no M^-1 at all. Two mismatches removed at once. The failed
+            # intercept patch (Sec 16) added a parameter to a model whose regressor was
+            # wrong; this fixes the regressor instead.
+            phi_v = pred - W[:, -1]
+            resid = y - pred
         if adapt:
             for i in range(6):
-                if abs(psi[i]) < pe_min:        # not excited -> not identifiable -> hold
+                gate = abs(phi_v[i]) if regressor == "fir" else abs(psi[i])
+                if gate < pe_min:               # not excited -> not identifiable -> hold
+                    continue
+                if regressor == "fir":
+                    err = resid[i] - beta[i] * phi_v[i]
+                    k = P[i] * phi_v[i] / (lam + P[i] * phi_v[i] ** 2)
+                    beta[i] += k * err
+                    P[i] = (P[i] - k * phi_v[i] * P[i]) / lam
+                    n_upd[i] += 1
                     continue
                 if intercept:
                     # Regress z_i = b_i + beta_i * psi_i, estimating BOTH.
@@ -168,6 +190,10 @@ def main():
                         "effectively off (20x authority); 0.35 = decline to repair "
                         "below 35%% remaining authority.")
     p.add_argument("--g-max", type=float, default=3.0)
+    p.add_argument("--regressor", choices=["cmd", "fir"], default="cmd",
+                   help="cmd: regress on the instantaneous command (original). "
+                        "fir: regress on the FIR-weighted command history, which is "
+                        "what the plant model says the residual is proportional to.")
     p.add_argument("--intercept", action="store_true",
                    help="estimate a per-channel offset alongside the gain. Without it "
                         "beta absorbs the plant-model bias and diverges as the command "
@@ -197,7 +223,7 @@ def main():
                                  a.pe_min, a.clip, rls=not a.lms, lam=a.lam,
                                  dither=a.dither, corr_dims=cdims,
                                  g_min=a.g_min, g_max=a.g_max,
-                                 intercept=a.intercept)
+                                 intercept=a.intercept, regressor=a.regressor)
             ok += int(s)
             per_ep.append(dict(task=int(tid), init=int(init), ok=bool(s))); B.append(beta.tolist()); U.append(n_upd.tolist())
             print(f"  [{tag}] task {tid}: success={s}  beta={np.round(beta,2)}  "
