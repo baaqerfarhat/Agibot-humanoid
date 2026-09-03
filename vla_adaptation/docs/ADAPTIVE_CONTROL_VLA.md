@@ -1484,3 +1484,65 @@ task repair at a severity with headroom is untested.
 | channels identified | 1 of 3 translation | **3 of 3** |
 | x separation | 1.4σ | **18.1σ** |
 | task repair | uninterpretable | +15, `p` = 0.25, needs headroom |
+
+## 22. Loss of effectiveness repairs at severity (added 2026-09-03)
+
+§21 fixed identification and safety for the multiplicative fault but could not test repair:
+at `gain = 0.5` the frozen policy still scored 15/20, leaving five episodes to fix. Lowering
+the gain until the policy actually fails settles it.
+
+### 22.1 Result
+
+| gain (β) | frozen | corrected | fixed | broken | exact McNemar |
+|---|---|---|---|---|---|
+| 0.50 (−0.50) | 15/20 = 75% | 18/20 = 90% | 3 | 0 | 0.25 (ceiling) |
+| **0.30 (−0.70)** | 1/20 = 5% | **17/20 = 85%** | 16 | 0 | **3.1×10⁻⁵** |
+| **0.20 (−0.80)** | 0/20 = 0% | **17/20 = 85%** | 17 | 0 | **1.5×10⁻⁵** |
+
+At a 80% loss of actuator effectiveness the frozen policy **never once succeeds**, and the
+correction recovers 17 of 20 episodes while breaking none.
+
+**Loss of effectiveness is solved.** It was the last fault family listed as unsolved, and the
+fix was §21's regressor correction — nothing here changed but the severity.
+
+### 22.2 One estimate is confounded, and it is not the one that matters
+
+`β̂` at `gain = 0.20` reads −0.800, −0.796, −0.797 against a true −0.800, which looks like a
+0.5% estimate. It is not, on two of three channels: **`--clip` is 0.8, so the bound and the
+truth coincide.** Checking per-episode saturation:
+
+| gain | x at clip | y at clip | z at clip |
+|---|---|---|---|
+| 0.30 | 10% | 0% | 0% |
+| 0.20 | **60%** | 0% | **35%** |
+
+At `gain = 0.20`, x and z are pinned at the projection bound in 60% and 35% of episodes, so
+their agreement with truth **cannot be distinguished from saturation**. Only y (0% railed,
+−0.796 against −0.800) is a genuine measurement there.
+
+`gain = 0.30` is the clean cell: −0.723, −0.699, −0.717 against −0.700, **within 3%**, with
+only x touching the bound and only in 10% of episodes.
+
+This is the §12.1 trap in a new place — an estimate reading exactly its own clip — and it is
+recorded because the accuracy claim at 0.20 would otherwise be wrong. **The task results are
+unaffected:** success does not depend on how the estimate is read out, and a saturated
+estimate that happens to equal the truth still produces the right correction.
+
+### 22.3 Coverage, complete
+
+| fault type | status |
+|---|---|
+| constant additive: uniform, single-family, structured | solved |
+| mid-episode onset, ramp, oscillatory, intermittent | solved |
+| **multiplicative (loss of effectiveness)** | **solved — 0/20 → 17/20 at 80% loss, p = 1.5×10⁻⁵** |
+| sensor bias, camera misalignment | structurally invisible (§4) |
+
+Rotation gain faults remain unidentifiable for this policy (§16.4): the commands never excite
+those channels, at any gate threshold. That is a property of π0.5's behaviour, not of the
+estimator, and no gain law can recover it without deliberate dither.
+
+### 22.4 Aggregate
+
+**450 paired episodes** — four suites, three additive fault families, three severities each,
+four time profiles, and a multiplicative severity sweep: **158 fixed, 5 broken, 1.1%
+regression.**
