@@ -1658,3 +1658,56 @@ not an afterthought.
 
 530 paired episodes, 203 fixed, 5 broken (0.9%). `libero_90` contributes one fix and no
 regressions, and is listed for completeness rather than as evidence.
+
+## 26. A second manipulator: ALOHA in joint space — design, validated before the policy (added 2026-09-03)
+
+Bimanual ALOHA (two ViperX arms) in `gym_aloha`, driven by `pi0_aloha_sim`. The action
+interface is **14 absolute joint targets in radians** at 50 Hz, the state is the same 14
+measured joint positions, and the episode cap is 300 steps. Nothing here is Cartesian and
+nothing rotates: joint space is a vector space, so the whole class of SO(3) bug from §2.2b
+cannot occur.
+
+The pipeline was exercised end to end with a **stub policy** before spending any server
+time, and that dry run changed the design twice.
+
+### 26.1 The residual must live at position level, not increment level
+
+The LIBERO plant predicts the *increment* `dq` from the command, because an OSC command *is*
+an increment. Ported verbatim, that plant gave `M ≈ 0.008` on every joint: a target offset is
+absorbed by the position servo within a few steps and leaves almost nothing in `dq`, so
+`M⁻¹ ≈ 125×` amplified pure noise and `f̂` oscillated to 0.26 with sign flips.
+
+Regressing **position** on the target history instead — `q_t = Σ_k h_k u_{t−k} + c` — gives
+R² 0.986–0.998 on the arm joints, taps summing to ≈ 1 (a servo tracks its target), and
+`M ≈ I` with cond 1.1 by construction. The law is otherwise unchanged.
+
+### 26.2 Whether the fault is observable depends on the policy, not the estimator
+
+A +0.05 rad offset on joints 0–2, traced under two stubs:
+
+| stub | residual on faulted joints | residual on clean joints | net drift, joint 0 |
+|---|---|---|---|
+| planned targets, no fault | 0.032, 0.015, −0.003 | ≈ 0 | −0.08 |
+| **planned targets, +0.05** | **0.082, 0.065, 0.047** | ≈ 0 | −0.04 |
+| anchored targets, no fault | ≈ 0 | ≈ 0 | 0.47 |
+| **anchored targets, +0.05** | ≈ 0 | **−0.19 on joint 4** | **1.39 (runaway)** |
+
+With targets planned from the task, the separation is **exactly +0.050 on every faulted
+joint**. With targets anchored to the *measured* state — "go to where I am, plus δ" — the
+same fault becomes an integrator: each re-anchor adds `f`, the arm runs away 1.4 rad, the
+drift is *inside the command* so a command-based residual cannot see it, and a clean joint
+is driven into a limit.
+
+This is the mechanism, stated once: **on an absolute-position interface, a policy that
+re-anchors to measured state converts a constant fault into a drift and hides it from
+proprioceptive identification.** LIBERO never posed the question because its commands are
+increments. π0 takes state as input, so how strongly it anchors is an empirical property of
+the checkpoint — the frozen-faulted run will show either a bounded tracking error (fault
+visible, repairable) or a runaway (fault invisible, and a different problem).
+
+### 26.3 What is fixed before the real run
+
+- the healthy-frozen control runs **first**, on the exact episodes (§24.3)
+- the plant and `M` are identified on the real policy's healthy rollouts, not the stub's
+- grippers (joints 6, 13) are never corrected: R² 0.75 and no excitation
+- `--clip` is set from the fault magnitude, not left at a default that can coincide with it
