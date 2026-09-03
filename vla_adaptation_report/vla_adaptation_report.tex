@@ -36,10 +36,12 @@
 A fault at the Cartesian action interface of a frozen 3.35\,B vision--language--action model is
 identified and corrected \emph{within a single episode}, from the robot's own
 motion, with no gradients through the task and no search over task success ---
-\textbf{across four LIBERO suites, 29\% $\rightarrow$ 73\% pooled,
-$p = 1.1\times 10^{-7}$} --- \textbf{provided the correction is restricted to
-the channels on which the fault is identifiable.} Correcting the rest is worse
-than doing nothing.
+\textbf{across four LIBERO suites, $26\% \rightarrow 65\%$ pooled on paired
+episodes, exact McNemar $p = 9.3\times 10^{-10}$, with zero regressions.}
+The correction is restricted to the channels on which the fault is identifiable;
+for the uniform six-axis fault used across the suites, correcting the rest is
+worse than doing nothing (\S\ref{sec:scope}), though that is a property of
+\emph{that fault} rather than of the channels (\S\ref{sec:severity}).
 \end{tcolorbox}
 
 \begin{tcolorbox}[colback=gray!6,colframe=gray!55!black]
@@ -53,6 +55,12 @@ Which channels are identifiable is determined \emph{empirically}, by a separatio
 test against matched fault-free runs. An earlier draft claimed it was predictable
 in advance from healthy action statistics; \S\ref{sec:shape} refutes that and the
 claim is withdrawn.
+
+\vspace{0.3em}
+Across \textbf{450 paired episodes} --- four suites, four fault families, three
+severities, four time profiles --- the correction fixes \textbf{158} episodes and
+breaks \textbf{5} (1.1\,\%). A tuned integral baseline on the same fault reaches
+35\,\% where this reaches 95\,\% (\S\ref{sec:severity}).
 \end{tcolorbox}
 
 \vspace{0.4em}
@@ -409,6 +417,8 @@ recover.
 \code{libero\_10}      & 0/20 = 0\%   & 7/20 = 35\%  & $+35$ & \textbf{0.008} \\
 \midrule
 \textbf{pooled} & \textbf{22/75 = 29\%} & \textbf{55/75 = 73\%} & $\mathbf{+44}$ & $\mathbf{1.1\times 10^{-7}}$ \\
+\multicolumn{5}{l}{\footnotesize Unpaired (Fisher). Superseded by the paired rerun,
+\S\ref{sec:paired}: $26\% \to 65\%$, McNemar $p = 9.3\times 10^{-10}$.} \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -432,6 +442,15 @@ all six dims          & 7/20 & 9/20  & $+10$ \\
 \bottomrule
 \end{tabular}
 \end{center}
+
+\begin{tcolorbox}[colback=red!4,colframe=red!45!black]
+\textbf{Superseded (\S\ref{sec:severity}).} The reading below --- that translation
+correction contributes nothing --- was an artefact of fault \emph{magnitude}, not a
+property of the channel. Every test of it ran at $0.05$, where a translation fault
+leaves the policy at 90\,\% and at most two episodes can be fixed. At $0.15$ the same
+correction takes $4/20 \to 19/20$, $p = 6.1\times 10^{-5}$. The uniform-fault numbers
+in this table are correct as measured; the conclusion drawn from them was not.
+\end{tcolorbox}
 
 Translation alone contributes \textbf{exactly nothing}, and including it drags a
 $+50$ effect down to $+10$. On \code{object} the translation estimates are
@@ -796,6 +815,169 @@ fault}. What changes is the explanation, and the loss of the claim that
 identifiability can be predicted before deployment from healthy data alone.
 
 %==========================================================================
+\section{Severity, and the recoverability map}
+\label{sec:severity}
+
+Every conclusion about \emph{which channels matter} in \S\ref{sec:scope} was drawn at a
+single fault magnitude, $0.05$. Sweeping severity changes one of them.
+
+\subsection{Translation correction works, at a magnitude the policy notices}
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+translation fault & frozen & corrected & exact McNemar \\
+\midrule
+$0.05$ & 18/20 = 90\,\% & 18/20 = 90\,\% & 1.0 \quad(ceiling) \\
+$0.10$ & 13/20 = 65\,\% & \textbf{19/20 = 95\,\%} & $\mathbf{0.031}$ \\
+$0.15$ & \phantom{0}4/20 = 20\,\% & \textbf{19/20 = 95\,\%} & $\mathbf{6.1\times 10^{-5}}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+At $0.15$ the fault destroys the policy and the correction recovers 15 of the 16 lost
+episodes. The earlier ``translation contributes nothing'' finding was measured where there
+was nothing to contribute.
+
+\subsection{The recoverability map}
+
+Fault family $\times$ severity, $n = 20$ paired per cell, \textbf{zero regressions in every
+cell}:
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+fault & $0.05$ & $0.10$ & $0.15$ \\
+\midrule
+translation    & 18/20 $\to$ 18/20 & 13/20 $\to$ \textbf{19/20} & 4/20 $\to$ \textbf{19/20} \\
+rotation       & 13/20 $\to$ 18/20 & \phantom{0}0/20 $\to$ \textbf{17/20} & 0/20 $\to$ \textbf{9/20} \\
+uniform 6-axis & \phantom{0}8/20 $\to$ 18/20 & \phantom{0}2/20 $\to$ 11/20 & 0/20 $\to$ \phantom{0}2/20 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Rotation is where this policy breaks.} At $0.10$ and $0.15$ a rotation fault takes it
+to \emph{exactly zero}; translation at the same magnitude leaves it at 13/20 and 4/20.
+Recovering $0/20 \to 17/20$ from a policy that never succeeds unaided is the strongest cell
+here.
+
+\paragraph{The boundary is the plant, not the estimator.}
+\code{rotation 0.15} and \code{uniform 0.15} are corrected \emph{identically} --- rotation
+only --- and the uniform fault is that fault plus a translation component the correction never
+touches. Recovery falls from $9/20 = 45\,\%$ to $2/20 = 10\,\%$. Since the correction is the
+same in both rows the loss cannot be estimation failure: it is the translation component
+driving the arm into contacts, where superposition fails and its own motion stops being
+informative.
+
+\subsection{Does the identification machinery earn its place?}
+
+A plain integral controller on the raw motion error --- no FIR plant, no $M$ --- swept over
+five gains spanning two orders of magnitude and reported at its best:
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+$k_i$ & frozen & baseline \\
+\midrule
+$0.001$ & 4/20 & 5/20 \\
+$\mathbf{0.005}$ & 3/20 & \textbf{7/20} \\
+$0.02$ & 5/20 & \textbf{0/20} \\
+$0.05$ & 2/20 & 1/20 \\
+$0.15$ & 4/20 & 1/20 \\
+\midrule
+\textbf{ours} & \textbf{4/20} & \textbf{19/20} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{35\,\% at its best against 95\,\%.} The baseline implicitly assumes achieved motion
+$\approx$ commanded action; the measured translation DC gain is $0.23$, so with \emph{no
+fault} the raw error is $-0.77a$ --- at a command of $0.5$ a phantom of $0.384$ against a real
+fault of $0.150$, $2.5\times$ the target and opposite in sign. It must creep to stay stable
+and saturates as soon as it moves. Predicting $y \approx 0.23a$ instead of $y \approx a$ is
+the entire difference.
+
+%==========================================================================
+\section{Time-varying faults}
+\label{sec:timevarying}
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+profile & frozen & corrected & exact McNemar \\
+\midrule
+step / mid-episode onset & --- & --- & solved (\S\ref{sec:results}) \\
+ramp, translation $0.10$ & 12/20 & \textbf{18/20} & $\mathbf{0.031}$ \\
+oscillatory, rotation $0.10$ & 13/20 & \textbf{20/20} & $\mathbf{0.016}$ \\
+intermittent, rotation $0.10$ & 12/20 & \textbf{19/20} & $\mathbf{0.039}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Tracking is poor, and it does not matter.}
+Measured against the analytic ground truth per step, RMS tracking error is 45--79\,\% of the
+fault amplitude, and time-shifting the estimate barely improves it --- so it is not lag. The
+estimator does not follow the waveform; it tracks something closer to a running average. The
+oscillatory cell nonetheless reaches $20/20$. \textbf{The correction must be roughly right in
+direction and scale, not a good tracker}, which is why six numbers updated on CPU suffice ---
+and why tracking accuracy is the wrong metric to report.
+
+%==========================================================================
+\section{Loss of effectiveness}
+\label{sec:gainsolved}
+
+The multiplicative law of \S\ref{sec:gain} was unsafe: it reported a 33\,\% authority loss on
+a \emph{healthy} robot. The cause was a wrong regressor, not a missing parameter. The world
+executes $g\,u$ and the FIR plant responds to what it is given, so
+%
+\begin{equation}
+y_i - \hat y_i = \beta_i \phi_i, \qquad \phi_i = \hat y_i - W_{i,-1},
+\end{equation}
+%
+i.e.\ the regressor is the \textbf{FIR-weighted command history}, not the instantaneous
+command, and the regression needs no $M^{-1}$ at all.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+& phantom on healthy robot & healthy task & $x$ separation \\
+\midrule
+instantaneous command & $0.181$ & 10/10 $\to$ 9/10 & $1.4\sigma$ \\
+\textbf{FIR-weighted} & $\mathbf{0.020}$ & \textbf{10/10 $\to$ 10/10} & $\mathbf{18.1\sigma}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+With the estimator safe, severity decides repair:
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+gain & frozen & corrected & exact McNemar \\
+\midrule
+$0.50$ & 15/20 & 18/20 & 0.25 \quad(ceiling) \\
+$0.30$ & \phantom{0}1/20 & \textbf{17/20} & $\mathbf{3.1\times 10^{-5}}$ \\
+$0.20$ & \phantom{0}0/20 & \textbf{17/20} & $\mathbf{1.5\times 10^{-5}}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+At an 80\,\% loss of actuator effectiveness the frozen policy never once succeeds and the
+correction recovers 17 of 20, breaking none.
+
+\paragraph{One estimate is confounded and is not claimed.}
+At $\mathrm{gain} = 0.20$, $\hat\beta$ reads $-0.800$ against a true $-0.800$ --- but
+\code{--clip} is $0.8$, so bound and truth coincide, and $x$ is pinned at the bound in 60\,\%
+of episodes ($z$ in 35\,\%). Only $y$ is a real measurement there. The clean cell is
+$\mathrm{gain} = 0.30$: $-0.723, -0.699, -0.717$ against $-0.700$, within 3\,\%. Task results
+are unaffected --- success does not depend on how the estimate is read out.
+
+\paragraph{Rotation gain faults remain unidentifiable.}
+The commands never excite those channels: at \emph{every} gate threshold from $0.15$ down to
+$0.02$, zero recorded steps qualify. That is a property of $\pi_{0.5}$'s behaviour, not of the
+estimator, and no gain law recovers it without deliberate dither.
+
+%==========================================================================
 \section{Negative results worth keeping}
 \label{sec:failures}
 
@@ -878,28 +1060,41 @@ severity (offset 0.10), where frozen success is 0/8.
 \section{Summary}
 
 \begin{enumerate}[leftmargin=1.6em,itemsep=3pt]
-  \item A frozen 3.35\,B VLA under a miscalibrated-actuator fault drops from 99\%
-        to 45\% task success.
-  \item The fault is \textbf{exactly repairable} by a six-number edit to one
-        layer's bias ($47\% \to 100\%$), provided the edit is computed
-        \emph{per dimension in the model's normalised coordinates}, where a
-        uniform physical fault is anisotropic by $7\times$.
-  \item The repair can be \textbf{identified online from proprioception alone},
-        within a single episode, with no gradients and no search over task
-        success --- and it tracks a fault that appears mid-episode to 70\% of
-        truth in 0.75\,s.
-  \item \textbf{The contribution is a scope condition.} Across four suites the
-        method is significant on one of four when all channels are corrected, and
-        on \emph{all four} ($29\% \to 73\%$, $p = 1.1\times10^{-7}$) when
-        restricted to identifiable channels. Correcting a non-identifiable
-        channel is \emph{worse than not correcting at all}.
-  \item \textbf{Identifiability is decidable in advance} from healthy data ---
-        action normalisation, plant fit, and command statistics --- and the theory
-        predicts that additive and multiplicative faults are identifiable on
-        \emph{complementary} channels, which the experiments bear out.
+  \item A frozen 3.35\,B VLA under a Cartesian action-interface fault drops from
+        99\,\% task success to 45\,\%, and at higher severities to \emph{zero}.
+  \item The fault is \textbf{identified and cancelled online, within a single
+        episode}, from the robot's own motion --- no gradients, no reward, no
+        search over task success, and no learning across episodes: the estimate
+        resets to zero every episode and reconverges in ${\sim}15$ control steps.
+  \item \textbf{Four suites, paired}: $21/80 = 26\,\% \to 52/80 = 65\,\%$, exact
+        McNemar $p = 9.3\times 10^{-10}$, with \textbf{zero regressions} --- the
+        correction never broke an episode the frozen policy solved.
+  \item \textbf{Every fault family tested is repaired}: constant additive
+        (translation $4/20 \to 19/20$; rotation $0/20 \to 17/20$), structured
+        mixed-sign, mid-episode onset, ramp, oscillatory, intermittent, and
+        multiplicative loss of effectiveness ($0/20 \to 17/20$ at 80\,\% authority
+        loss). Across \textbf{450 paired episodes: 158 fixed, 5 broken}
+        (1.1\,\% regression).
+  \item \textbf{The identification machinery is load-bearing.} A tuned integral
+        controller on the raw motion error, given five gains and reported at its
+        best, reaches 35\,\% where this method reaches 95\,\%: the measured plant
+        gain is $0.23$, so raw-error integration chases a phantom $2.5\times$ the
+        fault and opposite in sign.
+  \item \textbf{The boundary is the plant, not the estimator.} A fault spread
+        across all six axes at high severity drives the arm into contacts where
+        superposition fails; identically-corrected rotation faults recover 45\,\%
+        alone and 10\,\% with an untouched translation component added.
+  \item \textbf{Two of this work's own explanations were refuted by its own
+        measurements} and are retained as such: that identifiability is
+        predictable in advance from healthy action statistics, and that additive
+        and multiplicative faults are identifiable on complementary channels.
+        A third --- that translation correction contributes nothing --- proved to
+        be an artefact of testing only at a severity the policy shrugs off.
   \item Getting there required a metric bug on SO(3) that had silently corrupted
-        four results, and a matched no-fault control that revealed half of a
-        convincing-looking estimate was bias.
+        four results, a matched no-fault control that revealed half of a
+        convincing estimate was bias, and three separate occasions where an
+        estimate reading exactly its own projection bound was nearly reported as
+        a measurement.
 \end{enumerate}
 
 \end{document}
