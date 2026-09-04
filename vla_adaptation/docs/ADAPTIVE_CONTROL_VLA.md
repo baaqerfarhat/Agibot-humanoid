@@ -1786,3 +1786,56 @@ is consistent with OFT recovering 55% where π0.5 recovered 85% on this cell.
 
 **610 paired episodes** across two backbones, two suites, four fault families, three
 severities and four time profiles: **245 fixed, 6 broken** (1.0% regression).
+
+## 27. ALOHA on the real policy: a null, its cause, and the rerun (added 2026-09-03)
+
+### 27.1 Calibration on `pi0_aloha_sim` is clean, and the policy does not re-anchor
+
+Eight healthy rollouts of the real policy (transfer-cube, **4/8** successes — a modest
+policy) give a per-joint FIR plant with **R² 0.989–1.000 on all 14 joints**, and open-loop
+replay gives **`M ≈ I`** (diagonals 0.98–1.02, cond 7.3). The healthy control on the twenty
+paired episodes: frozen 5/20, law running 7/20 — no harm on a healthy robot.
+
+The open question of §26.2 — does π0 re-anchor its targets to measured state and hide a
+constant fault? — was answered by a log-mode run under the fault (three episodes,
+`faulted_log_off005.json`). Under +0.05 rad on joints 0–5:
+
+| | tracking `q − u`, joints 0–5 | residual `q − pred`, joints 0–5 | net drift, joint 1 |
+|---|---|---|---|
+| healthy | ≈ 0 | ≈ 0 | 0.76 |
+| **faulted +0.05** | 0.049, 0.050, 0.054, 0.048, 0.061, 0.050 | **0.050, 0.056, 0.049, 0.051, 0.050, 0.050** | 0.62 |
+
+**The residual reads the injected fault exactly, on every faulted joint, and drift is
+unchanged.** π0 does not re-anchor. The fault is fully observable to the estimator.
+
+### 27.2 And yet: 0/20 → 0/20 at both severities — because of one constant
+
+With the fault this visible, the paired runs returned `off005` **0/20 → 0/20** and `off010`
+**0/20 → 0/20**, with the estimate sitting at `f̂ ≈ 0.004` against a true 0.050. The law was
+not integrating a residual that was plainly there.
+
+The cause is the normaliser `est / (1 + ‖r‖²/ρ²)`. `norm_r` had been carried over as 0.05 —
+sized, in LIBERO, against a 6-D residual of ~0.034. Over 14 ALOHA joints the residual norm
+is **0.192**. Replaying the law offline on the stored residuals:
+
+| `norm_r` | attenuation `1/(1+(‖r‖/ρ)²)` | replayed `f̂` (true +0.050) |
+|---|---|---|
+| **0.05 (as run)** | **0.06** | **+0.003** ← matches the observed 0.004 |
+| 0.1 | 0.21 | +0.011 |
+| 0.2 | 0.52 | +0.026 |
+| 0.4 | 0.81 | +0.041 |
+| 0.8 | 0.95 | +0.048 |
+
+Every update was cut to six percent. This is the **fourth** instance in this record of a
+constant set without measuring the quantity it is compared against — the deadzone (§4),
+`pe_min` for the FIR regressor (§21.2), the projection clip (§12.1, §22.2), and now the
+residual normaliser on a plant of different dimension. The rule that follows is mechanical:
+**every threshold in the law is a ratio against a measured scale, and the scale must be
+re-measured on every new plant.** A robustness term tuned on one robot is a wrong constant
+on the next.
+
+The stub dry run of §26 did not catch it because the stub's fault visibility was assessed at
+the residual, not through the law — the law's own output under the *planned* stub was never
+read. It should have been.
+
+The rerun uses `norm_r = 0.4` on the same paired episodes.
