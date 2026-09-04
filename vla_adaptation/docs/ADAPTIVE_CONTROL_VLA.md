@@ -1885,3 +1885,33 @@ The transient, converted to gripper displacement with the measured 5.3 cm per 0.
 **24 steps above one cube width (2 cm), 56 steps above 1 cm, steady state 0.76 cm.** Half a
 second at more than a cube width, on a task whose healthy success is 25% and whose faulted
 arm is in motion from step 1.
+
+### 27.4 The oracle: the transient is the cause
+
+Same paired episodes, the exact fault subtracted from step 0, no estimator:
+
+| arm | success |
+|---|---|
+| healthy, frozen (control) | 5/20 |
+| faulted, frozen | 0/20 |
+| faulted, **oracle static correction** | **4/20** |
+| faulted, adaptive (85–91% identified, 0.6 s transient) | 0/20 |
+
+The oracle restores the task to the healthy rate (4/20 against 5/20; the exact test sits at
+its floor of 0.125 with four discordant pairs). So the faulted execution path is sound and
+the fault is recoverable — **what loses the task is the half-second at more than a cube
+width while the estimate converges**, on a task with no margin and an arm that is precise
+from step 1.
+
+This is a different failure from anything in LIBERO. There, the transient was ~15 control
+steps at 20 Hz on a task whose first second is a free-space reach; the arm had time. Here
+the transient is ~30 steps at 50 Hz — shorter in seconds — but the task punishes the first
+centimetres immediately. **Identification speed, not identification accuracy, is the
+binding constraint on this manipulator.**
+
+Two remedies follow, both testable on the same episodes: a smaller fault, where the
+transient stays under a cube width (0.02 rad → 2.1 cm peak, ~0.3 cm steady); and carrying
+the estimate across episodes, so that after the first episode there is no transient at all.
+The second is a deployment choice rather than a change to the law — a hardware fault is
+persistent, and resetting the estimate every episode was a deliberate constraint for the
+LIBERO claims ("no learning across episodes"), not a requirement of the method.
