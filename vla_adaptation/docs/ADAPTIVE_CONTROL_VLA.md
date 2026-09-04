@@ -2275,3 +2275,8 @@ them. Same configuration (uniform +0.05, rotation-only), inits 45–48, paired.
 Resolved. The effect size did not move (+25 → +35 points, inside run-to-run noise); the test
 simply gained the discordant pairs it needed. One regression appears at n = 40 — the first
 on this suite — and it is one in forty against fifteen repairs.
+
+The regression is task 5, init 46. Its correction was ordinary-sized (|f̂| 0.042, 0.034, 0.048
+against a run mean of 0.035, 0.031, 0.037), and the frozen policy itself flips on that task —
+3 of 4 inits either way in both arms. Policy stochasticity, not the law. Unlike the OFT
+healthy-control regression of §25.2, which the law caused.
