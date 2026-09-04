@@ -2258,3 +2258,20 @@ repair run:
 
 Neither quantity needs the fault to be known, and neither needs a repair experiment. This is
 the deployment test the method was missing.
+
+## 28. The two floor-limited suites at n = 40 (added 2026-09-04)
+
+§10.2 said `goal` and `libero_10` sat at `p = 0.0625` because five one-way discordant pairs
+is the exact test's floor, not because the effect was weak, and that n ≈ 30–40 would settle
+them. Same configuration (uniform +0.05, rotation-only), inits 45–48, paired.
+
+### 28.1 `libero_goal`
+
+| n | frozen | corrected | fixed | broken | exact McNemar |
+|---|---|---|---|---|---|
+| 20 | 8/20 = 40% | 13/20 = 65% | 5 | 0 | 0.0625 (floor) |
+| **40** | 15/40 = 38% | **29/40 = 72%** | **15** | 1 | **0.00052** |
+
+Resolved. The effect size did not move (+25 → +35 points, inside run-to-run noise); the test
+simply gained the discordant pairs it needed. One regression appears at n = 40 — the first
+on this suite — and it is one in forty against fifteen repairs.
