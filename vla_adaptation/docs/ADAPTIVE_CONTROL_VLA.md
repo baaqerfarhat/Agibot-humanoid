@@ -2098,3 +2098,28 @@ constraint. Accuracy relative to the task's margin is.
 The 0.02 rad cell with the history fixed is inside that margin (identification 94–106%,
 residual ≈ 0.1 cm) and is running; a static oracle at 0.02 is queued behind it as its
 ceiling.
+
+### 27.10 Inside the margin at steady state, outside it during the climb
+
+0.02 rad, history fixed, cold start, same paired episodes:
+
+| | value |
+|---|---|
+| identification, joints 0–5 | **95%, 104%, 94%, 95%, 95%, 95%** |
+| residual at the gripper, steps 0 / 10 / 20 / 30 / 50 / 100 | 2.08 / 1.30 / 0.85 / 0.61 / 0.37 / 0.08 cm |
+| steps above the 0.5 cm margin | **39** |
+| success | **0/20** |
+
+Steady state is inside the margin by a wide factor — the residual is 0.08 cm by step 100 —
+and the task still fails, because a cold start spends the first 0.8 s above 0.5 cm while the
+estimate climbs from zero. The bound of §27.8 is not "reach the margin"; it is **"never leave
+it"**, and on an arm that is precise from step 1 no cold-started estimator can satisfy that.
+
+That leaves exactly one adaptive configuration that can: a warm start at 0.02 rad with the
+history fixed, which begins each episode at ~95% of the fault and holds the residual near
+0.1 cm throughout. It is the last cell, queued behind a 0.02 oracle that gives its ceiling.
+If it repairs, the ALOHA statement is complete and honest: **identification transfers;
+repair requires the residual to stay inside the task's margin for the whole episode, which
+this law achieves at 0.02 rad only with a persistent estimate.** A persistent estimate is
+what a persistent hardware fault gets in deployment, and the per-episode reset in the LIBERO
+results was a constraint chosen to make a stronger claim there, not a property of the method.
