@@ -1875,3 +1875,13 @@ fault subtracted from step 0, no estimator. If it restores ~5/20, the transient 
 cause and the fix is on the law's speed or on carrying the estimate across episodes; if it
 also returns 0/20, the fault path differs from the healthy one and the bug is in the
 plumbing. That run is in progress.
+
+The transient, converted to gripper displacement with the measured 5.3 cm per 0.05 rad:
+
+| step | 0 | 5 | 10 | 20 | 30 | 50 | 100 | 200 |
+|---|---|---|---|---|---|---|---|---|
+| residual gripper error (cm) | 5.3 | 5.4 | 4.1 | 2.5 | 1.6 | 1.0 | 0.7 | 0.8 |
+
+**24 steps above one cube width (2 cm), 56 steps above 1 cm, steady state 0.76 cm.** Half a
+second at more than a cube width, on a task whose healthy success is 25% and whose faulted
+arm is in motion from step 1.
