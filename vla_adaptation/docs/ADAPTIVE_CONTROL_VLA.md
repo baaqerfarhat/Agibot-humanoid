@@ -1711,3 +1711,50 @@ visible, repairable) or a runaway (fault invisible, and a different problem).
 - the plant and `M` are identified on the real policy's healthy rollouts, not the stub's
 - grippers (joints 6, 13) are never corrected: R² 0.75 and no excitation
 - `--clip` is set from the fault magnitude, not left at a default that can coincide with it
+
+## 25. Second backbone: OpenVLA-OFT, with the π0.5 calibration (added 2026-09-03)
+
+OpenVLA-OFT (7 B, PyTorch, L1-regression action head, LIBERO-spatial fine-tune) served behind
+the same websocket protocol via `oft_server.py`. **Every experiment script, the FIR plant
+model and the sensitivity matrix `M` are the ones used for π0.5, unchanged** — `W` and `M`
+were identified with π0.5 driving the arm and were never re-fitted. `libero_spatial`, n = 20
+paired per cell, healthy control run first.
+
+| cell | frozen | corrected | fixed | broken | exact McNemar | π0.5 (same cell) |
+|---|---|---|---|---|---|---|
+| healthy control | 20/20 | 19/20 | 0 | 1 | 1.0 | 10/10 → 10/10 |
+| rotation 0.10 | 0/20 | **11/20 = 55%** | 11 | 0 | **0.00098** | 0/20 → 17/20 |
+| translation 0.15 | 0/20 | **14/20 = 70%** | 14 | 0 | **0.00012** | 4/20 → 19/20 |
+| gain 0.20 | 0/20 | **17/20 = 85%** | 17 | 0 | **1.5×10⁻⁵** | 0/20 → 17/20 |
+
+### 25.1 What this establishes
+
+**Nothing in the method was π0.5-specific.** A different architecture — autoregressive
+backbone with a regression head instead of flow matching, PyTorch instead of JAX, a different
+training pipeline and image preprocessing — is repaired by the identical law, on all three
+fault families, with zero regressions on the faulted cells. The gain estimate is
+`β̂ = −0.823, −0.805, −0.817` against −0.800, within 3%, with `--clip 0.95` so the bound
+cannot coincide with the truth (10% railing on x and z, flagged, not confounding).
+
+**The calibration is a property of the robot, not the policy.** `W` and `M` transferred
+across backbones with no re-identification. Combined with §23 (transfer across task suites),
+one healthy-data calibration covers a robot, whichever policy drives it and whatever it is
+asked to do.
+
+### 25.2 What is different, stated plainly
+
+OFT is **more fragile**: the frozen policy scores 0/20 on all three faults where π0.5 kept
+4/20 on translation. It also recovers less on rotation (55% vs 85%) though the same on gain
+(85% vs 85%). Two causes are plausible and this design does not separate them: OFT's action
+chunk is executed more open-loop (8 steps vs 5 before replanning), and its policy is less
+robust to off-distribution states. The healthy-robot offset phantom is also larger than
+under π0.5 (x 0.035, z 0.055 vs 0.022, 0.042) — expected, since the plant was fitted on
+π0.5's command distribution — and it did not matter for rotation-only correction.
+
+The healthy control shows **one regression (20/20 → 19/20)** with the law running on a
+robot with nothing wrong. Inside the ±10-point noise, and recorded rather than smoothed over.
+
+### 25.3 Aggregate
+
+**610 paired episodes** across two backbones, two suites, four fault families, three
+severities and four time profiles: **245 fixed, 6 broken** (1.0% regression).

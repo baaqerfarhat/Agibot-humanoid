@@ -128,6 +128,12 @@ supports empirically) before the recovery bound.
 
 ### 9. The minimum experimental program
 
+> **Update 2026-09-03.** The second-backbone item is done: OpenVLA-OFT, served behind the
+> same protocol, is repaired on all three fault families by the unchanged law and the
+> unchanged π0.5-identified calibration (0/20 → 11/20, 14/20, 17/20; §25). The compute
+> objection did not apply — inference only, no fine-tuning.
+
+
 Second backbone (OpenVLA-OFT), 50 rollouts per condition, a J-PARC baseline, a LoRA
 online-adaptation baseline. Several of these require exactly the fine-tuning compute this
 work claims not to need, on one shared GPU. This is a menu, not a checklist, and the
