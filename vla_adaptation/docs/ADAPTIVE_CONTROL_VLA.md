@@ -1757,8 +1757,24 @@ noise.** Its rotation estimate reached |f̂| = 0.037, 0.003, 0.062 against a typ
 phantom of 0.009, 0.014, 0.006: four to ten times the usual push, applied to a robot that
 needed none, and the episode failed. One in twenty, but a real harm mode — a transient
 phantom integrated and acted on. It is the first regression in this record with a
-diagnosed cause, and it argues for a confidence gate on the correction (act only once the
-estimate has been stable), which is not implemented.
+diagnosed cause.
+
+The obvious mitigation — a confidence gate, acting only once `|f̂|` has exceeded a threshold
+for K consecutive steps — was evaluated **offline on the stored trajectories before touching
+the law**, and it does not remove the harm:
+
+| gate | healthy OFT episodes that open | the harmful episode | faulted episodes open at (median step) |
+|---|---|---|---|
+| none | 20/20 | opens | ~7 |
+| \|f̂\| > 0.02 for 5 steps | 13/20 | **opens, step 38** | 6–10 |
+| \|f̂\| > 0.03 for 5 steps | 5/20 | **opens, step 40** | 7–16 |
+| \|f̂\| > 0.03 for 10 steps | 4/20 | **opens, step 45** | 12–21 |
+
+The phantom in that episode was *sustained*, not transient, so it is indistinguishable from
+a real fault by any test on the estimate alone, while every gate delays genuine repair by
+one to two seconds. A dwell gate is therefore not implemented. Separating that episode
+would need information the estimator does not have — most plausibly the task-level
+observation that the robot was already succeeding — which is a different design.
 
 **Identification is uneven on OFT.** Separation against the matched healthy run on the
 rotation fault (true +0.100): rx **87%**, ry **23%**, rz **87%**. π0.5 identified all three at
