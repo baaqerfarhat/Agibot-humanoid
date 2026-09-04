@@ -2128,3 +2128,33 @@ results was a constraint chosen to make a stronger claim there, not a property o
 task to 40% — above the 5/20 healthy-frozen control and inside the noise band the policy's
 own two healthy arms span (5/20 and 7/20). So the ceiling for the warm-started 0.02 cell is
 roughly 5–8 of 20, and a repair anywhere in that range would be the healthy rate.
+
+
+### 27.11 Warm-started 0.02 rad, history fixed: still 0/20 against an oracle of 8/20
+
+The last adaptive configuration that could stay inside the margin for a whole episode:
+
+| | success |
+|---|---|
+| frozen, faulted | 0/20 |
+| **adaptive, warm start, history fixed** | **0/20** |
+| oracle, exact −0.020 from step 0 | **8/20**, p = 0.0078 |
+
+From the warm episodes' own records:
+
+```
+identification j0-5 (true 0.020): ['93%', '98%', '92%', '91%', '93%', '93%']
+warm episodes: f_hat at step 0 median 0.0181 rad (90% of fault)
+within-episode range median 0.0041 rad = 0.43 cm;  worst-case min 0.0146 rad -> residual up to 0.57 cm
+residual gripper error, warm episodes: mean over steps 0.17 cm; fraction of steps > 0.5 cm: 2%; > 0.25 cm: 28%
+```
+
+The estimate begins each episode near the fault and identification is essentially exact, yet
+the task fails where an exact static correction succeeds 8 times in 20. **The margin bound
+of §27.8 is therefore necessary but not sufficient.** Two things separate the oracle from
+this arm: the law keeps updating during the episode, and its correction is what the plant
+residual says it should be rather than exactly the fault. The clean test is the law's own
+converged estimate (0.019 rad, 95%) applied *frozen* — no estimator, no wander — on the same
+episodes. If it recovers ~8/20, mid-episode updating is what breaks the task and the remedy is
+to stop adapting once converged; if it returns 0/20, this task distinguishes 95% from 100%
+correction, and no estimator that stops short of exact can repair it. That run is in progress.
