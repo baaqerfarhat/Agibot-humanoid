@@ -2042,6 +2042,19 @@ an estimate at 85–91% of the fault leaves 0.5–0.95 cm — outside it. Nothin
 estimator's speed, its wander, or the history dip changes this bound; it is a property of
 the task and the policy's 25% healthy success.
 
+Turning the margin into a requirement — the residual must stay under 0.5 cm, i.e. under
+0.0047 rad of uniform offset on these six joints — gives the identification accuracy the
+law must reach as a function of fault size:
+
+| fault | gripper displacement | required identification |
+|---|---|---|
+| 0.02 rad | 2.1 cm | **76%** |
+| 0.05 rad | 5.3 cm | **91%** |
+| 0.10 rad | 10.6 cm | **95%** |
+
+Measured: 94–106% at 0.02 rad (inside), 84–91% at 0.05 rad (outside), 69–71% at 0.10 rad
+(far outside). The bound explains every ALOHA success count in this section.
+
 So the ALOHA result decomposes cleanly:
 
 1. **Identification transfers** — 85–91% at 0.05 rad, 94–106% at 0.02 rad, ≤0.007 rad leak
