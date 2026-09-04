@@ -2158,3 +2158,36 @@ converged estimate (0.019 rad, 95%) applied *frozen* — no estimator, no wander
 episodes. If it recovers ~8/20, mid-episode updating is what breaks the task and the remedy is
 to stop adapting once converged; if it returns 0/20, this task distinguishes 95% from 100%
 correction, and no estimator that stops short of exact can repair it. That run is in progress.
+
+### 27.12 It is the updating, not the estimate
+
+The same correction magnitude, applied two ways on the same paired episodes, 0.02 rad fault:
+
+| correction | mean residual | success |
+|---|---|---|
+| none (frozen, faulted) | 2.12 cm | 0/20 |
+| **0.019 rad (95%) applied frozen** | 0.11 cm | **5/20**, p = 0.0625 |
+| 0.019 rad reached by the **updating** law (warm, history fixed) | 0.17 cm | **0/20** |
+| 0.020 rad (100%) oracle | 0 cm | 8/20 |
+
+**The law's own converged estimate restores the task — but only when it stops moving.** Rows
+two and three carry the same number to the same joints; the only difference is whether the
+estimator keeps writing to it. Frozen: 5/20, the healthy-frozen rate. Updating: nothing.
+
+The mechanism is in §27.11's measurements. The updating correction wanders within an episode
+by a median **0.0041 rad = 0.43 cm**, with worst-case excursions to 0.57 cm — comparable to
+the entire 0.5 cm margin — even though its *mean* residual, 0.17 cm, is comfortably inside.
+A mean inside the margin is not enough: the correction has to *stay* inside it, and a
+continuously updating estimator on a 14-joint plant does not.
+
+**This is the ALOHA finding, and it is not a defect in the estimator.** Identification
+transfers to a second manipulator and a second action interface — 94–106% at 0.02 rad, from
+a plant fitted on eight healthy rollouts. What does not transfer is the assumption that a
+*continuously adapting* correction is harmless. On LIBERO it was: §18 measured 0.019 cm per
+step of jitter there and repair worked anyway, because a 20 Hz Cartesian reach has
+centimetres of slack. On transfer-cube, with a sub-half-centimetre margin and an arm that is
+precise from step 1, the same jitter is the difference between 5/20 and 0/20.
+
+The remedy is one flag, and it is what a persistent hardware fault deserves anyway: adapt
+until the estimate settles, then **stop adapting and hold it** (`--freeze-after`). That run
+is in progress; whatever it returns, the pair of rows above already establishes the point.
