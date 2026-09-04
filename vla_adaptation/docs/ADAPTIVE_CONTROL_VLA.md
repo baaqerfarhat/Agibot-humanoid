@@ -2123,3 +2123,8 @@ repair requires the residual to stay inside the task's margin for the whole epis
 this law achieves at 0.02 rad only with a persistent estimate.** A persistent estimate is
 what a persistent hardware fault gets in deployment, and the per-episode reset in the LIBERO
 results was a constraint chosen to make a stronger claim there, not a property of the method.
+
+**The 0.02 oracle: 8/20, p = 0.0078.** The exact fault subtracted from step 0 restores the
+task to 40% — above the 5/20 healthy-frozen control and inside the noise band the policy's
+own two healthy arms span (5/20 and 7/20). So the ceiling for the warm-started 0.02 cell is
+roughly 5–8 of 20, and a repair anywhere in that range would be the healthy rate.
