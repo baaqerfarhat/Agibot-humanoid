@@ -2013,8 +2013,13 @@ I wrote to confirm it demanded the `q₀` replay stay above 0.038, and it bottom
 a 0.5 cm dip against the 1.7 cm one under test — so the gate rejected a mechanism the
 numbers plainly show. Thresholds, again.
 
-One more thing the replay exposes: the FIR's tap at lag 6 is 0.286, nearly as large as lag 0
-(0.292). The servo's settling extends past the six-lag window and the fit is loading the
-last tap to compensate. A longer window would be more honest; it is not the cause of the dip.
+One more thing the replay exposes, checked and dismissed: the FIR's tap at lag 6 is 0.286,
+nearly as large as lag 0 (0.292), which looked like servo settling extending past the
+window. Refitting with 12 and 20 lags does not make the taps decay — the last tap still
+carries 0.15 at K = 12, the taps scatter at K = 20, and R² moves from 0.99970 to 0.99973.
+It is collinearity: the target and the position track each other so closely that
+least-squares can place weight anywhere along that direction while keeping the sum at 1.
+Harmless for prediction, harmless for an offset residual (the sum is what matters), and not
+the cause of anything. No action.
 
 The fixed-history cell runs on the same paired episodes after the static bracket.
