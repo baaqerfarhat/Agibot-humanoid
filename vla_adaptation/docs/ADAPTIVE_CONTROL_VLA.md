@@ -1752,7 +1752,19 @@ under π0.5 (x 0.035, z 0.055 vs 0.022, 0.042) — expected, since the plant was
 π0.5's command distribution — and it did not matter for rotation-only correction.
 
 The healthy control shows **one regression (20/20 → 19/20)** with the law running on a
-robot with nothing wrong. Inside the ±10-point noise, and recorded rather than smoothed over.
+robot with nothing wrong — and inspecting that episode, **it was the law's doing, not
+noise.** Its rotation estimate reached |f̂| = 0.037, 0.003, 0.062 against a typical healthy
+phantom of 0.009, 0.014, 0.006: four to ten times the usual push, applied to a robot that
+needed none, and the episode failed. One in twenty, but a real harm mode — a transient
+phantom integrated and acted on. It is the first regression in this record with a
+diagnosed cause, and it argues for a confidence gate on the correction (act only once the
+estimate has been stable), which is not implemented.
+
+**Identification is uneven on OFT.** Separation against the matched healthy run on the
+rotation fault (true +0.100): rx **87%**, ry **23%**, rz **87%**. π0.5 identified all three at
+90–100% (§19). `ry` is the least-excited rotation channel, and OFT's command distribution
+evidently excites it less still; the correction on `ry` was therefore mostly absent, which
+is consistent with OFT recovering 55% where π0.5 recovered 85% on this cell.
 
 ### 25.3 Aggregate
 
