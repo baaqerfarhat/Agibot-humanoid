@@ -60,7 +60,7 @@ def annotate(img, title, colour, lines, prompt=""):
 
 
 def rollout(pr, tid, init, sev, M_inv, W, gamma, adapt, dead, norm_r, clip, max_steps=None,
-            rec_cam="agentview", rec_fovy=None, corr_dims=None):
+            rec_cam="agentview", rec_fovy=None, corr_dims=None, fvec=None):
     import paired_probe as _pp
     max_steps = max_steps or _pp.MAXS      # the suite's cap, not a spatial-only 220
     env, desc, inits = pr.env_for(tid)
@@ -92,7 +92,10 @@ def rollout(pr, tid, init, sev, M_inv, W, gamma, adapt, dead, norm_r, clip, max_
             m = np.zeros(6); m[list(corr_dims)] = 1.0
             c = c * m
         a_corr = a_cmd.copy(); a_corr[:6] += c
-        a_exec = apply_action_fault(a_corr, "offset", sev, 6)
+        if fvec is not None:
+            a_exec = a_corr.copy(); a_exec[:6] += fvec      # structured fault, as in adaptive_law
+        else:
+            a_exec = apply_action_fault(a_corr, "offset", sev, 6)
         x0 = np.array(obs["robot0_eef_pos"], float)
         r0 = lm._quat2axisangle(np.array(obs["robot0_eef_quat"], float))
         obs, _, done, _ = env.step(a_exec.tolist())
@@ -137,6 +140,7 @@ def main():
     ap.add_argument("--rec-fovy", type=float, default=None, help="widen it (45 = default)")
     ap.add_argument("--title", default="")
     ap.add_argument("--suite", default="libero_spatial")
+    ap.add_argument("--fault-vec", default=None, help="6 comma-separated env-space offsets; overrides --sev")
     ap.add_argument("--corr-dims", default=None,
                     help="channels to correct, e.g. 3,4,5 for rotation only. The "
                          "earlier videos corrected all six, the configuration Sec 7.3 "
@@ -148,6 +152,7 @@ def main():
     W = fit_plant(a.log)
     M_inv = np.linalg.pinv(np.array(json.loads(a.openloop.read_text())["M"]))
     cdims = [int(x) for x in a.corr_dims.split(',')] if a.corr_dims else None
+    fvec = np.array([float(x) for x in a.fault_vec.split(',')]) if a.fault_vec else None
     if cdims is not None:
         print(f'correction restricted to dims {cdims}')
     pr = Probe(a)
@@ -170,7 +175,7 @@ def main():
         out = {}
         out[False] = rollout(pr, tid, init, a.sev, M_inv, W, a.gamma, False,
                              a.dead, a.norm_r, a.clip,
-                             rec_cam=a.rec_cam, rec_fovy=a.rec_fovy)
+                             rec_cam=a.rec_cam, rec_fovy=a.rec_fovy, fvec=fvec)
         print(f"  task {tid} init {init}  frozen success={out[False][1]} "
               f"steps={len(out[False][0])}")
         if a.only_frozen_fail and out[False][1]:
@@ -180,7 +185,7 @@ def main():
             continue
         out[True] = rollout(pr, tid, init, a.sev, M_inv, W, a.gamma, True,
                             a.dead, a.norm_r, a.clip,
-                            rec_cam=a.rec_cam, rec_fovy=a.rec_fovy, corr_dims=cdims)
+                            rec_cam=a.rec_cam, rec_fovy=a.rec_fovy, corr_dims=cdims, fvec=fvec)
         print(f"  task {tid} init {init}  adaptive success={out[True][1]} "
               f"steps={len(out[True][0])}")
         (fL, okL, desc), (fR, okR, _) = out[False], out[True]
