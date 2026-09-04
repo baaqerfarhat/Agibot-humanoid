@@ -2059,3 +2059,29 @@ needs identification accuracy matched to the task's margin"; if it does not, the
 suspect is the first ten steps, where the estimate is still converging from zero, and the
 honest fix is a warm start — which is what a persistent hardware fault gets in deployment
 anyway.
+
+### 27.9 With the history fixed: the dip is gone, and the 0.05 rad result is closed
+
+Same paired episodes, FIR history seeded at the current joint position:
+
+| | early `f̂[0:6]` (steps 0, 5, 10, 25, 50) | identification | success |
+|---|---|---|---|
+| cold start | 0.001, 0.012, 0.020, 0.036, 0.041 | 84–90% | **0/20** |
+| warm start | 0.041, 0.037, 0.036, 0.038, 0.040 | 85–91% | **0/20** |
+
+The dip is gone: the cold start now converges monotonically, and the warm start holds
+within 12% of its seed from step 0 instead of collapsing by 40%. Identification is
+unchanged at 84–91%. And the task does not come back — **which is what §27.8 says it must
+not**: an estimate at 84–91% leaves 0.5–0.8 cm at the gripper, and a frozen static
+correction at 90% (0.53 cm) already returned 0/20.
+
+So the 0.05 rad result is closed, and it is a clean statement rather than a defect list:
+**on transfer-cube, repair requires holding the residual under 0.5 cm for the whole
+episode, and the law's steady-state accuracy on a 0.05 rad fault is 84–91%, which leaves
+0.5–0.8 cm.** Every dynamic effect investigated — the transient, the wander, the
+zero-history dip — was real, was fixed or ruled out, and none of them was the binding
+constraint. Accuracy relative to the task's margin is.
+
+The 0.02 rad cell with the history fixed is inside that margin (identification 94–106%,
+residual ≈ 0.1 cm) and is running; a static oracle at 0.02 is queued behind it as its
+ceiling.
