@@ -1915,3 +1915,33 @@ the estimate across episodes, so that after the first episode there is no transi
 The second is a deployment choice rather than a change to the law — a hardware fault is
 persistent, and resetting the estimate every episode was a deliberate constraint for the
 LIBERO claims ("no learning across episodes"), not a requirement of the method.
+
+### 27.5 A smaller fault does not help, and jitter is not the cause
+
+Same episodes, fault reduced to **+0.02 rad** on joints 0–5 — 2.1 cm at the gripper, under a
+cube width from step 20 on, 0.4 cm at steady state:
+
+| | frozen | corrected | identification (true +0.020) |
+|---|---|---|---|
+| +0.02 rad | 0/20 | **0/20** | 0.019, 0.021, 0.019, 0.019, 0.019, 0.019 (**94–106%**) |
+
+Identification is now essentially exact, the transient is a third of what it was, and the
+task still does not come back — while the oracle at a fault 2.5× larger restored 4/20. The
+frozen policy is destroyed by a 2 cm offset on one arm (0/20 against a healthy 5/20), which
+says how little margin this task has.
+
+**Jitter is ruled out.** After the transient, the applied correction changes by
+0.00004–0.00006 rad per step — **0.004–0.006 cm at the gripper, at 50 Hz** — a fifth of
+LIBERO's 0.019 cm per step, where repair works. The estimator is not shaking the arm.
+
+What separates the oracle from the adaptive arm is therefore confined to the first ~20
+steps. The warm-start run, in which episodes 1–19 begin at the converged estimate and have
+no transient at all, is the decisive test of that and is in progress. If it restores the
+task, identification speed is the whole story on this manipulator; if it does not, the
+difference between an exact static correction and a converged adaptive one is something
+this analysis has not found.
+
+On the oracle itself: it solves episodes {2, 4, 5, 9} where the healthy policy solves
+{2, 5, 6, 13, 14}. The overlap is partial, but the policy's own two healthy arms differ on
+four episodes at identical seeds, so equivalence holds at the rate level (4/20 vs 5/20), not
+episode for episode.
