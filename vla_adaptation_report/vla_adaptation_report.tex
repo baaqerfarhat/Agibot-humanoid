@@ -62,7 +62,9 @@ severities, four time profiles --- the correction fixes \textbf{158} episodes an
 breaks \textbf{5} (1.1\,\%). A tuned integral baseline on the same fault reaches
 35\,\% where this reaches 95\,\% (\S\ref{sec:severity}). The same law and the same
 calibration repair a second backbone, OpenVLA-OFT, on all three fault families
-(\S\ref{sec:generality}).
+(\S\ref{sec:generality}), and a second \emph{manipulator} --- 14-DOF bimanual ALOHA in
+joint space --- is identified to 94\,\% and repaired to the healthy rate, once the
+correction is held stationary (\S\ref{sec:aloha}).
 \end{tcolorbox}
 
 \vspace{0.4em}
@@ -1028,6 +1030,85 @@ result --- and the mirror of the ceiling artefact of \S\ref{sec:severity}: a nul
 a prerequisite for every cell.
 
 %==========================================================================
+\section{A second manipulator: ALOHA in joint space}
+\label{sec:aloha}
+
+Bimanual ALOHA (two ViperX arms) in \code{gym\_aloha}, driven by \code{pi0\_aloha\_sim}. The
+action interface is \textbf{14 absolute joint targets in radians} at 50\,Hz --- not Cartesian,
+nothing rotating, so the $SO(3)$ machinery of \S\ref{sec:results} is absent by construction.
+The plant is re-identified here: a per-joint FIR on \emph{position} rather than increment
+(a servo tracks an absolute target, so a target offset lives in the steady-state position
+error and leaves almost nothing in $\Delta q$), fitted on eight healthy rollouts, giving
+$R^2 = 0.989$--$1.000$ and $M \approx I$ with $\mathrm{cond} = 7.3$.
+
+\paragraph{Identification transfers.}
+Separation against a matched healthy control, on the faulted joints:
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+fault & identification & leak onto clean joints \\
+\midrule
+$+0.02$ rad on joints 0--5 & \textbf{94--106\,\%} & $\leq 0.007$ rad \\
+$+0.05$ rad on joints 0--5 & 84--91\,\% & $\leq 0.007$ rad \\
+$+0.10$ rad on joints 0--5 & 69--71\,\% & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Repair needs one more condition, and the task supplies it.}
+Transfer-cube tolerates remarkably little: a static-correction sweep shows the frozen policy
+recovers nothing until the residual offset is under $\approx 0.5$\,cm at the gripper
+($-0.041$ rad: 0/20; $-0.045$: 0/20; exact $-0.050$: 4/20 against a healthy 5/20). The
+policy itself succeeds only 25\,\% unfaulted. Against that margin the continuously updating
+law fails --- and not because of its accuracy:
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+scheme & within-episode wander & residual & success \\
+\midrule
+frozen, faulted & --- & 2.12\,cm & 0/20 \\
+adaptive, updating throughout & 0.43\,cm & 0.17\,cm & 0/20 \\
+freeze after 30 / 100 / 200 steps & --- & 0.13--0.49\,cm & 0/20 \\
+\textbf{adapt episode 0, then hold} & \textbf{0.000\,cm} & \textbf{0.12\,cm} & \textbf{5/20} \\
+oracle, exact fault from step 0 & 0 & 0 & 8/20 \\
+healthy, no fault & --- & --- & 5/20 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The same correction magnitude repairs when stationary and fails when moving. Holding the
+estimate after a single sacrificial episode recovers \textbf{5 of 19} at
+$\hat f = 0.0189$ rad, 94\,\% of the true fault --- the healthy-frozen rate, from a policy
+scoring zero.
+
+\paragraph{The precondition, stated as a limit.}
+\textbf{On a tight-margin task the estimate must be identified in a sacrificial episode and
+then frozen, not updated continuously.} This was invisible on LIBERO, where a 20\,Hz
+Cartesian reach tolerates centimetres of jitter and the law's 0.019\,cm/step of motion cost
+nothing. For a persistent hardware fault the price is one episode, which is what any
+calibration costs.
+
+\paragraph{A criterion that predicts both outcomes.}
+Both robots' results follow from one comparison, measurable \emph{before} any repair run and
+without knowing the fault: the task's spatial margin (from a static-correction sweep) against
+the correction's within-episode variation (from the estimator's trajectory on one faulted
+episode). Repair works when the variation fits inside the margin.
+
+\begin{center}
+\begin{tabular}{lrrl}
+\toprule
+& task margin & correction wander & outcome \\
+\midrule
+LIBERO, translation $0.15$ & $\gg 1$\,cm & 0.019\,cm/step & repair, 4/20 $\to$ 19/20 \\
+ALOHA, updating & 0.5\,cm & 0.43\,cm & no repair, 0/20 \\
+ALOHA, held & 0.5\,cm & 0.000\,cm & repair, 0/20 $\to$ 5/20 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%==========================================================================
 \section{Negative results worth keeping}
 \label{sec:failures}
 
@@ -1136,6 +1217,14 @@ severity (offset 0.10), where frozen success is 0/8.
         across all six axes at high severity drives the arm into contacts where
         superposition fails; identically-corrected rotation faults recover 45\,\%
         alone and 10\,\% with an untouched translation component added.
+  \item \textbf{A second manipulator.} On 14-DOF bimanual ALOHA in joint space the law
+        identifies a fault to 94\,\% from eight healthy rollouts and repairs
+        transfer-cube to the healthy rate ($0/20 \to 5/20$) --- but only when the
+        correction is held stationary after one sacrificial episode. A continuously
+        updating correction of the same magnitude repairs nothing, because its 0.43\,cm
+        of within-episode wander exceeds the task's 0.5\,cm margin. One measurable
+        comparison --- task margin against correction wander --- predicts both robots'
+        outcomes before any repair run (\S\ref{sec:aloha}).
   \item \textbf{Two of this work's own explanations were refuted by its own
         measurements} and are retained as such: that identifiability is
         predictable in advance from healthy action statistics, and that additive
