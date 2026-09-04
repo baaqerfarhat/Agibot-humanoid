@@ -60,7 +60,9 @@ claim is withdrawn.
 Across \textbf{450 paired episodes} --- four suites, four fault families, three
 severities, four time profiles --- the correction fixes \textbf{158} episodes and
 breaks \textbf{5} (1.1\,\%). A tuned integral baseline on the same fault reaches
-35\,\% where this reaches 95\,\% (\S\ref{sec:severity}).
+35\,\% where this reaches 95\,\% (\S\ref{sec:severity}). The same law and the same
+calibration repair a second backbone, OpenVLA-OFT, on all three fault families
+(\S\ref{sec:generality}).
 \end{tcolorbox}
 
 \vspace{0.4em}
@@ -978,6 +980,54 @@ $0.02$, zero recorded steps qualify. That is a property of $\pi_{0.5}$'s behavio
 estimator, and no gain law recovers it without deliberate dither.
 
 %==========================================================================
+\section{Generality: a second backbone, a second suite, and a competence floor}
+\label{sec:generality}
+
+\paragraph{Second backbone, same calibration.}
+OpenVLA-OFT (7\,B, PyTorch, L1-regression action head) was served behind the same
+websocket protocol, so every experiment script, the FIR plant model and the sensitivity
+matrix $M$ ran \emph{unchanged} --- $W$ and $M$ were identified with $\pi_{0.5}$ driving the
+arm and were never re-fitted. \code{libero\_spatial}, $n=20$ paired, healthy control first:
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+cell & frozen & corrected & exact McNemar & $\pi_{0.5}$, same cell \\
+\midrule
+healthy control  & 20/20 & 19/20 & 1.0 & --- \\
+rotation $0.10$  & 0/20 & \textbf{11/20} & $\mathbf{9.8\times 10^{-4}}$ & 0/20 $\to$ 17/20 \\
+translation $0.15$ & 0/20 & \textbf{14/20} & $\mathbf{1.2\times 10^{-4}}$ & 4/20 $\to$ 19/20 \\
+gain $0.20$      & 0/20 & \textbf{17/20} & $\mathbf{1.5\times 10^{-5}}$ & 0/20 $\to$ 17/20 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Nothing in the method was $\pi_{0.5}$-specific: a different architecture, framework and
+training pipeline is repaired by the identical law on all three fault families with zero
+regressions on the faulted cells, and the gain estimate lands within 3\,\% of truth.
+Stated plainly: OFT is more fragile (frozen $0/20$ on all three faults), recovers less on
+rotation (55\,\% vs 85\,\%) --- its $r_y$ fault is only 23\,\% identified where $\pi_{0.5}$
+reached 90--100\,\% --- and the healthy control lost one episode to the law itself, a
+sustained phantom that a confidence gate evaluated offline does not remove (\S25.2 of the
+record).
+
+\paragraph{Second suite, same calibration.}
+The three headline cells replicate on \code{libero\_object} without re-identifying $W$ or
+$M$: rotation $0/20 \to 10/20$ ($p = 0.002$), translation $0/20 \to 15/20$
+($p = 6.1\times 10^{-5}$), gain $0/20 \to 19/20$ ($p = 3.8\times 10^{-6}$), zero
+regressions. Together with the backbone result: \textbf{one healthy-data calibration is a
+property of the robot}, whichever policy drives it and whatever it is asked to do.
+
+\paragraph{A competence floor is not a repair result.}
+Extending the headline to \code{libero\_90} gave $4/20 \to 5/20$, $p=1$. The unfaulted
+control on the same episodes is $6/20$: the checkpoint was fine-tuned on the four standard
+suites only and fails 14 of these 20 tasks with no fault present. There is nothing to
+restore. This is a fact about the policy, reported as such and not tabulated as a repair
+result --- and the mirror of the ceiling artefact of \S\ref{sec:severity}: a null against a
+\emph{floor} is not a null either. The healthy-frozen control on the exact episodes is now
+a prerequisite for every cell.
+
+%==========================================================================
 \section{Negative results worth keeping}
 \label{sec:failures}
 
@@ -1074,7 +1124,9 @@ severity (offset 0.10), where frozen success is 0/8.
         mixed-sign, mid-episode onset, ramp, oscillatory, intermittent, and
         multiplicative loss of effectiveness ($0/20 \to 17/20$ at 80\,\% authority
         loss). Across \textbf{450 paired episodes: 158 fixed, 5 broken}
-        (1.1\,\% regression).
+        (1.1\,\% regression) --- and the three headline cells replicate on a
+        \textbf{second backbone} (OpenVLA-OFT) and a \textbf{second suite} with the
+        $\pi_{0.5}$-identified calibration unchanged (\S\ref{sec:generality}).
   \item \textbf{The identification machinery is load-bearing.} A tuned integral
         controller on the raw motion error, given five gains and reported at its
         best, reaches 35\,\% where this method reaches 95\,\%: the measured plant
