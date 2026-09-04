@@ -75,7 +75,8 @@ def fit_plant(log_path):
 
 
 def episode(A, ep, W=None, M_inv=None, fvec=None, gain=None, adapt=False, gamma=0.08, dead=0.002,
-            norm_r=0.05, clip=0.3, corr=None, profile="step", prof_p=60.0, onset=0, log=None):
+            norm_r=0.05, clip=0.3, corr=None, profile="step", prof_p=60.0, onset=0, log=None,
+            static_corr=None):
     obs = A.reset(ep); q = np.asarray(obs["agent_pos"], float)
     hist = collections.deque([np.zeros(NJ)] * (K_FIR + 1), maxlen=K_FIR + 1)
     f_hat = np.zeros(NJ); plan = collections.deque(); traj = []; success = False
@@ -86,7 +87,9 @@ def episode(A, ep, W=None, M_inv=None, fvec=None, gain=None, adapt=False, gamma=
             chunk = np.asarray(A.client.infer(A.policy_obs(obs))["actions"], float)
             plan.extend(chunk[:HORIZON])
         a_cmd = np.asarray(plan.popleft(), float)
-        c = (-f_hat * m) if adapt else np.zeros(NJ)
+        # oracle baseline: a FIXED correction equal to minus a known fault, no estimator.
+        # If the task still fails with this, the failure is not the adaptive transient.
+        c = (-np.asarray(static_corr, float)) if static_corr is not None else ((-f_hat * m) if adapt else np.zeros(NJ))
         a_corr = a_cmd + c
         live = t >= onset; u = t - onset
         scale = {"step": 1.0, "ramp": min(1.0, u / max(prof_p, 1e-9)),
@@ -134,6 +137,7 @@ def main():
     ap.add_argument("--gamma", type=float, default=0.08); ap.add_argument("--dead", type=float, default=0.002)
     ap.add_argument("--norm-r", type=float, default=0.05); ap.add_argument("--clip", type=float, default=0.3)
     ap.add_argument("--probe", type=float, default=0.02, help="openloop: per-joint probe (rad)")
+    ap.add_argument("--static-corr", default=None, help="oracle: 14 offsets subtracted from every command, no estimator")
     a = ap.parse_args()
     A = Aloha(a.host, a.port, a.seed)
     a.out.parent.mkdir(parents=True, exist_ok=True)
@@ -141,10 +145,15 @@ def main():
     if a.mode == "log":
         eps = []
         for ep in range(a.episodes):
-            L = dict(u=[], q=[]); s, _, _ = episode(A, ep, log=L); L["success"] = s; eps.append(L)
+            # log mode with a fault: records (u, q) under the fault so the anchoring question of
+            # Sec 26.2 -- does the policy convert a target offset into a drift? -- is measurable
+            fv = [float(x) for x in a.fault_vec.split(",")] if a.fault_vec else None
+            L = dict(u=[], q=[]); s, _, _ = episode(A, ep, fvec=fv, log=L); L["success"] = s; eps.append(L)
             print(f"  healthy ep {ep}: success={s} steps={len(L['u'])}")
-        a.out.write_text(json.dumps(eps)); W, r2 = fit_plant(a.out)
-        print("FIR R2 per joint:", np.round(r2, 3)); print(f"successes {sum(e['success'] for e in eps)}/{len(eps)}")
+        a.out.write_text(json.dumps(eps))
+        if not a.fault_vec:
+            W, r2 = fit_plant(a.out); print("FIR R2 per joint:", np.round(r2, 3))
+        print(f"successes {sum(e['success'] for e in eps)}/{len(eps)}")
         return
 
     if a.mode == "openloop":
@@ -168,12 +177,14 @@ def main():
     W, r2 = fit_plant(a.log); M = np.array(json.loads(a.openloop.read_text())["M"]); M_inv = np.linalg.pinv(M)
     fvec = [float(x) for x in a.fault_vec.split(",")] if a.fault_vec else None
     corr = [int(x) for x in a.corr_joints.split(",")] if a.corr_joints else None
+    sc = [float(x) for x in a.static_corr.split(",")] if a.static_corr else None
     res = dict(args=vars(a) | {"out": str(a.out), "log": str(a.log), "openloop": str(a.openloop)}, arms={})
     for tag, adapt in (("frozen_faulted", False), ("adaptive", True)):
         ok, fh, per_ep, trajs = 0, [], [], []
         for ep in range(a.episodes):
             s, f_hat, traj = episode(A, ep, W, M_inv, fvec, a.gain, adapt, a.gamma, a.dead, a.norm_r, a.clip,
-                                     corr, a.profile, a.prof_p, a.onset)
+                                     corr, a.profile, a.prof_p, a.onset,
+                                     static_corr=(sc if adapt else None))
             ok += int(s); fh.append(f_hat.tolist()); per_ep.append(dict(task=0, init=ep, ok=bool(s))); trajs.append(traj)
             print(f"  [{tag}] ep {ep}: success={s}  f_hat[:6]={np.round(f_hat[:6], 3)}")
         res["arms"][tag] = dict(successes=ok, n=a.episodes, f_hat=fh, per_ep=per_ep,

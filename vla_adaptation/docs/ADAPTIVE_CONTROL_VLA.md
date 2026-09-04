@@ -1839,3 +1839,39 @@ the residual, not through the law — the law's own output under the *planned* s
 read. It should have been.
 
 The rerun uses `norm_r = 0.4` on the same paired episodes.
+
+### 27.3 With the normaliser sized correctly: identified, and still not repaired
+
+Same paired episodes, `norm_r = 0.4`:
+
+| fault | frozen | corrected | separation on joints 0–5 (vs healthy control) | clean joints, max \|sep\| |
+|---|---|---|---|---|
+| +0.05 rad, j0–5 | 0/20 | **0/20** | 0.042, 0.045, 0.042, 0.042, 0.043, 0.043 (**85–91%**) | 0.007 |
+| +0.10 rad, j0–5 | 0/20 | **0/20** | 0.069, 0.071, 0.069, 0.069, 0.069, 0.069 (69–71%) | 0.006 |
+
+**Identification transfers to the second manipulator.** The estimate lands within 10–15% of
+truth on every faulted joint, leaks under 0.007 rad onto clean joints, and reaches 80% of its
+final value by step ~30 — 0.6 s of a 6 s episode. The clip guard fired only on joint 13, the
+right gripper, which is never corrected: gripper commands are binary and the servo cannot
+track them, so its "estimate" is a constant that saturates. Cosmetic, and noted so it is
+not mistaken for a problem.
+
+**Repair does not.** 0/20 → 0/20 at both severities. Against a healthy baseline of 5/20 on
+these episodes, `P(0/20 | p = 0.25) = 0.003`, so this is a real failure to restore, not noise
+around a low floor.
+
+Three measured facts bound the explanation:
+
+1. A +0.05 rad offset on six left-arm joints displaces the left gripper by **5.3 cm** — two
+   to three cube widths. During the ~30-step transient the arm is that far off; afterwards
+   ~0.8 cm.
+2. **Both arms begin moving at step 1** in every healthy episode. There is no idle window in
+   which the estimate can converge before the faulted arm is asked to do something precise.
+3. The healthy policy itself succeeds only 25% of the time. The task has almost no margin.
+
+So the leading hypothesis is that the **transient loses the task**: 0.6 s at 5 cm on a
+task with no margin, from the first step. The decisive test is an *oracle* — the exact
+fault subtracted from step 0, no estimator. If it restores ~5/20, the transient is the
+cause and the fix is on the law's speed or on carrying the estimate across episodes; if it
+also returns 0/20, the fault path differs from the healthy one and the bug is in the
+plumbing. That run is in progress.
