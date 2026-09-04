@@ -26,7 +26,7 @@ def annotate(img, header, color, lines):
     return np.asarray(canvas)
 
 
-def rollout(A, ep, W, M_inv, fvec, adapt, corr, clip, gamma, dead, norm_r, f_init=None):
+def rollout(A, ep, W, M_inv, fvec, adapt, corr, clip, gamma, dead, norm_r, f_init=None, freeze_after=None):
     """aloha_adapt.episode, but keeping every rendered frame."""
     obs = A.reset(ep); q = np.asarray(obs["agent_pos"], float)
     # History initialised at the CURRENT joint position (holding), not zeros. Zeros are a
@@ -48,7 +48,7 @@ def rollout(A, ep, W, M_inv, fvec, adapt, corr, clip, gamma, dead, norm_r, f_ini
         hist.appendleft(a_corr.copy()); H = np.array(hist)
         pred = np.array([W[j, :AA.K_FIR + 1] @ H[:, j] + W[j, -1] for j in range(AA.NJ)])
         res = q1 - pred
-        if adapt:
+        if adapt and (freeze_after is None or t < freeze_after):
             est = M_inv @ res; nr = float(np.linalg.norm(res))
             if nr < dead: est = np.zeros(AA.NJ)
             est = est / (1.0 + (nr / norm_r) ** 2)
@@ -72,6 +72,7 @@ def main():
     ap.add_argument("--dead", type=float, default=0.002); ap.add_argument("--norm-r", type=float, default=0.05)
     ap.add_argument("--fps", type=int, default=25); ap.add_argument("--title", default="")
     ap.add_argument("--only-frozen-fail", action="store_true")
+    ap.add_argument("--freeze-after", type=int, default=None)
     ap.add_argument("--f-init", default=None, help="14 comma-separated values: start the corrected panel at a converged estimate (warm start)")
     a = ap.parse_args()
     A = AA.Aloha(a.host, a.port, a.seed)
@@ -85,7 +86,7 @@ def main():
         print(f"  ep {ep}: frozen success={okL} steps={len(fL)}")
         if a.only_frozen_fail and okL:
             print("    frozen succeeded -> skipping"); continue
-        fR, okR = rollout(A, ep, W, M_inv, fvec, True, corr, a.clip, a.gamma, a.dead, a.norm_r, f_init=f_init)
+        fR, okR = rollout(A, ep, W, M_inv, fvec, True, corr, a.clip, a.gamma, a.dead, a.norm_r, f_init=f_init, freeze_after=a.freeze_after)
         print(f"  ep {ep}: adaptive success={okR} steps={len(fR)}")
         n = max(len(fL), len(fR))
         for k in range(n + a.fps):

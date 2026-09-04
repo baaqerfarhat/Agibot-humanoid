@@ -76,7 +76,7 @@ def fit_plant(log_path):
 
 def episode(A, ep, W=None, M_inv=None, fvec=None, gain=None, adapt=False, gamma=0.08, dead=0.002,
             norm_r=0.05, clip=0.3, corr=None, profile="step", prof_p=60.0, onset=0, log=None,
-            static_corr=None, f_init=None):
+            static_corr=None, f_init=None, freeze_after=None):
     obs = A.reset(ep); q = np.asarray(obs["agent_pos"], float)
     # History initialised at the CURRENT joint position (holding), not zeros. Zeros are a
     # valid history for delta commands (LIBERO) but mean target = 0 rad here: for the first
@@ -116,7 +116,7 @@ def episode(A, ep, W=None, M_inv=None, fvec=None, gain=None, adapt=False, gamma=
             H = np.array(hist)
             pred = np.array([W[j, :K_FIR + 1] @ H[:, j] + W[j, -1] for j in range(NJ)])
             res = q1 - pred                       # position residual
-            if adapt:
+            if adapt and (freeze_after is None or t < freeze_after):
                 est = M_inv @ res
                 nr = float(np.linalg.norm(res))
                 if nr < dead: est = np.zeros(NJ)
@@ -144,6 +144,9 @@ def main():
     ap.add_argument("--norm-r", type=float, default=0.05); ap.add_argument("--clip", type=float, default=0.3)
     ap.add_argument("--probe", type=float, default=0.02, help="openloop: per-joint probe (rad)")
     ap.add_argument("--static-corr", default=None, help="oracle: 14 offsets subtracted from every command, no estimator")
+    ap.add_argument("--freeze-after", type=int, default=None,
+                    help="stop updating f_hat after this step; the correction stays applied. Tests whether "
+                         "mid-episode updating, not the estimate itself, is what breaks a tight-margin task")
     ap.add_argument("--warm-start", action="store_true",
                     help="carry f_hat from one episode into the next (a persistent fault has a persistent estimate)")
     a = ap.parse_args()
@@ -194,7 +197,8 @@ def main():
             s, f_hat, traj = episode(A, ep, W, M_inv, fvec, a.gain, adapt, a.gamma, a.dead, a.norm_r, a.clip,
                                      corr, a.profile, a.prof_p, a.onset,
                                      static_corr=(sc if adapt else None),
-                                     f_init=(f_carry if (adapt and a.warm_start) else None))
+                                     f_init=(f_carry if (adapt and a.warm_start) else None),
+                                     freeze_after=a.freeze_after)
             f_carry = f_hat
             ok += int(s); fh.append(f_hat.tolist()); per_ep.append(dict(task=0, init=ep, ok=bool(s))); trajs.append(traj)
             print(f"  [{tag}] ep {ep}: success={s}  f_hat[:6]={np.round(f_hat[:6], 3)}")
