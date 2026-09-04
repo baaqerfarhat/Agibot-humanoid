@@ -144,6 +144,10 @@ def main():
     ap.add_argument("--norm-r", type=float, default=0.05); ap.add_argument("--clip", type=float, default=0.3)
     ap.add_argument("--probe", type=float, default=0.02, help="openloop: per-joint probe (rad)")
     ap.add_argument("--static-corr", default=None, help="oracle: 14 offsets subtracted from every command, no estimator")
+    ap.add_argument("--identify-episodes", type=int, default=None,
+                    help="adapt during the first N episodes, then HOLD the estimate for the rest. "
+                         "The deployable scheme for a persistent fault on a tight-margin task: pay the "
+                         "transient once, then apply a stationary correction (Sec 27.12).")
     ap.add_argument("--freeze-after", type=int, default=None,
                     help="stop updating f_hat after this step; the correction stays applied. Tests whether "
                          "mid-episode updating, not the estimate itself, is what breaks a tight-margin task")
@@ -197,8 +201,9 @@ def main():
             s, f_hat, traj = episode(A, ep, W, M_inv, fvec, a.gain, adapt, a.gamma, a.dead, a.norm_r, a.clip,
                                      corr, a.profile, a.prof_p, a.onset,
                                      static_corr=(sc if adapt else None),
-                                     f_init=(f_carry if (adapt and a.warm_start) else None),
-                                     freeze_after=a.freeze_after)
+                                     f_init=(f_carry if (adapt and (a.warm_start or a.identify_episodes is not None)) else None),
+                                     freeze_after=(0 if (a.identify_episodes is not None
+                                                         and ep >= a.identify_episodes) else a.freeze_after))
             f_carry = f_hat
             ok += int(s); fh.append(f_hat.tolist()); per_ep.append(dict(task=0, init=ep, ok=bool(s))); trajs.append(traj)
             print(f"  [{tag}] ep {ep}: success={s}  f_hat[:6]={np.round(f_hat[:6], 3)}")

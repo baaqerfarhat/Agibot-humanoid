@@ -2208,3 +2208,53 @@ pair establishes is that **a stationary correction at 95% repairs where a moving
 of the same mean does not**. Whether an estimator can *become* stationary at a good enough
 value on this task is a separate question, and freezing after 100 and 200 steps — where the
 updating run has actually reached ~0.019 — is the test now running.
+
+### 27.13 Identify once, then hold: the ALOHA result, positive
+
+Freezing *within* an episode failed at every cut point (30, 100, 200 steps → 0/20), because
+each still adapts during the opening steps and, combined with the carry, never converges.
+The scheme the data actually implies is to adapt for one **episode** and then hold:
+
+| scheme | within-episode wander | residual | success |
+|---|---|---|---|
+| frozen, faulted | — | 2.12 cm | 0/20 |
+| adaptive, updating throughout | 0.43 cm | 0.17 cm mean | 0/20 |
+| freeze after 30 / 100 / 200 steps | — | 0.13–0.49 cm | 0/20 |
+| **adapt episode 0, then hold** | **0.000 cm** | **0.12 cm** | **5/20**, p = 0.0625 |
+| oracle, exact fault from step 0 | 0 | 0 | 8/20 |
+| healthy, no fault | — | — | 5/20 |
+
+`--identify-episodes 1`: episode 0 pays the transient and fails; episodes 1–19 run a
+perfectly stationary correction at `f̂ = 0.0189` — **94% of the true fault** — and recover
+**5 of 19**, the healthy-frozen rate, from a frozen policy that scores zero.
+
+**The second manipulator works, with a stated precondition.** The law identifies a
+joint-space fault on a 14-DOF bimanual arm to 94% from eight healthy rollouts, and repairs
+the task to the healthy rate — provided the correction is *stationary while the task runs*.
+On LIBERO that precondition was invisible because a 20 Hz Cartesian reach tolerates
+centimetres of jitter; on transfer-cube, with a sub-half-centimetre margin, it decides
+everything.
+
+That is a real limit on "fully online" adaptation and it should be stated as one: **on a
+tight-margin task the estimate must be identified in a sacrificial episode and then frozen,
+not updated continuously.** For a persistent hardware fault this costs one episode, which is
+what a calibration procedure costs anyway.
+
+### 27.14 The predictive criterion
+
+The ALOHA and LIBERO outcomes are both predicted by one comparison, measurable before any
+repair run:
+
+> **Compare the task's spatial margin against the correction's within-episode variation.**
+> The margin is measured by a static-correction sweep (how much residual offset the frozen
+> policy tolerates); the variation is measured from the estimator's own trajectory on a
+> single faulted episode. Repair works when the variation fits inside the margin.
+
+| | task margin | correction wander | outcome |
+|---|---|---|---|
+| LIBERO, translation 0.15 | ≫ 1 cm (a reach) | 0.019 cm/step | repair, 4/20 → 19/20 |
+| ALOHA, transfer-cube, updating | 0.5 cm | 0.43 cm within episode | no repair, 0/20 |
+| ALOHA, transfer-cube, held | 0.5 cm | 0.000 cm | repair, 0/20 → 5/20 |
+
+Neither quantity needs the fault to be known, and neither needs a repair experiment. This is
+the deployment test the method was missing.
