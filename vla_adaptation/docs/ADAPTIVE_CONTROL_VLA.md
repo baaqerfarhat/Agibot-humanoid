@@ -2023,3 +2023,39 @@ Harmless for prediction, harmless for an offset residual (the sum is what matter
 the cause of anything. No action.
 
 The fixed-history cell runs on the same paired episodes after the static bracket.
+
+### 27.8 The task's margin: under half a centimetre
+
+Static corrections, frozen for the whole episode, no estimator, same paired episodes:
+
+| correction applied | residual offset at the gripper | success |
+|---|---|---|
+| none (frozen, faulted) | 5.3 cm | 0/20 |
+| −0.041 rad (82%, the law's converged estimate) | 0.95 cm | **0/20** |
+| −0.045 rad (90%) | 0.53 cm | **0/20** |
+| −0.050 rad (100%, oracle) | 0 | **4/20** |
+| healthy, no fault | 0 | 5/20 |
+
+**Transfer-cube tolerates less than 0.5 cm of steady offset on the left arm.** A 10%
+under-correction is as fatal as no correction. That is the margin the law has to hit, and
+an estimate at 85–91% of the fault leaves 0.5–0.95 cm — outside it. Nothing about the
+estimator's speed, its wander, or the history dip changes this bound; it is a property of
+the task and the policy's 25% healthy success.
+
+So the ALOHA result decomposes cleanly:
+
+1. **Identification transfers** — 85–91% at 0.05 rad, 94–106% at 0.02 rad, ≤0.007 rad leak
+   onto clean joints, on a plant identified from eight healthy rollouts.
+2. **Repair on transfer-cube requires >95% identification held from step 1**, because the
+   residual must stay under 0.5 cm and the arm is precise from the first step. At 0.05 rad
+   the law's steady accuracy is short of that by the task's margin. At 0.02 rad it is inside
+   the margin — and that cell failed for a different reason, the zero-history dip, which let
+   the full fault act during the first ten steps (§27.7).
+
+The one cell that can demonstrate repair on this task is therefore **0.02 rad with the
+history fixed**: identification inside the margin, no dip. It is queued after the fixed
+0.05 cells. If it restores the task, the ALOHA story is "identification transfers; repair
+needs identification accuracy matched to the task's margin"; if it does not, the remaining
+suspect is the first ten steps, where the estimate is still converging from zero, and the
+honest fix is a warm start — which is what a persistent hardware fault gets in deployment
+anyway.
