@@ -76,10 +76,11 @@ def fit_plant(log_path):
 
 def episode(A, ep, W=None, M_inv=None, fvec=None, gain=None, adapt=False, gamma=0.08, dead=0.002,
             norm_r=0.05, clip=0.3, corr=None, profile="step", prof_p=60.0, onset=0, log=None,
-            static_corr=None):
+            static_corr=None, f_init=None):
     obs = A.reset(ep); q = np.asarray(obs["agent_pos"], float)
     hist = collections.deque([np.zeros(NJ)] * (K_FIR + 1), maxlen=K_FIR + 1)
-    f_hat = np.zeros(NJ); plan = collections.deque(); traj = []; success = False
+    f_hat = np.zeros(NJ) if f_init is None else np.asarray(f_init, float).copy()
+    plan = collections.deque(); traj = []; success = False
     fvec = np.zeros(NJ) if fvec is None else np.asarray(fvec, float)
     m = np.zeros(NJ) if corr is None else np.isin(np.arange(NJ), corr).astype(float)
     for t in range(300):
@@ -138,6 +139,8 @@ def main():
     ap.add_argument("--norm-r", type=float, default=0.05); ap.add_argument("--clip", type=float, default=0.3)
     ap.add_argument("--probe", type=float, default=0.02, help="openloop: per-joint probe (rad)")
     ap.add_argument("--static-corr", default=None, help="oracle: 14 offsets subtracted from every command, no estimator")
+    ap.add_argument("--warm-start", action="store_true",
+                    help="carry f_hat from one episode into the next (a persistent fault has a persistent estimate)")
     a = ap.parse_args()
     A = Aloha(a.host, a.port, a.seed)
     a.out.parent.mkdir(parents=True, exist_ok=True)
@@ -181,10 +184,13 @@ def main():
     res = dict(args=vars(a) | {"out": str(a.out), "log": str(a.log), "openloop": str(a.openloop)}, arms={})
     for tag, adapt in (("frozen_faulted", False), ("adaptive", True)):
         ok, fh, per_ep, trajs = 0, [], [], []
+        f_carry = None
         for ep in range(a.episodes):
             s, f_hat, traj = episode(A, ep, W, M_inv, fvec, a.gain, adapt, a.gamma, a.dead, a.norm_r, a.clip,
                                      corr, a.profile, a.prof_p, a.onset,
-                                     static_corr=(sc if adapt else None))
+                                     static_corr=(sc if adapt else None),
+                                     f_init=(f_carry if (adapt and a.warm_start) else None))
+            f_carry = f_hat
             ok += int(s); fh.append(f_hat.tolist()); per_ep.append(dict(task=0, init=ep, ok=bool(s))); trajs.append(traj)
             print(f"  [{tag}] ep {ep}: success={s}  f_hat[:6]={np.round(f_hat[:6], 3)}")
         res["arms"][tag] = dict(successes=ok, n=a.episodes, f_hat=fh, per_ep=per_ep,

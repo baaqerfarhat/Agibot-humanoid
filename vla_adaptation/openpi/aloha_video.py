@@ -26,11 +26,12 @@ def annotate(img, header, color, lines):
     return np.asarray(canvas)
 
 
-def rollout(A, ep, W, M_inv, fvec, adapt, corr, clip, gamma, dead, norm_r):
+def rollout(A, ep, W, M_inv, fvec, adapt, corr, clip, gamma, dead, norm_r, f_init=None):
     """aloha_adapt.episode, but keeping every rendered frame."""
     obs = A.reset(ep); q = np.asarray(obs["agent_pos"], float)
     hist = collections.deque([np.zeros(AA.NJ)] * (AA.K_FIR + 1), maxlen=AA.K_FIR + 1)
-    f_hat = np.zeros(AA.NJ); plan = collections.deque(); frames = []; success = False
+    f_hat = np.zeros(AA.NJ) if f_init is None else np.asarray(f_init, float).copy()
+    plan = collections.deque(); frames = []; success = False
     m = np.isin(np.arange(AA.NJ), corr).astype(float)
     for t in range(300):
         if not plan:
@@ -66,18 +67,20 @@ def main():
     ap.add_argument("--dead", type=float, default=0.002); ap.add_argument("--norm-r", type=float, default=0.05)
     ap.add_argument("--fps", type=int, default=25); ap.add_argument("--title", default="")
     ap.add_argument("--only-frozen-fail", action="store_true")
+    ap.add_argument("--f-init", default=None, help="14 comma-separated values: start the corrected panel at a converged estimate (warm start)")
     a = ap.parse_args()
     A = AA.Aloha(a.host, a.port, a.seed)
     W, _ = AA.fit_plant(a.log); M_inv = np.linalg.pinv(np.array(json.loads(a.openloop.read_text())["M"]))
     fvec = np.array([float(x) for x in a.fault_vec.split(",")]); corr = [int(x) for x in a.corr_joints.split(",")]
     shown = [j for j in corr][:3]
+    f_init = np.array([float(x) for x in a.f_init.split(',')]) if a.f_init else None
     clips = []
     for ep in [int(x) for x in a.episodes.split(",")]:
         fL, okL = rollout(A, ep, W, M_inv, fvec, False, corr, a.clip, a.gamma, a.dead, a.norm_r)
         print(f"  ep {ep}: frozen success={okL} steps={len(fL)}")
         if a.only_frozen_fail and okL:
             print("    frozen succeeded -> skipping"); continue
-        fR, okR = rollout(A, ep, W, M_inv, fvec, True, corr, a.clip, a.gamma, a.dead, a.norm_r)
+        fR, okR = rollout(A, ep, W, M_inv, fvec, True, corr, a.clip, a.gamma, a.dead, a.norm_r, f_init=f_init)
         print(f"  ep {ep}: adaptive success={okR} steps={len(fR)}")
         n = max(len(fL), len(fR))
         for k in range(n + a.fps):
