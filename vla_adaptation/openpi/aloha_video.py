@@ -29,7 +29,12 @@ def annotate(img, header, color, lines):
 def rollout(A, ep, W, M_inv, fvec, adapt, corr, clip, gamma, dead, norm_r, f_init=None):
     """aloha_adapt.episode, but keeping every rendered frame."""
     obs = A.reset(ep); q = np.asarray(obs["agent_pos"], float)
-    hist = collections.deque([np.zeros(AA.NJ)] * (AA.K_FIR + 1), maxlen=AA.K_FIR + 1)
+    # History initialised at the CURRENT joint position (holding), not zeros. Zeros are a
+    # valid history for delta commands (LIBERO) but mean target = 0 rad here: for the first
+    # K_FIR steps the prediction was wildly wrong (|r| = 1.4), the normaliser zeroed every
+    # update, and f_hat decayed toward zero by gamma per step -- a 1.6 cm dip at the start
+    # of every episode, cold or warm (Sec 27.7).
+    hist = collections.deque([q.copy()] * (AA.K_FIR + 1), maxlen=AA.K_FIR + 1)
     f_hat = np.zeros(AA.NJ) if f_init is None else np.asarray(f_init, float).copy()
     plan = collections.deque(); frames = []; success = False
     m = np.isin(np.arange(AA.NJ), corr).astype(float)

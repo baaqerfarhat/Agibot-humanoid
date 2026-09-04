@@ -1987,3 +1987,34 @@ FIR fits the healthy robot essentially exactly at motion onset, mid-episode, and
 So the early dip in `f̂` arises only under the fault and the correction, in closed loop:
 whatever the estimator is tracking during the first second, it is not something the plant
 model gets wrong on a healthy arm.
+
+### 27.7 The dip is the zero-initialised FIR history
+
+The phase-locked dip has a mechanical cause, found by replaying the law on the stored faulted
+log from a warm `f̂ = 0.040`:
+
+| history initialised as | `f̂[0:6]` at steps 0, 2, 4, 6, 10, 15, 25 | `‖r‖` at step 0 |
+|---|---|---|
+| **zeros (as run)** | 0.037, 0.031, 0.026, **0.024**, 0.027, 0.032, 0.037 | **1.415** |
+| current joint position `q₀` | 0.037, 0.036, 0.036, 0.035, 0.035, 0.037, 0.039 | 0.198 |
+| closed-loop warm run, measured | 0.040 (step 0), **0.025 (step 5)**, 0.028, 0.032, 0.036 (step 25) | — |
+
+The FIR history is seeded with zeros at every episode start. For delta commands that is a
+valid history — "no motion" — and in LIBERO it was harmless. For absolute joint targets it
+means "target = 0 rad" on an arm resting at `[0, −0.96, 1.16, …]`: for the first `K_FIR`
+steps the prediction is wildly wrong (`‖r‖ = 1.4`), the normaliser zeroes every update, and
+`f̂` decays toward zero at `γ` per step. A **1.6 cm dip in the first ten steps of every
+episode, cold or warm** — precisely when the faulted arm is already moving and the task has
+no margin. Seeding the history with the current joint position removes it.
+
+This is the fourth defect in the ALOHA port and the first that was invisible in LIBERO by
+construction rather than by luck. It was also nearly missed a second time: the offline gate
+I wrote to confirm it demanded the `q₀` replay stay above 0.038, and it bottoms at 0.0347 —
+a 0.5 cm dip against the 1.7 cm one under test — so the gate rejected a mechanism the
+numbers plainly show. Thresholds, again.
+
+One more thing the replay exposes: the FIR's tap at lag 6 is 0.286, nearly as large as lag 0
+(0.292). The servo's settling extends past the six-lag window and the fit is loading the
+last tap to compensate. A longer window would be more honest; it is not the cause of the dip.
+
+The fixed-history cell runs on the same paired episodes after the static bracket.

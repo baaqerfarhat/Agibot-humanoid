@@ -78,7 +78,12 @@ def episode(A, ep, W=None, M_inv=None, fvec=None, gain=None, adapt=False, gamma=
             norm_r=0.05, clip=0.3, corr=None, profile="step", prof_p=60.0, onset=0, log=None,
             static_corr=None, f_init=None):
     obs = A.reset(ep); q = np.asarray(obs["agent_pos"], float)
-    hist = collections.deque([np.zeros(NJ)] * (K_FIR + 1), maxlen=K_FIR + 1)
+    # History initialised at the CURRENT joint position (holding), not zeros. Zeros are a
+    # valid history for delta commands (LIBERO) but mean target = 0 rad here: for the first
+    # K_FIR steps the prediction was wildly wrong (|r| = 1.4), the normaliser zeroed every
+    # update, and f_hat decayed toward zero by gamma per step -- a 1.6 cm dip at the start
+    # of every episode, cold or warm (Sec 27.7).
+    hist = collections.deque([q.copy()] * (K_FIR + 1), maxlen=K_FIR + 1)
     f_hat = np.zeros(NJ) if f_init is None else np.asarray(f_init, float).copy()
     plan = collections.deque(); traj = []; success = False
     fvec = np.zeros(NJ) if fvec is None else np.asarray(fvec, float)
