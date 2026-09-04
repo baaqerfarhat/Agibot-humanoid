@@ -2188,6 +2188,23 @@ step of jitter there and repair worked anyway, because a 20 Hz Cartesian reach h
 centimetres of slack. On transfer-cube, with a sub-half-centimetre margin and an arm that is
 precise from step 1, the same jitter is the difference between 5/20 and 0/20.
 
-The remedy is one flag, and it is what a persistent hardware fault deserves anyway: adapt
-until the estimate settles, then **stop adapting and hold it** (`--freeze-after`). That run
-is in progress; whatever it returns, the pair of rows above already establishes the point.
+The obvious remedy is to adapt until the estimate settles and then hold it
+(`--freeze-after`). **That run has now returned 0/20, and it refutes the remedy as I
+proposed it.** The reason is worth more than the proposal was:
+
+| | froze at | residual held | success |
+|---|---|---|---|
+| warm + freeze after 30 steps | 0.0155 rad (78%) | **0.48 cm** | 0/20 |
+| pure static 0.019 rad | 0.019 (95%) | 0.11 cm | 5/20 |
+
+Thirty steps is not convergence at `γ = 0.08` — the estimate is only at 78% there, and
+freezing locks in a 0.48 cm residual, sitting exactly on the margin. Worse, **combined with
+`--warm-start` the flag is self-defeating**: each episode carries forward whatever value was
+frozen, so the estimate gains only 0.0009 rad per episode and never reaches the fault. I
+wired the two flags together without noticing they fight.
+
+So the corrected claim is narrower than §27.12's first draft. What the frozen-versus-updating
+pair establishes is that **a stationary correction at 95% repairs where a moving correction
+of the same mean does not**. Whether an estimator can *become* stationary at a good enough
+value on this task is a separate question, and freezing after 100 and 200 steps — where the
+updating run has actually reached ~0.019 — is the test now running.
