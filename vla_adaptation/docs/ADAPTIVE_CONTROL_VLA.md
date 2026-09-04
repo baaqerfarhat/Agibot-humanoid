@@ -1971,3 +1971,19 @@ design.
 The 0.02 rad cell of §27.5 already hints at the second reading — identification there was
 94–106%, residual ≈ 0.1 cm, and it still failed with the transient present — so the two
 effects may each be sufficient on a task this fragile.
+
+
+**Addendum: the estimate wanders in a fixed pattern, and it is a closed-loop effect.** Within
+a warm-started episode the applied correction on joints 0–5 swings by a median 0.019 rad —
+**2.0 cm, a cube width** — and the *mean* trajectory across episodes has the same shape every
+time: 0.040 at step 0, a dip to 0.036 near step 25, a climb to 0.043–0.044 by step 75, then
+flat. Phase-locked, not noise. Replaying the law on stored open-loop residuals produces only
+0.4–0.7 cm of wander, and a slower gain makes it worse (γ 0.08 → 0.01: 0.38 → 0.72 cm), so
+the gain is not the lever.
+
+**It is not error in the healthy plant model.** With no fault present, the residual on joints
+0–5 is 0.0001–0.0003 rad (0.01–0.03 cm) in every phase of the episode, rms ≤ 0.0025 — the
+FIR fits the healthy robot essentially exactly at motion onset, mid-episode, and at the end.
+So the early dip in `f̂` arises only under the fault and the correction, in closed loop:
+whatever the estimator is tracking during the first second, it is not something the plant
+model gets wrong on a healthy arm.
