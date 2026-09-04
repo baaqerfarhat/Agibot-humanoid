@@ -1945,3 +1945,29 @@ On the oracle itself: it solves episodes {2, 4, 5, 9} where the healthy policy s
 {2, 5, 6, 13, 14}. The overlap is partial, but the policy's own two healthy arms differ on
 four episodes at identical seeds, so equivalence holds at the rate level (4/20 vs 5/20), not
 episode for episode.
+
+### 27.6 Warm start removes the transient, and the task still does not come back
+
+Estimate carried across episodes, same paired episodes, +0.05 rad on joints 0–5:
+
+| | success |
+|---|---|
+| episode 0 (full transient) | 0/1 |
+| **episodes 1–19, starting at `f̂ ≈ 0.037–0.041` (no transient)** | **0/19** |
+| oracle, exact −0.050 from step 0 | 4/20 |
+
+The carry worked — every later episode began within 20% of the fault — and it changed
+nothing. **The transient is not the cause.** Between the oracle and a warm-started
+adaptive arm two things remain: a steady residual of ~0.01 rad (≈ 1 cm at the gripper, half
+a cube width), and the estimator continuing to update during the episode.
+
+Two static runs separate them, both queued: the law's own converged estimate (−0.041)
+applied *frozen*, and a 90% correction (−0.045). If the frozen estimate restores the task,
+online updating during the episode is what hurts and the remedy is to stop adapting once
+converged; if neither restores it, this task tolerates less than a centimetre of residual
+offset and the law's 80–90% identification is short of that by the task's margin, not by
+design.
+
+The 0.02 rad cell of §27.5 already hints at the second reading — identification there was
+94–106%, residual ≈ 0.1 cm, and it still failed with the transient present — so the two
+effects may each be sufficient on a task this fragile.
