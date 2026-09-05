@@ -69,10 +69,14 @@ correction is held stationary (\S\ref{sec:aloha}).
 \end{tcolorbox}
 
 \vspace{0.4em}
-\noindent\textbf{Artifacts.} Video: \code{results/phase05/adaptive\_vs\_frozen.mp4}.
-Data: \code{results/}. Code: \code{openpi/error\_signal.py}, \code{openloop\_id.py},
-\code{adaptive\_law.py}, \code{compare\_video.py}. Full theory:
-\code{docs/ADAPTIVE\_CONTROL\_VLA.md}.
+\noindent\textbf{Artifacts.}
+\begin{itemize}[leftmargin=1.5em,itemsep=0pt,topsep=2pt]
+  \item videos: \code{results/phase05/adaptive\_vs\_frozen\_*.mp4} (spatial, object, goal, OFT, ALOHA)
+  \item data: \code{results/}, every run behind every number, with per-episode outcomes
+  \item code: \code{openpi/} --- \code{adaptive\_law.py}, \code{adaptive\_gain.py}, \code{mcnemar.py},
+        \code{openloop\_id.py}, \code{aloha\_adapt.py}, \code{oft\_server.py}
+  \item full record: \code{docs/ADAPTIVE\_CONTROL\_VLA.md}, \S1--\S28, refutations kept in place
+\end{itemize}
 
 \noindent\textbf{Status.} Simulation; hardware validation in progress.
 Section~\ref{sec:limits} states what this does not establish.
