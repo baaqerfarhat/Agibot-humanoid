@@ -8,6 +8,7 @@
 \newtheorem{remark}{Remark}
 \newcommand{\fhat}{\hat{f}}
 \newcommand{\code}[1]{\texttt{\small #1}}
+\providecommand{\citep}[1]{[\ref{#1}]}
 \setlength{\parskip}{3pt}
 
 \title{Frozen Yet Adaptive: Single-Episode Repair of Vision--Language--Action Policies from Proprioceptive Residuals}
@@ -50,8 +51,10 @@ against the achieved one---has no mechanism to notice.
 
 The standard remedies are to fine-tune on faulted data, which requires labelled faults and
 the compute to update billions of parameters, or to learn a residual correction offline
-against reference rollouts. Both need the fault to be represented in a dataset before it can
-be corrected. Neither is available to a robot that degrades while running.
+against reference rollouts. Both need the fault to be represented in a dataset before it can be corrected---the
+closest contemporary method, J-PARC \citep{jparc2026}, trains its calibrator per environment
+from faulted rollouts against fault-free references and teacher targets. Neither is
+available to a robot that degrades while running.
 
 This paper takes the classical control view. A fault at the action interface is a
 disturbance on a plant whose healthy dynamics can be identified once; the disturbance is
@@ -94,14 +97,22 @@ autoregressive backbone with a regression head. Both are evaluated on LIBERO in 
 simulated robot. Robustness to execution faults is not part of the evaluation protocol of
 either.
 
-\textbf{Residual and offline calibration.} Learned residual policies and offline
-calibration against reference rollouts correct systematic action error but require the
-faulted behaviour in a dataset first. A closely related contemporary line (J-PARC, reported
-to evaluate frozen $\pi_{0.5}$ and OpenVLA-OFT across LIBERO with learned residual
-calibration) was cited to us in review; we have not verified its content and do not
-characterise it further here. Closed-loop affine activation editing (CLAE) steers a policy
-by editing internal activations against an observed objective; our correction lives
-outside the network, at the action interface, and needs no access to activations.
+\textbf{Residual calibration of frozen VLAs.} The closest work is J-PARC
+\citep{jparc2026}, which studies joint-level physical faults---joint lock, limited range of
+motion, increased friction---on frozen $\pi_{0.5}$ and OpenVLA-OFT across the same four
+LIBERO suites, and reports a WidowX demonstration. It trains a lightweight residual
+calibrator \emph{offline}, per environment, from faulted rollouts paired with fault-free
+reference rollouts and teacher-oracle residual targets, and reports $48.4\%\to55.2\%$ on
+$\pi_{0.5}$ and $42.3\%\to46.8\%$ on OpenVLA-OFT under joint lock (unpaired, 500 episodes per
+suite). The differences define our contribution. We use no faulted data, no reference
+trajectories and no teacher: the plant is identified once on healthy motion and the fault
+is identified online within the episode in which it occurs, on paired episodes
+($23\%\to65\%$). Their faults, however, enter \emph{below} the controller, where the
+fault-to-motion map is state dependent; ours enter at the action interface above it, and the
+joint-level class appears in this paper only in the hardware protocol (\S\ref{sec:hardware}).
+The two are complementary on exactly that axis. Closed-loop affine activation editing
+\citep{clae2026} steers a frozen policy by editing internal activations against an observed
+objective; our correction lives outside the network and needs no access to activations.
 
 \textbf{Adaptive and fault-tolerant control.} Our law is a disturbance observer with
 feedforward cancellation, in the MRAC gradient form $\dot\theta = -\Gamma\phi e$, with the
@@ -505,8 +516,11 @@ ordering. The record keeps each with the measurement that killed it.
 \label{sec:limits}
 
 The LIBERO fault is at the Cartesian action interface, above the controller; a joint-level
-actuator fault enters below it with a state-dependent map, and the hardware section is the
-only place that fault class appears, without a repair result yet. The estimate resets every
+actuator fault---the class J-PARC studies---enters below it with a state-dependent map, and
+the hardware section is the only place that class appears here, without a repair result
+yet. Whether the residual of a position loop carries a joint lock or friction change as
+cleanly as it carries an offset is open; our X2 logs say a stiffness loss is invisible in
+position and recoverable in effort, which suggests the sensor, not the law, is what changes. The estimate resets every
 episode by design for the LIBERO claims; the ALOHA result shows that on a tight-margin task
 the deployable scheme is instead to hold it, which is a different claim about online
 adaptation and is stated as such. The policy's stochasticity gives $\pm10$ points at $n=20$;
@@ -523,6 +537,13 @@ given a plant model and a sensitivity matrix identified once on healthy data. Th
 is paired, controlled, and broad; the calibration transfers across suites and backbones; the
 two conditions that govern success are stated and measurable in advance; and the failures
 are named. The result the paper still owes is the one on a real robot.
+
+\begin{thebibliography}{9}\small
+\bibitem{jparc2026} M.~Jo, T.~Kwon, J.~Chun, Y.~Jeong, T.~Kim. Uncovering vulnerability of
+vision-language-action models under joint-level physical faults. arXiv:2606.10501, 2026.
+\bibitem{clae2026} S.~Das, D.~Chiu, S.~Hegde, G.~S.~Sukhatme. Steering multirobot behavior via
+closed-loop affine activation editing. arXiv:2606.11489, 2026.
+\end{thebibliography}
 
 \appendix
 \section{Reproducibility}

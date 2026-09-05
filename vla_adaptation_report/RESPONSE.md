@@ -136,6 +136,12 @@ supports empirically) before the recovery bound.
 > over 120 paired episodes. On a second embodiment: 14-DOF bimanual ALOHA in joint space is
 > identified to 94% and repaired to the healthy rate — with a stated precondition (the
 > correction must be held stationary; §27). The real-robot ask remains open.
+> **J-PARC verified (2026-09-05).** arXiv:2606.10501 is as the review described: frozen π0.5
+> and OpenVLA-OFT on the four LIBERO suites, a WidowX demo, joint-level faults (lock, limited
+> range, friction). Its calibrator is trained offline per environment from faulted rollouts
+> with fault-free references and teacher targets; +6.8 points on π0.5 and +4.5 on OFT under
+> joint lock, unpaired. The draft characterises it on those terms and states the one axis on
+> which it is stronger than ours: its faults are below the controller.
 
 
 Second backbone (OpenVLA-OFT), 50 rollouts per condition, a J-PARC baseline, a LoRA
