@@ -291,10 +291,26 @@ contact-rich task, and we do not claim it.
 \section{Experiments}
 \label{sec:exp}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_convergence.pdf}
+\caption{The fault estimate within one episode, from zero. Left: LIBERO spatial with a
+frozen $\pi_{0.5}$ under a uniform $+0.05$ fault on all six action dimensions; the three
+rotation channels (median and interquartile range over 20 episodes) with the correction on
+rotation only: two reach $0.04$ by step 60 and the third $0.024$, all still rising; at
+episode end the separation test puts them at $0.047$ to $0.049$ (\S\ref{sec:method}). Right: ALOHA
+transfer-cube with a frozen $\pi_0$ under a $+0.02$\,rad offset on the left arm's six
+joints; the joint-space estimate in the identification episode settles at $0.0183$ to
+$0.0191$\,rad, $92$ to $96\%$ of the true offset, and is then held for the remaining
+episodes (\S\ref{sec:aloha}).}
+\label{fig:convergence}
+\end{figure}
+
 \subsection{Protocol}
 
 \textbf{Paired design.} Both arms of every cell run the same (task, initial state, seed)
-episodes and differ only in whether the correction is applied. We report exact McNemar tests
+episodes and differ only in whether the correction is applied; Figure~\ref{fig:convergence}
+shows what the corrected arm does inside one episode. We report exact McNemar tests
 on the discordant pairs; unpaired tests on these data are conservative and, worse, hide the
 regression count. \textbf{Controls.} Every cell has a healthy-frozen control on the same
 episodes: a null against a ceiling (frozen already near $100\%$) or a floor (frozen near $0$
@@ -335,6 +351,20 @@ result.
 
 \subsection{Fault families and severity}
 \label{sec:severity}
+Figure~\ref{fig:map} and the table give the fault-family by magnitude map.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_map.pdf}
+\caption{The recoverability map: frozen versus corrected success on LIBERO spatial, $n=20$
+paired episodes per cell, correction on the channels each family's separation test
+supports (rotation for the rotation and uniform families, translation for translation).
+No cell has a regression. Single-family faults degrade gracefully with magnitude; the
+uniform fault collapses at $0.15$ because its uncorrected translation component drives the
+arm into contacts and limits (\S\ref{sec:fail}). Exact McNemar $p$-values are in the table
+below.}
+\label{fig:map}
+\end{figure}
 
 \begin{center}\small
 \begin{tabular}{lccc}
@@ -456,8 +486,10 @@ none (frozen) & --- & 2.12\,cm & 0/20 \\
 adaptive, updating throughout & 0.43\,cm & 0.17\,cm & 0/20 \\
 $0.019$\,rad ($95\%$) applied frozen & 0 & 0.11\,cm & \textbf{5/20} \\
 \textbf{adapt episode 0, then hold} & \textbf{0} & 0.12\,cm & \textbf{5/20} ($p=0.0625$) \\
+\textbf{adapt episode 0, then hold}, $n=40$ & \textbf{0} & --- & \textbf{15/40} ($p=6.1\times10^{-5}$, 0 broken) \\
 $0.020$\,rad exact, from step 0 & 0 & 0 & 8/20 \\
 healthy, no fault & --- & --- & 5/20 \\
+healthy, no fault, $n=40$ (law running: 14/40, $p=0.58$) & --- & --- & 17/40 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -467,8 +499,12 @@ for the whole episode restores nothing, $100\%$ restores the healthy rate. The u
 reaches a mean residual well inside that margin and still fails, because its correction
 moves by $0.43$\,cm within an episode---the whole margin---on an arm that is precise from
 step one. The same number, applied stationary, repairs. Adapting for one episode and holding
-the estimate recovers $5/19$ on the held episodes, the healthy-frozen rate, from a frozen
-policy at zero. This is the content of Proposition~\ref{prop:repair}, and it was invisible on
+the estimate recovers $5/19$ on the held episodes at $n=20$, the healthy-frozen rate, and
+$15/39$ at $n=40$ (exact McNemar $p=6.1\times10^{-5}$, zero regressions; held estimate
+$0.019$ to $0.020$\,rad, $95$ to $101\%$ of the offset), from a frozen policy at zero. The
+healthy arm on the same seeds scores $17/40$, and the repaired arm is indistinguishable from
+it ($p=0.75$); the law on a healthy arm holds a phantom of at most $0.0008$\,rad and changes
+nothing ($14/40$ against $17/40$, $p=0.58$). This is the content of Proposition~\ref{prop:repair}, and it was invisible on
 LIBERO because a 20\,Hz Cartesian reach tolerates centimetres of jitter.
 
 \subsection{Hardware}

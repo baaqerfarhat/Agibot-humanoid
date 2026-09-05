@@ -2347,3 +2347,34 @@ so the set of "fixed" pairs is not a stable set of episodes but a draw from a po
 outcome is dominated by its own sampling. This is the n = 20 ±11-point noise of §10 seen
 from the other side, and it is why every claim in this record is a paired rate, never a
 list of episodes.
+
+### 28.4 ALOHA identify-then-hold at n = 40 (added 2026-09-05)
+
+§27.13's `5/20`, `p = 0.0625`, sat on the same exact-test floor as `goal` and `libero_10`
+did before §28. Same configuration (+0.02 rad on left-arm joints 0–5, `--identify-episodes
+1`, norm_r 0.4, clip 0.08), seeds 200–239, paired.
+
+| n | frozen | held correction | fixed | broken | exact McNemar | held f̂, joints 0–5 |
+|---|---|---|---|---|---|---|
+| 20 | 0/20 | 5/20 = 25% | 5 | 0 | 0.0625 (floor) | 0.0183–0.0191 (92–96%) |
+| **40** | 0/40 | **15/40 = 38%** | **15** | 0 | **6.1×10⁻⁵** | **0.0190–0.0202 (95–101%)** |
+
+Resolved, with zero regressions, and the identification episode (episode 0) failed as it
+must. The rate moved from 25 % to 38 %, which is the ±11-point noise of §10 and §28.3, not
+a change in the mechanism. The estimator's clip guard fired on joint 13 (the right
+gripper) at 100 % of episodes: that joint is not in the correction set and its "estimate"
+is the projection bound, exactly the coincidence §12.1 warned about — reported here so the
+number is never read as an identification. 
+**Healthy control, same seeds, same law, no fault (n = 40):**
+
+| arm | success | vs healthy-frozen | exact McNemar |
+|---|---|---|---|
+| healthy, frozen | 17/40 = 42% | — | — |
+| healthy, law running (identify-then-hold) | 14/40 = 35% | 5 fixed / 8 broken | 0.58 (null) |
+| **faulted, repaired** (above) | **15/40 = 38%** | 4 / 6 | 0.75 (null) |
+
+The held phantom estimate on a healthy arm is at most 0.0008 rad on joints 0–5, 4 % of
+the fault, and the law neither helps nor harms a healthy robot at this n. The repaired arm
+is indistinguishable from the healthy one on the same seeds. This is the full cell the
+protocol requires: floor (0/40), repair (15/40), healthy ceiling (17/40), and a null for
+the law on healthy data.

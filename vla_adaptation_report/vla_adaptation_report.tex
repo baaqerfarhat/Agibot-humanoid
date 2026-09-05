@@ -1084,9 +1084,11 @@ scheme & within-episode wander & residual & success \\
 frozen, faulted & --- & 2.12\,cm & 0/20 \\
 adaptive, updating throughout & 0.43\,cm & 0.17\,cm & 0/20 \\
 freeze after 30 / 100 / 200 steps & --- & 0.13--0.49\,cm & 0/20 \\
-\textbf{adapt episode 0, then hold} & \textbf{0.000\,cm} & \textbf{0.12\,cm} & \textbf{5/20} \\
+\textbf{adapt episode 0, then hold} & \textbf{0.000\,cm} & \textbf{0.12\,cm} & \textbf{5/20} ($p=0.0625$) \\
+\textbf{adapt episode 0, then hold}, $n=40$ & \textbf{0.000\,cm} & --- & \textbf{15/40} ($p=6.1\times10^{-5}$, 0 broken) \\
 oracle, exact fault from step 0 & 0 & 0 & 8/20 \\
 healthy, no fault & --- & --- & 5/20 \\
+healthy, no fault, $n=40$ (law running: 14/40, $p=0.58$) & --- & --- & 17/40 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -1116,7 +1118,7 @@ episode). Repair works when the variation fits inside the margin.
 \midrule
 LIBERO, translation $0.15$ & $\gg 1$\,cm & 0.019\,cm/step & repair, 4/20 $\to$ 19/20 \\
 ALOHA, updating & 0.5\,cm & 0.43\,cm & no repair, 0/20 \\
-ALOHA, held & 0.5\,cm & 0.000\,cm & repair, 0/20 $\to$ 5/20 \\
+ALOHA, held & 0.5\,cm & 0.000\,cm & repair, 0/40 $\to$ 15/40 \\
 \bottomrule
 \end{tabular}
 \end{center}
