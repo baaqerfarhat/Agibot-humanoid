@@ -340,8 +340,9 @@ swapped on the strength of the algebra alone.
 \subsection{\texorpdfstring{$\fhat$}{f-hat} alone cannot distinguish identification from bias}
 
 Run the law with \textbf{no fault at all} and $\fhat$ does not go to zero. It
-settles at $[+0.045, +0.014, +0.073, -0.009, +0.017, -0.001]$ --- on $dz$ that is
-146\% of the magnitude of the real fault. The estimator reports a large offset
+settles at
+\[ \hat f = [+0.045,\ +0.014,\ +0.073,\ -0.009,\ +0.017,\ -0.001] \]
+--- on $dz$ that is 146\% of the magnitude of the real fault. The estimator reports a large offset
 where there is nothing to correct.
 
 The diagnostic that separates them is the \textbf{separation}: the estimate under
@@ -726,10 +727,11 @@ architecture-independent. That is the recommended construction going forward.
 Fresh runs carrying per-episode records, rotation-only correction, $\mathrm{sev} = 0.05$,
 $n = 20$ per suite.
 
+{\small
 \begin{center}
 \begin{tabular}{lccccc}
 \toprule
-suite & frozen & adaptive & adaptive-only & frozen-only & exact McNemar \\
+suite & frozen & adaptive & adapt.-only & froz.-only & exact McNemar \\
 \midrule
 \code{libero\_spatial} & 8/20 & 18/20 & 10 & 0 & $\mathbf{0.0020}$ \\
 \code{libero\_goal} ($n{=}40$)    & 15/40 & 29/40 & 15 & 1 & $\mathbf{0.00052}$ \\
@@ -741,6 +743,7 @@ suite & frozen & adaptive & adaptive-only & frozen-only & exact McNemar \\
 \bottomrule
 \end{tabular}
 \end{center}
+}
 
 \paragraph{The result only paired data could show.}
 \textbf{Frozen-only wins $= 1$}, across 120 paired episodes in four suites: the
