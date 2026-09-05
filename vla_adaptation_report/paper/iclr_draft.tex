@@ -1,0 +1,534 @@
+\documentclass[10pt]{article}
+% ICLR-style geometry; swap for the official iclr2027_conference.sty when porting.
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,booktabs,graphicx,enumitem,xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newcommand{\fhat}{\hat{f}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+\setlength{\parskip}{3pt}
+
+\title{Frozen Yet Adaptive: Single-Episode Repair of Vision--Language--Action Policies from Proprioceptive Residuals}
+\author{Anonymous authors\thanks{Draft generated from the project record on 2026-09-05. Numbers are verified against the stored per-episode outcomes; the record (\code{docs/ADAPTIVE\_CONTROL\_VLA.md}) keeps every refuted explanation in place.}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A vision--language--action (VLA) policy is a large frozen network whose training assumed a
+healthy robot. When the execution hardware drifts---a miscalibrated tool frame, a stiff or
+weakened joint---the policy is silently wrong, and fine-tuning it is out of reach for most
+deployments. We show that the fault can be identified and cancelled \emph{within a single
+episode}, from the robot's own motion, by adapting six numbers at the policy's action
+interface: a plant model and a sensitivity matrix identified once on healthy data turn the
+proprioceptive residual into an estimate of the fault, and a projected, normalised gradient
+law drives it to zero. No gradients through the policy, no reward, no reference trajectory,
+and no learning across episodes. On four LIBERO suites with a frozen $\pi_{0.5}$, paired
+episodes go from $23\%$ to $65\%$ success (exact McNemar $p = 6.1\times10^{-13}$, $n=120$),
+with every suite individually significant; across 690 paired episodes spanning additive,
+structured, time-varying and multiplicative faults the correction fixes 275 episodes and
+breaks 7. The same law and the \emph{same} calibration repair a second backbone
+(OpenVLA-OFT) and, in joint space, a second manipulator (bimanual ALOHA). A tuned integral
+baseline without the plant model reaches $35\%$ where the method reaches $95\%$. We state the
+two conditions the evidence supports---an identifiability condition and a repairability
+criterion comparing the task's spatial margin against the correction's variation---and the
+failure modes that bound the method: faults invisible to proprioception, tasks whose margin
+is below the estimator's stationarity, and a policy that cannot do the task unfaulted.
+\end{abstract}
+
+\section{Introduction}
+
+Vision--language--action models map images and a language instruction to robot actions and
+are trained on demonstrations collected from a particular robot in a particular state of
+repair. Deployed, they are frozen. The robot is not: tool frames drift, calibrations go
+stale, joints lose effectiveness. Each of these changes the map from the policy's action to
+the robot's motion, and the policy---which never observes its own commanded motion
+against the achieved one---has no mechanism to notice.
+
+The standard remedies are to fine-tune on faulted data, which requires labelled faults and
+the compute to update billions of parameters, or to learn a residual correction offline
+against reference rollouts. Both need the fault to be represented in a dataset before it can
+be corrected. Neither is available to a robot that degrades while running.
+
+This paper takes the classical control view. A fault at the action interface is a
+disturbance on a plant whose healthy dynamics can be identified once; the disturbance is
+observable in the difference between the motion the healthy plant would have produced and
+the motion actually measured; and an adaptive law with a handful of parameters can cancel
+it online. The question is whether this survives contact with a 3.35B-parameter policy,
+contact-rich tasks, and a residual that carries model error as well as the fault. Our
+contributions are the answer:
+
+\begin{enumerate}[leftmargin=1.5em,itemsep=1pt]
+\item \textbf{A single-episode repair loop for frozen VLAs} (\S\ref{sec:method}) needing
+  only a plant model and a sensitivity matrix identified on healthy data, both properties of
+  the robot rather than of the policy or the task. The estimate resets every episode and
+  reconverges in about 15 control steps.
+\item \textbf{Evidence at scale, paired} (\S\ref{sec:exp}): four suites, two backbones, two
+  manipulators, four fault families, three severities and four time profiles, evaluated
+  episode-for-episode against the frozen policy with exact McNemar tests, a healthy-frozen
+  control on every cell, and 690 paired episodes in aggregate.
+\item \textbf{Two conditions, stated as propositions} (\S\ref{sec:theory}): a constant input
+  fault and a constant output bias are not separable within one episode, so the healthy
+  bias must be measured outside it; and repair succeeds when the correction's
+  within-episode variation fits inside the task's spatial margin, both quantities being
+  measurable before any repair attempt. The second predicts every outcome on a second
+  manipulator, including the one continuous adaptation fails.
+\item \textbf{The boundary} (\S\ref{sec:fail}): what the method cannot see (sensor and camera
+  faults), cannot fix (a policy that fails the task unfaulted), and gets wrong (one healthy
+  episode in twenty on one backbone, caused by a sustained phantom).
+\end{enumerate}
+
+We also report, rather than hide, that three of our own mechanistic explanations were
+refuted by our own measurements during this work; the surviving claims are the ones that
+outlasted them.
+
+\section{Related work}
+\label{sec:related}
+
+\textbf{VLA policies and their fragility.} $\pi_0$ and $\pi_{0.5}$ generate action chunks
+by flow matching from a vision--language backbone; OpenVLA and its OFT variant use an
+autoregressive backbone with a regression head. Both are evaluated on LIBERO in a fixed
+simulated robot. Robustness to execution faults is not part of the evaluation protocol of
+either.
+
+\textbf{Residual and offline calibration.} Learned residual policies and offline
+calibration against reference rollouts correct systematic action error but require the
+faulted behaviour in a dataset first. A closely related contemporary line (J-PARC, reported
+to evaluate frozen $\pi_{0.5}$ and OpenVLA-OFT across LIBERO with learned residual
+calibration) was cited to us in review; we have not verified its content and do not
+characterise it further here. Closed-loop affine activation editing (CLAE) steers a policy
+by editing internal activations against an observed objective; our correction lives
+outside the network, at the action interface, and needs no access to activations.
+
+\textbf{Adaptive and fault-tolerant control.} Our law is a disturbance observer with
+feedforward cancellation, in the MRAC gradient form $\dot\theta = -\Gamma\phi e$, with the
+standard robustness modifications (deadzone, normalisation, projection). What is new is
+not the law but its target: a frozen generative policy whose command distribution
+determines what is identifiable, and a task whose spatial margin determines what is
+repairable.
+
+\section{Setting}
+\label{sec:setting}
+
+A frozen policy $\pi_\omega$ emits, at 20\,Hz (LIBERO) or 50\,Hz (ALOHA), an action chunk
+from which the controller consumes $a_t\in\mathbb{R}^d$ per step. For LIBERO $a_t$ is a
+six-dimensional Cartesian increment plus gripper, executed by an operational-space
+controller; for ALOHA it is fourteen absolute joint targets executed by position servos.
+The measured state $y_t$ is the end-effector increment (LIBERO) or the joint position
+(ALOHA).
+
+A fault corrupts the executed action:
+\[
+a^{\mathrm{exec}}_t = a_t + f \quad\text{(additive)},\qquad
+a^{\mathrm{exec}}_t = \mathrm{diag}(g)\,a_t \quad\text{(multiplicative)},
+\]
+constant or varying in time. The fault is injected between the policy and the controller.
+For LIBERO this models a miscalibrated tool frame or a stale hand--eye calibration; it is
+\emph{not} a joint-level actuator fault, which would enter below the controller where the
+fault-to-motion map is state dependent (\S\ref{sec:limits}).
+
+The policy never sees $f$. It sees images and the proprioceptive state, and $\pi_{0.5}$-LIBERO
+in particular ignores the state input entirely (zeroing it changes the action by exactly
+$0.00000$), so a perception-side fault cannot be constructed for it and an action-side fault
+cannot be corrected by it.
+
+\section{Method}
+\label{sec:method}
+
+\subsection{Plant, residual, and sensitivity}
+
+On healthy rollouts we identify a per-channel FIR plant
+\begin{equation}
+\hat y_t = \sum_{\ell=0}^{K} h_\ell\, u_{t-\ell} + c, \qquad K = 6,
+\end{equation}
+where $u_t$ is the command we \emph{believe} we sent (the policy's action plus any
+correction we applied). For LIBERO the plant predicts the increment; for ALOHA it predicts
+the position, because there the command is an absolute target that a servo tracks and a
+target offset lives in the steady-state position error, not in the increment
+(\S\ref{sec:aloha}). The residual
+\begin{equation}
+r_t = y_t - \hat y_t
+\end{equation}
+is what the healthy plant cannot explain. Because $u_t$ includes the correction and the
+world executes $u_t + f$, $r_t \approx M f$ independently of the correction, so the residual
+estimates the \emph{total} fault. $M = \partial(\text{motion})/\partial(\text{fault})$ is a
+$d\times d$ sensitivity matrix measured once by open-loop replay: a recorded healthy command
+sequence is replayed with and without a per-axis probe, and the mean motion difference per
+unit probe gives each column. On the LIBERO plant $M$ is diagonal-dominant with
+$\mathrm{cond}(M)=3.0$ and is magnitude independent to within $14\%$ between probes of
+$0.02$ and $0.05$; on ALOHA $M\approx I$ with $\mathrm{cond}(M)=7.3$.
+
+\subsection{The adaptive law}
+\label{sec:law}
+
+Per control step,
+\begin{equation}
+\label{eq:law}
+e_t = M^{-1} r_t - b,\qquad
+\tilde e_t = \frac{e_t\,\mathbb{1}[\|r_t\|>\delta]}{1+\|r_t\|^2/\rho^2},\qquad
+\fhat_{t+1} = \Pi_{[-\kappa,\kappa]}\!\big(\fhat_t + \gamma(\tilde e_t - \fhat_t)\big),
+\end{equation}
+and the next action is sent as $a_t - \fhat_t \odot m$, where $m$ selects the channels to
+correct. The terms are the standard robustness modifications and each earned its place by
+fixing an observed failure: the deadzone $\delta$ stops plant noise integrating into drift,
+the normalisation damps outlier steps (contacts, joint limits), the projection $\kappa$ keeps
+the estimate in a physical box, and $b$ is the healthy-plant phantom---the value $\fhat$
+settles at with no fault present---measured offline and subtracted, exactly as a sensor is
+zeroed before it is trusted (Proposition~\ref{prop:sep} says why it cannot be fitted
+within the episode).
+
+\begin{remark}[Constants are ratios of measured scales]
+\label{rem:scale}
+Every threshold in \eqref{eq:law} is compared against a quantity with a scale: $\delta$
+against the residual norm of the healthy plant, $\rho$ against the residual norm under the
+fault, $\kappa$ against the expected fault, the excitation gate of \S\ref{sec:gain} against
+the regressor's magnitude. Five silent failures in this work came from carrying a constant
+tuned on one plant to another---a deadzone larger than the residual it gated, a normaliser
+that attenuated every ALOHA update to $6\%$, a projection bound that coincided with the true
+fault and was read as a measurement. The rule that follows is mechanical: print the scale,
+then set the constant as a multiple of it, on every new plant.
+\end{remark}
+
+The fixed point of \eqref{eq:law} is attenuated by $1/(1+\|Mf\|^2/\rho^2)$; at the measured
+$\|r\|$ this is $5\%$, matching the observed $2\%$ shortfall of the estimate, and an
+innovation-normalised variant that removes it was measured to be indistinguishable
+($0.12\sigma$) at twice the variance. We keep \eqref{eq:law}.
+
+\subsection{Which channels to correct}
+\label{sec:channels}
+
+The separation test---the estimate under a fault minus the estimate on matched healthy
+episodes---is the only evidence of identification we accept; a raw $\fhat$ carries the plant
+phantom and cannot distinguish identification from bias (this standard, applied to our own
+multiplicative law, retracted a claim we had called decisive). For the uniform six-axis fault
+used across the LIBERO suites, rotation identifies ($+0.049$ against a true $0.050$) and
+translation does not (sign-wrong), so the headline correction is restricted to rotation.
+That restriction is a property of \emph{that fault}, not of the channel: on a translation-only
+fault the same law identifies translation at $79\%$--$106\%$ and repairs it
+(\S\ref{sec:severity}). What makes the uniform fault different is measurable: single-axis
+responses superpose at $\pm0.02$ and stop superposing at $\pm0.05$, asymmetrically ($x$:
+$0.07$ in one direction, $0.78$ in the other), the signature of a contact or joint limit
+reached only when all six axes are perturbed together.
+
+\subsection{Multiplicative faults}
+\label{sec:gain}
+
+For a gain fault the regressor follows from the plant rather than being assumed. The world
+executes $g\,u$ and the FIR responds to what it is given, so per channel
+\begin{equation}
+y_i - \hat y_i = \beta_i\,\phi_i,\qquad \phi_i = \hat y_i - c_i,\qquad \beta_i = g_i - 1,
+\end{equation}
+the regressor being the FIR-weighted command history, and the regression lives in motion
+units with no $M^{-1}$. Estimating $\beta_i$ by recursive least squares on channels whose
+$|\phi_i|$ clears an excitation gate, the correction is the exact certainty-equivalent
+inverse $a_i/(1+\hat\beta_i)$ with $\hat g_i$ projected away from zero. Two facts matter
+here. The compensator \emph{inverts} the estimate, so estimation error is amplified by
+$1/\hat g^2$---fourfold at $g=0.5$---and accuracy sufficient for an additive fault is not
+sufficient for a multiplicative one. And a wrong regressor is not repaired by adding
+parameters: regressing on the instantaneous command instead of $\phi_i$ produced a $33\%$
+phantom loss of effectiveness on a \emph{healthy} robot, an intercept made it worse, and the
+derived regressor shrank the phantom ninefold and took the $x$-channel separation from
+$1.4\sigma$ to $18\sigma$.
+
+\subsection{Identify, then hold}
+\label{sec:hold}
+
+On a task whose spatial margin is smaller than the correction's within-episode variation,
+continuous adaptation fails even when its mean is inside the margin (\S\ref{sec:aloha}). The
+scheme the evidence supports is to adapt during one sacrificial episode and hold the
+estimate thereafter: a persistent hardware fault gets a persistent estimate, at the cost of
+one episode, which is what a calibration procedure costs anyway.
+
+\section{Two conditions}
+\label{sec:theory}
+
+\begin{proposition}[A constant input fault and a constant output bias are not separable]
+\label{prop:sep}
+Let $y_t = M(a_t + f) + b + \nu_t$ with $M$ square and full rank, and $f,b$ constant over
+the episode. For any $b'$, the fault $f' = f + M^{-1}(b - b')$ reproduces every observation
+exactly. Only $Mf + b$ is identified.
+\end{proposition}
+\begin{proof}
+$M(a_t+f') + b' = M a_t + Mf + (b - b') + b' = M(a_t + f) + b$.
+\end{proof}
+\noindent Consequently the healthy phantom $b$ must come from outside the episode (we measure
+it on fault-free rollouts), and a fault that switches on mid-episode is \emph{better} posed
+than one present from the start: $b$ is identified before onset and $f$ after. Mid-episode
+onset is a well-posedness condition, not a robustness flourish.
+
+\begin{proposition}[Repairability]
+\label{prop:repair}
+Let $\mu$ be the task's spatial margin---the largest steady residual offset at the
+end-effector under which the healthy policy still succeeds at its healthy rate---and let
+$\sigma$ be the within-episode variation of the applied correction. Repair recovers the
+healthy rate when the residual stays within $\mu$ for the whole episode, for which
+$\sigma < \mu$ is necessary. Both $\mu$ (by a static-correction sweep) and $\sigma$ (from
+the estimator's trajectory on one faulted episode) are measurable without knowing the fault
+and without a repair trial.
+\end{proposition}
+\noindent This is an empirical proposition, not a theorem: it states the quantity the data
+turned out to depend on. It predicts LIBERO (a reach with centimetres of margin; $\sigma$ of
+$0.019$\,cm per step; repair), ALOHA with continuous adaptation ($\mu<0.5$\,cm;
+$\sigma = 0.43$\,cm; no repair), and ALOHA with the held estimate ($\sigma=0$; repair)
+(\S\ref{sec:aloha}). A stronger, contraction-based recovery bound would need the composite
+policy--controller--robot map to contract on a task tube, which is not established for a
+contact-rich task, and we do not claim it.
+
+\section{Experiments}
+\label{sec:exp}
+
+\subsection{Protocol}
+
+\textbf{Paired design.} Both arms of every cell run the same (task, initial state, seed)
+episodes and differ only in whether the correction is applied. We report exact McNemar tests
+on the discordant pairs; unpaired tests on these data are conservative and, worse, hide the
+regression count. \textbf{Controls.} Every cell has a healthy-frozen control on the same
+episodes: a null against a ceiling (frozen already near $100\%$) or a floor (frozen near $0$
+unfaulted) is not a null, and four cells in this work were avoidable with that control run
+first. \textbf{Noise.} $\pi_{0.5}$ samples its action flow; the identical condition scored
+$13/20$, $13/20$, $15/20$ on three runs, so $\pm10$ points at $n=20$ is free variation and we
+quote intervals. \textbf{Calibration.} Plant and $M$ were identified once on
+\code{libero\_spatial} healthy rollouts with $\pi_{0.5}$ driving and are used unchanged for
+every LIBERO suite and for OpenVLA-OFT; ALOHA has its own, from eight healthy rollouts.
+
+\subsection{Four suites}
+\label{sec:headline}
+
+Uniform $+0.05$ offset on all six action dimensions, rotation-only correction
+(\S\ref{sec:channels}), $\pi_{0.5}$-LIBERO.
+
+\begin{center}\small
+\begin{tabular}{lrrrrrc}
+\toprule
+suite & $n$ & frozen & corrected & fixed & broken & exact McNemar \\
+\midrule
+\code{libero\_spatial} & 20 & 8/20 (40\%) & 18/20 (90\%) & 10 & 0 & $0.0020$ \\
+\code{libero\_goal}    & 40 & 15/40 (38\%) & 29/40 (72\%) & 15 & 1 & $0.00052$ \\
+\code{libero\_object}  & 20 & 5/20 (25\%) & 16/20 (80\%) & 11 & 0 & $0.00098$ \\
+\code{libero\_10}      & 40 & 0/40 (0\%) & 15/40 (38\%) & 15 & 0 & $6.1\times10^{-5}$ \\
+\midrule
+\textbf{pooled} & 120 & \textbf{28/120 (23\%)} & \textbf{78/120 (65\%)} & \textbf{51} & \textbf{1} & $\mathbf{6.1\times10^{-13}}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Every suite is individually significant. The long-horizon suite goes from a frozen policy
+that never succeeds in forty episodes to fifteen recoveries. The single regression is a
+\code{goal} episode the frozen policy itself solves three times in four, with an
+ordinary-sized correction. \code{libero\_90}, on which the checkpoint was never fine-tuned,
+scores $6/20$ unfaulted and is reported as a competence floor of the policy, not a repair
+result.
+
+\subsection{Fault families and severity}
+\label{sec:severity}
+
+\begin{center}\small
+\begin{tabular}{lccc}
+\toprule
+fault (\code{libero\_spatial}, $n=20$) & $0.05$ & $0.10$ & $0.15$ \\
+\midrule
+translation & 18/20 $\to$ 18/20 (ceiling) & 13/20 $\to$ \textbf{19/20} & 4/20 $\to$ \textbf{19/20} \\
+rotation    & 13/20 $\to$ 18/20 & 0/20 $\to$ \textbf{17/20} & 0/20 $\to$ \textbf{9/20} \\
+uniform 6-axis & 8/20 $\to$ 18/20 & 2/20 $\to$ 11/20 & 0/20 $\to$ 2/20 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Zero regressions in every cell. Rotation is where this policy breaks---a rotation fault at
+$0.10$ takes it to exactly zero where translation leaves $13/20$---and the correction
+recovers $17/20$ from that floor. Single-family faults degrade gracefully with severity; the
+uniform fault collapses, and the comparison of the last column isolates why: the rotation
+fault and the uniform fault are corrected identically, and adding an \emph{uncorrected}
+translation component drops recovery from $45\%$ to $10\%$. The boundary is the plant
+leaving the regime where its motion is informative, not the estimator. A structured
+mixed-sign fault $[0,0,0,+.06,-.06,+.03]$ the law was never tuned on goes $2/12\to10/12$ with
+separation matching truth on every axis.
+
+\textbf{Time-varying faults} (amplitude $0.10$): a ramp to full over 60 steps goes
+$12/20\to18/20$ ($p=0.031$); a non-zero-mean oscillation on rotation $13/20\to20/20$
+($p=0.016$); an intermittent fault $12/20\to19/20$ ($p=0.039$). The estimator tracks the
+waveform poorly---$45$--$79\%$ RMS error, not attributable to lag---and it does not matter:
+the correction must be roughly right in direction and scale, not a good tracker, which is
+why six numbers updated on CPU suffice. (A zero-mean oscillation averages away and does no
+damage; that cell proved nothing and is not counted.)
+
+\textbf{Loss of effectiveness} (\S\ref{sec:gain}): at $g=0.30$, $1/20\to17/20$
+($p=3.1\times10^{-5}$) with $\hat\beta = (-0.723,-0.699,-0.717)$ against $-0.700$; at
+$g=0.20$, $0/20\to17/20$ ($p=1.5\times10^{-5}$). At $g=0.5$ the frozen policy still scores
+$15/20$ and the cell is a ceiling. Rotation gain faults are unidentifiable for this policy:
+no recorded step clears the excitation gate on $r_x$ or $r_z$ at any threshold, because the
+policy does not rotate the wrist. That is a property of the policy's behaviour, not of the
+estimator.
+
+\subsection{Baselines}
+\label{sec:baselines}
+
+\textbf{Frozen} and a \textbf{static oracle} correction equal to the true fault bound the
+problem. The informative baseline is the one that asks whether the plant model and $M$ earn
+their place: \textbf{integral action on the raw motion error}, $\fhat \leftarrow \fhat +
+k_i(y_t - a_t)$, swept over five gains across two orders of magnitude and reported at its
+best. On the $0.15$ translation fault:
+
+\begin{center}\small
+\begin{tabular}{lrr}
+\toprule
+$k_i$ & frozen & baseline \\
+\midrule
+0.001 & 4/20 & 5/20 \\
+\textbf{0.005} & 3/20 & \textbf{7/20 (35\%)} \\
+0.02 & 5/20 & 0/20 \\
+0.15 & 4/20 & 1/20 \\
+\midrule
+\textbf{ours} & 4/20 & \textbf{19/20 (95\%)} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The baseline implicitly assumes achieved motion equals commanded action; the measured plant
+DC gain is $0.23$, so with no fault at all its error is $-0.77\,a$---at a command of $0.5$
+a phantom of $0.384$ against a real fault of $0.150$, $2.5\times$ the target and opposite in
+sign. It must creep to stay stable and saturates when it moves. Predicting $y\approx0.23a$
+instead of $y\approx a$ is the whole difference.
+
+\subsection{A second backbone, unchanged calibration}
+\label{sec:oft}
+
+OpenVLA-OFT (7B, PyTorch, L1 action head) is served behind the same interface; every
+script, the plant and $M$ are the $\pi_{0.5}$ ones.
+
+\begin{center}\small
+\begin{tabular}{lrrrrc}
+\toprule
+cell (\code{libero\_spatial}) & frozen & corrected & fixed & broken & McNemar \\
+\midrule
+healthy control & 20/20 & 19/20 & 0 & 1 & 1.0 \\
+rotation $0.10$ & 0/20 & \textbf{11/20} & 11 & 0 & $9.8\times10^{-4}$ \\
+translation $0.15$ & 0/20 & \textbf{14/20} & 14 & 0 & $1.2\times10^{-4}$ \\
+gain $0.20$ & 0/20 & \textbf{17/20} & 17 & 0 & $1.5\times10^{-5}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Nothing in the method was $\pi_{0.5}$-specific. OFT is more fragile (frozen $0/20$ on all
+three faults), recovers less on rotation ($55\%$ vs $85\%$; its $r_y$ fault is only $23\%$
+identified where $\pi_{0.5}$ reached $87$--$100\%$), and the healthy control lost one episode
+to the law itself: a sustained phantom at four to ten times the usual size, which a
+confidence gate evaluated offline does not remove without delaying genuine repair by one to
+two seconds (\S\ref{sec:fail}). The three headline cells also replicate on
+\code{libero\_object} with the same calibration ($0/20\to10/20$, $0/20\to15/20$,
+$0/20\to19/20$).
+
+\subsection{A second manipulator, in joint space}
+\label{sec:aloha}
+
+Bimanual ALOHA in \code{gym\_aloha} driven by $\pi_0$: fourteen absolute joint targets at
+50\,Hz, transfer-cube, 300-step episodes, healthy success $25\%$. The plant is identified on
+\emph{position} from eight healthy rollouts ($R^2 = 0.989$--$1.000$ on all joints),
+$M\approx I$. A $+0.05$\,rad offset on the six left-arm joints displaces the gripper by
+$5.3$\,cm; the frozen policy scores $0/20$ at every severity tested.
+
+\textbf{Identification transfers.} Separation against the healthy control: $85$--$91\%$ of
+the fault at $0.05$\,rad, $94$--$106\%$ at $0.02$\,rad, leakage $\le0.007$\,rad onto
+uncorrected joints. \textbf{Repair does not, at first.} With continuous adaptation the task
+returns $0/20$ at every severity, warm-started or cold, with or without an early-history
+defect we found and fixed. The reason is quantitative:
+
+\begin{center}\small
+\begin{tabular}{lccc}
+\toprule
+correction ($0.02$\,rad fault, $n=20$) & within-episode variation & mean residual & success \\
+\midrule
+none (frozen) & --- & 2.12\,cm & 0/20 \\
+adaptive, updating throughout & 0.43\,cm & 0.17\,cm & 0/20 \\
+$0.019$\,rad ($95\%$) applied frozen & 0 & 0.11\,cm & \textbf{5/20} \\
+\textbf{adapt episode 0, then hold} & \textbf{0} & 0.12\,cm & \textbf{5/20} ($p=0.0625$) \\
+$0.020$\,rad exact, from step 0 & 0 & 0 & 8/20 \\
+healthy, no fault & --- & --- & 5/20 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+A static-correction sweep puts the task's margin under $0.5$\,cm: a $90\%$ correction held
+for the whole episode restores nothing, $100\%$ restores the healthy rate. The updating law
+reaches a mean residual well inside that margin and still fails, because its correction
+moves by $0.43$\,cm within an episode---the whole margin---on an arm that is precise from
+step one. The same number, applied stationary, repairs. Adapting for one episode and holding
+the estimate recovers $5/19$ on the held episodes, the healthy-frozen rate, from a frozen
+policy at zero. This is the content of Proposition~\ref{prop:repair}, and it was invisible on
+LIBERO because a 20\,Hz Cartesian reach tolerates centimetres of jitter.
+
+\subsection{Hardware}
+\label{sec:hardware}
+
+The same law was applied to logs from an X2 humanoid running a learned box-pickup policy,
+in which a real actuator-authority fault (\code{gain\_scale}, scaling stiffness, damping
+and feedforward together) spans $0.1$--$1.3$ across 134 rollouts. Three findings fix the
+protocol for the repair experiment that follows. The fault is absorbed by the position loop
+and is invisible in joint position, but recoverable in effort ($r=+0.84$). The plant is
+run-varying on the load-bearing joints, so the calibration window must be within-run and
+must contain motion ($\ge450$ steps), not the standing phase. The detectability floor is
+$0.5$--$1.3^\circ$ of joint offset. The injection knob for a joint-target offset is in the
+deploy script; the paired repair experiment on the robot is pending robot time and is the
+one result this paper does not yet contain.
+
+\section{What does not work, and what was wrong}
+\label{sec:fail}
+
+\textbf{Invisible faults.} A proprioceptive bias and a wrist-camera misalignment both
+damage the policy ($6/12$ for the camera shift) and neither reaches the residual
+(separation $0.004$ against $0.049$ for an action fault). The method sees the action
+interface and nothing upstream of it.
+
+\textbf{A policy that cannot do the task.} \code{libero\_90} fails 14 of 20 sampled tasks
+unfaulted. Correcting the fault restores nothing because nothing was lost to it.
+
+\textbf{Harm on a healthy robot.} One OFT episode in twenty was lost to a sustained phantom
+integrated and acted on. A dwell gate cuts spurious openings from $13/20$ to $4/20$ healthy
+episodes but the harmful one opens at every setting tried, and every setting delays real
+repair. Separating it would need information the estimator does not have.
+
+\textbf{Continuous adaptation on a tight margin} (\S\ref{sec:aloha}).
+
+\textbf{Refuted explanations, kept.} We proposed that identifiability is predictable from
+healthy action statistics via the quantile scale (refuted: translation identifies a
+single-axis fault at $79\%$); that the plant is nonlinear on translation (refuted: $M$ is
+magnitude independent to $14\%$; superposition fails instead); and that translation
+correction contributes nothing (refuted: it was tested only where the policy shrugs off a
+translation fault; at $0.15$ it takes $20\%\to95\%$). A fourth, that additive and
+multiplicative faults are identifiable on complementary channels, survives only as a graded
+ordering. The record keeps each with the measurement that killed it.
+
+\section{Limitations}
+\label{sec:limits}
+
+The LIBERO fault is at the Cartesian action interface, above the controller; a joint-level
+actuator fault enters below it with a state-dependent map, and the hardware section is the
+only place that fault class appears, without a repair result yet. The estimate resets every
+episode by design for the LIBERO claims; the ALOHA result shows that on a tight-margin task
+the deployable scheme is instead to hold it, which is a different claim about online
+adaptation and is stated as such. The policy's stochasticity gives $\pm10$ points at $n=20$;
+we mitigated it with pairing and $n=40$ where it mattered, not by more seeds. We give
+propositions, not a recovery theorem; a contraction argument on the composite map is the
+natural next step and requires assumptions we could not verify on contact-rich tasks. And
+every constant in the law is a ratio of a measured scale that must be re-measured on a new
+plant---five of our own failures came from not doing so.
+
+\section{Conclusion}
+
+A frozen VLA can be repaired within one episode by six numbers at its action interface,
+given a plant model and a sensitivity matrix identified once on healthy data. The evidence
+is paired, controlled, and broad; the calibration transfers across suites and backbones; the
+two conditions that govern success are stated and measurable in advance; and the failures
+are named. The result the paper still owes is the one on a real robot.
+
+\appendix
+\section{Reproducibility}
+Every number above is recomputed from stored per-episode outcomes by \code{openpi/mcnemar.py}
+with nothing installed; experiments need openpi at commit \code{15a9616}, the
+\code{pi05\_libero} checkpoint, and one GPU. The two-virtualenv split, the OpenVLA-OFT and
+ALOHA environments, and the three pins that were not obvious are in \code{SETUP.md}.
+
+\end{document}
