@@ -70,8 +70,8 @@ correction is held stationary (\S\ref{sec:aloha}).
 
 \vspace{0.4em}
 \noindent\textbf{Artifacts.} Video: \code{results/phase05/adaptive\_vs\_frozen.mp4}.
-Data: \code{results/}. Code: \code{openpi/\{error\_signal, openloop\_id,
-adaptive\_law, compare\_video\}.py}. Full theory:
+Data: \code{results/}. Code: \code{openpi/error\_signal.py}, \code{openloop\_id.py},
+\code{adaptive\_law.py}, \code{compare\_video.py}. Full theory:
 \code{docs/ADAPTIVE\_CONTROL\_VLA.md}.
 
 \noindent\textbf{Status.} Simulation; hardware validation in progress.
@@ -103,6 +103,7 @@ which fail the test is actively harmful.
 %==========================================================================
 \section{Setting}
 
+{\sloppy
 \begin{itemize}[leftmargin=1.4em,itemsep=2pt]
   \item \textbf{Model.} $\pi_{0.5}$-LIBERO, frozen: 3.35\,B parameters, no
         fine-tuning, no backpropagation through the environment. Faults are
@@ -116,6 +117,7 @@ which fail the test is actively harmful.
   \item \textbf{Controls.} Frozen and adaptive arms share task, initial state,
         policy and fault; the only difference is whether the law runs.
 \end{itemize}
+}
 
 %==========================================================================
 \section{Fault screening}
