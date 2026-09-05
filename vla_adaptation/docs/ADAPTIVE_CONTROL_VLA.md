@@ -2348,6 +2348,24 @@ outcome is dominated by its own sampling. This is the n = 20 ±11-point noise of
 from the other side, and it is why every claim in this record is a paired rate, never a
 list of episodes.
 
+**The four earlier videos, re-rendered under the benchmark condition (2026-09-05).**
+Same recipe as `_libero10`: candidates are the pairs fixed in the stored run, distinct
+tasks first, `--only-repaired --max-clips 4`; every final frame was checked by eye.
+
+| video | candidates walked | frozen succeeded (skipped) | corrected failed (skipped) | clips | estimate range on rotation |
+|---|---|---|---|---|---|
+| `adaptive_vs_frozen.mp4` (spatial, π0.5) | 6 | 2 | 0 | 4 | 0.028–0.056 (true 0.05) |
+| `_goal` (π0.5) | 9 | 4 | 1 | 4 | 0.015–0.055; one clip finished at 0.02 on rz with ry/rx near zero |
+| `_object` (π0.5) | 9 | 2 | 3 | 4 | 0.021–0.053 |
+| `_oft` (OpenVLA-OFT, rotation +0.10) | 6 | 0 | 2 | 4 | 0.043–0.099 (true 0.10) |
+
+Over the pairs where the frozen policy failed on the re-run, the correction repaired
+16 of 22. All five LIBERO videos in `results/phase05/` are now benchmark-condition renders;
+the earlier confounded versions are in git history before this commit. The goal clip that
+finished with a small estimate is left in: the video is a demonstration of the paired
+protocol, and it would misrepresent that protocol to cut the pairs where the policy's own
+draw did some of the work.
+
 ### 28.4 ALOHA identify-then-hold at n = 40 (added 2026-09-05)
 
 §27.13's `5/20`, `p = 0.0625`, sat on the same exact-test floor as `goal` and `libero_10`
