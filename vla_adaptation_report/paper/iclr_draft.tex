@@ -1,19 +1,17 @@
-\documentclass[10pt]{article}
-% ICLR-style geometry; swap for the official iclr2027_conference.sty when porting.
-\usepackage[letterpaper,margin=1in]{geometry}
+\documentclass{article}
+\usepackage{iclr2027_conference,times}
+\input{math_commands.tex}
 \usepackage{amsmath,amssymb,amsthm,booktabs,graphicx,enumitem,xcolor}
-\usepackage[hidelinks]{hyperref}
+\usepackage{hyperref}
+\usepackage{url}
 \usepackage{microtype}
 \newtheorem{proposition}{Proposition}
 \newtheorem{remark}{Remark}
 \newcommand{\fhat}{\hat{f}}
 \newcommand{\code}[1]{\texttt{\small #1}}
-\providecommand{\citep}[1]{[\ref{#1}]}
-\setlength{\parskip}{3pt}
 
 \title{Frozen Yet Adaptive: Single-Episode Repair of Vision--Language--Action Policies from Proprioceptive Residuals}
-\author{Anonymous authors\thanks{Draft generated from the project record on 2026-09-05. Numbers are verified against the stored per-episode outcomes; the record (\code{docs/ADAPTIVE\_CONTROL\_VLA.md}) keeps every refuted explanation in place.}}
-\date{}
+\author{Anonymous authors}
 
 \begin{document}
 \maketitle
@@ -574,18 +572,30 @@ is paired, controlled, and broad; the calibration transfers across suites and ba
 two conditions that govern success are stated and measurable in advance; and the failures
 are named. The result the paper still owes is the one on a real robot.
 
-\begin{thebibliography}{9}\small
-\bibitem{jparc2026} M.~Jo, T.~Kwon, J.~Chun, Y.~Jeong, T.~Kim. Uncovering vulnerability of
-vision-language-action models under joint-level physical faults. arXiv:2606.10501, 2026.
-\bibitem{clae2026} S.~Das, D.~Chiu, S.~Hegde, G.~S.~Sukhatme. Steering multirobot behavior via
-closed-loop affine activation editing. arXiv:2606.11489, 2026.
-\end{thebibliography}
+\subsection*{AI use statement}
+Generative AI (Claude, Anthropic) was used throughout this work as a coding and writing
+assistant under the authors' direction: it wrote and edited the experiment scripts, the
+analysis code, the running project record from which this paper is built, and this
+manuscript's text; the authors set the research questions, chose the experiments, ran or
+supervised every run on their own hardware, and reviewed the outputs. All numbers in the
+paper are recomputed from stored per-episode outcomes by a stdlib-only script, so no
+reported figure rests on model-generated text. Three mechanistic explanations proposed
+during the work, some AI-generated, were refuted by our own measurements and are reported
+as such (\S\ref{sec:fail}). Related work was verified against the cited preprints. We take
+responsibility for the final content of this work, including text, claims and artifacts
+produced with the aid of generative AI.
 
-\appendix
-\section{Reproducibility}
+\subsection*{Reproducibility statement}
 Every number above is recomputed from stored per-episode outcomes by \code{openpi/mcnemar.py}
-with nothing installed; experiments need openpi at commit \code{15a9616}, the
-\code{pi05\_libero} checkpoint, and one GPU. The two-virtualenv split, the OpenVLA-OFT and
-ALOHA environments, and the three pins that were not obvious are in \code{SETUP.md}.
+with nothing installed; the anonymised repository holds those outcomes, the plant and
+sensitivity calibrations, and every script named in the paper. Experiments need openpi at
+commit \code{15a9616}, the \code{pi05\_libero} checkpoint, and one GPU. The two-virtualenv
+split, the OpenVLA-OFT and ALOHA environments, and the three pins that were not obvious
+are in \code{SETUP.md}. The law's constants are stated as ratios of measured scales
+(\S\ref{sec:method}), which is what made the calibration transfer across suites and
+backbones without retuning.
+
+\bibliography{refs}
+\bibliographystyle{iclr2027_conference}
 
 \end{document}
