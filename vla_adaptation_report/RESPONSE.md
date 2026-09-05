@@ -132,6 +132,12 @@ supports empirically) before the recovery bound.
 > same protocol, is repaired on all three fault families by the unchanged law and the
 > unchanged π0.5-identified calibration (0/20 → 11/20, 14/20, 17/20; §25). The compute
 > objection did not apply — inference only, no fine-tuning.
+> **Update 2026-09-04.** On sample size: the two suites at the exact test's floor were rerun at
+> n = 40 and resolve (`goal` p = 0.00052, `libero_10` p = 6.1×10⁻⁵) with effect sizes unchanged;
+> the four-suite headline is now individually significant on every row, pooled p = 6.1×10⁻¹³
+> over 120 paired episodes. On a second embodiment: 14-DOF bimanual ALOHA in joint space is
+> identified to 94% and repaired to the healthy rate — with a stated precondition (the
+> correction must be held stationary; §27). The real-robot ask remains open.
 
 
 Second backbone (OpenVLA-OFT), 50 rollouts per condition, a J-PARC baseline, a LoRA
