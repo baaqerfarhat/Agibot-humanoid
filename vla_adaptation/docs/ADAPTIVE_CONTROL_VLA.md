@@ -2280,3 +2280,30 @@ The regression is task 5, init 46. Its correction was ordinary-sized (|f̂| 0.04
 against a run mean of 0.035, 0.031, 0.037), and the frozen policy itself flips on that task —
 3 of 4 inits either way in both arms. Policy stochasticity, not the law. Unlike the OFT
 healthy-control regression of §25.2, which the law caused.
+
+### 28.2 `libero_10`, and the headline at its best n
+
+| n | frozen | corrected | fixed | broken | exact McNemar |
+|---|---|---|---|---|---|
+| 20 | 0/20 | 5/20 | 5 | 0 | 0.0625 (floor) |
+| **40** | 0/40 | **15/40 = 38%** | **15** | 0 | **6.1×10⁻⁵** |
+
+The long-horizon suite, from a frozen policy that never succeeds, to 15 of 40. Zero
+regressions.
+
+**The four-suite headline, each suite at its best n:**
+
+| suite | n | frozen | corrected | fixed | broken | McNemar |
+|---|---|---|---|---|---|---|
+| `libero_spatial` | 20 | 8/20 = 40% | 18/20 = 90% | 10 | 0 | 0.0020 |
+| `libero_goal` | 40 | 15/40 = 38% | 29/40 = 72% | 15 | 1 | 0.00052 |
+| `libero_object` | 20 | 5/20 = 25% | 16/20 = 80% | 11 | 0 | 0.00098 |
+| `libero_10` | 40 | 0/40 = 0% | 15/40 = 38% | 15 | 0 | 6.1×10⁻⁵ |
+| **pooled** | **120** | **28/120 = 23%** | **78/120 = 65%** | **51** | **1** | **6.1×10⁻¹³** |
+
+Every suite is individually significant. §10's pooled figure (26% → 65%, `p = 9.3×10⁻¹⁰`,
+80 episodes) is superseded by this one.
+
+**Aggregate for the online law, LIBERO and OpenVLA-OFT, every paired run:** 690 episodes,
+**275 fixed, 7 broken** (1.0%). ALOHA is reported separately (§27) because its repair uses
+the identify-then-hold scheme, not continuous adaptation.

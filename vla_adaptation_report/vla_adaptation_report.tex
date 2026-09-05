@@ -36,8 +36,9 @@
 A fault at the Cartesian action interface of a frozen 3.35\,B vision--language--action model is
 identified and corrected \emph{within a single episode}, from the robot's own
 motion, with no gradients through the task and no search over task success ---
-\textbf{across four LIBERO suites, $26\% \rightarrow 65\%$ pooled on paired
-episodes, exact McNemar $p = 9.3\times 10^{-10}$, with zero regressions.}
+\textbf{across four LIBERO suites, $23\% \rightarrow 65\%$ pooled on 120 paired
+episodes, exact McNemar $p = 6.1\times 10^{-13}$, every suite individually significant,
+with one regression.}
 The correction is restricted to the channels on which the fault is identifiable;
 for the uniform six-axis fault used across the suites, correcting the rest is
 worse than doing nothing (\S\ref{sec:scope}), though that is a property of
@@ -57,9 +58,9 @@ in advance from healthy action statistics; \S\ref{sec:shape} refutes that and th
 claim is withdrawn.
 
 \vspace{0.3em}
-Across \textbf{450 paired episodes} --- four suites, four fault families, three
-severities, four time profiles --- the correction fixes \textbf{158} episodes and
-breaks \textbf{5} (1.1\,\%). A tuned integral baseline on the same fault reaches
+Across \textbf{690 paired episodes} --- two backbones, four suites, four fault
+families, three severities, four time profiles --- the correction fixes \textbf{275}
+episodes and breaks \textbf{7} (1.0\,\%). A tuned integral baseline on the same fault reaches
 35\,\% where this reaches 95\,\% (\S\ref{sec:severity}). The same law and the same
 calibration repair a second backbone, OpenVLA-OFT, on all three fault families
 (\S\ref{sec:generality}), and a second \emph{manipulator} --- 14-DOF bimanual ALOHA in
@@ -731,30 +732,33 @@ $n = 20$ per suite.
 suite & frozen & adaptive & adaptive-only & frozen-only & exact McNemar \\
 \midrule
 \code{libero\_spatial} & 8/20 & 18/20 & 10 & 0 & $\mathbf{0.0020}$ \\
-\code{libero\_goal}    & 8/20 & 13/20 &  5 & 0 & 0.0625 \\
+\code{libero\_goal} ($n{=}40$)    & 15/40 & 29/40 & 15 & 1 & $\mathbf{0.00052}$ \\
 \code{libero\_object}  & 5/20 & 16/20 & 11 & 0 & $\mathbf{0.00098}$ \\
-\code{libero\_10}      & 0/20 &  5/20 &  5 & 0 & 0.0625 \\
+\code{libero\_10} ($n{=}40$)      & 0/40 & 15/40 & 15 & 0 & $\mathbf{6.1\times 10^{-5}}$ \\
 \midrule
-\textbf{pooled} & \textbf{21/80 = 26\%} & \textbf{52/80 = 65\%} & \textbf{31} & \textbf{0}
-  & $\mathbf{9.3\times 10^{-10}}$ \\
+\textbf{pooled} & \textbf{28/120 = 23\%} & \textbf{78/120 = 65\%} & \textbf{51} & \textbf{1}
+  & $\mathbf{6.1\times 10^{-13}}$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \paragraph{The result only paired data could show.}
-\textbf{Frozen-only wins $= 0$}, in all four suites, across 80 paired episodes. Every
-episode the frozen policy solved, the corrected policy also solved: the correction fixed
-thirty-one episodes and broke none. Unpaired totals are equally consistent with a method
+\textbf{Frozen-only wins $= 1$}, across 120 paired episodes in four suites: the
+correction fixed fifty-one episodes and broke one (a \code{goal} episode the frozen policy
+itself solves only three times in four --- policy stochasticity, with an ordinary-sized
+correction). Unpaired totals are equally consistent with a method
 that fixes fifteen and breaks four. For a method intended to run continuously on hardware,
 ``never makes things worse'' is a stronger claim than the success delta, and it was
 invisible until the pairing was kept.
 
-\paragraph{Two suites are power-limited, not weak.}
-\code{goal} and \code{libero\_10} both land at exactly $p = 0.0625$. That is the
-\emph{floor} of the exact test: with 5 discordant pairs all favouring the correction,
-$2^{-5}\times 2 = 0.0625$ is the smallest attainable value, and a perfect result cannot do
-better. Reaching $p < 0.05$ needs $\geq 6$ discordant pairs, i.e.\ $n \approx 30$--$40$ at
-these effect sizes. That is a sample-size decision, not a finding.
+\paragraph{Two suites were power-limited, and doubling $n$ resolved them.}
+At $n = 20$, \code{goal} and \code{libero\_10} both landed at exactly $p = 0.0625$ --- the
+\emph{floor} of the exact test with five one-way discordant pairs, where a perfect result
+cannot do better. At $n = 40$ they give $p = 0.00052$ and $6.1\times 10^{-5}$ with the
+effect sizes unchanged ($+25 \to +35$ and $+25 \to +38$ points, inside run-to-run noise).
+The test gained the pairs it needed; the effect was there all along. \code{libero\_10} is
+the sharpest case in the paper: a long-horizon suite where the frozen policy never
+succeeds in forty episodes, and the correction recovers fifteen.
 
 \paragraph{Effect sizes moved.}
 Against the earlier Fisher-tested runs, \code{goal} came in at $+25$ where it showed $+45$,
@@ -1197,15 +1201,16 @@ severity (offset 0.10), where frozen success is 0/8.
         episode}, from the robot's own motion --- no gradients, no reward, no
         search over task success, and no learning across episodes: the estimate
         resets to zero every episode and reconverges in ${\sim}15$ control steps.
-  \item \textbf{Four suites, paired}: $21/80 = 26\,\% \to 52/80 = 65\,\%$, exact
-        McNemar $p = 9.3\times 10^{-10}$, with \textbf{zero regressions} --- the
-        correction never broke an episode the frozen policy solved.
+  \item \textbf{Four suites, paired, each individually significant}: pooled
+        $28/120 = 23\,\% \to 78/120 = 65\,\%$, exact McNemar $p = 6.1\times 10^{-13}$;
+        51 episodes fixed, one broken. The long-horizon suite goes from a frozen policy
+        that never succeeds in forty episodes to fifteen recoveries.
   \item \textbf{Every fault family tested is repaired}: constant additive
         (translation $4/20 \to 19/20$; rotation $0/20 \to 17/20$), structured
         mixed-sign, mid-episode onset, ramp, oscillatory, intermittent, and
         multiplicative loss of effectiveness ($0/20 \to 17/20$ at 80\,\% authority
-        loss). Across \textbf{450 paired episodes: 158 fixed, 5 broken}
-        (1.1\,\% regression) --- and the three headline cells replicate on a
+        loss). Across \textbf{690 paired episodes: 275 fixed, 7 broken}
+        (1.0\,\% regression) --- and the three headline cells replicate on a
         \textbf{second backbone} (OpenVLA-OFT) and a \textbf{second suite} with the
         $\pi_{0.5}$-identified calibration unchanged (\S\ref{sec:generality}).
   \item \textbf{The identification machinery is load-bearing.} A tuned integral
