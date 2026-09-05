@@ -1,9 +1,7 @@
 # Response to the 2026-09-01 review
 
-> **The PDF in this folder is stale.** `vla_adaptation_report.tex` has been edited (bias
-> subsection, statistics caveat, fault scoping, corrected estimate claim) but no LaTeX
-> toolchain is installed on this machine, so `vla_adaptation_report.pdf` still shows the
-> reviewed version. Read the `.tex`, and rebuild the PDF before circulating it.
+> The PDF in this folder is rebuilt from the current `.tex` (tectonic 0.15, 2026-09-04) and
+> matches it.
 
 Written 2026-09-01, after checking each claim against the code and the stored results rather
 than accepting or rejecting it on reading. The review is strong and most of it is correct.
