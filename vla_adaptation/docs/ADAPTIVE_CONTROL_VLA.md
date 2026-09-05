@@ -2307,3 +2307,43 @@ Every suite is individually significant. §10's pooled figure (26% → 65%, `p =
 **Aggregate for the online law, LIBERO and OpenVLA-OFT, every paired run:** 690 episodes,
 **275 fixed, 7 broken** (1.0%). ALOHA is reported separately (§27) because its repair uses
 the identify-then-hold scheme, not continuous adaptation.
+
+### 28.3 The video script was not the benchmark condition (found 2026-09-05)
+
+Rendering a `libero_10` comparison video from five pairs that the n = 40 run had fixed gave
+**0 of 5** repaired. The benchmark had not changed; `compare_video.py` had two differences
+from `adaptive_law.py` that the LIBERO benchmark never had:
+
+1. **The widened recording camera was the policy's input.** `--rec-cam agentview
+   --rec-fovy 62` set the fov of the *same* camera the policy observes, so the policy saw a
+   62° view where it was trained at 45°. The docstring said the recording camera was
+   separate; the code did not do that. Mean pixel difference wide-vs-native: 28 of 255.
+2. **The rotation residual was an axis-angle difference**, not the so3 increment the
+   `*_so3` plant and M were fitted on (§so3). The estimator therefore ran on a residual its
+   calibration did not describe.
+
+Both fixed: the policy always receives the native `agentview` image, the video frame is a
+second render with the fov swapped in and out around it, and `rot_delta` is used. Rerun on
+the same five pairs: **1 of 5 repaired** (task 1 init 48, fault estimate +0.046/+0.024/+0.044
+against a true +0.05 on rotation, corrected run done at step 314; frozen timed out at 520).
+One in five on a 38 % suite, conditioned on a previous success, is inside stochastic
+variation; it is not the 0 of 5 the confounded script gave.
+
+**What this means for the earlier videos.** `adaptive_vs_frozen.mp4` (spatial),
+`_goal`, `_object`, `_oft` were all rendered with the widened camera reaching the policy.
+Both panels of each video saw the same input and the same fault, so they are still fair
+frozen-versus-corrected comparisons on that input; they are not renders of the benchmark
+condition, and the success rates in the record come from `adaptive_law.py`, never from the
+video script. `_libero10` is the first video rendered under the benchmark condition.
+`--only-repaired --max-clips N` was added so a demonstration video can be assembled from
+the pairs the correction actually repairs on that render, with the skip count printed.
+
+**The assembled video.** Walking the fifteen pairs fixed at n = 40 in order, the corrected
+run succeeded on **4 of the first 10** (tasks 9, 0, 5, 0 at inits 47, 47, 45, 48; done at
+steps 328, 332, 188, 312 against a frozen timeout of 520 on every one); the render stopped
+at four clips. 4 of 10 on pairs that had *all* succeeded before is the suite's marginal
+38 %, not something higher: **conditioning on a previous success buys almost nothing**,
+so the set of "fixed" pairs is not a stable set of episodes but a draw from a policy whose
+outcome is dominated by its own sampling. This is the n = 20 ±11-point noise of §10 seen
+from the other side, and it is why every claim in this record is a paired rate, never a
+list of episodes.

@@ -19,6 +19,7 @@ from openpi_client import image_tools
 from paired_probe import Probe
 from gate_faults import apply_action_fault
 from adaptive_law import fit_plant, OUT, K_FIR
+from so3 import rot_delta
 
 BAR = 74
 
@@ -43,6 +44,24 @@ def set_fovy(env, cam, fovy):
     sim.model.cam_fovy[sim.model.camera_name2id(cam)] = fovy
 
 
+def record_frame(env, cam, fovy, res):
+    """Render the VIDEO frame only, at a widened fov, then restore the camera.
+
+    The policy's observation was already rendered by env.step at the trained fov; this
+    extra render never reaches the policy. (Until 2026-09-05 the widened camera WAS the
+    policy's input, which is not the benchmark condition -- see docs, video note.)
+    """
+    sim = env.env.sim if hasattr(env, "env") else env.sim
+    cid = sim.model.camera_name2id(cam)
+    old = sim.model.cam_fovy[cid]
+    sim.model.cam_fovy[cid] = fovy
+    try:
+        im = sim.render(width=res, height=res, camera_name=cam)
+    finally:
+        sim.model.cam_fovy[cid] = old
+    return np.ascontiguousarray(im[::-1, ::-1])
+
+
 def annotate(img, title, colour, lines, prompt=""):
     im = Image.fromarray(img).resize((384, 384), Image.BILINEAR)
     canvas = Image.new("RGB", (384, 384 + BAR), colour)
@@ -65,8 +84,6 @@ def rollout(pr, tid, init, sev, M_inv, W, gamma, adapt, dead, norm_r, clip, max_
     max_steps = max_steps or _pp.MAXS      # the suite's cap, not a spatial-only 220
     env, desc, inits = pr.env_for(tid)
     env.reset()
-    if rec_fovy:
-        set_fovy(env, rec_cam, rec_fovy)          # re-apply: reset can reload the model
     obs = env.set_init_state(inits[init])
     plan, t = collections.deque(), 0
     hist = collections.deque([np.zeros(6)] * (K_FIR + 1), maxlen=K_FIR + 1)
@@ -75,9 +92,15 @@ def rollout(pr, tid, init, sev, M_inv, W, gamma, adapt, dead, norm_r, clip, max_
     while t < max_steps + 10:
         if t < 10:
             obs, _, done, _ = env.step(lm.LIBERO_DUMMY_ACTION); t += 1; continue
-        key = f"{rec_cam}_image" if f"{rec_cam}_image" in obs else "agentview_image"
-        raw = np.ascontiguousarray(obs[key][::-1, ::-1])
-        img = image_tools.convert_to_uint8(image_tools.resize_with_pad(raw, 224, 224))
+        # The policy ALWAYS sees the standard agentview at its trained fov, exactly as in
+        # the benchmark runs. The video frame is a separate render (wider fov, any camera).
+        img = image_tools.convert_to_uint8(image_tools.resize_with_pad(
+            np.ascontiguousarray(obs["agentview_image"][::-1, ::-1]), 224, 224))
+        if rec_fovy:
+            raw = record_frame(env, rec_cam, rec_fovy, obs["agentview_image"].shape[0])
+        else:
+            key = f"{rec_cam}_image" if f"{rec_cam}_image" in obs else "agentview_image"
+            raw = np.ascontiguousarray(obs[key][::-1, ::-1])
         wr = image_tools.convert_to_uint8(image_tools.resize_with_pad(
             np.ascontiguousarray(obs["robot0_eye_in_hand_image"][::-1, ::-1]), 224, 224))
         if not plan:
@@ -97,11 +120,13 @@ def rollout(pr, tid, init, sev, M_inv, W, gamma, adapt, dead, norm_r, clip, max_
         else:
             a_exec = apply_action_fault(a_corr, "offset", sev, 6)
         x0 = np.array(obs["robot0_eef_pos"], float)
-        r0 = lm._quat2axisangle(np.array(obs["robot0_eef_quat"], float))
+        q0 = np.array(obs["robot0_eef_quat"], float)
         obs, _, done, _ = env.step(a_exec.tolist())
         x1 = np.array(obs["robot0_eef_pos"], float)
-        r1 = lm._quat2axisangle(np.array(obs["robot0_eef_quat"], float))
-        y = np.concatenate([x1 - x0, r1 - r0]) / OUT
+        q1 = np.array(obs["robot0_eef_quat"], float)
+        # same rotation residual as adaptive_law (so3 increment), which is what the
+        # *_so3 plant and M were fitted on; the axis-angle difference used before was not
+        y = np.concatenate([x1 - x0, rot_delta(q0, q1)]) / OUT
         hist.appendleft(a_corr[:6])
         H = np.array(hist)
         pred = np.array([W[i, :K_FIR + 1] @ H[:, i] + W[i, -1] for i in range(6)])
@@ -145,6 +170,10 @@ def main():
                     help="channels to correct, e.g. 3,4,5 for rotation only. The "
                          "earlier videos corrected all six, the configuration Sec 7.3 "
                          "shows is wrong for a uniform fault.")
+    ap.add_argument("--only-repaired", action="store_true",
+                    help="keep only pairs where the corrected run SUCCEEDS (implies --only-frozen-fail); "
+                         "the policy is stochastic, so pass more candidates than clips wanted")
+    ap.add_argument("--max-clips", type=int, default=0, help="stop after this many kept pairs (0 = all)")
     ap.add_argument("--only-frozen-fail", action="store_true",
                     help="skip episodes the frozen arm happens to pass")
     a = ap.parse_args()
@@ -165,12 +194,15 @@ def main():
             tid = int(spec.split(":")[0])
             task = suite.get_task(tid)
             env, desc = wide_env(task, lm.LIBERO_ENV_RESOLUTION, 7, a.rec_cam, a.rec_fovy)
-            set_fovy(env, a.rec_cam, a.rec_fovy)
             pr._envs[tid] = (env, desc, suite.get_task_init_states(tid))
 
     import imageio.v2 as iio
-    clips = []
+    clips, kept = [], 0
+    if a.only_repaired:
+        a.only_frozen_fail = True
     for spec in a.episodes.split(","):
+        if a.max_clips and kept >= a.max_clips:
+            break
         tid, init = (int(x) for x in spec.split(":"))
         out = {}
         out[False] = rollout(pr, tid, init, a.sev, M_inv, W, a.gamma, False,
@@ -188,6 +220,10 @@ def main():
                             rec_cam=a.rec_cam, rec_fovy=a.rec_fovy, corr_dims=cdims, fvec=fvec)
         print(f"  task {tid} init {init}  adaptive success={out[True][1]} "
               f"steps={len(out[True][0])}")
+        if a.only_repaired and not out[True][1]:
+            print("    corrected run failed this render -> skipping (not a repaired pair)")
+            continue
+        kept += 1
         (fL, okL, desc), (fR, okR, _) = out[False], out[True]
         # show the channels the correction actually applies, not the first three:
         # with --corr-dims 3,4,5 the translation estimates are computed but never used,
