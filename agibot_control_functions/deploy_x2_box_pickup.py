@@ -289,7 +289,7 @@ CONTROLLED_AREAS = (JointArea.LEG, JointArea.WAIST, JointArea.ARM, JointArea.HEA
 
 
 def build_area_cmd(area, pos_by_name, kp_by_name, kd_by_name, gain_scale,
-                   jmap=None, eff_by_name=None):
+                   jmap=None, eff_by_name=None, offset_by_name=None):
     """One JointCommandArray for `area`, reproducing training's torque exactly.
 
     Training clips the PD torque to the effort limit and never clips the position
@@ -308,6 +308,11 @@ def build_area_cmd(area, pos_by_name, kp_by_name, kd_by_name, gain_scale,
     for ji in robot_model[area]:
         n = ji.name
         des = float(pos_by_name[n])
+        if offset_by_name:
+            # Injected joint-target offset: the hardware analogue of the action-interface
+            # fault used in the VLA work (a calibration / encoder offset on this joint).
+            # Applied before the limit clip so it can never park a target past the stop.
+            des += float(offset_by_name.get(n, 0.0))
         pos = float(np.clip(des, ji.lower_limit, ji.upper_limit))
         kp = float(kp_by_name[n])
         kd = float(kd_by_name[n])
@@ -335,12 +340,13 @@ def build_area_cmd(area, pos_by_name, kp_by_name, kd_by_name, gain_scale,
 
 
 def publish_pose(commander, pos_by_name, kp_by_name, kd_by_name, gain_scale, engage,
-                 jmap=None, eff_by_name=None):
+                 jmap=None, eff_by_name=None, offset_by_name=None):
     """Publish every controlled area; returns the feed-forward torque per joint."""
     ff = {}
     for area in CONTROLLED_AREAS:
         cmd, area_ff = build_area_cmd(area, pos_by_name, kp_by_name, kd_by_name,
-                                      gain_scale, jmap=jmap, eff_by_name=eff_by_name)
+                                      gain_scale, jmap=jmap, eff_by_name=eff_by_name,
+                                      offset_by_name=offset_by_name)
         ff.update(area_ff)
         if engage:
             commander.publish(area, cmd)
@@ -384,6 +390,10 @@ def main():
                          "raw IMU gyro -- the v33 defect, kept only for A/B testing.")
     ap.add_argument("--gain-scale", type=float, default=1.0,
                     help="Scale on the training PD gains (lower = gentler).")
+    ap.add_argument("--joint-offset", default="",
+                    help="Inject a constant joint-target offset, e.g. "
+                         "'left_hip_pitch:0.02,left_knee:-0.03' (radians). Names must match "
+                         "the policy's joint_names. Logged in the run metadata. Default: none.")
     ap.add_argument("--ramp-seconds", type=float, default=5.0,
                     help="Time to ramp from current pose to the motion start pose.")
     ap.add_argument("--settle-seconds", type=float, default=2.0,
@@ -441,6 +451,15 @@ def main():
     policy = NumpyPolicy(args.policy)
     meta = policy.meta
     joint_names = meta["joint_names"]
+    offset_by_name = {}
+    for item in [x for x in args.joint_offset.split(",") if x.strip()]:
+        name, _, val = item.partition(":")
+        name = name.strip()
+        if name not in joint_names:
+            raise SystemExit(f"--joint-offset: unknown joint {name!r}; known: {joint_names}")
+        offset_by_name[name] = float(val)
+    if offset_by_name:
+        print(f"[fault] joint-target offsets (rad): {offset_by_name}")
     default = np.array(meta["default_joint_pos"], np.float32)
     action_scale = np.array(meta["action_scale"], np.float32)
     kp_by_name = dict(zip(joint_names, meta["joint_stiffness"]))
@@ -618,6 +637,7 @@ def main():
         joint_names, base_imu=args.base_imu, run_name=run_name,
         meta={"script": "deploy_x2_box_pickup.py", "policy": args.policy,
               "gain_scale": args.gain_scale,
+              "joint_offset": offset_by_name,
               # Kept in the log so a run recorded after these were removed is not
               # mistaken for one recorded before, when they defaulted 0.9 / 0.15.
               "leg_filter": 0.0, "max_joint_step": 0.0,
@@ -748,7 +768,7 @@ def main():
                                   for i, n in enumerate(joint_names)}
 
             ff = publish_pose(commander, target_by_name, kp_by_name, kd_by_name,
-                              gain_now, args.engage, jmap=jmap, eff_by_name=eff_by_name)
+                              gain_now, args.engage, jmap=jmap, eff_by_name=eff_by_name, offset_by_name=offset_by_name)
             prev_target = target_by_name
             logger.log(now - t0, phase, frame, imus, jmap, target_by_name,
                        extra=pelvis_extra(q_pelvis_now, w_pelvis_now, obs_w_now),
@@ -795,7 +815,7 @@ def main():
             except Exception:
                 imus_i = jmap_i = None
             ff = publish_pose(commander, tgt, kp_by_name, kd_by_name, args.gain_scale,
-                              args.engage, jmap=jmap_i, eff_by_name=eff_by_name)
+                              args.engage, jmap=jmap_i, eff_by_name=eff_by_name, offset_by_name=offset_by_name)
             if jmap_i is not None:
                 logger.log(time.perf_counter() - t0, "interrupt", frame, imus_i, jmap_i,
                            tgt, effort_cmd=ff)
