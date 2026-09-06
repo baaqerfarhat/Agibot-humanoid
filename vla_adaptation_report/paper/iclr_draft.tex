@@ -33,10 +33,10 @@ breaks 7. The same law and the \emph{same} calibration repair two further backbo
 two other developers (OpenVLA-OFT, NVIDIA GR00T N1.7) and, in joint space, a second
 manipulator (bimanual ALOHA). A tuned integral
 baseline without the plant model reaches $35\%$ where the method reaches $95\%$. We state the
-two conditions the evidence supports---an identifiability condition and a repairability
-criterion comparing the task's spatial margin against the correction's variation---and the
-failure modes that bound the method: faults invisible to proprioception, tasks whose margin
-is below the estimator's stationarity, and a policy that cannot do the task unfaulted.
+two conditions the evidence supports---identifiability, and a repairability criterion
+comparing the task's spatial margin against the correction's variation---and the failure
+modes that bound the method, including faults invisible to proprioception and a joint lock
+that is identified but cannot be cancelled from the action interface.
 \end{abstract}
 
 \section{Introduction}
@@ -59,9 +59,8 @@ This paper takes the classical control view. A fault at the action interface is 
 disturbance on a plant whose healthy dynamics can be identified once; the disturbance is
 observable in the difference between the motion the healthy plant would have produced and
 the motion actually measured; and an adaptive law with a handful of parameters can cancel
-it online. The question is whether this survives contact with a 3.35B-parameter policy,
-contact-rich tasks, and a residual that carries model error as well as the fault. Our
-contributions are the answer:
+it online. The question is whether this survives a 3.35B-parameter policy, contact-rich
+tasks, and a residual that carries model error as well as the fault. Our contributions:
 
 \begin{enumerate}[leftmargin=1.5em,itemsep=1pt]
 \item \textbf{A single-episode repair loop for frozen VLAs} (\S\ref{sec:method}) needing
@@ -83,10 +82,6 @@ contributions are the answer:
   episode in twenty on one backbone, caused by a sustained phantom).
 \end{enumerate}
 
-We also report, rather than hide, that three of our own mechanistic explanations were
-refuted by our own measurements during this work; the surviving claims are the ones that
-outlasted them.
-
 \section{Related work}
 \label{sec:related}
 
@@ -97,19 +92,14 @@ simulated robot. Robustness to execution faults is not part of the evaluation pr
 either.
 
 \textbf{Residual calibration of frozen VLAs.} The closest work is J-PARC
-\citep{jparc2026}, which studies joint-level physical faults---joint lock, limited range of
-motion, increased friction---on frozen $\pi_{0.5}$ and OpenVLA-OFT across the same four
-LIBERO suites, and reports a WidowX demonstration. It trains a lightweight residual
-calibrator \emph{offline}, per environment, from faulted rollouts paired with fault-free
-reference rollouts and teacher-oracle residual targets, and reports $48.4\%\to55.2\%$ on
-$\pi_{0.5}$ and $42.3\%\to46.8\%$ on OpenVLA-OFT under joint lock (unpaired, 500 episodes per
-suite). The differences define our contribution. We use no faulted data, no reference
-trajectories and no teacher: the plant is identified once on healthy motion and the fault
-is identified online within the episode in which it occurs, on paired episodes
-($23\%\to65\%$). Their faults, however, enter \emph{below} the controller, where the
-fault-to-motion map is state dependent; ours enter at the action interface above it, and the
-joint-level class appears in this paper only in the hardware protocol (\S\ref{sec:hardware}).
-The two are complementary on exactly that axis. Closed-loop affine activation editing
+\citep{jparc2026}: joint-level physical faults (lock, limited range, friction) on frozen
+$\pi_{0.5}$ and OpenVLA-OFT across the same four LIBERO suites, repaired by a residual
+calibrator trained \emph{offline}, per environment, from faulted rollouts with fault-free
+references and teacher targets ($+6.8$ and $+4.5$ points under joint lock, unpaired). We use
+no faulted data, no references and no teacher: the plant is identified once on healthy
+motion and the fault online within the episode it occurs in, on paired episodes. Their
+faults enter below the controller; ours enter at the action interface, and
+\S\ref{sec:joint} tests their class with our law. Closed-loop affine activation editing
 \citep{clae2026} steers a frozen policy by editing internal activations against an observed
 objective; our correction lives outside the network and needs no access to activations.
 
@@ -433,6 +423,44 @@ a phantom of $0.384$ against a real fault of $0.150$, $2.5\times$ the target and
 sign. It must creep to stay stable and saturates when it moves. Predicting $y\approx0.23a$
 instead of $y\approx a$ is the whole difference.
 
+\subsection{Faults below the controller}
+\label{sec:joint}
+
+Every fault above enters at the action interface. J-PARC's enter in the actuator, where
+the fault-to-motion map depends on configuration through the Jacobian. We inject that
+class in the MuJoCo model of the LIBERO Panda, below the operational-space controller:
+a constant joint torque (a payload or a gravity-compensation error), added joint friction,
+and a joint lock. Magnitudes were measured first: at the elbow, 5\,N\,m leaks through the
+controller as an 8--9\,cm drift over 40 steps whether or not the arm is commanded (an
+additive fault from below), while a $\pm0.05$\,rad lock and $+2.0$ friction do nothing
+while holding and remove 3--10\,cm of commanded motion (a loss of effectiveness from
+below). An estimate-only probe identifies every one of them on the translation channels
+and nowhere else, the lock at 15--23 healthy-phantom standard deviations. Paired cells,
+$\pi_{0.5}$, \code{libero\_spatial}, translation corrected, healthy phantom subtracted:
+
+\begin{center}\small
+\begin{tabular}{lrrrrrc}
+\toprule
+joint fault (elbow) & $n$ & frozen & corrected & fixed & broken & McNemar \\
+\midrule
+torque bias 5\,N\,m & 40 & 20/40 & \textbf{32/40} & 15 & 3 & $0.0075$ \\
+friction $+4.0$ & 20 & 20/20 & 20/20 & 0 & 0 & ceiling \\
+lock $\pm0.05$\,rad & 20 & 0/20 & 0/20 & 0 & 0 & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The torque bias is repaired, at a cost the Cartesian cells never paid: three regressions
+in forty. Its estimate's across-episode spread is 0.075, four times any Cartesian fault's,
+because the offset the residual reports is right for the configuration it was measured in
+and wrong for the one the arm moves into, and a tracking law follows that with a lag. The
+lock is identified, corrected and not repaired: the estimate converges within 30 steps on
+every episode and the correction changes nothing, because a lock removes a degree of
+freedom and no additive command moves the arm along a direction it can no longer produce.
+Identifiability is necessary for repair and not sufficient. J-PARC's offline residual
+reports gains under a lock, consistently: a residual trained on faulted rollouts can learn
+a different route through the free joints, and this law cannot.
+
 \subsection{Two further backbones, unchanged calibration}
 \label{sec:oft}
 
@@ -462,21 +490,10 @@ two seconds (\S\ref{sec:fail}). The three headline cells also replicate on
 \code{libero\_object} with the same calibration ($0/20\to10/20$, $0/20\to15/20$,
 $0/20\to19/20$).
 
-\begin{center}\small
-\begin{tabular}{lrrrrc}
-\toprule
-GR00T N1.7 cell (\code{libero\_spatial}) & frozen & corrected & fixed & broken & McNemar \\
-\midrule
-healthy control & 18/20 & 18/20 & 1 & 1 & 1.0 \\
-rotation $0.10$ & 0/20 & \textbf{14/20} & 14 & 0 & $1.2\times10^{-4}$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-GR00T is a third developer and a third architecture. Its healthy control is a null with a
-rotation phantom below $0.005$; a rotation fault that zeros it is recovered to $70\%$ with
-no retuning, the estimate settling at $81\%$, $42\%$ and $82\%$ of the true fault on the
-three axes. The under-identified $r_y$ is the same channel that lags on the other two
+GR00T N1.7 is a third developer and a third architecture. Its healthy control is a null
+($18/20$ both arms, rotation phantom below $0.005$); the rotation $0.10$ fault takes it to
+$0/20$ and the correction recovers $\mathbf{14/20}$ (14 fixed, 0 broken, $p=1.2\times10^{-4}$)
+with no retuning, the estimate settling at $81\%$, $42\%$ and $82\%$ of the true fault. The under-identified $r_y$ is the same channel that lags on the other two
 backbones: it is a property of the plant and $M$, not of the policy. Across the three
 backbones on this cell, 42 of 60 paired episodes are repaired and none is broken.
 
@@ -551,30 +568,26 @@ interface and nothing upstream of it.
 unfaulted. Correcting the fault restores nothing because nothing was lost to it.
 
 \textbf{Harm on a healthy robot.} One OFT episode in twenty was lost to a sustained phantom
-integrated and acted on. A dwell gate cuts spurious openings from $13/20$ to $4/20$ healthy
-episodes but the harmful one opens at every setting tried, and every setting delays real
-repair. Separating it would need information the estimator does not have.
+acted on. A dwell gate removes most spurious openings but not that one, and every setting
+delays real repair; separating it needs information the estimator does not have.
 
 \textbf{Continuous adaptation on a tight margin} (\S\ref{sec:aloha}).
 
-\textbf{Refuted explanations, kept.} We proposed that identifiability is predictable from
-healthy action statistics via the quantile scale (refuted: translation identifies a
-single-axis fault at $79\%$); that the plant is nonlinear on translation (refuted: $M$ is
-magnitude independent to $14\%$; superposition fails instead); and that translation
-correction contributes nothing (refuted: it was tested only where the policy shrugs off a
-translation fault; at $0.15$ it takes $20\%\to95\%$). A fourth, that additive and
-multiplicative faults are identifiable on complementary channels, survives only as a graded
-ordering. The record keeps each with the measurement that killed it.
+\textbf{Refuted explanations, kept.} We proposed that identifiability follows from healthy
+action statistics (refuted: translation identifies a single-axis fault at $79\%$); that the
+plant is nonlinear on translation (refuted: $M$ is magnitude independent to $14\%$;
+superposition fails instead); and that translation correction contributes nothing (refuted:
+at $0.15$ it takes $20\%\to95\%$). The record keeps each with the measurement that killed it.
 
 \section{Limitations}
 \label{sec:limits}
 
-The LIBERO fault is at the Cartesian action interface, above the controller; a joint-level
-actuator fault---the class J-PARC studies---enters below it with a state-dependent map, and
-the hardware section is the only place that class appears here, without a repair result
-yet. Whether the residual of a position loop carries a joint lock or friction change as
-cleanly as it carries an offset is open; our X2 logs say a stiffness loss is invisible in
-position and recoverable in effort, which suggests the sensor, not the law, is what changes. The estimate resets every
+Faults below the controller are repaired only when they act as inputs: a joint torque
+bias is (with a regression rate the Cartesian cells never showed), a joint lock is not
+(\S\ref{sec:joint}), and friction at the levels that identify does not damage this policy.
+A joint-space law would see the torque bias as the constant it is; the Cartesian residual
+sees it through the Jacobian. The X2 logs say a stiffness loss is invisible in position and
+recoverable in effort, which suggests the sensor, not the law, is what changes on hardware. The estimate resets every
 episode by design for the LIBERO claims; the ALOHA result shows that on a tight-margin task
 the deployable scheme is instead to hold it, which is a different claim about online
 adaptation and is stated as such. The policy's stochasticity gives $\pm10$ points at $n=20$;
@@ -588,8 +601,8 @@ plant---five of our own failures came from not doing so.
 
 A frozen VLA can be repaired within one episode by six numbers at its action interface,
 given a plant model and a sensitivity matrix identified once on healthy data. The evidence
-is paired, controlled, and broad; the calibration transfers across suites and backbones; the
-two conditions that govern success are stated and measurable in advance; and the failures
+is paired, controlled and broad; the calibration transfers across suites and three
+backbones; the two conditions that govern success are measurable in advance; the failures
 are named. The result the paper still owes is the one on a real robot.
 
 \subsection*{AI use statement}

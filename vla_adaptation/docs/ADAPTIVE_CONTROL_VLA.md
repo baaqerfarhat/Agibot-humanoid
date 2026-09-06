@@ -2547,3 +2547,16 @@ Same cell across the three backbones (rotation +0.10, rotation-only correction,
 
 Three developers, three architectures, one calibration, 42 repairs and zero regressions
 in 60 paired episodes.
+
+**Elbow torque bias 5 N·m at n = 40: resolved.** `20/40 → 32/40`, **15 fixed, 3 broken**,
+exact McNemar `p = 0.0075`. The first fault below the controller that the law repairs,
+and it is claimed with its cost stated: three regressions in forty (7.5 %) against 1 % on
+the Cartesian aggregate, two of them on the same task (6, inits 47 and 48). The estimate's
+across-episode sd is 0.075 on x and 0.078 on z, unchanged from n = 20, and that spread is
+the mechanism for the regressions: a joint torque maps to a Cartesian offset through the
+Jacobian, so the offset the estimator sees, and cancels, is right for the configuration it
+was measured in and wrong for the one the arm moves into. A tracking law with
+one-episode memory follows that drift with a lag; on a task whose trajectory changes
+configuration quickly the lag is a correction applied in the wrong direction for a few
+steps, which is what a regression looks like here. The gap to a joint-space law (§27, which
+would see the torque bias as a constant) is the obvious next step and is not run.
