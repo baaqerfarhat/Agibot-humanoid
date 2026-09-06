@@ -29,8 +29,9 @@ and no learning across episodes. On four LIBERO suites with a frozen $\pi_{0.5}$
 episodes go from $23\%$ to $65\%$ success (exact McNemar $p = 6.1\times10^{-13}$, $n=120$),
 with every suite individually significant; across 690 paired episodes spanning additive,
 structured, time-varying and multiplicative faults the correction fixes 275 episodes and
-breaks 7. The same law and the \emph{same} calibration repair a second backbone
-(OpenVLA-OFT) and, in joint space, a second manipulator (bimanual ALOHA). A tuned integral
+breaks 7. The same law and the \emph{same} calibration repair two further backbones from
+two other developers (OpenVLA-OFT, NVIDIA GR00T N1.7) and, in joint space, a second
+manipulator (bimanual ALOHA). A tuned integral
 baseline without the plant model reaches $35\%$ where the method reaches $95\%$. We state the
 two conditions the evidence supports---an identifiability condition and a repairability
 criterion comparing the task's spatial margin against the correction's variation---and the
@@ -67,7 +68,7 @@ contributions are the answer:
   only a plant model and a sensitivity matrix identified on healthy data, both properties of
   the robot rather than of the policy or the task. The estimate resets every episode and
   reconverges in about 15 control steps.
-\item \textbf{Evidence at scale, paired} (\S\ref{sec:exp}): four suites, two backbones, two
+\item \textbf{Evidence at scale, paired} (\S\ref{sec:exp}): four suites, three backbones, two
   manipulators, four fault families, three severities and four time profiles, evaluated
   episode-for-episode against the frozen policy with exact McNemar tests, a healthy-frozen
   control on every cell, and 690 paired episodes in aggregate.
@@ -432,11 +433,12 @@ a phantom of $0.384$ against a real fault of $0.150$, $2.5\times$ the target and
 sign. It must creep to stay stable and saturates when it moves. Predicting $y\approx0.23a$
 instead of $y\approx a$ is the whole difference.
 
-\subsection{A second backbone, unchanged calibration}
+\subsection{Two further backbones, unchanged calibration}
 \label{sec:oft}
 
-OpenVLA-OFT (7B, PyTorch, L1 action head) is served behind the same interface; every
-script, the plant and $M$ are the $\pi_{0.5}$ ones.
+OpenVLA-OFT (7B, autoregressive backbone with an L1 action head) and NVIDIA GR00T N1.7
+(3B, Cosmos VLM with a flow-matching DiT head, the official LIBERO finetune) are each
+served behind the same interface; every script, the plant and $M$ are the $\pi_{0.5}$ ones.
 
 \begin{center}\small
 \begin{tabular}{lrrrrc}
@@ -459,6 +461,24 @@ confidence gate evaluated offline does not remove without delaying genuine repai
 two seconds (\S\ref{sec:fail}). The three headline cells also replicate on
 \code{libero\_object} with the same calibration ($0/20\to10/20$, $0/20\to15/20$,
 $0/20\to19/20$).
+
+\begin{center}\small
+\begin{tabular}{lrrrrc}
+\toprule
+GR00T N1.7 cell (\code{libero\_spatial}) & frozen & corrected & fixed & broken & McNemar \\
+\midrule
+healthy control & 18/20 & 18/20 & 1 & 1 & 1.0 \\
+rotation $0.10$ & 0/20 & \textbf{14/20} & 14 & 0 & $1.2\times10^{-4}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+GR00T is a third developer and a third architecture. Its healthy control is a null with a
+rotation phantom below $0.005$; a rotation fault that zeros it is recovered to $70\%$ with
+no retuning, the estimate settling at $81\%$, $42\%$ and $82\%$ of the true fault on the
+three axes. The under-identified $r_y$ is the same channel that lags on the other two
+backbones: it is a property of the plant and $M$, not of the policy. Across the three
+backbones on this cell, 42 of 60 paired episodes are repaired and none is broken.
 
 \subsection{A second manipulator, in joint space}
 \label{sec:aloha}

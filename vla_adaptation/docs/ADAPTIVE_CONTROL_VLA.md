@@ -2494,3 +2494,56 @@ deadband on its own, and the estimator running on top of a healthy outcome chang
 motion signature of §29.2) but there is no task loss for it to repair. A friction level that
 does damage the policy is queued after the n = 40 torque run; §19's lesson applies — a cell
 where frozen scores 100 % proves only that the law is harmless.
+
+## 30. Third backbone: NVIDIA GR00T N1.7 (added 2026-09-06)
+
+The official `nvidia/GR00T-N1.7-LIBERO` finetune (3B; Cosmos-Reason2 VLM, flow-matching
+DiT action head, 16-step chunks; NVIDIA reports 97.65 % on `libero_spatial` at 720 steps)
+is served by `openpi/groot_server.py` behind the same websocket protocol as π0.5 and
+OpenVLA-OFT, so every script, the plant model and M are unchanged. Conventions were read
+from Isaac-GR00T's own LIBERO wrapper, not assumed: same 180°-rotated 256×256 cameras, same
+8-D state, same 7-D action with the gripper normalised then inverted. Three things had to
+be fixed for this machine (gated backbone repo, no FlashAttention on Turing, a venv
+without pip; `SETUP.md`). Inference is 3.8 s per chunk, so `--replan-steps 8` (GR00T's own
+evaluation horizon) and a 20-episode paired cell takes about 45 minutes. A two-episode
+healthy smoke through our client scored 2/2 before any fault.
+
+### 30.1 Healthy control, `libero_spatial`, n = 20, law running on rotation
+
+| arm | success | vs frozen |
+|---|---|---|
+| frozen, no fault | 18/20 | — |
+| law running, no fault | 18/20 | 1 fixed / 1 broken |
+
+A null, as required, with π0.5's plant and M. The rotation phantom is ≤ 0.005 (last-50-step
+mean, sd ≤ 0.009); translation shows the same 0.02–0.03 phantom as on π0.5, which is why
+translation stays uncorrected. GR00T's healthy rate at our 220-step cap is 90 %, against
+NVIDIA's 97.65 % at 720 steps: the shorter cap costs a few slow episodes and is kept so
+the cell is comparable to the other two backbones.
+
+### 30.2 Rotation fault +0.10, rotation-only correction, `libero_spatial`, n = 20, paired
+
+| arm | success | fixed | broken | exact McNemar |
+|---|---|---|---|---|
+| frozen, faulted | 0/20 | | | |
+| **corrected** | **14/20 = 70%** | **14** | **0** | **1.2×10⁻⁴** |
+
+**The third backbone is repaired with the calibration identified on the first.** A
+rotation fault that zeros GR00T is recovered to 70 % with π0.5's plant model and M, no
+retuning, no clip hit. The estimate settles at `rx 0.081, ry 0.042, rz 0.082` (last-50
+mean, sd ≤ 0.011) against a true 0.10 — 81 %, 42 %, 82 %, and it is 62 % of the way there
+by step 15. `ry` under-identified by half is the same channel that lagged on π0.5 (Fig. 1
+of the draft) and on OFT; it is a property of the plant and M, not of the policy, which
+is the point: nothing in the repair depends on which network is being repaired.
+
+Same cell across the three backbones (rotation +0.10, rotation-only correction,
+`libero_spatial`, n = 20):
+
+| backbone | developer / family | frozen | corrected | fixed / broken | p |
+|---|---|---|---|---|---|
+| π0.5 (calibration source) | Physical Intelligence, flow matching | 0/20 | 17/20 | 17 / 0 | 1.5×10⁻⁵ |
+| OpenVLA-OFT | Stanford/Berkeley, autoregressive + L1 head | 0/20 | 11/20 | 11 / 0 | 9.8×10⁻⁴ |
+| **GR00T N1.7** | NVIDIA, Cosmos VLM + flow-matching DiT | 0/20 | 14/20 | 14 / 0 | 1.2×10⁻⁴ |
+
+Three developers, three architectures, one calibration, 42 repairs and zero regressions
+in 60 paired episodes.
