@@ -26,6 +26,7 @@ import numpy as np
 
 import main as lm
 from so3 import rot_delta
+from joint_fault import JointFault
 from openpi_client import image_tools
 from paired_probe import Probe
 from gate_faults import apply_action_fault
@@ -91,11 +92,16 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
         obs_off=None, wrist_shift=0, static_c=None,
         dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None, corr_dims=None,
         law="legacy", M=None, profile="step", prof_p=60.0,
-        baseline="none", ki=0.05):
+        baseline="none", ki=0.05, joint_fault=None):
     import paired_probe as _pp
     max_steps = max_steps or _pp.MAXS
     env, desc, inits = pr.env_for(tid)
     env.reset(); obs = env.set_init_state(inits[init])
+    # A joint-level fault lives in the MuJoCo model, below the controller; applied after
+    # the reset so set_init_state cannot undo it, restored at the next episode's apply().
+    jf = JointFault(env, joint_fault) if joint_fault else None
+    if jf is not None:
+        jf.apply()
     plan, t = collections.deque(), 0
     hist = collections.deque([np.zeros(6)] * (K_FIR + 1), maxlen=K_FIR + 1)
     f_hat = np.zeros(6)
@@ -180,6 +186,8 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
             a_exec = apply_action_fault(a_corr, "offset", sev if live else 0.0, 6)       # then the world's fault
         x0 = np.array(obs["robot0_eef_pos"], float)
         q0 = np.array(obs["robot0_eef_quat"], float)
+        if jf is not None:
+            jf.step(live)
         obs, _, done, _ = env.step(a_exec.tolist())
         x1 = np.array(obs["robot0_eef_pos"], float)
         q1 = np.array(obs["robot0_eef_quat"], float)
@@ -297,6 +305,9 @@ def main():
                    help="first evaluation initial state (keep fresh per run)")
     p.add_argument("--fault-vec", default=None,
                    help="6 comma-separated per-dim fault values (overrides --sev)")
+    p.add_argument("--joint-fault", default=None,
+                   help="kind:joint:magnitude, a fault BELOW the controller in the MuJoCo model "
+                        "(torque N.m bias, friction, damping, gain scale, lock +-rad); see joint_fault.py")
     p.add_argument("--corr-dims", default=None,
                    help="comma-separated dims to correct, e.g. 3,4,5 for rotation only")
     p.add_argument("--bias", default=None,
@@ -337,7 +348,9 @@ def main():
         print(f"correction applied only on dims {cdims}")
     pr = Probe(a)
     pr.control(dict(site=None, pin_rng=False))
-    res = {"gamma": a.gamma, "arms": {}}
+    res = {"gamma": a.gamma, "joint_fault": a.joint_fault, "arms": {}}
+    if a.joint_fault:
+        print(f"JOINT-LEVEL fault (below the controller): {a.joint_fault}")
     # Spread episodes across the WHOLE suite. The old form, i % 10, silently confined a
     # libero_90 run to its first ten tasks. With --task-stride 4 on 90 tasks, 20 episodes
     # land on tasks 0, 4, 8, ... 76 -- a sample of the suite rather than a corner of it.
@@ -354,7 +367,7 @@ def main():
                                  obs_off=obs_off, wrist_shift=a.wrist_shift,
                                  static_c=static_c, law=a.law, M=M,
                                  profile=a.profile, prof_p=a.prof_p,
-                                 baseline=a.baseline, ki=a.ki)
+                                 baseline=a.baseline, ki=a.ki, joint_fault=a.joint_fault)
             ok += int(s); fh.append(f_hat.tolist())
             # Per-episode outcome, keyed by (task, init). The arms run on the SAME episode
             # list, so these pair up -- which is what McNemar needs and what the earlier

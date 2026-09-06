@@ -2396,3 +2396,101 @@ the fault, and the law neither helps nor harms a healthy robot at this n. The re
 is indistinguishable from the healthy one on the same seeds. This is the full cell the
 protocol requires: floor (0/40), repair (15/40), healthy ceiling (17/40), and a null for
 the law on healthy data.
+
+## 29. Faults below the controller: joint-level faults in simulation (added 2026-09-06)
+
+Every fault in §1–§28 enters at the Cartesian action interface, above LIBERO's
+operational-space controller. J-PARC's faults (joint lock, limited range of motion, friction)
+enter below it, in the actuator, where the fault-to-motion map depends on the arm's
+configuration through the Jacobian; §Limitations of the draft says that class is open. It
+can be tested without a robot: `joint_fault.py` edits the MuJoCo model of the Panda after
+each reset (friction loss, damping, actuator gain, joint range) or applies a constant joint
+torque every step (`qfrc_applied`), and restores the model before the next episode. The
+policy, the controller, the plant model and M are untouched.
+
+### 29.1 Measure before setting constants: what each fault does to the end effector
+
+40 control steps from task 0 init 45, holding still and under a constant +x command,
+difference from the healthy motion:
+
+| fault | holding | commanded +x |
+|---|---|---|
+| torque bias, joint 1 (shoulder), 5 N·m | +4.0 cm x | +4.4 cm x |
+| torque bias, joint 3 (elbow), 5 N·m | +9.1 cm x, +7.8 cm z | +9.5 cm x, +8.3 cm z |
+| friction loss +2.0, joint 3 | 0 | −4.0 cm x, −2.9 cm z |
+| actuator gain 0.5, joint 1 | +25 cm x | +18 cm x, −12 cm z |
+| joint lock ±0.05 rad, joint 3 | 0 | −10.3 cm x, −7.1 cm z |
+
+A torque bias leaks through the OSC controller (no integral action) as a near-constant
+displacement whether or not the arm is commanded: an additive fault, arriving from below.
+Friction and a lock do nothing while holding and remove centimetres of commanded motion:
+a loss of effectiveness, arriving from below. A halved gain drops the arm by a quarter
+metre and is not a fault the policy could be asked to survive. So the two fault families
+of §19 both exist at the joint level, and the magnitudes chosen (5 N·m, +2.0 friction,
+±0.05 rad) produce 1–3 mm per step, the scale of the Cartesian faults already studied.
+
+### 29.2 Estimate-only probe: does the Cartesian residual see them?
+
+Three episodes each, π0.5, `libero_spatial`, estimator running but never applied
+(`--estimate-only`), clip 0.30. Statistic: mean of the estimate over the last 50 steps
+(the final value alone swings at the grasp). Separation = faulted − healthy phantom, in
+units of the healthy phantom's across-episode standard deviation:
+
+| fault | frozen | separation x, y, z (action units) | in sd of healthy | rotation channels |
+|---|---|---|---|---|
+| healthy phantom | 3/3 | 0.007, −0.008, 0.016 (sd 0.015, 0.009, 0.008) | — | ≤ 0.002 |
+| torque j1 5 N·m | 3/3 | 0.003, 0.018, −0.068 | 0.2, 1.9, 8.4 | none |
+| torque j3 5 N·m | 1/3 | 0.054, −0.049, 0.099 | 3.7, 5.3, 12.2 | none |
+| friction j3 +2.0 | 3/3 | −0.074, −0.009, −0.076 | 5.1, 1.0, 9.5 | none |
+| **lock j3 ±0.05** | **0/3** | **−0.224, −0.051, −0.183** | **15, 5.5, 23** | none |
+
+Every joint-level fault is identified on translation and nowhere else, which is the
+opposite of the Cartesian uniform fault (§14.3: rotation identified, translation not).
+The lock, which zeros the frozen policy, is the cleanest identification in the record so
+far: 15–23 standard deviations, consistent sign on all three episodes. The torque bias at
+the elbow is identified at 4–12 sd with a positive z that matches §29.1's +8 cm.
+
+**What the estimator is actually reading.** For a lock the physical fault is a range
+limit, not an offset; the residual reports "commanded +x and +z did not happen", and the
+estimator calls that a negative offset of 0.2. Correcting it means commanding more +x/+z,
+which on a redundant 7-DOF arm the six free joints can partly deliver and a locked joint
+cannot. Whether that repairs the task is the experiment; the estimate itself is
+state-dependent by construction, so the law must track rather than converge. Paired cells
+follow in §29.3, translation channels corrected, the healthy phantom subtracted as
+`--bias` per Proposition 1.
+
+### 29.3 Paired cells, π0.5, `libero_spatial`, n = 20, translation corrected, phantom subtracted
+
+**Joint lock ±0.05 rad at the elbow: identified, corrected, not repaired.** `0/20 → 0/20`.
+The estimate converges within 30 steps to `x −0.23, z −0.16` on every episode (sd 0.02
+on x, no clip hit), the correction is applied, and nothing changes. This is a different
+boundary from §19's: there the plant left the informative regime; here the plant's
+*structure* changed. A lock removes a degree of freedom, so the reachable motion is a
+subspace, and no additive command on the action interface moves the arm along a direction
+the arm can no longer produce. The residual reports the missing motion faithfully, the
+law inverts it faithfully, and the inverse of a rank-deficient map through a full-rank M is
+a command the plant discards. **Identifiability is necessary for repair and not
+sufficient**: the fault must be an input to the plant, not a change in its rank. J-PARC reports +6.8 points on π0.5 under a joint lock with its offline residual, which is
+consistent with this reading rather than against it: a residual trained on faulted rollouts
+can learn a *different route* through the six free joints, whereas our law can only push
+harder along the direction the residual says is missing. On a lock that is the difference
+between a learned re-plan and an inverted disturbance, and it is a real limitation of the
+method to state. The torque and friction cells follow.
+
+**Elbow torque bias 5 N·m: repaired, state-dependent estimate, n = 20 short of significance.**
+`11/20 → 17/20`, 8 fixed, 2 broken, exact McNemar `p = 0.11`. The last-50-step estimate is
+`x +0.13, z +0.11` with an across-episode sd of 0.07 — three to four times the sd of any
+Cartesian-fault estimate in the record, and the signature §29.2 predicted: a constant joint
+torque maps to a Cartesian offset through the Jacobian, so the offset the estimator sees
+changes with the arm's configuration and the law tracks it rather than converging. The
++30 points are the same size as the Cartesian cells' effects and the test is at n = 20
+with two regressions, so n = 40 is queued (as for `goal`, `libero_10` and ALOHA) before
+this cell is claimed. This is the first repair of a fault that enters below the controller.
+
+**Elbow friction +4.0: a ceiling, and a null.** `20/20 → 20/20`. Doubling §29.2's friction
+still does not damage the policy on this suite: the OSC loop drives through a friction
+deadband on its own, and the estimator running on top of a healthy outcome changes nothing
+(zero regressions). The identification is there (a negative x/z estimate, the loss-of-
+motion signature of §29.2) but there is no task loss for it to repair. A friction level that
+does damage the policy is queued after the n = 40 torque run; §19's lesson applies — a cell
+where frozen scores 100 % proves only that the law is harmless.
