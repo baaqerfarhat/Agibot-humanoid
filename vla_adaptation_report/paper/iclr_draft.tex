@@ -445,6 +445,7 @@ joint fault (elbow) & $n$ & frozen & corrected & fixed & broken & McNemar \\
 \midrule
 torque bias 5\,N\,m & 40 & 20/40 & \textbf{32/40} & 15 & 3 & $0.0075$ \\
 friction $+4.0$ & 20 & 20/20 & 20/20 & 0 & 0 & ceiling \\
+friction $+20$ & 20 & 0/20 & \textbf{8/20} & 8 & 0 & $0.0078$ \\
 lock $\pm0.05$\,rad & 20 & 0/20 & 0/20 & 0 & 0 & --- \\
 \bottomrule
 \end{tabular}
@@ -453,11 +454,15 @@ lock $\pm0.05$\,rad & 20 & 0/20 & 0/20 & 0 & 0 & --- \\
 The torque bias is repaired, at a cost the Cartesian cells never paid: three regressions
 in forty. Its estimate's across-episode spread is 0.075, four times any Cartesian fault's,
 because the offset the residual reports is right for the configuration it was measured in
-and wrong for the one the arm moves into, and a tracking law follows that with a lag. The
-lock is identified, corrected and not repaired: the estimate converges within 30 steps on
-every episode and the correction changes nothing, because a lock removes a degree of
-freedom and no additive command moves the arm along a direction it can no longer produce.
-Identifiability is necessary for repair and not sufficient. J-PARC's offline residual
+and wrong for the one the arm moves into, and a tracking law follows that with a lag. Heavy
+friction, which zeros the policy, is repaired to $40\%$ with no regression. The lock is
+identified, corrected and not repaired: the estimate converges within 30 steps on every
+episode, reading the same loss-of-motion signature as the friction cell, and the correction
+changes nothing. The difference is physical: friction is a force the controller overcomes
+by commanding more, and the correction commands more; a lock removes a degree of freedom,
+and no command moves the arm along a direction it can no longer produce. Identifiability
+is necessary for repair and not sufficient; the fault must be an input the plant still
+responds to. J-PARC's offline residual
 reports gains under a lock, consistently: a residual trained on faulted rollouts can learn
 a different route through the free joints, and this law cannot.
 
@@ -582,9 +587,10 @@ at $0.15$ it takes $20\%\to95\%$). The record keeps each with the measurement th
 \section{Limitations}
 \label{sec:limits}
 
-Faults below the controller are repaired only when they act as inputs: a joint torque
-bias is (with a regression rate the Cartesian cells never showed), a joint lock is not
-(\S\ref{sec:joint}), and friction at the levels that identify does not damage this policy.
+Faults below the controller are repaired only when they remain inputs the plant responds
+to: a joint torque bias and heavy joint friction are, a joint lock is not
+(\S\ref{sec:joint}), and the torque bias carries a regression rate the Cartesian cells never
+showed.
 A joint-space law would see the torque bias as the constant it is; the Cartesian residual
 sees it through the Jacobian. The X2 logs say a stiffness loss is invisible in position and
 recoverable in effort, which suggests the sensor, not the law, is what changes on hardware. The estimate resets every

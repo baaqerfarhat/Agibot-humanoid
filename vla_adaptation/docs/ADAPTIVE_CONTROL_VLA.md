@@ -2560,3 +2560,21 @@ one-episode memory follows that drift with a lag; on a task whose trajectory cha
 configuration quickly the lag is a correction applied in the wrong direction for a few
 steps, which is what a regression looks like here. The gap to a joint-space law (§27, which
 would see the torque bias as a constant) is the obvious next step and is not run.
+
+**Elbow friction, escalated until it damages: +10 (frozen 1/3), +20 (frozen 0/3).**
+The +4.0 ceiling was the policy's tolerance, not the method's. Paired at +20:
+
+| arm | success | fixed | broken | exact McNemar |
+|---|---|---|---|---|
+| frozen, faulted | 0/20 | | | |
+| **corrected** (x,y,z, phantom subtracted, clip 0.30) | **8/20 = 40%** | **8** | **0** | **0.0078** |
+
+**A loss-of-effectiveness fault below the controller, from zero to 40 % with zero
+regressions.** The estimate reads `x −0.21, z −0.19` (last-50 mean; one clip hit in 20 on
+z, the rest inside the box), the same loss-of-motion signature as the lock — and the
+lock got nothing. The difference is physical, not statistical: friction is a force the
+controller can overcome by commanding more, and the correction commands more; a lock is a
+constraint no command overcomes. Same residual, same estimate, opposite outcome, decided
+by whether the fault is an *input* the plant still responds to. That is the precise form
+of the "necessary, not sufficient" statement in the lock paragraph, now with its positive
+half. The +10 cell (clip 0.50) follows.
