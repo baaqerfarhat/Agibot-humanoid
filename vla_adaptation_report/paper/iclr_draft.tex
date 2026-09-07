@@ -494,9 +494,11 @@ two seconds (\S\ref{sec:fail}). The three headline cells also replicate on
 $0/20\to19/20$).
 
 GR00T N1.7 is a third developer and a third architecture. Its healthy control is a null
-($18/20$ both arms, rotation phantom below $0.005$); the rotation $0.10$ fault takes it to
-$0/20$ and the correction recovers $\mathbf{14/20}$ (14 fixed, 0 broken, $p=1.2\times10^{-4}$)
-with no retuning, the estimate settling at $81\%$, $42\%$ and $82\%$ of the true fault. The under-identified $r_y$ is the same channel that lags on the other two
+($18/20$ both arms, rotation phantom below $0.005$). With no retuning: rotation $0.10$,
+$0/20\to\mathbf{14/20}$ (14 fixed, 0 broken, $p=1.2\times10^{-4}$); translation $0.15$,
+$2/20\to\mathbf{15/20}$ (13/0, $p=2.4\times10^{-4}$); gain $0.20$ under the multiplicative
+law, $0/20\to\mathbf{19/20}$ (19/0, $p=3.8\times10^{-6}$, $\hat\beta$ within $2\%$ of the
+true $-0.80$). Three families, 46 repaired, none broken. The under-identified $r_y$ is the same channel that lags on the other two
 backbones: it is a property of the plant and $M$, not of the policy. Across the three
 backbones on this cell, 42 of 60 paired episodes are repaired and none is broken.
 

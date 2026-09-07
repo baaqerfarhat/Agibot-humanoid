@@ -2667,3 +2667,41 @@ the one chosen below the measured residual scale. On calibration size, **one hea
 is enough for the plant** — 17/20 from 75 steps of healthy motion, with r̂x under-identified
 at 0.027 and the result carried by the other two axes; two episodes recover the full
 estimate. The plant needs seconds of healthy data, not a dataset.
+
+### 30.3 Translation fault +0.15, translation-only correction, `libero_spatial`, n = 20
+
+| arm | success | fixed | broken | exact McNemar |
+|---|---|---|---|---|
+| frozen, faulted | 2/20 | | | |
+| **corrected** | **15/20 = 75%** | **13** | **0** | **2.4×10⁻⁴** |
+
+Second fault family on the third backbone, same calibration. The estimate reads
+`x 0.19, y 0.07, z 0.21` (last-50 mean, sd ≤ 0.05, two clip hits in 60 channel-episodes)
+against a true 0.15: x and z carry the translation phantom (§29.2 measured it at +0.02 to
++0.03 on π0.5, and GR00T's healthy control showed the same) on top of the fault, and y is
+under-identified — the same per-channel pattern π0.5 (§19) and OFT (§25) showed. The
+gain-fault cell follows.
+
+### 30.4 Gain fault 0.20 on translation, multiplicative law, `libero_spatial`, n = 20
+
+| arm | success | fixed | broken | exact McNemar | β̂ (true −0.80) |
+|---|---|---|---|---|---|
+| frozen, faulted | 0/20 | | | | |
+| **corrected** (FIR regressor, g-min 0.12, clip 0.95) | **19/20 = 95%** | **19** | **0** | **3.8×10⁻⁶** | **−0.816, −0.804, −0.813** |
+
+The multiplicative law identifies the loss of effectiveness to within 2 % on all three
+translation axes (clip 0.95, so the value is an estimate, not the bound) and takes the third
+backbone from zero to 19/20, the same cell OFT reached 17/20 on (§25) and π0.5 17/20 (§22).
+
+### 30.5 The third backbone, complete
+
+| GR00T N1.7 cell (`libero_spatial`, n = 20) | frozen | corrected | fixed / broken | p |
+|---|---|---|---|---|
+| healthy control (law running) | 18/20 | 18/20 | 1 / 1 | null |
+| rotation +0.10, rotation-only correction | 0/20 | 14/20 | 14 / 0 | 1.2×10⁻⁴ |
+| translation +0.15, translation-only correction | 2/20 | 15/20 | 13 / 0 | 2.4×10⁻⁴ |
+| gain 0.20, multiplicative law | 0/20 | 19/20 | 19 / 0 | 3.8×10⁻⁶ |
+
+Three fault families, 46 repaired, 0 broken, on a policy from a third developer with a
+third architecture, using the plant model and M identified on π0.5 and never retuned. Every
+number in OFT's row (§25) now has its GR00T counterpart.
