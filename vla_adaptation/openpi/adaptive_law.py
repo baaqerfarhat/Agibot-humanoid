@@ -35,7 +35,7 @@ OUT = np.array([0.05, 0.05, 0.05, 0.5, 0.5, 0.5])
 K_FIR = 6
 
 
-def fit_plant(log_path, lam=1e-2, mimo=False):
+def fit_plant(log_path, lam=1e-2, mimo=False, episodes=None):
     """MIMO FIR plant, identified on the NOMINAL episodes only.
 
     Each output dim is regressed on the last K_FIR+1 commands of ALL SIX inputs, not just its
@@ -59,11 +59,16 @@ def fit_plant(log_path, lam=1e-2, mimo=False):
     """
     d = json.loads(pathlib.Path(log_path).read_text())
     A = np.array(d[0]["raw_a"]); D = np.array(d[0]["raw_d"]); lens = d[0]["ep_len"]
+    # episodes: optional subset of healthy-episode indices to fit on (calibration-size
+    # ablation: how many healthy rollouts does the plant need?). None = all.
+    keep = set(range(len(lens))) if episodes is None else set(episodes)
     W = []
     for i in range(6):
         X, Y, o = [], [], 0
-        for L in lens:
+        for k, L in enumerate(lens):
             a, y = A[o:o+L], D[o:o+L, i] / OUT[i]; o += L
+            if k not in keep:
+                continue
             for t in range(K_FIR, L):
                 win = a[t-K_FIR:t+1][::-1]
                 feat = win.reshape(-1) if mimo else win[:, i]
@@ -314,6 +319,8 @@ def main():
                    help="6 comma-separated values: the estimator bias measured on healthy runs")
     p.add_argument("--estimate-only", action="store_true",
                    help="update f_hat but never apply it; isolates estimator feedback")
+    p.add_argument("--calib-episodes", default=None,
+                   help="comma-separated indices of healthy log episodes to fit the plant on (default all)")
     p.add_argument("--mimo", action="store_true",
                    help="coupled plant: fits better, extrapolates worse (see fit_plant)")
     p.add_argument("--dead", type=float, default=0.05, help="residual deadzone")
@@ -325,7 +332,10 @@ def main():
     p.add_argument("--sev", type=float, default=0.05)
     a = p.parse_args()
 
-    W = fit_plant(a.log, mimo=a.mimo)
+    calib = [int(x) for x in a.calib_episodes.split(",")] if a.calib_episodes else None
+    W = fit_plant(a.log, mimo=a.mimo, episodes=calib)
+    if calib is not None:
+        print(f"plant fitted on healthy episodes {calib} only")
     M = np.array(json.loads(a.openloop.read_text())["M"])
     M_inv = np.linalg.pinv(M)
     print(f"plant identified; cond(M) = {np.linalg.cond(M):.1f}, gamma = {a.gamma}\n")

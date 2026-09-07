@@ -337,7 +337,8 @@ result.
 
 \subsection{Fault families and severity}
 \label{sec:severity}
-Figure~\ref{fig:map} and the table give the fault-family by magnitude map.
+Figure~\ref{fig:map} and the table give the fault-family by magnitude map
+(two cells at $n=40$ in Appendix~\ref{app:map40}; constants ablation in Appendix~\ref{app:abl}).
 
 \begin{figure}[t]
 \centering
@@ -632,5 +633,52 @@ backbones without retuning.
 
 \bibliography{refs}
 \bibliographystyle{iclr2027_conference}
+
+\appendix
+\section{Ablation of the law's constants and the calibration size}
+\label{app:abl}
+Headline cell ($\pi_{0.5}$, \code{libero\_spatial}, uniform $+0.05$, rotation-only
+correction), $n=20$ paired per row, one constant changed per row from the reference
+($\gamma=0.08$, $\rho=0.15$, deadzone $0.008$, plant fitted on three healthy episodes,
+285 steps). Last column: rotation estimate at episode end (last-50-step mean) against a
+true $0.05$ on each axis.
+
+\begin{center}\small
+\begin{tabular}{lrrrrcl}
+\toprule
+setting & frozen & corrected & fixed & broken & McNemar & $\hat f_{rx},\hat f_{ry},\hat f_{rz}$ \\
+\midrule
+reference & 8/20 & \textbf{18/20} & 10 & 0 & $0.0020$ & 0.044, 0.020, 0.044 \\
+$\gamma=0.02$ ($\tfrac14\times$) & 8/20 & 17/20 & 9 & 0 & $0.0039$ & 0.036, 0.016, 0.036 \\
+$\gamma=0.32$ ($4\times$) & 7/20 & 18/20 & 11 & 0 & $0.00098$ & 0.044, 0.019, 0.044 \\
+$\rho=0.05$ ($\tfrac13\times$) & 11/20 & 14/20 & 5 & \textbf{2} & $0.45$ & 0.027, 0.011, 0.027 \\
+$\rho=0.50$ ($3\tfrac13\times$) & 8/20 & \textbf{20/20} & 12 & 0 & $0.00049$ & 0.048, 0.022, 0.049 \\
+deadzone $0$ & 8/20 & 19/20 & 11 & 0 & $0.00098$ & 0.044, 0.018, 0.044 \\
+deadzone $0.03$ ($\approx$ residual scale) & 8/20 & 17/20 & 9 & 0 & $0.0039$ & 0.031, 0.016, 0.032 \\
+plant from 1 healthy episode (75 steps) & 10/20 & 17/20 & 8 & 1 & $0.039$ & 0.027, 0.008, 0.044 \\
+plant from 2 healthy episodes & 8/20 & 17/20 & 10 & 1 & $0.012$ & 0.045, 0.021, 0.043 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The gain is flat across a $16\times$ range: it sets the length of the transient, which at a
+quarter of the reference still ends well inside a 220-step episode, and the final estimate is
+unchanged. The deadzone is flat until it reaches the residual's own scale, where it eats
+signal. The normaliser is the one constant that decides the outcome, in the direction the
+law's fixed point $f/(1+|r|^2/\rho^2)$ predicts: $\rho=0.05$ against a measured residual of
+$0.034$ puts the estimate at $55\%$ of the fault and the cell becomes a null with two
+regressions; $\rho=0.50$ removes the bias and the cell reaches $20/20$. The only setting that
+fails is the one chosen below the measured residual scale, which is the content of the
+``constants as ratios of measured scales'' rule in \S\ref{sec:method}. One healthy episode,
+75 control steps, is enough for the plant: $17/20$ with one rotation axis under-identified
+and the other two carrying the repair; two episodes recover the full estimate.
+
+\section{Recoverability-map cells at $n=40$}
+\label{app:map40}
+The two cells of \S\ref{sec:severity} that were significant only at the exact test's floor
+or just above it were rerun at $n=40$ (same configuration, initial states 45--48). Rotation
+$0.05$: $27/40\to39/40$, 12 fixed, 0 broken, $p=4.9\times10^{-4}$. Translation $0.10$:
+$30/40\to38/40$, 9 fixed, 1 broken, $p=0.021$. Every map cell that showed an effect at
+$n=20$ is individually significant; uniform $0.15$ is the superposition boundary and is not.
 
 \end{document}

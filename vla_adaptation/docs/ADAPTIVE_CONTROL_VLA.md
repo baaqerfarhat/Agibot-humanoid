@@ -2604,3 +2604,66 @@ boundary of degree (a motion-dependent fault under a constant estimate). Every o
 identified on the translation channels by the Cartesian residual with the healthy
 calibration. The draft's limitation ("that class appears only in the hardware protocol")
 is closed and replaced by these five rows.
+
+## 31. Recoverability-map cells at n = 40, and the constants ablation (added 2026-09-06)
+
+### 31.1 Rotation 0.05, the last map cell on the exact-test floor
+
+§19 had rotation 0.05 at `13/20 → 18/20, p = 0.063` — five one-way pairs, the floor.
+
+| n | frozen | corrected | fixed | broken | exact McNemar |
+|---|---|---|---|---|---|
+| 20 | 13/20 = 65% | 18/20 = 90% | 5 | 0 | 0.063 (floor) |
+| **40** | 27/40 = 68% | **39/40 = 98%** | **12** | 0 | **0.00049** |
+
+Resolved, zero regressions; the effect (+25 → +30 points) did not move. Every cell of the
+map that showed an effect at n = 20 is now individually significant except uniform 0.15,
+which is the superposition boundary (§19.3) and is not expected to be.
+
+### 31.2 Translation 0.10 at n = 40
+
+§19: `13/20 → 19/20, p = 0.031`.
+
+| n | frozen | corrected | fixed | broken | exact McNemar |
+|---|---|---|---|---|---|
+| 20 | 13/20 = 65% | 19/20 = 95% | 6 | 0 | 0.031 |
+| **40** | 30/40 = 75% | **38/40 = 95%** | 9 | 1 | **0.021** |
+
+Significant at both n, and the cell is a near-ceiling: the frozen rate rose from 65 % to
+75 % on the second twenty initial states (the ±11-point noise of §10) while the corrected
+arm stayed at 95 %, so the discordant count barely grew. One regression appears at n = 40,
+the second on `libero_spatial` in the whole record. With §31.1, every map cell that showed
+an effect at n = 20 is individually significant, and the summary of §28.2 stands.
+
+### 31.3 Ablation of the law's constants and of the calibration size
+
+Headline cell (π0.5, `libero_spatial`, uniform +0.05, rotation-only correction), n = 20
+paired per row, one constant changed per row. Reference constants: γ = 0.08, ρ = 0.15,
+deadzone 0.008, plant fitted on three healthy episodes (285 steps). The last column is the
+rotation estimate, last-50-step mean, against a true 0.05 on each axis.
+
+| setting | frozen | corrected | fixed | broken | exact McNemar | r̂x, r̂y, r̂z |
+|---|---|---|---|---|---|---|
+| **reference** | 8/20 | **18/20** | 10 | 0 | 0.0020 | 0.044, 0.020, 0.044 |
+| γ 0.02 (¼) | 8/20 | 17/20 | 9 | 0 | 0.0039 | 0.036, 0.016, 0.036 |
+| γ 0.32 (4×) | 7/20 | 18/20 | 11 | 0 | 0.00098 | 0.044, 0.019, 0.044 |
+| ρ 0.05 (⅓) | 11/20 | 14/20 | 5 | **2** | **0.45** | 0.027, 0.011, 0.027 |
+| ρ 0.50 (3⅓×) | 8/20 | **20/20** | 12 | 0 | 0.00049 | 0.048, 0.022, 0.049 |
+| deadzone 0 | 8/20 | 19/20 | 11 | 0 | 0.00098 | 0.044, 0.018, 0.044 |
+| deadzone 0.03 (≈ residual scale) | 8/20 | 17/20 | 9 | 0 | 0.0039 | 0.031, 0.016, 0.032 |
+| plant from **1** healthy episode (75 steps) | 10/20 | 17/20 | 8 | 1 | 0.039 | 0.027, 0.008, 0.044 |
+| plant from 2 healthy episodes | 8/20 | 17/20 | 10 | 1 | 0.012 | 0.045, 0.021, 0.043 |
+
+**Reading.** The gain is flat across a 16× range: γ only sets how many steps the transient
+takes (a quarter gain still converges well inside a 220-step episode), and the estimate at
+the end is the same. The deadzone is flat until it reaches the residual's own scale, where it
+starts eating signal (estimate 0.031 against 0.044) and costs one episode. The normaliser is
+the one constant that decides the outcome, in exactly the direction §12's derivation
+says: the legacy law's fixed point is f/(1 + |r|²/ρ²), so ρ = 0.05 against a residual of
+0.034 puts the estimate at 0.027 — 55 % of the fault — and the cell drops to a null with two
+regressions; ρ = 0.50 removes the bias (0.048) and the cell reaches 20/20. **This is the
+"measure before setting constants" rule with its price tag:** the only setting that fails is
+the one chosen below the measured residual scale. On calibration size, **one healthy episode
+is enough for the plant** — 17/20 from 75 steps of healthy motion, with r̂x under-identified
+at 0.027 and the result carried by the other two axes; two episodes recover the full
+estimate. The plant needs seconds of healthy data, not a dataset.
