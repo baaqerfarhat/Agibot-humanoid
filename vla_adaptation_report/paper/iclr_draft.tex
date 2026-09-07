@@ -428,15 +428,13 @@ instead of $y\approx a$ is the whole difference.
 
 Every fault above enters at the action interface. J-PARC's enter in the actuator, where
 the fault-to-motion map depends on configuration through the Jacobian. We inject that
-class in the MuJoCo model of the LIBERO Panda, below the operational-space controller:
-a constant joint torque (a payload or a gravity-compensation error), added joint friction,
-and a joint lock. Magnitudes were measured first: at the elbow, 5\,N\,m leaks through the
-controller as an 8--9\,cm drift over 40 steps whether or not the arm is commanded (an
-additive fault from below), while a $\pm0.05$\,rad lock and $+2.0$ friction do nothing
-while holding and remove 3--10\,cm of commanded motion (a loss of effectiveness from
-below). An estimate-only probe identifies every one of them on the translation channels
-and nowhere else, the lock at 15--23 healthy-phantom standard deviations. Paired cells,
-$\pi_{0.5}$, \code{libero\_spatial}, translation corrected, healthy phantom subtracted:
+class in the MuJoCo model of the LIBERO Panda, below the operational-space controller: a
+constant elbow torque (a payload or gravity-compensation error; 5\,N\,m leaks through the
+controller as an 8--9\,cm drift over 40 steps, commanded or not), added elbow friction, and
+an elbow lock (both invisible while holding, removing 3--10\,cm of commanded motion). An
+estimate-only probe identifies each on the translation channels and nowhere else, the lock
+at 15--23 healthy-phantom standard deviations. Paired cells, $\pi_{0.5}$,
+\code{libero\_spatial}, translation corrected, healthy phantom subtracted:
 
 \begin{center}\small
 \begin{tabular}{lrrrrrc}
