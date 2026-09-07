@@ -2578,3 +2578,29 @@ constraint no command overcomes. Same residual, same estimate, opposite outcome,
 by whether the fault is an *input* the plant still responds to. That is the precise form
 of the "necessary, not sufficient" statement in the lock paragraph, now with its positive
 half. The +10 cell (clip 0.50) follows.
+
+**Elbow friction +10 (clip 0.50): not a claim.** `11/20 → 14/20`, 6 fixed, **3 broken**,
+`p = 0.51`. The milder friction leaves the frozen policy at half and the law both helps
+and hurts. The estimate spread (sd 0.09 on x and z) is the torque cell's again, and the
+mechanism is specific to a loss of effectiveness from below: friction removes motion only
+*while the joint moves*, and an additive estimate that was right during a reach is a
+push in the wrong direction the moment the arm pauses to grasp. At +20 the deadband is
+present at every speed and the constant estimate is right more often than wrong (0 → 8,
+no regression); at +10 it is right about as often as it is wrong. This is where a
+velocity-dependent (multiplicative, §22) model of the fault would belong, and it is not run.
+
+### 29.4 Summary of the joint-level cells
+
+| fault (elbow, below the controller) | frozen | corrected | fixed / broken | p | reading |
+|---|---|---|---|---|---|
+| torque bias 5 N·m, n = 40 | 20/40 | **32/40** | 15 / 3 | **0.0075** | repaired; Jacobian makes the estimate state-dependent |
+| friction +4 | 20/20 | 20/20 | 0 / 0 | ceiling | policy tolerates it; law harmless |
+| friction +10 (clip 0.5) | 11/20 | 14/20 | 6 / 3 | 0.51 | motion-dependent fault vs constant estimate |
+| friction +20 | 0/20 | **8/20** | 8 / 0 | **0.0078** | repaired from zero |
+| lock ±0.05 rad | 0/20 | 0/20 | 0 / 0 | — | identified, not an input: not repairable |
+
+Two of five cells repaired and claimed; one ceiling; one boundary of kind (rank); one
+boundary of degree (a motion-dependent fault under a constant estimate). Every one is
+identified on the translation channels by the Cartesian residual with the healthy
+calibration. The draft's limitation ("that class appears only in the hardware protocol")
+is closed and replaced by these five rows.

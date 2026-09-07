@@ -256,8 +256,7 @@ $M(a_t+f') + b' = M a_t + Mf + (b - b') + b' = M(a_t + f) + b$.
 \end{proof}
 \noindent Consequently the healthy phantom $b$ must come from outside the episode (we measure
 it on fault-free rollouts), and a fault that switches on mid-episode is \emph{better} posed
-than one present from the start: $b$ is identified before onset and $f$ after. Mid-episode
-onset is a well-posedness condition, not a robustness flourish.
+than one present from the start: $b$ is identified before onset and $f$ after.
 
 \begin{proposition}[Repairability]
 \label{prop:repair}
@@ -273,9 +272,7 @@ and without a repair trial.
 turned out to depend on. It predicts LIBERO (a reach with centimetres of margin; $\sigma$ of
 $0.019$\,cm per step; repair), ALOHA with continuous adaptation ($\mu<0.5$\,cm;
 $\sigma = 0.43$\,cm; no repair), and ALOHA with the held estimate ($\sigma=0$; repair)
-(\S\ref{sec:aloha}). A stronger, contraction-based recovery bound would need the composite
-policy--controller--robot map to contract on a task tube, which is not established for a
-contact-rich task, and we do not claim it.
+(\S\ref{sec:aloha}).
 
 \section{Experiments}
 \label{sec:exp}
@@ -442,7 +439,7 @@ at 15--23 healthy-phantom standard deviations. Paired cells, $\pi_{0.5}$,
 joint fault (elbow) & $n$ & frozen & corrected & fixed & broken & McNemar \\
 \midrule
 torque bias 5\,N\,m & 40 & 20/40 & \textbf{32/40} & 15 & 3 & $0.0075$ \\
-friction $+4.0$ & 20 & 20/20 & 20/20 & 0 & 0 & ceiling \\
+friction $+10$ & 20 & 11/20 & 14/20 & 6 & 3 & $0.51$ \\
 friction $+20$ & 20 & 0/20 & \textbf{8/20} & 8 & 0 & $0.0078$ \\
 lock $\pm0.05$\,rad & 20 & 0/20 & 0/20 & 0 & 0 & --- \\
 \bottomrule
@@ -453,7 +450,9 @@ The torque bias is repaired, at a cost the Cartesian cells never paid: three reg
 in forty. Its estimate's across-episode spread is 0.075, four times any Cartesian fault's,
 because the offset the residual reports is right for the configuration it was measured in
 and wrong for the one the arm moves into, and a tracking law follows that with a lag. Heavy
-friction, which zeros the policy, is repaired to $40\%$ with no regression. The lock is
+friction, which zeros the policy, is repaired to $40\%$ with no regression; milder friction
+is not a claim ($p=0.51$): friction acts only while the joint moves, so an estimate that
+was right during a reach pushes the wrong way when the arm pauses to grasp. The lock is
 identified, corrected and not repaired: the estimate converges within 30 steps on every
 episode, reading the same loss-of-motion signature as the friction cell, and the correction
 changes nothing. The difference is physical: friction is a force the controller overcomes
@@ -563,9 +562,8 @@ one result this paper does not yet contain.
 \label{sec:fail}
 
 \textbf{Invisible faults.} A proprioceptive bias and a wrist-camera misalignment both
-damage the policy ($6/12$ for the camera shift) and neither reaches the residual
-(separation $0.004$ against $0.049$ for an action fault). The method sees the action
-interface and nothing upstream of it.
+damage the policy and neither reaches the residual (separation $0.004$ against $0.049$ for
+an action fault): the method sees the action interface and nothing upstream of it.
 
 \textbf{A policy that cannot do the task.} \code{libero\_90} fails 14 of 20 sampled tasks
 unfaulted. Correcting the fault restores nothing because nothing was lost to it.
@@ -605,9 +603,9 @@ plant---five of our own failures came from not doing so.
 
 A frozen VLA can be repaired within one episode by six numbers at its action interface,
 given a plant model and a sensitivity matrix identified once on healthy data. The evidence
-is paired, controlled and broad; the calibration transfers across suites and three
-backbones; the two conditions that govern success are measurable in advance; the failures
-are named. The result the paper still owes is the one on a real robot.
+is paired and broad, the calibration transfers across suites and three backbones, the two
+conditions that govern success are measurable in advance, and the failures are named. The
+result the paper still owes is the one on a real robot.
 
 \subsection*{AI use statement}
 Generative AI (Claude, Anthropic) was used throughout this work as a coding and writing
