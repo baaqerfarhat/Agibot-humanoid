@@ -2705,3 +2705,15 @@ backbone from zero to 19/20, the same cell OFT reached 17/20 on (§25) and π0.5
 Three fault families, 46 repaired, 0 broken, on a policy from a third developer with a
 third architecture, using the plant model and M identified on π0.5 and never retuned. Every
 number in OFT's row (§25) now has its GR00T counterpart.
+
+### 30.6 Videos
+
+`results/phase05/adaptive_vs_frozen_groot.mp4` (rotation +0.10, rotation-only correction)
+and `adaptive_vs_frozen_groot_translation.mp4` (translation +0.15, translation-only
+correction), rendered under the benchmark condition (§28.3) with `--only-repaired
+--max-clips 4` from the pairs the stored runs fixed, distinct tasks first, every final
+frame checked. Rotation: 4 clips from 5 candidates (one corrected re-run failed), estimates
+0.06–0.09 against 0.10, the frozen gripper approaching tilted in every clip. Translation:
+4 clips from 4 candidates, estimates x 0.13–0.22, y 0.08–0.10, z 0.16–0.27 against 0.15
+(x and z carry the translation phantom on top of the fault), the frozen gripper landing
+past the bowl in every clip. 48 s each.
