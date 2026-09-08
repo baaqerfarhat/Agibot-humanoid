@@ -2985,7 +2985,8 @@ different objects because the scene was redrawn per reset. Re-rendered 2026-09-0
 env generator reseeded (§32.15): **both panels now show the same scene, object and task
 language** (pear, squash, ...), four clips from six candidate seeds, the frozen panel
 timing out at 720 steps with the hand beside the plate and the corrected panel finishing
-in 166–211 steps.
+in 166–211 steps. The file is re-encoded with the letterbox of the 256-pixel egocentric render
+cropped out (header bars kept, same frames, CRF 26): 4 MB instead of 36.
 
 ### 32.13 The null: the law on a healthy humanoid
 
