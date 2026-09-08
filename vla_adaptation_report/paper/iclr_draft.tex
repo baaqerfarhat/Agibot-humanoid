@@ -29,10 +29,10 @@ and no learning across episodes. On four LIBERO suites with a frozen $\pi_{0.5}$
 episodes go from $23\%$ to $65\%$ success (exact McNemar $p = 6.1\times10^{-13}$, $n=120$),
 with every suite individually significant; across 690 paired episodes spanning additive,
 structured, time-varying and multiplicative faults the correction fixes 275 episodes and
-breaks 7. The same law and the \emph{same} calibration repair two further backbones from
-two other developers (OpenVLA-OFT, NVIDIA GR00T N1.7) and, in joint space, two further
-manipulators: a bimanual ALOHA and a humanoid (Fourier GR1 under GR00T N1.5, $7\%\to70\%$,
-its healthy rate). A tuned integral
+breaks 7. The same law repairs two further backbones from two other developers (OpenVLA-OFT,
+NVIDIA GR00T N1.7) with the \emph{same} calibration, and, in joint space with a calibration
+of their own from a few healthy rollouts, two further manipulators: a bimanual ALOHA and a
+humanoid (Fourier GR1 under GR00T N1.5, $4\%\to70\%$, its healthy rate). A tuned integral
 baseline without the plant model reaches $35\%$ where the method reaches $95\%$. We state the
 two conditions the evidence supports---identifiability, and a repairability criterion
 comparing the task's spatial margin against the correction's variation---and the failure
@@ -67,17 +67,19 @@ tasks, and a residual that carries model error as well as the fault. Our contrib
 \item \textbf{A single-episode repair loop for frozen VLAs} (\S\ref{sec:method}) needing
   only a plant model and a sensitivity matrix identified on healthy data, both properties of
   the robot rather than of the policy or the task. The estimate resets every episode and
-  reconverges in about 15 control steps.
+  reconverges within a few tens of control steps.
 \item \textbf{Evidence at scale, paired} (\S\ref{sec:exp}): four suites, three backbones, three
   manipulators, four fault families, three severities and four time profiles, evaluated
-  episode-for-episode against the frozen policy with exact McNemar tests, a healthy-frozen
-  control on every cell, and 690 paired episodes in aggregate.
+  episode-for-episode against the frozen policy with exact McNemar tests wherever the
+  simulator repeats a scene (unpaired Fisher tests on the humanoid benchmark, which
+  redraws its scene per reset), a healthy control on every cell, and 690 paired episodes
+  in aggregate.
 \item \textbf{Two conditions, stated as propositions} (\S\ref{sec:theory}): a constant input
   fault and a constant output bias are not separable within one episode, so the healthy
   bias must be measured outside it; and repair succeeds when the correction's
   within-episode variation fits inside the task's spatial margin, both quantities being
-  measurable before any repair attempt. The second predicts every outcome on a second
-  manipulator, including the one continuous adaptation fails.
+  measurable before any repair attempt. The second predicts every outcome on two further
+  manipulators, including the ones continuous adaptation fails.
 \item \textbf{The boundary} (\S\ref{sec:fail}): what the method cannot see (sensor and camera
   faults), cannot fix (a policy that fails the task unfaulted), and gets wrong (one healthy
   episode in twenty on one backbone, caused by a sustained phantom).
@@ -114,12 +116,12 @@ repairable.
 \section{Setting}
 \label{sec:setting}
 
-A frozen policy $\pi_\omega$ emits, at 20\,Hz (LIBERO) or 50\,Hz (ALOHA), an action chunk
-from which the controller consumes $a_t\in\mathbb{R}^d$ per step. For LIBERO $a_t$ is a
-six-dimensional Cartesian increment plus gripper, executed by an operational-space
-controller; for ALOHA it is fourteen absolute joint targets executed by position servos.
-The measured state $y_t$ is the end-effector increment (LIBERO) or the joint position
-(ALOHA).
+A frozen policy $\pi_\omega$ emits, at 20\,Hz (LIBERO, GR1) or 50\,Hz (ALOHA), an action
+chunk from which the controller consumes $a_t\in\mathbb{R}^d$ per step. For LIBERO $a_t$ is
+a six-dimensional Cartesian increment plus gripper, executed by an operational-space
+controller; for ALOHA it is fourteen and for the GR1 humanoid twenty-nine absolute joint
+targets executed by position servos. The measured state $y_t$ is the end-effector
+increment (LIBERO) or the joint position (ALOHA, GR1).
 
 A fault corrupts the executed action:
 \[
@@ -160,7 +162,9 @@ $d\times d$ sensitivity matrix measured once by open-loop replay: a recorded hea
 sequence is replayed with and without a per-axis probe, and the mean motion difference per
 unit probe gives each column. On the LIBERO plant $M$ is diagonal-dominant with
 $\mathrm{cond}(M)=3.0$ and is magnitude independent to within $14\%$ between probes of
-$0.02$ and $0.05$; on ALOHA $M\approx I$ with $\mathrm{cond}(M)=7.3$.
+$0.02$ and $0.05$; on ALOHA $M\approx I$ with $\mathrm{cond}(M)=7.3$; on the GR1 the
+arm block is $0.99\,I$ by a direct step response from a held pose (the replay probe is
+contaminated on an arm that touches objects during the replay).
 
 \subsection{The adaptive law}
 \label{sec:law}
@@ -186,17 +190,23 @@ within the episode).
 Every threshold in \eqref{eq:law} is compared against a quantity with a scale: $\delta$
 against the residual norm of the healthy plant, $\rho$ against the residual norm under the
 fault, $\kappa$ against the expected fault, the excitation gate of \S\ref{sec:gain} against
-the regressor's magnitude. Five silent failures in this work came from carrying a constant
+the regressor's magnitude. Six silent failures in this work came from carrying a constant
 tuned on one plant to another---a deadzone larger than the residual it gated, a normaliser
-that attenuated every ALOHA update to $6\%$, a projection bound that coincided with the true
-fault and was read as a measurement. The rule that follows is mechanical: print the scale,
+that attenuated every ALOHA update to $6\%$, a normaliser fed the residual of joints the law
+was not estimating, a projection bound that coincided with the true fault and was read as a
+measurement. The rule that follows is mechanical: print the scale,
 then set the constant as a multiple of it, on every new plant.
 \end{remark}
 
-The fixed point of \eqref{eq:law} is attenuated by $1/(1+\|Mf\|^2/\rho^2)$; at the measured
-$\|r\|$ this is $5\%$, matching the observed $2\%$ shortfall of the estimate, and an
-innovation-normalised variant that removes it was measured to be indistinguishable
-($0.12\sigma$) at twice the variance. We keep \eqref{eq:law}.
+The norms in \eqref{eq:law} are taken over the channels being corrected: on the humanoid
+the twelve unmodelled hand joints carry three times the arm's residual, and a norm over all
+joints attenuated every arm update until the estimate settled at $13\%$ of the fault. The
+fixed point of \eqref{eq:law} is attenuated by $1/(1+\|Mf\|^2/\rho^2)$; at the measured
+$\|r\|$ on LIBERO this is $5\%$, matching the observed $2\%$ shortfall, and an
+innovation-normalised variant ($e_t = M^{-1}(r_t - M\fhat_t)$, unbiased fixed point) was
+indistinguishable there ($0.12\sigma$) at twice the variance. We keep \eqref{eq:law} on
+LIBERO and ALOHA and use the innovation form on the humanoid, where the fault is three
+times the healthy residual and the bias would be $50\%$.
 
 \subsection{Which channels to correct}
 \label{sec:channels}
@@ -268,23 +278,23 @@ $\sigma = 0.43$\,cm; no repair), ALOHA with the held estimate ($\sigma=0$; repai
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.92\linewidth]{fig_convergence.pdf}
-\caption{The fault estimate within one episode, from zero. Left: LIBERO spatial with a
-frozen $\pi_{0.5}$ under a uniform $+0.05$ fault on all six action dimensions; the three
-rotation channels (median and interquartile range over 20 episodes) with the correction on
-rotation only: two reach $0.04$ by step 60 and the third $0.024$, all still rising; at
-episode end the separation test puts them at $0.047$ to $0.049$ (\S\ref{sec:method}). Right: ALOHA
-transfer-cube with a frozen $\pi_0$ under a $+0.02$\,rad offset on the left arm's six
-joints; the joint-space estimate in the identification episode settles at $0.0183$ to
-$0.0191$\,rad, $92$ to $96\%$ of the true offset, and is then held for the remaining
-episodes (\S\ref{sec:aloha}).}
+\includegraphics[width=\linewidth]{fig_convergence.pdf}
+\caption{The fault estimate within one episode, from zero, on three robots. Left: LIBERO
+spatial, $\pi_{0.5}$, uniform $+0.05$ fault, rotation channels (median and interquartile
+range over 20 episodes): two reach $0.04$ by step 60, the third $0.024$, all still rising;
+at episode end the separation test puts them at $0.047$--$0.049$. Middle: ALOHA
+transfer-cube, $\pi_0$, $+0.02$\,rad on the left arm's six joints; the identification
+episode settles at $92$--$96\%$ of the offset, then held (\S\ref{sec:aloha}). Right: GR1
+humanoid, GR00T N1.5, $+0.10$\,rad on the seven right-arm joints; $90$--$112\%$ within 100
+steps, then held (\S\ref{sec:gr1}).}
 \label{fig:convergence}
 \end{figure}
 
 \subsection{Protocol}
 
 \textbf{Paired design.} Both arms of every cell run the same (task, initial state, seed)
-episodes and differ only in whether the correction is applied; Figure~\ref{fig:convergence}
+episodes and differ only in whether the correction is applied (the humanoid benchmark
+redraws its scene per reset and is the one unpaired comparison, \S\ref{sec:gr1}); Figure~\ref{fig:convergence}
 shows what the corrected arm does inside one episode. We report exact McNemar tests
 on the discordant pairs; unpaired tests on these data are conservative and, worse, hide the
 regression count. \textbf{Controls.} Every cell has a healthy-frozen control on the same
@@ -294,7 +304,8 @@ first. \textbf{Noise.} $\pi_{0.5}$ samples its action flow; the identical condit
 $13/20$, $13/20$, $15/20$ on three runs, so $\pm10$ points at $n=20$ is free variation and we
 quote intervals. \textbf{Calibration.} Plant and $M$ were identified once on
 \code{libero\_spatial} healthy rollouts with $\pi_{0.5}$ driving and are used unchanged for
-every LIBERO suite and for OpenVLA-OFT; ALOHA has its own, from eight healthy rollouts.
+every LIBERO suite and for OpenVLA-OFT; ALOHA has its own from eight healthy rollouts, the
+GR1 from six.
 
 \subsection{Four suites}
 \label{sec:headline}
@@ -540,7 +551,7 @@ identify episode 0, then hold & 64/90 & 4/90 & \textbf{21/30} & $8.9\times10^{-1
 \end{tabular}
 \end{center}
 
-Held, the estimate ($83$--$118\%$ of the fault per joint) takes the humanoid from $7\%$ to
+Held, the estimate ($83$--$118\%$ of the fault per joint) takes the humanoid from $4\%$ to
 its healthy rate, and on a healthy arm the law holds a phantom of at most $0.012$\,rad (one joint; under
 $0.006$ on the rest) and changes nothing ($19/30$ against $18/30$); updating, the same estimate reaches a third of it, above frozen and
 significantly below healthy. Proposition~\ref{prop:repair} decides the
@@ -586,7 +597,7 @@ we mitigated it with pairing and $n=40$ where it mattered, not by more seeds. We
 propositions, not a recovery theorem; a contraction argument on the composite map is the
 natural next step and requires assumptions we could not verify on contact-rich tasks. And
 every constant in the law is a ratio of a measured scale that must be re-measured on a new
-plant---five of our own failures came from not doing so.
+plant---six of our own failures came from not doing so.
 
 \section{Conclusion}
 

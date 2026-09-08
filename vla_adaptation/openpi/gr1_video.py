@@ -1,7 +1,7 @@
 """Side-by-side GR1 humanoid video: the same seed, frozen-faulted vs corrected.
-Same style as compare_video.py / aloha_video.py: the same seed in both panels, though the
-simulator randomises objects and placement at every reset (Sec 32.10), so the two panels
-show different draws of the scene, the task language and the fault on the frame, the live
+Same style as compare_video.py / aloha_video.py: the same seed in both panels, and with the
+env rng reseeded per reset (gr1_adapt.GR1.reset, Sec 32.15) the same scene and object too;
+the task language and the fault on the frame, the live
 joint-space estimate on the corrected panel, and with --only-repaired only pairs the frozen
 policy fails and the corrected run succeeds on this render. Frames are the benchmark's own
 256x256 egocentric render; nothing the policy sees is changed.

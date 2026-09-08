@@ -53,7 +53,14 @@ class GR1:
         atexit.register(self.env.close)
 
     def reset(self, ep):
-        obs, _ = self.env.reset(seed=self.seed + ep)
+        # The wrapper seeds only np.random; robocasa draws the scene (object, placement,
+        # task language, textures) from the env's OWN numpy Generator, which advances with
+        # every reset. Reseeding it here makes reset(seed) repeatable within and across
+        # processes (Sec 32.15), so two arms on the same seed see the same scene.
+        import random
+        seed = self.seed + ep
+        self.env.unwrapped.env.rng = np.random.default_rng(seed); random.seed(seed)
+        obs, _ = self.env.reset(seed=seed)
         return obs
 
     @staticmethod
@@ -175,9 +182,8 @@ def main():
     ap.add_argument("--law", choices=["legacy", "innov"], default="legacy")
     ap.add_argument("--with-healthy", action="store_true",
                     help="also run a HEALTHY arm (no fault, no correction) on the same seeds in the same process. "
-                         "The simulator randomises objects and their placement at every reset (Sec 32.10), so "
-                         "the arms are UNPAIRED samples of the scene distribution; test them with Fisher exact, "
-                         "and measure the ceiling with the same number of episodes.")
+                         "Runs the healthy arm on the same seeds; with the env rng reseeded per reset (Sec 32.15) "
+                         "all arms see identical scenes and the comparison is paired.")
     ap.add_argument("--hold-stat", choices=["last", "mean50"], default="last",
                     help="what identify-then-hold carries: the final estimate, or the mean of the last 50 steps "
                          "(the record's statistic; the final value on a contact-rich episode is one contact spike away)")

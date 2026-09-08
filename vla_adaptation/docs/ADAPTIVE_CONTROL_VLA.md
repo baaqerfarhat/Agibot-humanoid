@@ -2980,9 +2980,12 @@ the corrected panel applying the held estimate (`0.103, 0.102, 0.102, 0.101, 0.1
 0.090` rad on the seven right-arm joints, identified in one episode) from step 0. Four of
 six candidate seeds kept (`--only-repaired`): the frozen panel times out at 720 steps in
 every clip — reaching past the plate, or turning away from it — and the corrected panel
-finishes in 166–182 steps. Because the simulator redraws the scene at every reset, the two
-panels of a clip show different objects (croissant, bell pepper, can, tomato) and each panel
-carries its own task language; the pairing is by seed, not by scene, and the frame says so.
+finishes in 166–182 steps. First render (2026-09-07): the two panels of a clip showed
+different objects because the scene was redrawn per reset. Re-rendered 2026-09-08 with the
+env generator reseeded (§32.15): **both panels now show the same scene, object and task
+language** (pear, squash, ...), four clips from six candidate seeds, the frozen panel
+timing out at 720 steps with the hand beside the plate and the corrected panel finishing
+in 166–211 steps.
 
 ### 32.13 The null: the law on a healthy humanoid
 
@@ -3008,3 +3011,16 @@ the held arm drifts into whatever the redrawn scene puts under it, and the torqu
 drift. A clean probe would need a free-space pose away from the table and a fixed scene;
 neither is available from the benchmark wrapper without modifying it. Left here as a
 measured dead end; the humanoid section stands on the action-interface offset.
+
+### 32.15 Pairing restored: the scene comes from the env's own generator
+
+The scene randomness of §32.10 is `env.rng`, a numpy `Generator` the tabletop environment
+creates once and advances at every `_load_model`; the wrapper's `np.random.seed` never
+touches it. Reseeding it before each reset (`env.unwrapped.env.rng =
+np.random.default_rng(seed)`, plus `random.seed`) makes `reset(seed)` repeat exactly: 0 of
+86 bodies move between two seed-100 resets, the object and the task language are the same,
+and seed 101 still differs in 45 bodies. `gr1_adapt.GR1.reset` now does this, so every
+humanoid run from here is **paired** in the LIBERO sense and the video's two panels show the
+same task and object. §32.10–32.13 stand as stated (unpaired); the plate-to-plate cell is
+being rerun paired (three arms, seeds 100–129) so the humanoid table can carry McNemar
+counts like every other table, and the tray-to-plate chain runs paired from the start.
