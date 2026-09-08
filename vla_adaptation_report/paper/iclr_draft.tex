@@ -45,9 +45,9 @@ that is identified but cannot be cancelled from the action interface.
 Vision--language--action models map images and a language instruction to robot actions and
 are trained on demonstrations collected from a particular robot in a particular state of
 repair. Deployed, they are frozen. The robot is not: tool frames drift, calibrations go
-stale, joints lose effectiveness. Each of these changes the map from the policy's action to
-the robot's motion, and the policy---which never observes its own commanded motion
-against the achieved one---has no mechanism to notice.
+stale, joints lose effectiveness. Each changes the map from the policy's action to the
+robot's motion, and the policy, which never compares commanded motion with achieved
+motion, has no mechanism to notice.
 
 The standard remedies are to fine-tune on faulted data, which requires labelled faults and
 the compute to update billions of parameters, or to learn a residual correction offline
@@ -208,10 +208,8 @@ used across the LIBERO suites, rotation identifies ($+0.049$ against a true $0.0
 translation does not (sign-wrong), so the headline correction is restricted to rotation.
 That restriction is a property of \emph{that fault}, not of the channel: on a translation-only
 fault the same law identifies translation at $79\%$--$106\%$ and repairs it
-(\S\ref{sec:severity}). What makes the uniform fault different is measurable: single-axis
-responses superpose at $\pm0.02$ and stop superposing at $\pm0.05$, asymmetrically ($x$:
-$0.07$ in one direction, $0.78$ in the other), the signature of a contact or joint limit
-reached only when all six axes are perturbed together.
+(\S\ref{sec:severity}). The uniform fault differs because single-axis responses stop superposing at
+$\pm0.05$, the signature of a contact or joint limit reached only when all six axes move.
 
 \subsection{Multiplicative faults}
 \label{sec:gain}
@@ -270,7 +268,7 @@ $\sigma = 0.43$\,cm; no repair), ALOHA with the held estimate ($\sigma=0$; repai
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{fig_convergence.pdf}
+\includegraphics[width=0.92\linewidth]{fig_convergence.pdf}
 \caption{The fault estimate within one episode, from zero. Left: LIBERO spatial with a
 frozen $\pi_{0.5}$ under a uniform $+0.05$ fault on all six action dimensions; the three
 rotation channels (median and interquartile range over 20 episodes) with the correction on
@@ -333,7 +331,7 @@ Figure~\ref{fig:map} and the table give the fault-family by magnitude map
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{fig_map.pdf}
+\includegraphics[width=0.92\linewidth]{fig_map.pdf}
 \caption{The recoverability map: frozen versus corrected success on LIBERO spatial, $n=20$
 paired episodes per cell, correction on the channels each family's separation test
 supports (rotation for the rotation and uniform families, translation for translation).
@@ -521,9 +519,9 @@ centimetres of jitter.
 
 \subsection{A humanoid}
 \label{sec:gr1}
-Fourier GR1 upper body (two 7-joint arms, two 6-joint dexterous hands, a 3-joint waist;
-29 absolute joint targets at 20\,Hz) in NVIDIA's RoboCasa GR1 tabletop simulator, driven
-zero-shot by GR00T N1.5, for which GR1 is a pretrained embodiment. Plant from six healthy
+Fourier GR1 upper body (two 7-joint arms, two 6-joint dexterous hands, a waist; 29
+absolute joint targets at 20\,Hz) in NVIDIA's RoboCasa GR1 simulator, driven zero-shot by
+GR00T N1.5, for which GR1 is a pretrained embodiment. Plant from six healthy
 episodes ($R^2\ge0.998$ on the arm), $M$ by direct step response ($0.99\,I$ on the arm
 block; the replay probe of \S\ref{sec:aloha} is contaminated on an arm in contact),
 constants from the measured residual. A $+0.10$\,rad offset on the working arm zeros the
@@ -548,13 +546,7 @@ the scheme on the third manipulator as on the second.
 
 \subsection{Hardware}
 \label{sec:hardware}
-
-On logs from an X2 humanoid running a learned box-pickup policy, a real actuator-authority
-fault (stiffness, damping and feedforward scaled together, $0.1$--$1.3$ across 134
-rollouts) is invisible in joint position and recoverable in effort ($r=+0.84$); the plant
-is run-varying on load-bearing joints, so calibration must be within-run and in motion; the
-detectability floor is $0.5$--$1.3^\circ$ of joint offset. The paired repair experiment on
-the robot is pending robot time and is the one result this paper does not yet contain.
+The X2 humanoid protocol (a real actuator-authority fault in 134 logged rollouts, invisible in position, recoverable in effort) is in Appendix~\ref{app:hw}; the paired repair on the robot is pending robot time and is the one result this paper does not yet contain.
 
 \section{What does not work, and what was wrong}
 \label{sec:fail}
@@ -597,10 +589,10 @@ plant---five of our own failures came from not doing so.
 \section{Conclusion}
 
 A frozen VLA can be repaired within one episode by six numbers at its action interface,
-given a plant model and a sensitivity matrix identified once on healthy data. The evidence
-is paired and broad, the calibration transfers across suites and three backbones, the two
-conditions that govern success are measurable in advance, and the failures are named. The
-result the paper still owes is the one on a real robot.
+given a plant model and a sensitivity matrix identified once on healthy data; the evidence is
+paired and broad, the calibration transfers across suites, backbones and manipulators, the
+two conditions that govern success are measurable in advance, and the failures are named.
+The result the paper still owes is the one on a real robot.
 
 \subsection*{AI use statement}
 Generative AI (Claude, Anthropic) was used throughout this work as a coding and writing
@@ -666,6 +658,15 @@ fails is the one chosen below the measured residual scale, which is the content 
 ``constants as ratios of measured scales'' rule in \S\ref{sec:method}. One healthy episode,
 75 control steps, is enough for the plant: $17/20$ with one rotation axis under-identified
 and the other two carrying the repair; two episodes recover the full estimate.
+
+\section{Hardware protocol on the X2 humanoid}
+\label{app:hw}
+On logs from an X2 humanoid running a learned box-pickup policy, a real actuator-authority
+fault (stiffness, damping and feedforward scaled together, $0.1$--$1.3$ across 134
+rollouts) is invisible in joint position and recoverable in effort ($r=+0.84$); the plant
+is run-varying on load-bearing joints, so calibration must be within-run and in motion; the
+detectability floor is $0.5$--$1.3^\circ$ of joint offset. The paired repair experiment on
+the robot is pending robot time and is the one result this paper does not yet contain.
 
 \section{Recoverability-map cells at $n=40$}
 \label{app:map40}
