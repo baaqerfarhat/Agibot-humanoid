@@ -30,8 +30,9 @@ episodes go from $23\%$ to $65\%$ success (exact McNemar $p = 6.1\times10^{-13}$
 with every suite individually significant; across 690 paired episodes spanning additive,
 structured, time-varying and multiplicative faults the correction fixes 275 episodes and
 breaks 7. The same law and the \emph{same} calibration repair two further backbones from
-two other developers (OpenVLA-OFT, NVIDIA GR00T N1.7) and, in joint space, a second
-manipulator (bimanual ALOHA). A tuned integral
+two other developers (OpenVLA-OFT, NVIDIA GR00T N1.7) and, in joint space, two further
+manipulators: a bimanual ALOHA and a humanoid (Fourier GR1 under GR00T N1.5, $7\%\to70\%$,
+its healthy rate). A tuned integral
 baseline without the plant model reaches $35\%$ where the method reaches $95\%$. We state the
 two conditions the evidence supports---identifiability, and a repairability criterion
 comparing the task's spatial margin against the correction's variation---and the failure
@@ -67,7 +68,7 @@ tasks, and a residual that carries model error as well as the fault. Our contrib
   only a plant model and a sensitivity matrix identified on healthy data, both properties of
   the robot rather than of the policy or the task. The estimate resets every episode and
   reconverges in about 15 control steps.
-\item \textbf{Evidence at scale, paired} (\S\ref{sec:exp}): four suites, three backbones, two
+\item \textbf{Evidence at scale, paired} (\S\ref{sec:exp}): four suites, three backbones, three
   manipulators, four fault families, three severities and four time profiles, evaluated
   episode-for-episode against the frozen policy with exact McNemar tests, a healthy-frozen
   control on every cell, and 690 paired episodes in aggregate.
@@ -202,8 +203,7 @@ innovation-normalised variant that removes it was measured to be indistinguishab
 
 The separation test---the estimate under a fault minus the estimate on matched healthy
 episodes---is the only evidence of identification we accept; a raw $\fhat$ carries the plant
-phantom and cannot distinguish identification from bias (this standard, applied to our own
-multiplicative law, retracted a claim we had called decisive). For the uniform six-axis fault
+phantom and cannot distinguish identification from bias. For the uniform six-axis fault
 used across the LIBERO suites, rotation identifies ($+0.049$ against a true $0.050$) and
 translation does not (sign-wrong), so the headline correction is restricted to rotation.
 That restriction is a property of \emph{that fault}, not of the channel: on a translation-only
@@ -232,15 +232,6 @@ parameters: regressing on the instantaneous command instead of $\phi_i$ produced
 phantom loss of effectiveness on a \emph{healthy} robot, an intercept made it worse, and the
 derived regressor shrank the phantom ninefold and took the $x$-channel separation from
 $1.4\sigma$ to $18\sigma$.
-
-\subsection{Identify, then hold}
-\label{sec:hold}
-
-On a task whose spatial margin is smaller than the correction's within-episode variation,
-continuous adaptation fails even when its mean is inside the margin (\S\ref{sec:aloha}). The
-scheme the evidence supports is to adapt during one sacrificial episode and hold the
-estimate thereafter: a persistent hardware fault gets a persistent estimate, at the cost of
-one episode, which is what a calibration procedure costs anyway.
 
 \section{Two conditions}
 \label{sec:theory}
@@ -271,8 +262,8 @@ and without a repair trial.
 \noindent This is an empirical proposition, not a theorem: it states the quantity the data
 turned out to depend on. It predicts LIBERO (a reach with centimetres of margin; $\sigma$ of
 $0.019$\,cm per step; repair), ALOHA with continuous adaptation ($\mu<0.5$\,cm;
-$\sigma = 0.43$\,cm; no repair), and ALOHA with the held estimate ($\sigma=0$; repair)
-(\S\ref{sec:aloha}).
+$\sigma = 0.43$\,cm; no repair), ALOHA with the held estimate ($\sigma=0$; repair)
+(\S\ref{sec:aloha}), and the GR1 humanoid both ways (\S\ref{sec:gr1}).
 
 \section{Experiments}
 \label{sec:exp}
@@ -397,25 +388,10 @@ estimator.
 \textbf{Frozen} and a \textbf{static oracle} correction equal to the true fault bound the
 problem. The informative baseline is the one that asks whether the plant model and $M$ earn
 their place: \textbf{integral action on the raw motion error}, $\fhat \leftarrow \fhat +
-k_i(y_t - a_t)$, swept over five gains across two orders of magnitude and reported at its
-best. On the $0.15$ translation fault:
-
-\begin{center}\small
-\begin{tabular}{lrr}
-\toprule
-$k_i$ & frozen & baseline \\
-\midrule
-0.001 & 4/20 & 5/20 \\
-\textbf{0.005} & 3/20 & \textbf{7/20 (35\%)} \\
-0.02 & 5/20 & 0/20 \\
-0.15 & 4/20 & 1/20 \\
-\midrule
-\textbf{ours} & 4/20 & \textbf{19/20 (95\%)} \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-The baseline implicitly assumes achieved motion equals commanded action; the measured plant
+k_i(y_t - a_t)$, swept over five gains across two orders of magnitude. On the $0.15$
+translation fault its best setting ($k_i=0.005$) reaches $7/20$ ($35\%$) from a frozen
+$3/20$; higher gains fall to $0/20$--$1/20$; ours reaches $19/20$ ($95\%$) on the same
+cell. The baseline implicitly assumes achieved motion equals commanded action; the measured plant
 DC gain is $0.23$, so with no fault at all its error is $-0.77\,a$---at a command of $0.5$
 a phantom of $0.384$ against a real fault of $0.150$, $2.5\times$ the target and opposite in
 sign. It must creep to stay stable and saturates when it moves. Predicting $y\approx0.23a$
@@ -525,10 +501,7 @@ correction ($0.02$\,rad fault, $n=20$) & within-episode variation & mean residua
 none (frozen) & --- & 2.12\,cm & 0/20 \\
 adaptive, updating throughout & 0.43\,cm & 0.17\,cm & 0/20 \\
 $0.019$\,rad ($95\%$) applied frozen & 0 & 0.11\,cm & \textbf{5/20} \\
-\textbf{adapt episode 0, then hold} & \textbf{0} & 0.12\,cm & \textbf{5/20} ($p=0.0625$) \\
-\textbf{adapt episode 0, then hold}, $n=40$ & \textbf{0} & --- & \textbf{15/40} ($p=6.1\times10^{-5}$, 0 broken) \\
-$0.020$\,rad exact, from step 0 & 0 & 0 & 8/20 \\
-healthy, no fault & --- & --- & 5/20 \\
+\textbf{adapt episode 0, then hold}, $n=40$ & \textbf{0} & 0.12\,cm & \textbf{15/40} ($p=6.1\times10^{-5}$, 0 broken) \\
 healthy, no fault, $n=40$ (law running: 14/40, $p=0.58$) & --- & --- & 17/40 \\
 \bottomrule
 \end{tabular}
@@ -538,28 +511,50 @@ A static-correction sweep puts the task's margin under $0.5$\,cm: a $90\%$ corre
 for the whole episode restores nothing, $100\%$ restores the healthy rate. The updating law
 reaches a mean residual well inside that margin and still fails, because its correction
 moves by $0.43$\,cm within an episode---the whole margin---on an arm that is precise from
-step one. The same number, applied stationary, repairs. Adapting for one episode and holding
-the estimate recovers $5/19$ on the held episodes at $n=20$, the healthy-frozen rate, and
-$15/39$ at $n=40$ (exact McNemar $p=6.1\times10^{-5}$, zero regressions; held estimate
-$0.019$ to $0.020$\,rad, $95$ to $101\%$ of the offset), from a frozen policy at zero. The
-healthy arm on the same seeds scores $17/40$, and the repaired arm is indistinguishable from
-it ($p=0.75$); the law on a healthy arm holds a phantom of at most $0.0008$\,rad and changes
-nothing ($14/40$ against $17/40$, $p=0.58$). This is the content of Proposition~\ref{prop:repair}, and it was invisible on
-LIBERO because a 20\,Hz Cartesian reach tolerates centimetres of jitter.
+step one. The same number, applied stationary, repairs. \emph{Identify, then hold}---adapt during one
+sacrificial episode, hold the estimate thereafter, the cost of a calibration
+procedure--- recovers $15/40$ from a frozen zero (held estimate $0.019$--$0.020$\,rad, $95$--$101\%$),
+indistinguishable from the healthy arm's $17/40$ on the same seeds ($p=0.75$), while the law
+on a healthy arm holds a phantom below $0.001$\,rad and changes nothing. This is
+Proposition~\ref{prop:repair}, invisible on LIBERO because a Cartesian reach tolerates
+centimetres of jitter.
+
+\subsection{A humanoid}
+\label{sec:gr1}
+Fourier GR1 upper body (two 7-joint arms, two 6-joint dexterous hands, a 3-joint waist;
+29 absolute joint targets at 20\,Hz) in NVIDIA's RoboCasa GR1 tabletop simulator, driven
+zero-shot by GR00T N1.5, for which GR1 is a pretrained embodiment. Plant from six healthy
+episodes ($R^2\ge0.998$ on the arm), $M$ by direct step response ($0.99\,I$ on the arm
+block; the replay probe of \S\ref{sec:aloha} is contaminated on an arm in contact),
+constants from the measured residual. A $+0.10$\,rad offset on the working arm zeros the
+policy on the plate-to-plate task. Thirty paired episodes with a healthy arm in the same
+process (scenes repeat per seed only within a process):
+
+\begin{center}\small
+\begin{tabular}{lrrrrrc}
+\toprule
+scheme & healthy & frozen & corrected & fixed & broken & McNemar \\
+\midrule
+continuous adaptation & 23/30 & 1/30 & 8/30 & 8 & 1 & $0.039$ \\
+identify episode 0, then hold & 21/30 & 2/30 & \textbf{21/30} & 19 & 0 & $3.8\times10^{-6}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Held, the estimate ($83$--$118\%$ of the fault per joint) takes the humanoid from $7\%$ to
+its healthy rate ($p=1$ against healthy); updating, the same estimate reaches a third of
+it and is significantly below healthy ($p=0.0015$). Proposition~\ref{prop:repair} decides
+the scheme on the third manipulator as on the second.
 
 \subsection{Hardware}
 \label{sec:hardware}
 
-The same law was applied to logs from an X2 humanoid running a learned box-pickup policy,
-in which a real actuator-authority fault (\code{gain\_scale}, scaling stiffness, damping
-and feedforward together) spans $0.1$--$1.3$ across 134 rollouts. Three findings fix the
-protocol for the repair experiment that follows. The fault is absorbed by the position loop
-and is invisible in joint position, but recoverable in effort ($r=+0.84$). The plant is
-run-varying on the load-bearing joints, so the calibration window must be within-run and
-must contain motion ($\ge450$ steps), not the standing phase. The detectability floor is
-$0.5$--$1.3^\circ$ of joint offset. The injection knob for a joint-target offset is in the
-deploy script; the paired repair experiment on the robot is pending robot time and is the
-one result this paper does not yet contain.
+On logs from an X2 humanoid running a learned box-pickup policy, a real actuator-authority
+fault (stiffness, damping and feedforward scaled together, $0.1$--$1.3$ across 134
+rollouts) is invisible in joint position and recoverable in effort ($r=+0.84$); the plant
+is run-varying on load-bearing joints, so calibration must be within-run and in motion; the
+detectability floor is $0.5$--$1.3^\circ$ of joint offset. The paired repair experiment on
+the robot is pending robot time and is the one result this paper does not yet contain.
 
 \section{What does not work, and what was wrong}
 \label{sec:fail}
@@ -575,8 +570,6 @@ unfaulted. Correcting the fault restores nothing because nothing was lost to it.
 acted on. A dwell gate removes most spurious openings but not that one, and every setting
 delays real repair; separating it needs information the estimator does not have.
 
-\textbf{Continuous adaptation on a tight margin} (\S\ref{sec:aloha}).
-
 \textbf{Refuted explanations, kept.} We proposed that identifiability follows from healthy
 action statistics (refuted: translation identifies a single-axis fault at $79\%$); that the
 plant is nonlinear on translation (refuted: $M$ is magnitude independent to $14\%$;
@@ -591,11 +584,10 @@ to: a joint torque bias and heavy joint friction are, a joint lock is not
 (\S\ref{sec:joint}), and the torque bias carries a regression rate the Cartesian cells never
 showed.
 A joint-space law would see the torque bias as the constant it is; the Cartesian residual
-sees it through the Jacobian. The X2 logs say a stiffness loss is invisible in position and
-recoverable in effort, which suggests the sensor, not the law, is what changes on hardware. The estimate resets every
-episode by design for the LIBERO claims; the ALOHA result shows that on a tight-margin task
-the deployable scheme is instead to hold it, which is a different claim about online
-adaptation and is stated as such. The policy's stochasticity gives $\pm10$ points at $n=20$;
+sees it through the Jacobian. On hardware a stiffness loss is invisible in position and recoverable in effort, so the
+sensor, not the law, is what changes. On tight-margin tasks the deployable scheme is to hold
+the estimate after one episode, a weaker claim about online adaptation than the LIBERO one,
+stated as such. The policy's stochasticity gives $\pm10$ points at $n=20$;
 we mitigated it with pairing and $n=40$ where it mattered, not by more seeds. We give
 propositions, not a recovery theorem; a contraction argument on the composite map is the
 natural next step and requires assumptions we could not verify on contact-rich tasks. And

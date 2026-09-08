@@ -2877,3 +2877,49 @@ episodes with a good estimate that failed anyway — as the healthy arm failed f
 Two of the three repaired episodes (seeds 104, 105) are ones the *healthy* policy failed,
 which is the sampling noise of §32.4 again and the reason the healthy arm has to sit in
 the same table. The wrist joint (j13) touched the 0.20 clip on three episodes.
+
+### 32.8 Identify-then-hold on the humanoid: 1/10 → 8/10, above the healthy arm
+
+Same cell, same ten seeds, same process: adapt on episode 0, hold the last-50-step mean
+(`0.090–0.112` rad on the seven right-arm joints, 90–112 % of the 0.10 fault) on episodes
+1–9.
+
+| arm | success | per episode |
+|---|---|---|
+| healthy | 6/10 | 0 1 0 1 1 1 1 0 1 0 |
+| frozen, faulted | 1/10 | 0 0 0 0 0 0 0 0 0 1 |
+| **identify episode 0, then hold** | **8/10** | 1 1 1 1 0 1 1 1 0 1 |
+
+The identification episode itself succeeded (the estimate is at 0.1 within 100 steps of a
+170-step task), and the held correction takes the humanoid from one in ten to eight in ten,
+two above its own healthy arm on these seeds — inside noise, and the reading is "to the
+healthy rate". Against continuous adaptation on the same seeds (§32.7: 3/10, wander
+0.013–0.058 rad) this is Proposition 2 on a third manipulator: the estimate is the same
+number either way; what decides the task is whether it moves while the hand is at the
+plate. Exact McNemar against frozen: **7 fixed, 0 broken, p = 0.016**; against healthy:
+4 up, 2 down, p = 0.69 (indistinguishable). Seeds 110–129 are running for both schemes.
+
+### 32.9 The humanoid result at n = 30
+
+Seeds 100–129, three arms per process, right arm +0.10 rad, right arm corrected, plant and
+M from §32.6, constants from the measured residual. Exact McNemar on the paired outcomes.
+
+| scheme | healthy | frozen | **corrected** | fixed / broken vs frozen | p vs frozen | vs healthy |
+|---|---|---|---|---|---|---|
+| continuous adaptation | 23/30 | 1/30 | 8/30 = 27% | 8 / 1 | 0.039 | −18 / +3, p = 0.0015 (below) |
+| **identify episode 0, then hold** | 21/30 | 2/30 | **21/30 = 70%** | **19 / 0** | **3.8×10⁻⁶** | +8 / −8, **p = 1** (at the ceiling) |
+
+**A frozen humanoid VLA is repaired from 7 % to its healthy rate by six numbers held after
+one identification episode.** The held estimate is 0.083–0.118 rad per joint on the second
+batch (83–118 %), 0.090–0.112 on the first. Continuous adaptation on the same seeds is
+significant but stays at a third of the ceiling and is *significantly below* healthy: the
+same estimate applied while it moves. This is the third manipulator on which Proposition 2
+decides the scheme — LIBERO (large margin: continuous works), ALOHA (sub-centimetre margin:
+hold), GR1 (a dexterous-hand grasp on a plate: hold) — and the first humanoid. The clip
+warnings in the log are the hand joints, which are estimated as a by-product, never
+corrected, and pinned at the bound because their plant is R² ≈ 0; they are noise in the
+report and nothing in the result.
+
+Cost of the whole humanoid chain from a cold start, GPU time: six healthy episodes for the
+plant (≈ 2 min), a direct M probe (≈ 1 min, no policy), 6+6 damage probes, and 6 × 30
+paired episodes — under three hours, with one 3B model that was never fine-tuned.
