@@ -526,23 +526,23 @@ episodes ($R^2\ge0.998$ on the arm), $M$ by direct step response ($0.99\,I$ on t
 block; the replay probe of \S\ref{sec:aloha} is contaminated on an arm in contact),
 constants from the measured residual. A $+0.10$\,rad offset on the working arm zeros the
 policy on the plate-to-plate task. The simulator randomises the scene at every reset, so
-the arms here are \emph{unpaired}: thirty episodes each, healthy arm included, Fisher exact
-tests.
+the arms here are \emph{unpaired}: thirty corrected episodes per scheme against frozen and
+healthy arms pooled over 90 episodes each, Fisher exact tests.
 
 \begin{center}\small
 \begin{tabular}{lrrrcc}
 \toprule
 scheme & healthy & frozen & corrected & $p$ vs frozen & $p$ vs healthy \\
 \midrule
-continuous adaptation & 23/30 & 1/30 & 8/30 & $0.08$ & $2.3\times10^{-4}$ \\
-identify episode 0, then hold & 21/30 & 2/30 & \textbf{21/30} & $5.5\times10^{-7}$ & $1$ \\
+continuous adaptation & 64/90 & 4/90 & 8/30 & $0.0016$ & $2.3\times10^{-4}$ \\
+identify episode 0, then hold & 64/90 & 4/90 & \textbf{21/30} & $8.9\times10^{-13}$ & $1$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 Held, the estimate ($83$--$118\%$ of the fault per joint) takes the humanoid from $7\%$ to
-its healthy rate; updating, the same estimate reaches a third of it, not significantly
-above frozen and significantly below healthy. Proposition~\ref{prop:repair} decides the
+its healthy rate; updating, the same estimate reaches a third of it, above frozen and
+significantly below healthy. Proposition~\ref{prop:repair} decides the
 scheme on the third manipulator as on the second.
 
 \subsection{Hardware}

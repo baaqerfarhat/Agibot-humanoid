@@ -2955,3 +2955,31 @@ can-to-drawer task (the client's default `--task`, not passed) with the plate-to
 M and held estimate; its frozen arm succeeded 4/8 because that task is barely damaged by a
 right-arm offset. The render is discarded and the plate-to-plate video is queued. Nothing
 from it is reported anywhere.
+
+### 32.11 Frozen and healthy on thirty fresh seeds; the humanoid table, final
+
+Seeds 130–159, one process each: frozen under the right-arm +0.10 rad offset **1/30**;
+healthy **20/30**. Pooled over all processes on this task: frozen **4/90 = 4 %**, healthy
+**64/90 = 71 %**.
+
+| arm | rate | Fisher p vs frozen (4/90) | Fisher p vs healthy (64/90) |
+|---|---|---|---|
+| frozen, right arm +0.10 rad | 4/90 | — | — |
+| healthy | 64/90 | — | — |
+| **identify episode 0, then hold** | **21/30 = 70 %** | **8.9×10⁻¹³** | 1.0 |
+| continuous adaptation | 8/30 = 27 % | 0.0016 | 2.3×10⁻⁴ (below) |
+
+With the floors and ceilings pinned by ninety episodes each, continuous adaptation is
+significant against frozen after all (27 % against 4 %) and the held correction sits exactly
+on the healthy rate. Every number in this section is unpaired and stated so.
+
+### 32.12 Video
+
+`results/phase05/adaptive_vs_frozen_gr1.mp4` (148 s): plate-to-plate, right arm +0.10 rad,
+the corrected panel applying the held estimate (`0.103, 0.102, 0.102, 0.101, 0.112, 0.090,
+0.090` rad on the seven right-arm joints, identified in one episode) from step 0. Four of
+six candidate seeds kept (`--only-repaired`): the frozen panel times out at 720 steps in
+every clip — reaching past the plate, or turning away from it — and the corrected panel
+finishes in 166–182 steps. Because the simulator redraws the scene at every reset, the two
+panels of a clip show different objects (croissant, bell pepper, can, tomato) and each panel
+carries its own task language; the pairing is by seed, not by scene, and the frame says so.

@@ -108,13 +108,15 @@ def main():
         print(f"  seed {a.seed+ep}: frozen success={okL} steps={len(fL)}", flush=True)
         if okL:
             print("    frozen succeeded this render -> skipping"); continue
-        fR, okR, _ = rollout(A, ep, W, M_inv, M, fvec, True, corr, a.clip, a.gamma, a.dead, a.norm_r, a.law,
+        fR, okR, promptR = rollout(A, ep, W, M_inv, M, fvec, True, corr, a.clip, a.gamma, a.dead, a.norm_r, a.law,
                              f_init=f_init, freeze_after=a.freeze_after, horizon=a.horizon, max_steps=a.max_steps)
         print(f"  seed {a.seed+ep}: corrected success={okR} steps={len(fR)}", flush=True)
         if a.only_repaired and not okR:
             print("    corrected run failed this render -> skipping"); continue
         kept += 1
-        lang = prompt.split(": ", 1)[-1]
+        # each panel carries ITS OWN task language: the scene (and the object) is redrawn at
+        # every reset, so the two rollouts of a seed are different draws (Sec 32.10)
+        lang = prompt.split(": ", 1)[-1]; langR = promptR.split(": ", 1)[-1]
         n = max(len(fL), len(fR))
         for k in range(n + a.fps):
             i, j = min(k, len(fL) - 1), min(k, len(fR) - 1)
@@ -123,7 +125,7 @@ def main():
                          [f'"{lang}"', a.title, f"step {tL}",
                           "SUCCESS" if (okL and k >= len(fL) - 1) else ("FAILED - timeout" if (not okL and k >= len(fL) - 1) else "")])
             R = annotate(imR, f"ADAPTIVE  ({scheme})", (25, 110, 45),
-                         [f'"{lang}"', a.title,
+                         [f'"{langR}"', a.title,
                           f"step {tR}   f_hat[j{','.join(map(str, shown))}] = " + " ".join(f"{fh[d]:+.3f}" for d in shown),
                           "SUCCESS" if (okR and k >= len(fR) - 1) else ("FAILED - timeout" if (not okR and k >= len(fR) - 1) else "")])
             clips.append(np.concatenate([L, R], axis=1))
