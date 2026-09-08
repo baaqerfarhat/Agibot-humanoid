@@ -2983,3 +2983,15 @@ every clip — reaching past the plate, or turning away from it — and the corr
 finishes in 166–182 steps. Because the simulator redraws the scene at every reset, the two
 panels of a clip show different objects (croissant, bell pepper, can, tomato) and each panel
 carries its own task language; the pairing is by seed, not by scene, and the frame says so.
+
+### 32.13 The null: the law on a healthy humanoid
+
+Seeds 160–189, no fault, identify-then-hold on the right arm with the same constants: the
+healthy arm in the same process **18/30**, the law running on the healthy arm **19/30**
+(Fisher p = 1.0; against the pooled healthy 64/90, p = 0.5). The held phantom on the seven
+right-arm joints is at most **0.004 rad** — 4 % of the 0.10 fault it is compared with — so
+the correction the law applies to a healthy humanoid is a twentieth of a degree per joint
+and changes nothing. The clip warning is joint 24, a left-hand joint that is estimated as a
+by-product and never corrected. With this the humanoid cell has every row the protocol of
+§14.5 requires: floor (4/90), repair (21/30), ceiling (64/90), and a null for the law on
+healthy data (19/30 against 18/30).
