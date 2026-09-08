@@ -2923,3 +2923,35 @@ report and nothing in the result.
 Cost of the whole humanoid chain from a cold start, GPU time: six healthy episodes for the
 plant (≈ 2 min), a direct M probe (≈ 1 min, no policy), 6+6 damage probes, and 6 × 30
 paired episodes — under three hours, with one 3B model that was never fine-tuned.
+
+### 32.10 Correction: the humanoid arms are NOT paired; unpaired statistics replace §32.7–32.9's
+
+§32.5 said scenes repeat per seed within a process. That test compared robot joint state and
+the *fixed furniture* across resets and both matched; it did not look at the manipulated
+objects. A second test (plate-to-plate; reset 100, reset 101, reset 100 again) shows 45 of 86
+bodies moved between the two seed-100 resets, the manipulated object changed (a squash, then
+a bell pepper; 0.19 m apart), and so did the task language. `np.random.seed` in the wrapper
+does not govern robocasa's object sampling. **Every arm in §32.7–32.9 saw its own draw of
+the scene**, so the McNemar "fixed / broken" counts there are not pair counts and the
+paired p-values are not valid. The three arms are independent samples of the same scene
+distribution and the right test is unpaired (Fisher exact, two-sided):
+
+| comparison, n = 30 per arm | rates | Fisher p |
+|---|---|---|
+| **identify-then-hold vs frozen** | **21/30 vs 2/30** | **5.5×10⁻⁷** |
+| identify-then-hold vs healthy | 21/30 vs 21/30 | 1 |
+| continuous adaptation vs frozen | 8/30 vs 2/30 | 0.08 (not significant) |
+| continuous adaptation vs healthy | 8/30 vs 23/30 | 2.3×10⁻⁴ |
+
+The headline survives unchanged in substance — a held correction takes the humanoid from
+7 % to its healthy rate, seven orders of magnitude from chance — and the continuous-adaptation
+row loses its significance against frozen, which is the honest reading of a 27 % rate against
+7 % at n = 30. The paper's humanoid table now reports rates and Fisher p-values, no
+fixed/broken columns. Frozen and healthy are being run for 30 more episodes each on fresh
+seeds to tighten both ends.
+
+**A second error caught in the same hour.** The first humanoid video was rendered on the
+can-to-drawer task (the client's default `--task`, not passed) with the plate-to-plate plant,
+M and held estimate; its frozen arm succeeded 4/8 because that task is barely damaged by a
+right-arm offset. The render is discarded and the plate-to-plate video is queued. Nothing
+from it is reported anywhere.

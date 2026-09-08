@@ -175,8 +175,9 @@ def main():
     ap.add_argument("--law", choices=["legacy", "innov"], default="legacy")
     ap.add_argument("--with-healthy", action="store_true",
                     help="also run a HEALTHY arm (no fault, no correction) on the same seeds in the same process. "
-                         "Scenes are deterministic per seed only within a process (Sec 32.5), so the ceiling has "
-                         "to be measured next to the arms it is compared with.")
+                         "The simulator randomises objects and their placement at every reset (Sec 32.10), so "
+                         "the arms are UNPAIRED samples of the scene distribution; test them with Fisher exact, "
+                         "and measure the ceiling with the same number of episodes.")
     ap.add_argument("--hold-stat", choices=["last", "mean50"], default="last",
                     help="what identify-then-hold carries: the final estimate, or the mean of the last 50 steps "
                          "(the record's statistic; the final value on a contact-rich episode is one contact spike away)")

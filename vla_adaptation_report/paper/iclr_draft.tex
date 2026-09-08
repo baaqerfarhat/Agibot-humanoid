@@ -525,24 +525,25 @@ GR00T N1.5, for which GR1 is a pretrained embodiment. Plant from six healthy
 episodes ($R^2\ge0.998$ on the arm), $M$ by direct step response ($0.99\,I$ on the arm
 block; the replay probe of \S\ref{sec:aloha} is contaminated on an arm in contact),
 constants from the measured residual. A $+0.10$\,rad offset on the working arm zeros the
-policy on the plate-to-plate task. Thirty paired episodes with a healthy arm in the same
-process (scenes repeat per seed only within a process):
+policy on the plate-to-plate task. The simulator randomises the scene at every reset, so
+the arms here are \emph{unpaired}: thirty episodes each, healthy arm included, Fisher exact
+tests.
 
 \begin{center}\small
-\begin{tabular}{lrrrrrc}
+\begin{tabular}{lrrrcc}
 \toprule
-scheme & healthy & frozen & corrected & fixed & broken & McNemar \\
+scheme & healthy & frozen & corrected & $p$ vs frozen & $p$ vs healthy \\
 \midrule
-continuous adaptation & 23/30 & 1/30 & 8/30 & 8 & 1 & $0.039$ \\
-identify episode 0, then hold & 21/30 & 2/30 & \textbf{21/30} & 19 & 0 & $3.8\times10^{-6}$ \\
+continuous adaptation & 23/30 & 1/30 & 8/30 & $0.08$ & $2.3\times10^{-4}$ \\
+identify episode 0, then hold & 21/30 & 2/30 & \textbf{21/30} & $5.5\times10^{-7}$ & $1$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 Held, the estimate ($83$--$118\%$ of the fault per joint) takes the humanoid from $7\%$ to
-its healthy rate ($p=1$ against healthy); updating, the same estimate reaches a third of
-it and is significantly below healthy ($p=0.0015$). Proposition~\ref{prop:repair} decides
-the scheme on the third manipulator as on the second.
+its healthy rate; updating, the same estimate reaches a third of it, not significantly
+above frozen and significantly below healthy. Proposition~\ref{prop:repair} decides the
+scheme on the third manipulator as on the second.
 
 \subsection{Hardware}
 \label{sec:hardware}
