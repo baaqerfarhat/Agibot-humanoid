@@ -2989,9 +2989,10 @@ carries its own task language; the pairing is by seed, not by scene, and the fra
 Seeds 160–189, no fault, identify-then-hold on the right arm with the same constants: the
 healthy arm in the same process **18/30**, the law running on the healthy arm **19/30**
 (Fisher p = 1.0; against the pooled healthy 64/90, p = 0.5). The held phantom on the seven
-right-arm joints is at most **0.004 rad** — 4 % of the 0.10 fault it is compared with — so
-the correction the law applies to a healthy humanoid is a twentieth of a degree per joint
-and changes nothing. The clip warning is joint 24, a left-hand joint that is estimated as a
+right-arm joints is 0.0005–0.0055 rad on six of them and **0.012 rad on the wrist (joint
+13)** — 12 % of the 0.10 fault on that one joint, under 6 % elsewhere — and applying it to a
+healthy humanoid changes nothing. (The first version of this paragraph said "at most 0.004
+rad"; that was written before the number was read and is corrected here.) The clip warning is joint 24, a left-hand joint that is estimated as a
 by-product and never corrected. With this the humanoid cell has every row the protocol of
 §14.5 requires: floor (4/90), repair (21/30), ceiling (64/90), and a null for the law on
 healthy data (19/30 against 18/30).
