@@ -2717,3 +2717,163 @@ frame checked. Rotation: 4 clips from 5 candidates (one corrected re-run failed)
 4 clips from 4 candidates, estimates x 0.13–0.22, y 0.08–0.10, z 0.16–0.27 against 0.15
 (x and z carry the translation phantom on top of the fault), the frozen gripper landing
 past the bowl in every clip. 48 s each.
+
+## 32. A humanoid: GR00T N1.5 on the Fourier GR1 (added 2026-09-07)
+
+**Why N1.5 and not N1.7.** N1.7's only humanoid simulator embodiment (RoboCasa GR1
+tabletop, 24 pick-and-place tasks in MuJoCo) is finetune-only and NVIDIA released no
+checkpoint for it; the X2 has no GR00T embodiment at all, and fine-tuning is the compute we
+do not have. The N1.5 base model lists GR1 as a *pretrained* embodiment ("humanoid robots with
+dexterous hands using absolute joint space control"), usable zero-shot. So: a second clone at
+`n1.5-release`, python 3.10, patched to SDPA attention for the Turing GPU (three files;
+`SETUP.md`), `groot15_server.py` behind the same websocket protocol, and `gr1_adapt.py`, the
+ALOHA joint-space script with a GR1 adapter. N1.5 runs at 0.4 s per 16-step chunk here, ten
+times faster than N1.7.
+
+**The robot and its interface.** Fourier GR1 upper body: two 7-joint arms, two 6-joint
+dexterous hands, a 3-joint waist, 29 absolute joint targets at 20 Hz (`control_delta =
+False` in the benchmark's own wrapper), one egocentric camera rendered at 1280×800 and
+crop-padded to 256×256. Task: `PnPCanToDrawerClose` — pick up the can, place it in the
+drawer, close the drawer; 720-step cap as in NVIDIA's evaluation; success is the
+benchmark's own check. Both arms move on every episode (the left arm is the one that
+handles the can; the right arm the drawer).
+
+### 32.1 Measure before setting constants
+
+| quantity | value |
+|---|---|
+| healthy success, N1.5 zero-shot, 5 episodes | 3/5 (NVIDIA reports 70 % for the finetuned N1.7 on this task) |
+| plant FIR R² on the 14 arm joints | 0.94–1.00 (hands and waist not modelled; not corrected) |
+| healthy residual norm on the arm joints | median 0.064 rad, 90th pct 0.18, max 0.58 (contact) |
+| servo tracking of a held +0.05 rad target offset | ratio 1.00 (j8, j10) |
+| M, right arm, open-loop replay of 120 healthy commands | block = I exactly, cond 1.0 |
+| M, left arm, same replay | block diag 0.26–0.91, off-diag to 1.2: **contaminated** — the left arm is in contact during the replay window, and the probe measures the divergence of a contact trajectory, not the servo |
+| M, left arm, direct step response from a held pose (30 settle + 30 probe) | diag 0.984–0.991, off-diag ≤ 0.002, cond 1.01 — used |
+| frozen under +0.05 rad on the right arm (5 eps) | 3/5, not damaging |
+| frozen under +0.15 rad on the right arm | 2/5 |
+| **frozen under +0.15 rad on the left arm** | **0/5**: the grasping arm; this is the cell |
+
+Constants from the table: deadzone 0.03 (half the median residual), normaliser 0.35 (twice
+the 90th percentile), clip 0.30 (twice the fault), γ 0.08. The replay-based M probe of
+`aloha_adapt.py` is *wrong on an arm that contacts objects during the replay*, which ALOHA's
+transfer-cube arm did not in its first 120 steps; the direct step-response probe is the
+general method and is what `openloop_left_direct.json` records.
+
+### 32.2 Run 1: 0/10 → 0/10, and why — the normaliser was looking at the hands
+
+Left arm +0.15 rad, correct the left arm, continuous adaptation, constants from §32.1
+(γ 0.08, deadzone 0.03, ρ 0.35, clip 0.30), 10 paired episodes: frozen **0/10**, corrected
+**0/10**. The estimate rose to 0.059 by step 50 and then *decayed* to 0.02 — 13 % of the
+fault — on every episode.
+
+The constants were set from the residual on the arm joints (median 0.064), but the law's
+normaliser took the norm of the residual on **all 29 joints**, and the twelve hand joints,
+commanded open/closed and fitted with R² ≈ 0, carry a residual three times the arm's
+(median 0.17, 90th pct 0.61; the 29-joint norm is median 0.19, 90th pct 0.63). Every update
+on the arm was attenuated four to ten times by a signal from joints the law was not
+estimating, and the legacy fixed point f/(1 + |r|²/ρ²) landed near zero. ALOHA did not show
+this because its two gripper joints are a small share of its fourteen.
+
+Two changes, both in `gr1_adapt.py`: the normaliser and deadzone act on the residual of the
+joints being corrected, and `--law innov` (the innovation form of §12, unbiased fixed point)
+is available. Run 2 uses both with ρ = 0.30 and deadzone 0.03 from the *left-arm* residual
+(median 0.054, 90th pct 0.142). Measure-before-setting has a corollary: **measure the
+quantity the law actually consumes**, not a neighbour of it.
+
+### 32.3 Run 2: identified to 85–95 %, still 0/10 — the ALOHA pattern
+
+Same cell, innovation law, normaliser on the left-arm residual: frozen **0/10**, corrected
+**0/10**. The identification now works: the last-50-step estimate on the seven left-arm
+joints is 0.13–0.16 on eight of ten episodes (85–105 % of the 0.15 fault; two episodes at
+0.085), and it is at 0.12 by step 50 and 0.15 by step 100. The correction is applied and the
+task still fails. The within-episode wander of the applied correction is **0.056 rad median**
+(sd over steps after step 50, mean over joints), with contact spikes driving single joints to
+the ±0.30 clip on two episodes. That is the ALOHA signature of §27.12: a continuously
+updating correction on a task whose margin is smaller than the estimator's motion.
+Proposition 2 says the next two runs, not a retune: the oracle (exact −0.15 applied from step
+0, no estimator), which measures whether the task is recoverable at all at this fault and
+sets the ceiling; and identify-then-hold (adapt on episode 0, hold on episodes 1–9), the
+deployable scheme that gave ALOHA its result.
+
+### 32.4 Oracle 1/10, identify-then-hold 0/10: the ceiling is the question
+
+| scheme (left arm +0.15, seeds 100–109) | success |
+|---|---|
+| frozen, faulted | 0/10 |
+| continuous adaptation (run 2) | 0/10 |
+| **oracle: exact −0.15 on the left arm from step 0, no estimator** | **1/10** |
+| identify episode 0, hold 1–9 (held estimate 0.086–0.204 per joint, 57–136 %) | 0/10 |
+| healthy, seeds 100–104 (from the log run) | 3/5 |
+
+The oracle's executed commands are identical to the healthy policy's — a_cmd − 0.15 + 0.15 —
+and it succeeded on the one seed of the first five the healthy run failed and failed on the
+three it passed. So on this task the policy's own sampling noise (flow-matching, 16-step
+chunks, 720 steps) is at least as large as any effect being measured, and every number above
+is inside it. Two consequences before any more repair runs: the healthy rate on the same
+ten seeds is being measured (the control §14.5 requires), and the held estimate now has a
+`--hold-stat mean50` option, because the final value of a contact-rich identification
+episode is one contact spike away from the fault (0.086 on joint 6, 0.204 on joint 5) and
+the record's statistic has always been the last-50-step mean. If the healthy control comes
+back low, the task, not the law, is the problem, and a screen of five other GR1 tasks for a
+higher healthy rate is queued behind it.
+
+### 32.5 The healthy control came back 0/10, and the scenes are not the same across processes
+
+Healthy, no fault, seeds 100–109, a fresh process: **0/10** — against 3/5 on seeds 100–104 in
+the first log run. Not sampling noise alone: on the same seed the two processes start from
+initial joint states 0.026 rad apart and the first commands differ by 0.12 rad, so the
+*scenes* differ. Within a process, `reset(seed=100)` is exactly repeatable (q₀ identical to
+four decimals, three resets), so the two arms of a `run` — which share a process — are
+paired on identical scenes, but any number from a separate process (the log run, the
+oracle, identify-then-hold, the healthy control) is on a different draw of the scene. The
+wrapper seeds `np.random` only; whatever robocasa uses for the rest of the scene is not
+under that seed. Consequence: the healthy ceiling must be measured **inside the same
+process** as the arms it is compared with. `gr1_adapt.py run --with-healthy` now runs a
+third arm, healthy, on the same seeds before the two faulted ones. Nothing in §32.2–32.4
+is retracted, but none of those rows can be compared to the 3/5 either.
+
+### 32.6 Task screen and the cell that has a ceiling: plate-to-plate
+
+Healthy N1.5 zero-shot, six episodes each, one process per task:
+
+| task | healthy | steps to success |
+|---|---|---|
+| **PosttrainPnPNovelFromPlateToPlate** | **5/6** | 160–180 |
+| PosttrainPnPNovelFromTrayToPlate | 3/6 | |
+| PnPBottleToCabinetClose | 1/6 | |
+| PnPCupToDrawerClose | 0/6 | |
+| PnPWineToCabinetClose | 0/6 | |
+| PnPCanToDrawerClose (§32.1–32.5) | 3/5 then 0/10 | 250–560 |
+
+N1.5 zero-shot is weak on the "close the drawer/cabinet" tasks and strong on the short
+pick-and-place ones; plate-to-plate is a **right-arm** task (the left arm moves under 0.5
+rad, the right 1–2 rad) and finishes in 170 steps, which also makes every cell four times
+cheaper. Plant on its six healthy episodes: R² 0.998–0.999 on the right arm; healthy
+right-arm residual norm median 0.027, 90th pct 0.054 → deadzone 0.013, normaliser 0.11.
+M: direct step response, right-arm block 0.990–0.997, off-diagonal ≤ 0.005 (the left arm is
+in contact in this scene's held pose and its block is taken from the can-drawer probe).
+
+Damage, frozen, six episodes: left arm +0.10 → 3/6, +0.20 → 1/6 (the idle arm still
+matters: it is in the camera view and the policy reads it); **right arm +0.10 → 0/6**. The
+cell is right arm +0.10 rad (5.7°), corrected on the right arm, clip 0.20, two schemes
+(continuous; identify-then-hold with the last-50 mean), each with an in-process healthy
+arm on the same ten seeds.
+
+### 32.7 Plate-to-plate, right arm +0.10 rad, three arms in one process, n = 10
+
+| arm | success | per episode (seeds 100–109) |
+|---|---|---|
+| healthy (no fault) | **6/10** | 0 0 1 1 0 0 1 1 1 1 |
+| frozen, faulted | **0/10** | 0 0 0 0 0 0 0 0 0 0 |
+| **corrected, continuous adaptation** | **3/10** | 0 0 1 0 1 1 0 0 0 0 |
+
+**The law repairs a humanoid.** From a frozen zero to half the healthy rate, 3 fixed, 0
+broken — at n = 10 that is p = 0.25 on the exact test, so it is a result to extend, not yet
+to claim; seeds 110–129 are queued for both schemes. What the trajectories say: the three
+successes are the three episodes whose estimate reached 0.098–0.099 (98 % of the fault) with
+a within-episode wander of 0.013–0.017 rad; the failures split into episodes where the
+estimate stayed at 0.035–0.05 with wander 0.04–0.06 (contact-driven, under-identified) and
+episodes with a good estimate that failed anyway — as the healthy arm failed four of ten.
+Two of the three repaired episodes (seeds 104, 105) are ones the *healthy* policy failed,
+which is the sampling noise of §32.4 again and the reason the healthy arm has to sit in
+the same table. The wrist joint (j13) touched the 0.20 clip on three episodes.

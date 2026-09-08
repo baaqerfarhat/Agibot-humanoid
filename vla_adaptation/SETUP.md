@@ -211,3 +211,31 @@ Three things that are not in the GR00T docs:
   chunk on a Quadro RTX 8000, so use `--replan-steps 8` (GR00T's own evaluation horizon).
 - `groot_server.py` imports `openpi_client` from the openpi checkout for the message format; set
   `OPENPI_CLIENT` if that checkout is elsewhere, and `ISAAC_GROOT` for the GR00T checkout.
+
+## A humanoid: GR00T N1.5 on the Fourier GR1 (optional)
+
+N1.7 has no released GR1 checkpoint (the tag is finetune-only), so the humanoid runs use the
+N1.5 base model, which has GR1 pretrained. Two more environments:
+
+```bash
+git clone --branch n1.5-release --depth 1 https://github.com/NVIDIA/Isaac-GR00T Isaac-GR00T-n15
+cd Isaac-GR00T-n15 && python3.10 -m venv --without-pip .venv && .venv/bin/python get-pip.py
+.venv/bin/pip install -e ".[base]" websockets msgpack           # torch 2.5.1; no flash-attn needed
+<n17 venv>/bin/hf download nvidia/GR00T-N1.5-3B --local-dir checkpoints/GR00T-N1.5-3B   # 5.1 GB, not gated
+# Turing / pre-Ampere GPU: patch to SDPA attention (three files; diff in the record, section 32)
+#   gr00t/model/backbone/eagle2_hg_model/config.json     "_attn_implementation": "sdpa"
+#   .../modeling_eagle2_5_vl.py                          SigLIP branch: try flash_attn, else "sdpa"
+#   .../radio_model.py                                   flash_attn imports inside try/except
+git clone https://github.com/robocasa/robocasa-gr1-tabletop-tasks robocasa-gr1 && cd robocasa-gr1
+git checkout 4840e671596f93ca03651524b9f72ffb1aadfeff
+python3.10 -m venv --without-pip .venv && .venv/bin/python get-pip.py
+.venv/bin/pip install "git+https://github.com/ARISE-Initiative/robosuite.git@v1.5.1"
+.venv/bin/pip install -e . --config-settings editable_mode=compat gymnasium==0.29.1 numpy==1.26.4 mujoco==3.2.6 msgpack msgpack-numpy websockets
+(cd robocasa/scripts && ../../.venv/bin/python download_tabletop_assets.py -y)     # 8.7 GB
+```
+
+Server (N1.5 venv): `CUDA_VISIBLE_DEVICES=1 .venv/bin/python openpi/groot15_server.py --model-path checkpoints/GR00T-N1.5-3B --port 8004`.
+Client (robocasa venv, `MUJOCO_GL=egl`): `openpi/gr1_adapt.py {log,openloop,run}` with the same flags as
+`aloha_adapt.py`, plus `--task`, `--fault-vec arm:left:0.15`, `--corr-joints arm:left`. Measure the
+sensitivity matrix with a direct step response from a held pose, not the replay probe, on any arm
+that touches objects early in an episode (record, section 32.1).
