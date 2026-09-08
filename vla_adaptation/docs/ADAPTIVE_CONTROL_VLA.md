@@ -2996,3 +2996,15 @@ rad"; that was written before the number was read and is corrected here.) The cl
 by-product and never corrected. With this the humanoid cell has every row the protocol of
 §14.5 requires: floor (4/90), repair (21/30), ceiling (64/90), and a null for the law on
 healthy data (19/30 against 18/30).
+
+### 32.14 Not pursued: a below-the-controller fault on the humanoid
+
+A joint-torque bias (`qfrc_applied`) on a right-arm joint of the GR1, as in §29 on the
+Panda, was probed from a held pose: 30 settle steps, 40 steps with the bias, against a
+zero-bias run of the same length. The zero-bias run itself is not repeatable across two
+resets of the same seed (max 0.18 rad difference on the right arm over 70 held steps), because
+the held arm drifts into whatever the redrawn scene puts under it, and the torque responses
+(0.1–0.2 rad, spread over all seven joints, non-monotonic in the torque) are inside that
+drift. A clean probe would need a free-space pose away from the table and a fixed scene;
+neither is available from the benchmark wrapper without modifying it. Left here as a
+measured dead end; the humanoid section stands on the action-interface offset.
