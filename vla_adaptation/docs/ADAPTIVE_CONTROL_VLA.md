@@ -3214,3 +3214,109 @@ counts **1,330 paired episodes, 544 fixed, 32 broken**; the paper now says "over
 paired episodes in aggregate across cells, controls and ablations", and the abstract's
 curated 690/275/7 (LIBERO and OFT, the online law) is unchanged and separately verified
 (§33).
+
+## 34. A second simulator and a fourth robot: WidowX in SimplerEnv with GR00T N1.7 (2026-09-09)
+
+**Why.** Every result so far lives in MuJoCo (LIBERO, ALOHA, RoboCasa). SimplerEnv is the
+benchmark J-PARC and most VLA papers report on, it runs in SAPIEN, and its WidowX tasks have
+real-robot counterparts (Bridge V2). GR00T N1.7 ships a SimplerEnv-Bridge finetune
+(`GR00T-N1.7-SimplerEnv-Bridge`, 6.5 GB), so the same backbone family serves a third robot
+with no training on our side.
+
+**Setup** (`openpi/groot_widowx_server.py`, port 8005; `openpi/widowx_adapt.py`; venv
+`simpler-venv`). SAPIEN 2.2.2 headless needs `unset DISPLAY` and the NVIDIA Vulkan ICD;
+SimplerEnv pulls numpy 2 which segfaults in `compute_fk` -> pinned numpy 1.26.4. Task
+`widowx_spoon_on_towel`, 150-step cap (the wrapper default is 120 for Bridge; 150 gives the
+policy slack), seeds 100+. Controller `PDEEPoseController use_delta=True use_target=True`:
+each 7-vector action is an end-effector pose *increment* (xyz in [-1,1], rpy in [-1.571,1.571],
+gripper) applied to an accumulating target. The plant output is the measured pose increment per
+step, normalised per channel by the per-unit-action motion scale (`healthy_log_scale.json`:
+0.93/0.94/0.77 on xyz), so the fault, the residual and f_hat all live in action units.
+
+**Healthy log and plant.** 10 healthy episodes, 6/10 success. FIR K=6 plant R^2 on xyz
+0.97/0.995/0.92.
+
+**Sensitivity probe: the accumulating target bites.** The first M probe (offset 0.02 over
+120 steps, the LIBERO recipe) saturated: 0.02 per step on an accumulating target drives the
+arm to the workspace limit (0.4462) in a few dozen steps and the response goes to zero. The
+probe is 0.005 over 60 steps from the held pose (`openloop_p005.json`): diag
+[0.78, 1.07, 0.51, 0.99, 0.93, 1.10], cond 9.7. Z is the weakest channel (gravity and the
+table).
+
+**Residual scale before constants (the rule from Sec 22).** Healthy residual norm on xyz in
+normalised units: median 0.0020, 90th pct 0.0047, max 0.023. The client defaults
+(dead 0.01, norm_r 0.15) were carried over from LIBERO and sit 5x and 16x above this scale;
+they were not used. Constants: dead 0.001 (half the median), norm_r 0.009 (2x the 90th
+pct), clip 0.03, gamma 0.08, innovation form, xyz corrected.
+
+**Damage probes (frozen policy, 10 eps each unless noted).** A constant offset on the
+action's xyz: +0.04, +0.02, +0.01, +0.005, +0.003 -> 0/10 each (seeds 100-109, 150-step cap). On an
+accumulating target even 0.003 per step (1.5x the residual median) is a 0.3 unit drift over
+the episode, and the vision loop does not undo it: the frozen policy fails at every
+magnitude tried. The fault for the paired cell is 0.005 on xyz (2.5x the residual median,
+identifiable inside the deadzone budget), with 0.003 as the harder cell.
+
+**First paired attempt aborted: the probe's M was wrong (seventh entry for Sec 22).**
+With `openloop_p005.json` the adaptive arm's first two episodes failed with the z estimate
+at the clip (0.03, six times the fault) and x barely moving. Replaying the law offline on
+the frozen +0.005 log showed the residual itself is right (mean residual on x,y,z 0.0048,
+0.0046, 0.0058: the fault, to the third decimal) and the probe's M is not: its z entry 0.51
+inflates the z estimate 2.5x, and its rotation rows carry cross-couplings of order 1 (a
+held-pose step response in SAPIEN mixes in contact and the joint limits). Under the FIR
+plant an additive offset on the command appears in the residual scaled by the plant's DC
+gain, so M = diag(sum of FIR taps) is derivable from the healthy log alone: DC gains
+1.04/1.04/1.12/1.01/1.02/1.07 (`openloop_dc.json`). Offline on the faulted log this M
+recovers 0.0047-0.0055 on x,y,z per episode (median over steps). The paired cell was
+restarted with it; the aborted file is kept as `cell_tra005_probeM_aborted.json`
+(healthy 11/20, frozen 0/20, adaptive 0/2 before the stop). The update is also masked to
+the corrected dimensions (uncorrected entries of f_hat previously integrated with no
+feedback and drifted to the clip; harmless for the correction, misleading in the printout).
+
+### 34.1 Continuous adaptation, +0.005 on x,y,z (`cell_tra005.json`, seeds 100-119)
+
+| arm | successes / 20 |
+|---|---|
+| healthy (no fault, no law) | 13 |
+| frozen under the fault | 0 |
+| adaptive, online from step 0 (gamma 0.08) | 6 |
+
+Paired: adaptive-only 6, frozen-only 0, McNemar p = 0.031. Final estimate median
+(0.0050, 0.0051, 0.0049) on x,y,z for a fault of 0.005, IQR <= 0.0007: the estimator is
+exact. The healthy arm was 11/20 on the same seeds an hour earlier (the aborted file):
+SAPIEN's reset is not bit-repeatable across processes at the two-episode level, so
+"same seed" here means the same object draw with a small pose jitter, as on the humanoid
+before Sec 32.15 (pairing is within one process, arm after arm on the same seed list).
+
+**Why 6 and not 13: the transient is permanent on this controller.** The estimate
+reaches half the fault at step 14 and 80% at step 27 (all episodes). On LIBERO's delta
+controller the uncorrected part of the fault during those steps is forgotten; on the
+WidowX `use_target` controller it stays in the target: 0.07-0.09 action units accumulated
+per episode (about 7 cm at 0.93 m per unit, with the policy's own commands at 0.01 per
+step), more than the spoon. After convergence the residual bias is <= 0.001 per step. Two
+schemes address exactly this and both are already in the paper: the identify-then-hold
+scheme (Sec 32.17: identify over 3 episodes, apply the held correction from step 0 of the
+next), and a faster gain. Both queued: hold3w (23 episodes, 20 held) and gamma 0.2.
+
+### 34.2 Identify-then-hold, +0.005 on x,y,z (`cell_tra005_hold3w.json`, seeds 100-122)
+
+Three identification episodes online (seeds 100-102: adaptive 2/3, healthy 3/3), the held
+correction = median over the three per-episode window medians (steps 30-150):
+(0.0049, 0.0048, 0.0046). Then 20 episodes (seeds 103-122) with that correction applied
+from step 0, no adaptation.
+
+| arm, held 20 | successes / 20 |
+|---|---|
+| healthy | 14 |
+| frozen under the fault | 0 |
+| adaptive, held correction | 14 |
+
+Paired: adaptive-only 14, frozen-only 0, McNemar p = 1.2e-4. Adaptive vs healthy on the
+same seeds: 5 each way, p = 1.0. The held correction restores the healthy rate exactly;
+the leftover per-step bias of 0.0003 (about 4 cm over a full 150-step episode, but most
+successes come at 30-80 steps) does not show in the success rate. Over all 23 episodes:
+healthy 17, frozen 0, adaptive 16.
+
+This is the same pattern as the humanoid (Sec 32.17-32.19): on a controller that keeps
+its target, the online scheme pays for its transient every episode, and identifying once
+and holding is the right deployment. On LIBERO and ALOHA the online scheme reaches the
+healthy rate because the delta controllers there forget the transient.
