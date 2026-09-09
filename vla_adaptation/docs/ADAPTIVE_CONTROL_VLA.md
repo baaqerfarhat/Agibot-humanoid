@@ -3174,3 +3174,30 @@ are hand joints, uncorrected.
 vector (0.188–0.197) from step 0. Paired scenes, four clips from five candidates; the
 frozen arm is driven so far off that the source plate leaves the camera's view, and the
 corrected panel finishes in 161–184 steps.
+
+### 32.23 Time-varying faults on the humanoid
+
+A held estimate cannot follow a moving fault by construction, so these cells run
+continuous adaptation (the scheme that reached 8/30 on a constant fault, §32.9), paired,
+n = 20, right arm, amplitude 0.10 rad.
+
+| profile | healthy | frozen | corrected (continuous) | fixed / broken | McNemar |
+|---|---|---|---|---|---|
+| **ramp to full over 60 steps** | 16/20 | 1/20 | **9/20** | 9 / 1 | 0.021 (vs healthy −8/+1, p = 0.039) |
+| non-zero-mean sine, period 120 | 11/20 | 1/20 | 6/20 | 6 / 1 | 0.13 (vs healthy −9/+4, p = 0.27) |
+| intermittent, 60 on / 60 off | 14/20 | 0/20 | 4/20 | 4 / 0 | 0.13 (vs healthy −11/+1, p = 0.006) |
+| ramp, **identify 3 then hold** | 13/20 | 1/20 | **11/20** | 10 / 0 | **0.002** (vs healthy −5/+3, p = 0.73) |
+
+The ramp is the one profile a held estimate can serve, because after its 60-step rise the
+fault is constant for the rest of every episode and the three-episode window median reads
+that constant: 11/20, at the healthy rate. Under continuous adaptation the ramp is repaired
+significantly (9/20, p = 0.021) but stays below healthy — the estimate lags the rise by
+about 30 steps and reaches 92 % by step 100, and then it keeps moving, which is §32.9's
+problem again. The two profiles that never settle are the boundary: a slow oscillation
+gets 6/20 and an intermittent fault 4/20, neither significant against frozen at n = 20 and
+the intermittent one significantly below healthy. On the Panda the same profiles were
+repaired (§20) because a Cartesian reach tolerates a correction that is wrong for a few
+steps; a dexterous-hand grasp on a plate does not. The humanoid's repairability criterion
+is therefore stricter than the Panda's on exactly the axis Proposition 2 names: the
+correction must be stationary while the hand is at the object, and a fault that keeps
+moving cannot be given a stationary correction.

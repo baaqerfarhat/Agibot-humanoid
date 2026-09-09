@@ -700,6 +700,18 @@ arm) the frozen policy never succeeds. The identification stays within $10\%$ ac
 fourfold range of magnitude, with no sign of the superposition boundary the Panda shows at
 its largest uniform fault (\S\ref{sec:severity}).
 
+\paragraph{Time-varying faults on the humanoid.} Same cell, $n=20$ paired, amplitude
+$0.10$\,rad. A ramp to full over 60 steps is constant thereafter, and the held estimate
+serves it: $1/20\to11/20$ (10 fixed, 0 broken, $p=0.002$; healthy $13/20$, $p=0.73$).
+Continuous adaptation repairs the ramp significantly but below healthy ($9/20$, $p=0.021$
+against frozen, $p=0.039$ against healthy $16/20$), lagging the rise by about 30 steps and
+then continuing to move. The two profiles that never settle are the boundary: a slow
+non-zero-mean oscillation reaches $6/20$ and an intermittent fault $4/20$, neither
+significant against frozen at $n=20$. On the Panda the same profiles were repaired
+(\S\ref{sec:severity}) because a Cartesian reach tolerates a correction that is briefly
+wrong; a dexterous-hand grasp does not, which is Proposition~\ref{prop:repair} on the
+axis it names: a fault that keeps moving cannot be given a stationary correction.
+
 \section{Recoverability-map cells at $n=40$}
 \label{app:map40}
 The two cells of \S\ref{sec:severity} that were significant only at the exact test's floor
