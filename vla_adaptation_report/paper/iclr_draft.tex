@@ -32,7 +32,8 @@ structured, time-varying and multiplicative faults the correction fixes 275 epis
 breaks 7. The same law repairs two further backbones from two other developers (OpenVLA-OFT,
 NVIDIA GR00T N1.7) with the \emph{same} calibration, and, in joint space with a calibration
 of their own from a few healthy rollouts, two further manipulators: a bimanual ALOHA and a
-humanoid (Fourier GR1 under GR00T N1.5, $4\%\to70\%$, its healthy rate). A tuned integral
+humanoid (Fourier GR1 under GR00T N1.5: on two tasks, $3\%\to63\%$ and $3\%\to43\%$, each its
+healthy rate, zero regressions in sixty paired episodes). A tuned integral
 baseline without the plant model reaches $35\%$ where the method reaches $95\%$. We state the
 two conditions the evidence supports---identifiability, and a repairability criterion
 comparing the task's spatial margin against the correction's variation---and the failure
@@ -70,10 +71,8 @@ tasks, and a residual that carries model error as well as the fault. Our contrib
   reconverges within a few tens of control steps.
 \item \textbf{Evidence at scale, paired} (\S\ref{sec:exp}): four suites, three backbones, three
   manipulators, four fault families, three severities and four time profiles, evaluated
-  episode-for-episode against the frozen policy with exact McNemar tests wherever the
-  simulator repeats a scene (unpaired Fisher tests on the humanoid benchmark, which
-  redraws its scene per reset), a healthy control on every cell, and 690 paired episodes
-  in aggregate.
+  episode-for-episode against the frozen policy with exact McNemar tests, a healthy
+  control on every cell, and 750 paired episodes in aggregate.
 \item \textbf{Two conditions, stated as propositions} (\S\ref{sec:theory}): a constant input
   fault and a constant output bias are not separable within one episode, so the healthy
   bias must be measured outside it; and repair succeeds when the correction's
@@ -271,7 +270,7 @@ and without a repair trial.
 turned out to depend on. It predicts LIBERO (a reach with centimetres of margin; $\sigma$ of
 $0.019$\,cm per step; repair), ALOHA with continuous adaptation ($\mu<0.5$\,cm;
 $\sigma = 0.43$\,cm; no repair), ALOHA with the held estimate ($\sigma=0$; repair)
-(\S\ref{sec:aloha}), and the GR1 humanoid both ways (\S\ref{sec:gr1}).
+(\S\ref{sec:aloha}), and the GR1 humanoid both ways on two tasks (\S\ref{sec:gr1}).
 
 \section{Experiments}
 \label{sec:exp}
@@ -293,8 +292,7 @@ steps, then held (\S\ref{sec:gr1}).}
 \subsection{Protocol}
 
 \textbf{Paired design.} Both arms of every cell run the same (task, initial state, seed)
-episodes and differ only in whether the correction is applied (the humanoid benchmark
-redraws its scene per reset and is the one unpaired comparison, \S\ref{sec:gr1}); Figure~\ref{fig:convergence}
+episodes and differ only in whether the correction is applied; Figure~\ref{fig:convergence}
 shows what the corrected arm does inside one episode. We report exact McNemar tests
 on the discordant pairs; unpaired tests on these data are conservative and, worse, hide the
 regression count. \textbf{Controls.} Every cell has a healthy-frozen control on the same
@@ -536,26 +534,26 @@ GR00T N1.5, for which GR1 is a pretrained embodiment. Plant from six healthy
 episodes ($R^2\ge0.998$ on the arm), $M$ by direct step response ($0.99\,I$ on the arm
 block; the replay probe of \S\ref{sec:aloha} is contaminated on an arm in contact),
 constants from the measured residual. A $+0.10$\,rad offset on the working arm zeros the
-policy on the plate-to-plate task. The simulator randomises the scene at every reset, so
-the arms here are \emph{unpaired}: thirty corrected episodes per scheme against frozen and
-healthy arms pooled over 90 episodes each, Fisher exact tests.
+policy on both tasks. The simulator's scene generator is reseeded per episode so both arms
+see identical scenes. The estimate is read in the reach window (steps 50--200, before the
+hand is on the plate) over three episodes and the median held: one episode's end reads a
+contact standoff, and was $0.2$\,rad wrong on a wrist joint on two of three draws.
 
 \begin{center}\small
-\begin{tabular}{lrrrcc}
+\begin{tabular}{lrrrrrcc}
 \toprule
-scheme & healthy & frozen & corrected & $p$ vs frozen & $p$ vs healthy \\
+task, $n=30$ paired & healthy & frozen & corrected & fixed & broken & McNemar & vs healthy \\
 \midrule
-continuous adaptation & 64/90 & 4/90 & 8/30 & $0.0016$ & $2.3\times10^{-4}$ \\
-identify episode 0, then hold & 64/90 & 4/90 & \textbf{21/30} & $8.9\times10^{-13}$ & $1$ \\
+plate-to-plate & 22/30 & 1/30 & \textbf{19/30} & 18 & 0 & $7.6\times10^{-6}$ & $p=0.55$ \\
+tray-to-plate & 17/30 & 1/30 & \textbf{13/30} & 12 & 0 & $4.9\times10^{-4}$ & $p=0.45$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-Held, the estimate ($83$--$118\%$ of the fault per joint) takes the humanoid from $4\%$ to
-its healthy rate, and on a healthy arm the law holds a phantom of at most $0.012$\,rad (one joint; under
-$0.006$ on the rest) and changes nothing ($19/30$ against $18/30$); updating, the same estimate reaches a third of it, above frozen and
-significantly below healthy. Proposition~\ref{prop:repair} decides the
-scheme on the third manipulator as on the second.
+Held vectors are $93$--$104\%$ and $73$--$126\%$ of the fault per joint; on a healthy arm
+the law changes nothing ($19/30$ vs $18/30$; $16/30$ vs $15/30$). Continuous adaptation
+reaches $8/30$ on plate-to-plate, a third of the ceiling: Proposition~\ref{prop:repair}
+decides the scheme here as on ALOHA.
 
 \subsection{Hardware}
 \label{sec:hardware}
@@ -587,9 +585,7 @@ at $0.15$ it takes $20\%\to95\%$). The record keeps each with the measurement th
 Faults below the controller are repaired only when they remain inputs the plant responds
 to: a joint torque bias and heavy joint friction are, a joint lock is not
 (\S\ref{sec:joint}), and the torque bias carries a regression rate the Cartesian cells never
-showed.
-A joint-space law would see the torque bias as the constant it is; the Cartesian residual
-sees it through the Jacobian. On hardware a stiffness loss is invisible in position and recoverable in effort, so the
+showed. On hardware a stiffness loss is invisible in position and recoverable in effort, so the
 sensor, not the law, is what changes. On tight-margin tasks the deployable scheme is to hold
 the estimate after one episode, a weaker claim about online adaptation than the LIBERO one,
 stated as such. The policy's stochasticity gives $\pm10$ points at $n=20$;

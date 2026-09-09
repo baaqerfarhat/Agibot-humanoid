@@ -3025,3 +3025,117 @@ humanoid run from here is **paired** in the LIBERO sense and the video's two pan
 same task and object. §32.10–32.13 stand as stated (unpaired); the plate-to-plate cell is
 being rerun paired (three arms, seeds 100–129) so the humanoid table can carry McNemar
 counts like every other table, and the tray-to-plate chain runs paired from the start.
+
+### 32.16 Plate-to-plate, PAIRED (identical scenes), identify-then-hold, n = 30
+
+| arm | success | vs frozen | vs healthy |
+|---|---|---|---|
+| healthy | 22/30 | | |
+| frozen, right arm +0.10 rad | 2/30 | | |
+| **identify episode 0, then hold** | **15/30 = 50 %** | **13 fixed / 0 broken, p = 2.4×10⁻⁴** | −13 / +6, p = 0.17 |
+
+Paired at last, and the number is lower than the unpaired 21/30: not because of pairing but
+because of the **one identification episode**. Its held estimate this time is `0.117, 0.092,
+0.096, 0.115, 0.095, 0.146, −0.096` — joint 13 (wrist pitch) came out with the **wrong sign**
+and joint 12 at 146 %; the earlier run's held vector was 0.090–0.112 on all seven. One
+episode of identification on a contact-rich task can be one contact spike away from the
+fault on a joint, and the hold scheme then carries that error for 29 episodes. The repair
+is still 13 fixed and 0 broken against frozen, but it sits below the healthy arm (p = 0.17)
+where the earlier draw sat on it. Identifying over three episodes and holding their mean is
+the obvious robustness step (§27 identified over one because ALOHA's estimate was
+uniform to 2 %) and is queued, paired, on the same seeds.
+
+## 33. Review pass on the draft (2026-09-08)
+
+Eleven wording corrections (the manipulators' own calibration, the pooled 4 % humanoid floor,
+the humanoid's unpaired status in the contributions, "a few tens of steps" for convergence,
+the GR1 in the setting and method, the corrected-channel norm and the innovation law on the
+humanoid, six measured failures of the constants rule). Then every success-rate cell in the
+draft's tables — 38 cells across the headline, map, time-varying, gain, OFT, GR00T,
+joint-level, ALOHA, ablation and n = 40 tables — was recomputed from its stored
+per-episode file by script: **38 of 38 match** (the one apparent mismatch was the script
+reading `tv_intermittent.json`, the underpowered §17 cell, instead of `tv2_intermit.json`,
+the §20 cell the draft reports; the draft is right). The humanoid pooled floor and ceiling
+(4/90, 64/90) also recompute from their six files.
+
+### 32.17 Tray-to-plate, paired, identify-then-hold: 6/30, and the identification episode is the weak link
+
+| arm (tray-to-plate, right arm +0.10 rad, seeds 100–129, identical scenes) | success |
+|---|---|
+| healthy | 16/30 |
+| frozen | 2/30 |
+| identify episode 0, then hold | 6/30 — 5 fixed / 1 broken, p = 0.22; below healthy, p = 0.006 |
+
+Not a repair. The held vector is `0.085, 0.081, 0.097, 0.055, 0.083, −0.107, 0.179`: the two
+wrist joints are wrong by 0.2 rad in opposite directions, and the identification episode
+itself failed at 720 steps — it spent most of the episode in contact, and the last-50-step
+mean is a contact standoff, not the fault. §32.16 was the same failure on a milder draw.
+The law identifies the fault well while the arm reaches (the trajectories are at 90–110 %
+by step 100 on the shoulder joints) and badly once the hand is on the plate; a single
+episode's ending is the wrong place to read the estimate. Two fixes, both queued paired on
+both tasks: read the **median over the episode after the transient** (`--hold-stat
+median`, added), and identify over three episodes before holding.
+
+**Which statistic of the identification episode to hold** (offline, on the four stored
+identification episodes, max |error| over the seven joints against 0.10 rad):
+
+| episode | last-50 mean | median after 50 | mean 50–200 | median 50–200 |
+|---|---|---|---|---|
+| plate-to-plate, good draw (held → 21/30) | 0.012 | 0.008 | 0.009 | 0.008 |
+| plate-to-plate, paired draw (held → 15/30) | 0.196 | 0.165 | 0.131 | 0.165 |
+| tray-to-plate, paired (held → 6/30) | 0.207 | 0.123 | 0.064 | 0.055 |
+| plate-to-plate continuous, ep 0 (720 steps) | 0.299 | 0.116 | 0.015 | 0.009 |
+
+The reach window (steps 50–200) is where the law reads the fault; the episode's end is
+where the hand is on the plate. On three of four episodes the window median is within
+0.06 rad on every joint where the last-50 mean is off by 0.2–0.3; the fourth (the paired
+plate-to-plate draw) had the wrist wrong from the start of that episode, which only more
+identification episodes can fix. `--hold-stat window` now holds the median over steps
+50–200, and with `--identify-episodes k` the median of the k per-episode windows. Both
+tasks are rerun paired with k = 3 and the window statistic.
+
+### 32.18 Plate-to-plate, paired, identify over three episodes, hold the window median
+
+| arm (seeds 100–129, identical scenes) | success | vs frozen | vs healthy |
+|---|---|---|---|
+| healthy | 22/30 | | |
+| frozen, right arm +0.10 rad | 1/30 | | |
+| **identify episodes 0–2 (median of the three reach windows), hold 3–29** | **19/30 = 63 %** | **18 fixed / 0 broken, p = 7.6×10⁻⁶** | +4 / −7, p = 0.55 |
+
+Held vector `0.104, 0.097, 0.098, 0.099, 0.100, 0.093, 0.096` — **93–104 % of the fault on
+every joint**, where the single-episode draw of §32.16 had a wrong-signed wrist. On the 27
+held episodes the corrected arm scores 17/27 against the healthy arm's 20/27 on the same
+scenes; two of the three identification episodes succeeded as well. This is the humanoid
+result the paper carries: paired, McNemar, at the healthy rate, with the identification
+cost stated as three episodes rather than one. The tray-to-plate rerun with the same scheme
+is running.
+
+### 32.19 Tray-to-plate, paired, identify over three episodes: at the healthy rate too
+
+| arm (seeds 100–129, identical scenes) | success | vs frozen | vs healthy |
+|---|---|---|---|
+| healthy | 17/30 | | |
+| frozen, right arm +0.10 rad | 1/30 | | |
+| **identify episodes 0–2 (window median), hold 3–29** | **13/30 = 43 %** | **12 fixed / 0 broken, p = 4.9×10⁻⁴** | +6 / −10, p = 0.45 |
+
+Held vector `0.102, 0.097, 0.102, 0.098, 0.100, 0.126, 0.073` (73–126 %); on the 27 held
+episodes 13/27 against the healthy arm's 15/27. All three identification episodes failed
+the task (they run with the estimate still moving) and the held correction repairs
+anyway. The law on a healthy arm on this task: 16/30 against 15/30 (§ C4 of the queue log,
+`t2p_null_hold_s160.json`), a null.
+
+**The humanoid, final: two tasks, paired, at the healthy rate.**
+
+| task | healthy | frozen | corrected (identify 3, hold) | fixed / broken | McNemar p | vs healthy |
+|---|---|---|---|---|---|---|
+| plate-to-plate | 22/30 | 1/30 | **19/30** | 18 / 0 | 7.6×10⁻⁶ | p = 0.55 |
+| tray-to-plate | 17/30 | 1/30 | **13/30** | 12 / 0 | 4.9×10⁻⁴ | p = 0.45 |
+| pooled | 39/60 | 2/60 | **32/60** | 30 / 0 | 1.9×10⁻⁹ | — |
+
+Zero regressions in sixty paired episodes; both tasks indistinguishable from their healthy
+arms; nulls on both (19/30 vs 18/30; 16/30 vs 15/30). What it cost: six healthy episodes
+for the plant, a one-minute direct probe for M, and three identification episodes per
+task. What it took to get right: the normaliser on the corrected joints (§32.2), the
+innovation law (§32.3), the scene generator (§32.15), and reading the estimate in the reach
+window over three episodes instead of at the end of one (§32.17). Each of those is a
+measured failure that is now a sentence in the method.

@@ -184,7 +184,7 @@ def main():
                     help="also run a HEALTHY arm (no fault, no correction) on the same seeds in the same process. "
                          "Runs the healthy arm on the same seeds; with the env rng reseeded per reset (Sec 32.15) "
                          "all arms see identical scenes and the comparison is paired.")
-    ap.add_argument("--hold-stat", choices=["last", "mean50"], default="last",
+    ap.add_argument("--hold-stat", choices=["last", "mean50", "median", "window"], default="last",
                     help="what identify-then-hold carries: the final estimate, or the mean of the last 50 steps "
                          "(the record's statistic; the final value on a contact-rich episode is one contact spike away)")
     a = ap.parse_args()
@@ -241,7 +241,7 @@ def main():
         arms = [("healthy", None)] + arms
     for tag, adapt in arms:
         ok, fh, per_ep, trajs = 0, [], [], []
-        f_carry = None
+        f_carry = None; windows = []
         for ep in range(a.episodes):
             if adapt is None:                      # healthy control: no fault, no correction, same seeds
                 s, f_hat, traj = episode(A, ep, W, M_inv, None, None, False, horizon=a.horizon, max_steps=a.max_steps)
@@ -254,7 +254,16 @@ def main():
                                      f_init=(f_carry if (adapt and (a.warm_start or a.identify_episodes is not None)) else None),
                                      freeze_after=(0 if (a.identify_episodes is not None and ep >= a.identify_episodes) else a.freeze_after),
                                      horizon=a.horizon, max_steps=a.max_steps, law=a.law, M=M)
-            f_carry = f_hat if a.hold_stat == "last" or not traj else np.mean([st["f_hat"] for st in traj[-50:]], axis=0)
+            if a.hold_stat == "last" or not traj:
+                f_carry = f_hat
+            elif a.hold_stat == "mean50":
+                f_carry = np.mean([st["f_hat"] for st in traj[-50:]], axis=0)
+            elif a.hold_stat == "median":   # median over the episode after the transient (Sec 32.17)
+                f_carry = np.median([st["f_hat"] for st in traj[50:]] or [st["f_hat"] for st in traj], axis=0)
+            else:   # "window": median over steps 50-200, the reach phase before the hand is on the plate;
+                    # with several identification episodes, the median of the per-episode windows (Sec 32.17)
+                win = np.median([st["f_hat"] for st in traj[50:200]] or [st["f_hat"] for st in traj], axis=0)
+                windows.append(win); f_carry = np.median(windows, axis=0)
             ok += int(s); fh.append(f_hat.tolist()); per_ep.append(dict(task=0, init=ep, ok=bool(s))); trajs.append(traj)
             shown = corr if corr else list(range(7))
             print(f"  [{tag}] ep {ep}: success={s}  f_hat[{shown[0]}..]={np.round(f_hat[shown], 3)}", flush=True)
