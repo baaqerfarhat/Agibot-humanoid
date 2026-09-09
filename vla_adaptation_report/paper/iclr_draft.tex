@@ -24,8 +24,9 @@ deployments. We show that the fault can be identified and cancelled \emph{within
 episode}, from the robot's own motion, by adapting six numbers at the policy's action
 interface: a plant model and a sensitivity matrix identified once on healthy data turn the
 proprioceptive residual into an estimate of the fault, and a projected, normalised gradient
-law drives it to zero. No gradients through the policy, no reward, no reference trajectory,
-and no learning across episodes. On four LIBERO suites with a frozen $\pi_{0.5}$, paired
+law drives it to zero. No gradients through the policy, no reward, no reference trajectory;
+on tasks whose margin is smaller than the estimator's motion, the estimate identified in one
+to three episodes is held thereafter. On four LIBERO suites with a frozen $\pi_{0.5}$, paired
 episodes go from $23\%$ to $65\%$ success (exact McNemar $p = 6.1\times10^{-13}$, $n=120$),
 with every suite individually significant; across 690 paired episodes spanning additive,
 structured, time-varying and multiplicative faults the correction fixes 275 episodes and
@@ -67,12 +68,14 @@ tasks, and a residual that carries model error as well as the fault. Our contrib
 \begin{enumerate}[leftmargin=1.5em,itemsep=1pt]
 \item \textbf{A single-episode repair loop for frozen VLAs} (\S\ref{sec:method}) needing
   only a plant model and a sensitivity matrix identified on healthy data, both properties of
-  the robot rather than of the policy or the task. The estimate resets every episode and
-  reconverges within a few tens of control steps.
+  the robot rather than of the policy or the task. On LIBERO the estimate resets every
+  episode and reconverges within a few tens of control steps; on the two joint-space
+  manipulators it is identified in one to three episodes and held.
 \item \textbf{Evidence at scale, paired} (\S\ref{sec:exp}): four suites, three backbones, three
   manipulators, four fault families, three severities and four time profiles, evaluated
   episode-for-episode against the frozen policy with exact McNemar tests, a healthy
-  control on every cell, and 750 paired episodes in aggregate.
+  control on every cell, and over 1,300 paired episodes in aggregate across cells, controls
+  and ablations.
 \item \textbf{Two conditions, stated as propositions} (\S\ref{sec:theory}): a constant input
   fault and a constant output bias are not separable within one episode, so the healthy
   bias must be measured outside it; and repair succeeds when the correction's

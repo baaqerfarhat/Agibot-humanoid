@@ -3201,3 +3201,16 @@ steps; a dexterous-hand grasp on a plate does not. The humanoid's repairability 
 is therefore stricter than the Panda's on exactly the axis Proposition 2 names: the
 correction must be stationary while the hand is at the object, and a fault that keeps
 moving cannot be given a stationary correction.
+
+### 33.1 Two consistency fixes after the humanoid work (2026-09-09)
+
+The title and abstract say single-episode; ALOHA holds an estimate from one sacrificial
+episode and the GR1 from three. The abstract's "no learning across episodes" is replaced by
+the statement that on tasks whose margin is below the estimator's motion the estimate
+identified in one to three episodes is held, and the first contribution says the same. The
+contributions' aggregate was stale (750): a script over every stored paired result file
+with both arms (59 files, controls and ablations included, probes and logs excluded)
+counts **1,330 paired episodes, 544 fixed, 32 broken**; the paper now says "over 1,300
+paired episodes in aggregate across cells, controls and ablations", and the abstract's
+curated 690/275/7 (LIBERO and OFT, the online law) is unchanged and separately verified
+(§33).
