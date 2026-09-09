@@ -3139,3 +3139,13 @@ task. What it took to get right: the normaliser on the corrected joints (§32.2)
 innovation law (§32.3), the scene generator (§32.15), and reading the estimate in the reach
 window over three episodes instead of at the end of one (§32.17). Each of those is a
 measured failure that is now a sentence in the method.
+
+### 32.20 Second humanoid video
+
+`results/phase05/adaptive_vs_frozen_gr1_tray.mp4` (148 s, 5 MB): tray-to-plate, right arm
++0.10 rad, the corrected panel applying the three-episode held vector (`0.102, 0.097,
+0.102, 0.098, 0.100, 0.126, 0.073`) from step 0, labelled as identified over three
+episodes. Paired scenes: both panels show the same task and object (can, bell pepper,
+squash, can). Four clips from seven candidates; the frozen panel times out at 720 steps in
+each — in one it swings the arm up into the camera — and the corrected panel finishes in
+150–177 steps. Both humanoid videos are re-encoded with the letterbox cropped.

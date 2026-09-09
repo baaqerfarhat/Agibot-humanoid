@@ -84,6 +84,7 @@ def main():
     ap.add_argument("--freeze-after", type=int, default=None)
     ap.add_argument("--f-init", default=None, help="29 comma-separated values (the held estimate)")
     ap.add_argument("--horizon", type=int, default=16); ap.add_argument("--max-steps", type=int, default=720)
+    ap.add_argument("--scheme-label", default=None, help="text after ADAPTIVE on the corrected panel, e.g. 'held correction (identified over 3 episodes)'")
     a = ap.parse_args()
 
     def joints(spec):
@@ -98,7 +99,7 @@ def main():
     W, _ = GA.fit_plant(a.log); M = np.array(json.loads(a.openloop.read_text())["M"]); M_inv = np.linalg.pinv(M)
     fvec = fault(a.fault_vec); corr = joints(a.corr_joints); shown = corr[:3]
     f_init = np.array([float(x) for x in a.f_init.split(",")]) if a.f_init else None
-    scheme = "held correction (identified in one episode)" if a.freeze_after == 0 and f_init is not None else "online"
+    scheme = a.scheme_label or ("held correction (identified in one episode)" if a.freeze_after == 0 and f_init is not None else "online")
     clips, kept = [], 0
     for ep in [int(x) for x in a.episodes.split(",")]:
         if a.max_clips and kept >= a.max_clips:
