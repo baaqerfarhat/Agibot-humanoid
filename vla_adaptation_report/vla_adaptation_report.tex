@@ -1124,6 +1124,130 @@ ALOHA, held & 0.5\,cm & 0.000\,cm & repair, 0/40 $\to$ 15/40 \\
 \end{center}
 
 %==========================================================================
+\section{A third backbone: NVIDIA GR00T N1.7}
+\label{sec:groot}
+
+The official \code{nvidia/GR00T-N1.7-LIBERO} finetune (3B; Cosmos-Reason2 VLM, flow-matching
+DiT action head, 16-step chunks) is served behind the same websocket protocol as $\pi_{0.5}$
+and OpenVLA-OFT, with every script, the plant model and $M$ unchanged. Three things had to be
+fixed for this machine --- a gated backbone repository, no FlashAttention on a Turing GPU,
+a virtualenv without pip --- and are in \code{SETUP.md}. Inference is 3.8\,s per chunk, so a
+20-episode paired cell takes about 45 minutes.
+
+\begin{center}\small
+\begin{tabular}{lrrrrc}
+\toprule
+cell (\code{libero\_spatial}, $n=20$) & frozen & corrected & fixed & broken & McNemar \\
+\midrule
+healthy control (law running) & 18/20 & 18/20 & 1 & 1 & 1.0 \\
+rotation $0.10$, rotation-only correction & 0/20 & \textbf{14/20} & 14 & 0 & $1.2\times10^{-4}$ \\
+translation $0.15$, translation-only correction & 2/20 & \textbf{15/20} & 13 & 0 & $2.4\times10^{-4}$ \\
+gain $0.20$, multiplicative law & 0/20 & \textbf{19/20} & 19 & 0 & $3.8\times10^{-6}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Three fault families, 46 repaired, none broken, on a policy from a third developer with a
+third architecture, using the calibration identified on $\pi_{0.5}$ and never retuned. The
+gain estimate lands within $2\%$ of the true $-0.80$ on all three axes. On the rotation cell
+across the three backbones, 42 of 60 paired episodes are repaired and none is broken.
+
+\section{Faults below the controller}
+\label{sec:joint}
+
+Every fault above enters at the Cartesian action interface, above LIBERO's operational-space
+controller. J-PARC's faults (joint lock, limited range, friction) enter below it, where the
+fault-to-motion map depends on configuration through the Jacobian. \code{joint\_fault.py}
+edits the MuJoCo model of the Panda after each reset (friction loss, damping, actuator gain,
+joint range) or applies a constant joint torque every step, and restores the model before the
+next episode. Magnitudes were measured first (40 steps from a held pose): a 5\,N\,m elbow torque
+leaks through the controller as an 8--9\,cm drift whether or not the arm is commanded; a
+$\pm0.05$\,rad lock and $+2.0$ friction do nothing while holding and remove 3--10\,cm of
+commanded motion. An estimate-only probe identifies each on the translation channels and
+nowhere else, the lock at 15--23 healthy-phantom standard deviations.
+
+\begin{center}\small
+\begin{tabular}{lrrrrrc}
+\toprule
+elbow fault, translation corrected, phantom subtracted & $n$ & frozen & corrected & fixed & broken & McNemar \\
+\midrule
+torque bias 5\,N\,m & 40 & 20/40 & \textbf{32/40} & 15 & 3 & $0.0075$ \\
+friction $+4.0$ & 20 & 20/20 & 20/20 & 0 & 0 & ceiling \\
+friction $+10$ & 20 & 11/20 & 14/20 & 6 & 3 & $0.51$ \\
+friction $+20$ & 20 & 0/20 & \textbf{8/20} & 8 & 0 & $0.0078$ \\
+lock $\pm0.05$\,rad & 20 & 0/20 & 0/20 & 0 & 0 & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The torque bias is repaired with three regressions in forty: its estimate's across-episode
+spread is four times any Cartesian fault's, because the Jacobian makes the offset the residual
+reports right for the configuration it was measured in and wrong for the next one, and a
+tracking law follows that with a lag. Heavy friction is repaired from zero with no
+regression; mild friction is not a claim, because friction acts only while the joint moves
+and a constant estimate that was right during a reach pushes the wrong way when the arm
+pauses. The lock is identified, corrected and not repaired: the estimate converges within 30
+steps on every episode and the correction changes nothing, because a lock removes a degree
+of freedom and no additive command moves the arm along a direction it can no longer
+produce. Identifiability is necessary for repair and not sufficient: the fault must remain
+an input the plant responds to.
+
+\section{Ablation of the constants, and two map cells at $n=40$}
+\label{sec:ablation}
+
+Headline cell, $n=20$ per row, one constant changed from the reference ($\gamma=0.08$,
+$\rho=0.15$, deadzone $0.008$, plant on three healthy episodes; reference $8/20\to18/20$).
+Gain: $0.02$ gives $17/20$, $0.32$ gives $18/20$ --- flat across a $16\times$ range. Deadzone:
+$0$ gives $19/20$, $0.03$ (the residual's own scale) $17/20$. Normaliser: $0.05$, below the
+measured residual, gives $14/20$ with two regressions ($p=0.45$) and an estimate at $55\%$ of
+the fault, exactly the fixed-point bias $f/(1+|r|^2/\rho^2)$ predicts; $0.50$ gives $20/20$.
+Plant fitted on one healthy episode (75 steps): $17/20$; on two: $17/20$ with the full
+estimate. The only setting that fails is the one chosen below the measured residual scale.
+Rotation $0.05$ at $n=40$: $27/40\to39/40$ (12/0, $p=4.9\times10^{-4}$); translation $0.10$:
+$30/40\to38/40$ (9/1, $p=0.021$). Every map cell that showed an effect at $n=20$ is now
+individually significant.
+
+\section{A humanoid: GR00T N1.5 on the Fourier GR1}
+\label{sec:gr1}
+
+N1.7's humanoid embodiment is finetune-only with no released checkpoint, and the X2 has no
+GR00T embodiment; the N1.5 base model has the Fourier GR1 pretrained. A second clone at the
+N1.5 tag, patched to SDPA attention, drives the GR1 upper body (two 7-joint arms, two 6-joint
+hands, a waist; 29 absolute joint targets at 20\,Hz) in NVIDIA's RoboCasa GR1 tabletop
+simulator, zero-shot. The joint-space law of \S\ref{sec:aloha} runs unchanged; the plant is
+fitted on six healthy episodes ($R^2\ge0.998$ on the arm) and $M$ is $0.99\,I$ on the arm
+block by a direct step response from a held pose --- the replay probe is contaminated on an
+arm that touches objects during the replay. Four measured failures on the way became method:
+the normaliser must take the residual of the joints being corrected (the twelve unmodelled
+hand joints carry three times the arm's residual and attenuated every update until the
+estimate sat at $13\%$); the innovation form of the law is used because the fault is three
+times the healthy residual; the simulator draws its scene from its own generator, which is
+reseeded per episode so both arms see identical scenes; and the estimate is read in the reach
+window (steps 50--200) over three identification episodes, because one episode's end reads a
+contact standoff and was $0.2$\,rad wrong on a wrist joint on two of three draws.
+
+\begin{center}\small
+\begin{tabular}{lrrrrrcc}
+\toprule
+task, right arm $+0.10$\,rad, $n=30$ paired & healthy & frozen & corrected & fixed & broken & McNemar & vs healthy \\
+\midrule
+plate-to-plate & 22/30 & 1/30 & \textbf{19/30} & 18 & 0 & $7.6\times10^{-6}$ & $p=0.55$ \\
+tray-to-plate & 17/30 & 1/30 & \textbf{13/30} & 12 & 0 & $4.9\times10^{-4}$ & $p=0.45$ \\
+\midrule
+plate-to-plate, $+0.05$\,rad & 19/30 & 7/30 & \textbf{24/30} & 17 & 0 & $1.5\times10^{-5}$ & $p=0.18$ \\
+plate-to-plate, $+0.20$\,rad & 25/30 & 0/30 & \textbf{21/30} & 21 & 0 & $9.5\times10^{-7}$ & $p=0.29$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Every cell is at its healthy rate with no regression in 120 paired episodes; the held vectors
+are within $10\%$ of the fault on every joint at every magnitude; the law on a healthy arm
+changes nothing ($19/30$ against $18/30$; $16/30$ against $15/30$). Continuous adaptation on
+plate-to-plate reaches $8/30$, a third of the ceiling: Proposition~2 of the paper decides the
+scheme on the third manipulator as on the second. What it cost: six healthy episodes for the
+plant, a one-minute probe for $M$, three identification episodes per task, on a 3B model that
+was never fine-tuned.
+
 \section{Negative results worth keeping}
 \label{sec:failures}
 
