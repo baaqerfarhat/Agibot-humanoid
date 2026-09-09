@@ -3166,3 +3166,11 @@ every joint. **Zero regressions across the three magnitudes (56 fixed / 0 broken
 paired episodes)**, and no sign yet of the superposition boundary §19 found on the Panda:
 the identification stays at 90–108 % from 0.05 to 0.20 rad. The clip warnings in the log
 are hand joints, uncorrected.
+
+### 32.22 Third humanoid video: the largest fault
+
+`results/phase05/adaptive_vs_frozen_gr1_020.mp4` (148 s, 3.6 MB): plate-to-plate, right arm
+**+0.20 rad** (11.5° on every joint), the corrected panel applying the three-episode held
+vector (0.188–0.197) from step 0. Paired scenes, four clips from five candidates; the
+frozen arm is driven so far off that the source plate leaves the camera's view, and the
+corrected panel finishes in 161–184 steps.
