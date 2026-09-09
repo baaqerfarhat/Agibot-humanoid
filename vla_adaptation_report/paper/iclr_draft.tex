@@ -553,7 +553,7 @@ tray-to-plate & 17/30 & 1/30 & \textbf{13/30} & 12 & 0 & $4.9\times10^{-4}$ & $p
 Held vectors are $93$--$104\%$ and $73$--$126\%$ of the fault per joint; on a healthy arm
 the law changes nothing ($19/30$ vs $18/30$; $16/30$ vs $15/30$). Continuous adaptation
 reaches $8/30$ on plate-to-plate, a third of the ceiling: Proposition~\ref{prop:repair}
-decides the scheme here as on ALOHA.
+decides the scheme here as on ALOHA. Appendix~\ref{app:gr1map} maps three fault magnitudes.
 
 \subsection{Hardware}
 \label{sec:hardware}
@@ -676,6 +676,29 @@ rollouts) is invisible in joint position and recoverable in effort ($r=+0.84$); 
 is run-varying on load-bearing joints, so calibration must be within-run and in motion; the
 detectability floor is $0.5$--$1.3^\circ$ of joint offset. The paired repair experiment on
 the robot is pending robot time and is the one result this paper does not yet contain.
+
+\section{Humanoid recoverability map}
+\label{app:gr1map}
+Plate-to-plate, right-arm offset at three magnitudes, paired on identical scenes, identify
+over three episodes then hold (\S\ref{sec:gr1}), $n=30$ per arm:
+
+\begin{center}\small
+\begin{tabular}{lrrrrrcl}
+\toprule
+offset & healthy & frozen & corrected & fixed & broken & McNemar & held estimate \\
+\midrule
+$0.05$\,rad & 19/30 & 7/30 & \textbf{24/30} & 17 & 0 & $1.5\times10^{-5}$ & $90$--$108\%$ \\
+$0.10$\,rad & 22/30 & 1/30 & \textbf{19/30} & 18 & 0 & $7.6\times10^{-6}$ & $93$--$104\%$ \\
+$0.20$\,rad & 25/30 & 0/30 & \textbf{21/30} & 21 & 0 & $9.5\times10^{-7}$ & $94$--$99\%$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Every cell is at its healthy rate ($p=0.18$, $0.55$, $0.29$ against the healthy arm) with no
+regression in 90 paired episodes; at $0.20$\,rad ($11.5^\circ$ on every joint of the working
+arm) the frozen policy never succeeds. The identification stays within $10\%$ across a
+fourfold range of magnitude, with no sign of the superposition boundary the Panda shows at
+its largest uniform fault (\S\ref{sec:severity}).
 
 \section{Recoverability-map cells at $n=40$}
 \label{app:map40}

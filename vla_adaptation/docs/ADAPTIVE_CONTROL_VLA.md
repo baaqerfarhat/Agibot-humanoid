@@ -3149,3 +3149,20 @@ episodes. Paired scenes: both panels show the same task and object (can, bell pe
 squash, can). Four clips from seven candidates; the frozen panel times out at 720 steps in
 each — in one it swings the arm up into the camera — and the corrected panel finishes in
 150–177 steps. Both humanoid videos are re-encoded with the letterbox cropped.
+
+### 32.21 Humanoid recoverability map, plate-to-plate, paired, identify 3 then hold
+
+| right-arm offset | healthy | frozen | corrected | fixed / broken | McNemar | vs healthy | held estimate |
+|---|---|---|---|---|---|---|---|
+| **0.05 rad** | 19/30 | 7/30 | **24/30** | 17 / 0 | 1.5×10⁻⁵ | +7 / −2, p = 0.18 | 0.045–0.054 (90–108 %) |
+| 0.10 rad (§32.18) | 22/30 | 1/30 | **19/30** | 18 / 0 | 7.6×10⁻⁶ | +4 / −7, p = 0.55 | 0.093–0.104 |
+| **0.20 rad** | 25/30 | 0/30 | **21/30** | 21 / 0 | 9.5×10⁻⁷ | +2 / −6, p = 0.29 | 0.188–0.197 (94–99 %) |
+
+At half the headline fault the frozen humanoid keeps a quarter of its successes and the
+held correction takes it above its own healthy arm on these seeds (inside noise); at twice
+the headline fault (11.5° on every right-arm joint) the frozen policy never succeeds and
+the held correction recovers 21 of 30, at the healthy rate, with the estimate within 6 % on
+every joint. **Zero regressions across the three magnitudes (56 fixed / 0 broken in 90
+paired episodes)**, and no sign yet of the superposition boundary §19 found on the Panda:
+the identification stays at 90–108 % from 0.05 to 0.20 rad. The clip warnings in the log
+are hand joints, uncorrected.
