@@ -25,7 +25,10 @@ def leg_target_cols(meta):
     return cols
 
 
-for f in sorted(glob.glob("2026*_box_pickup_*.meta.json")):
+runs = sorted(
+    glob.glob("2026*_box_pickup_*.meta.json") + glob.glob("2026*_box_hug_*.meta.json")
+)
+for f in runs:
     meta = json.load(open(f))
     csv_path = meta["csv"]
     if not os.path.exists(csv_path) or not meta.get("engage"):
