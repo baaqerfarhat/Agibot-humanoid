@@ -28,10 +28,12 @@ def annotate(img, header, color, lines):
     return np.asarray(canvas)
 
 
-def rollout(A, ep, W, M_inv, M, scale, fvec, adapt, corr, gamma, dead, norm_r, clip, horizon, max_steps):
+def rollout(A, ep, W, M_inv, M, scale, fvec, adapt, corr, gamma, dead, norm_r, clip, horizon, max_steps,
+            f_init=None, freeze_after=None):
     obs = A.reset(ep); p = A.pose(obs); prompt = str(obs[WA.LANG_KEY])
     hist = collections.deque([np.zeros(6)] * (WA.K_FIR + 1), maxlen=WA.K_FIR + 1)
-    f_hat = np.zeros(6); m = np.isin(np.arange(6), corr).astype(float); sel = m > 0
+    f_hat = np.zeros(6) if f_init is None else np.asarray(f_init, float).copy()
+    m = np.isin(np.arange(6), corr).astype(float); sel = m > 0
     plan = collections.deque(); frames = []; success = False
     for t in range(max_steps):
         if not plan:
@@ -44,7 +46,7 @@ def rollout(A, ep, W, M_inv, M, scale, fvec, adapt, corr, gamma, dead, norm_r, c
         hist.appendleft(a_corr[:6].copy()); H = np.array(hist)
         pred = np.array([W[j, :WA.K_FIR + 1] @ H[:, j] + W[j, -1] for j in range(6)])
         res = y / scale - pred
-        if adapt:
+        if adapt and (freeze_after is None or t < freeze_after):
             e = res - M @ (f_hat * m); ne = float(np.linalg.norm(e[sel]))
             step = np.zeros(6) if ne < dead else (M_inv @ e) / (1.0 + (ne / norm_r) ** 2)
             f_hat = np.clip(f_hat + gamma * step * m, -clip, clip)
@@ -68,6 +70,8 @@ def main():
     ap.add_argument("--horizon", type=int, default=8); ap.add_argument("--max-steps", type=int, default=150)
     ap.add_argument("--fps", type=int, default=10); ap.add_argument("--title", default="")
     ap.add_argument("--only-repaired", action="store_true"); ap.add_argument("--max-clips", type=int, default=0)
+    ap.add_argument("--f-init", default=None, help="6 comma-separated values (the held estimate); use --f-init=...")
+    ap.add_argument("--freeze-after", type=int, default=None); ap.add_argument("--scheme-label", default=None)
     a = ap.parse_args()
 
     A = WA.WidowX(a.task, a.host, a.port, a.seed)
@@ -75,6 +79,8 @@ def main():
     W, _ = WA.fit_plant(a.log, scale); M = np.array(json.loads(a.openloop.read_text())["M"]); M_inv = np.linalg.pinv(M)
     fvec = np.array([float(x) for x in a.fault_vec.split(",")]); corr = [int(x) for x in a.corr_dims.split(",")]
     shown = corr[:3]
+    f_init = np.array([float(x) for x in a.f_init.split(",")]) if a.f_init else None
+    scheme = a.scheme_label or ("held correction (identified over 3 episodes)" if a.freeze_after == 0 and f_init is not None else "online")
     clips, kept = [], 0
     for ep in [int(x) for x in a.episodes.split(",")]:
         if a.max_clips and kept >= a.max_clips:
@@ -83,7 +89,8 @@ def main():
         print(f"  seed {a.seed+ep}: frozen success={okL} steps={len(fL)}", flush=True)
         if okL:
             print("    frozen succeeded this render -> skipping"); continue
-        fR, okR, _ = rollout(A, ep, W, M_inv, M, scale, fvec, True, corr, a.gamma, a.dead, a.norm_r, a.clip, a.horizon, a.max_steps)
+        fR, okR, _ = rollout(A, ep, W, M_inv, M, scale, fvec, True, corr, a.gamma, a.dead, a.norm_r, a.clip, a.horizon, a.max_steps,
+                             f_init=f_init, freeze_after=a.freeze_after)
         print(f"  seed {a.seed+ep}: corrected success={okR} steps={len(fR)}", flush=True)
         if a.only_repaired and not okR:
             print("    corrected run failed this render -> skipping"); continue
@@ -95,7 +102,7 @@ def main():
             L = annotate(imL, "FROZEN  (uncorrected)", (150, 30, 30),
                          [f'"{prompt}"', a.title, f"step {tL}",
                           "SUCCESS" if (okL and k >= len(fL) - 1) else ("FAILED - timeout" if (not okL and k >= len(fL) - 1) else "")])
-            R = annotate(imR, "ADAPTIVE  (online)", (25, 110, 45),
+            R = annotate(imR, f"ADAPTIVE  ({scheme})", (25, 110, 45),
                          [f'"{prompt}"', a.title,
                           f"step {tR}   f_hat[{','.join(WA.POSE[d] for d in shown)}] = " + " ".join(f"{fh[d]:+.4f}" for d in shown),
                           "SUCCESS" if (okR and k >= len(fR) - 1) else ("FAILED - timeout" if (not okR and k >= len(fR) - 1) else "")])

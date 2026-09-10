@@ -3320,3 +3320,69 @@ This is the same pattern as the humanoid (Sec 32.17-32.19): on a controller that
 its target, the online scheme pays for its transient every episode, and identifying once
 and holding is the right deployment. On LIBERO and ALOHA the online scheme reaches the
 healthy rate because the delta controllers there forget the transient.
+
+### 34.3 The transient explanation, tested: gamma 0.2 online (`cell_tra005_g02.json`, seeds 100-119)
+
+If the online scheme loses to the drift accumulated before convergence, a faster gain
+should recover part of the gap in proportion. Gamma 0.2, everything else unchanged:
+
+| gamma (online, from step 0) | steps to 80% of the fault (median) | drift accumulated by episode end (median, action units) | successes / 20 |
+|---|---|---|---|
+| 0.08 | 27 | 0.09 | 6 |
+| 0.20 | 13 | 0.032 | 12 |
+
+Paired against frozen (0/20): 12 fixed, 0 broken, p = 4.9e-4; against the healthy arm's
+13/20 on the same seeds: 3 vs 4 discordant, p = 1.0. Final estimate median
+(0.0048, 0.0052, 0.0048). Halving the transient doubles the success count and closes the
+gap to the healthy rate; the hold scheme (Sec 34.2) removes the transient entirely and
+reaches it exactly. The explanation is quantitative, not a story.
+
+### 34.4 Null: the law on a healthy arm (`null_tra000.json`, seeds 100-119, gamma 0.08)
+
+| arm | successes / 20 |
+|---|---|
+| healthy, no law | 15 |
+| healthy, law running | 16 |
+
+Discordant 3 vs 2, p = 1.0. Phantom at episode end: median |f| per axis 0.0003/0.0001/0.0002,
+max 0.0009, a fifth of the fault of 0.005 and at the residual floor. The healthy rate in
+this process was 15/20 against 13/20 and 11/20 in earlier processes on the same seeds:
+the spread of a 20-episode binomial at p ~ 0.65 plus SAPIEN's reset jitter, and the reason
+every comparison here is within-process and paired.
+
+### 34.5 A second magnitude, +0.003 on x,y,z, hold scheme (`cell_tra003_hold3w.json`, seeds 100-122)
+
+1.5x the healthy residual median, the mildest fault that damages this policy. Identification
+episodes (seeds 100-102): adaptive 1/3, frozen 0/3; held correction (0.0028, 0.0030,
+0.0030) = 93-100% of the fault.
+
+| arm, held 20 (seeds 103-122) | successes / 20 |
+|---|---|
+| frozen under the fault | 2 |
+| adaptive, held correction | 13 |
+
+Paired: 11 fixed, 0 broken, p = 9.8e-4. Against the healthy arm of Sec 34.2 on the same
+seeds (14/20, a different process): 4 vs 5 discordant, p = 1.0. The frozen policy scored
+2/23 here against 0/10 in the probe (Sec 34): the same reset jitter as the healthy arm's
+11-15/20. Two magnitudes, both at the healthy rate under the hold scheme, none broken.
+
+**WidowX totals.** Paired episodes on this robot: continuous 20 + 20 (gamma 0.08, 0.2),
+hold 20 + 20, null 20, healthy controls 20 + 23: 163 paired episodes, 57 fixed, 0 broken
+across the four faulted cells.
+
+**Aggregate after Sec 34.** 1,330 paired episodes (Sec 33.1) + 163 on the WidowX = 1,493;
+the paper's contributions say "over 1,400".
+
+### 34.6 Video (`results/phase05/adaptive_vs_frozen_widowx.mp4`)
+
+`openpi/widowx_video.py`, the compare_video.py style: same seed in both panels (SimplerEnv
+seeds its scene from `env.reset(seed)`, so the same spoon and towel placement), the
+benchmark's own 256x256 third-person camera, which is exactly what the policy sees; the
+task language, the fault and the held estimate on the frame. Hold scheme: the held vector
+(0.0049, 0.0048, 0.0046) applied from step 0, as episodes 3-22 of Sec 34.2. Seeds 106 and
+107, `--only-repaired`: frozen fails at the 150-step cap on both (the arm drifts up and
+away from the spoon), corrected succeeds at steps 66 and 23. A first render (seeds 103,
+104: corrected at 80 and 73) was redone for a title that overran the panel; in the redo
+seeds 103-105 failed corrected before 106 and 107 succeeded, the same reset jitter as the
+11-15/20 healthy spread, and the reason `--only-repaired` exists. Verified frame by frame
+on a contact sheet before shipping.
