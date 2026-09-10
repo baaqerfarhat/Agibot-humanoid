@@ -3386,3 +3386,72 @@ away from the spoon), corrected succeeds at steps 66 and 23. A first render (see
 seeds 103-105 failed corrected before 106 and 107 succeeded, the same reset jitter as the
 11-15/20 healthy spread, and the reason `--only-repaired` exists. Verified frame by frame
 on a contact sheet before shipping.
+
+## 35. OpenVLA on SimplerEnv: the Google robot, move-near (2026-09-09)
+
+**Why not WidowX with OpenVLA.** The published SimplerEnv table puts base OpenVLA-7B at
+0% on all four WidowX tasks; a healthy control at 0 is a floor, not a null (Sec 33 protocol).
+On the Google robot it reports 46% on move-near, so that is the task.
+
+**Setup.** `openpi/openvla_google_server.py` (port 8006, openvla-oft venv, transformers
+4.40.1, bf16 emulated on the Turing card: 0.84 s per action). Base `openvla/openvla-7b`
+(15 GB, OXE-pretrained, never finetuned), SimplerEnv's own conventions reproduced: prompt
+"In: What action should the robot take to {instruction}?\nOut:", unnorm_key
+`fractal20220817_data`, rpy delta -> axis-angle, raw open-ness in [0,1] to the GR00T gym
+wrapper whose Google branch applies the relative/sticky gripper rule. Client
+`widowx_adapt.py --task simpler_env_google/google_robot_move_near --horizon 1 --max-steps 80`
+(pose from the wrapper's quaternion; image key `video.image`, 256x320). 3 Hz control, 80
+steps, seeds 100+.
+
+**Healthy log: 2/10.** Successes at 79 and 41 steps; the arm moves 0.2-0.4 m net per
+episode. Against the published 46%: P(<=2 | 0.46, n=10) = 4%; the seed draw here is
+uniform over the task's object pairs rather than the benchmark's fixed 60 configurations,
+and nothing in the conventions was found wrong. Taken as measured; the healthy arm of the
+paired cell will add 40 more.
+
+**The weakest plant in the paper.** The arm controller is
+`arm_pd_ee_delta_pose_align_interpolate_by_planner`: a per-step delta (use_target False, so
+no accumulation, unlike the WidowX) executed by a motion planner within the 3 Hz step. Only
+20-30% of a commanded delta is realised in the step, and the fraction falls with the command
+(x: 0.28 below 0.01, 0.20 above 0.03): a mild saturation. FIR K=6 R^2 on x,y,z
+0.57/0.62/0.35, unchanged at K=2 or K=10 (so lag is not the missing part; the nonlinearity
+is); rotation channels R^2 ~ 0 (quaternion-derived rpy, unmodelled, never corrected).
+Per-unit motion scale 0.28/0.25/0.22 on x,y,z; DC gain in normalised units
+0.85/0.91/0.80 (`openloop_dc.json`, the WidowX lesson applied from the start). Healthy
+residual norm on x,y,z: median 0.017, 90th pct 0.042, with commands of 0.013-0.022: the
+residual is as large as the command. Per-step identification SNR for a fault f is ~f/0.017;
+the innovation form integrates it over an episode. Constants: dead 0.008, norm_r 0.08,
+clip 0.1, gamma 0.08.
+
+**Damage probes** queued: frozen under +0.02 and +0.04 on x,y,z (10 eps each).
+
+**Damage probes and the close-out (2026-09-10).** Frozen under +0.02: 0/10; under +0.04:
+0/10 (the fault damages; the healthy 2/10 is itself near the floor). Offline replay of the
+law on the faulted logs against the healthy phantom, window estimate (median over steps
+30-80) per episode:
+
+| fault on x,y,z | window-estimate separation (% of the fault; sd) | mean-residual separation (% of DC x fault) |
+|---|---|---|
+| +0.02 | x 2% (0.1 sd), y 19% (0.4), z 19% (0.5) | 37 / 42 / 57 |
+| +0.04 | x 1% (0.0 sd), y 8% (0.2), z 6% (0.2) | 19 / 18 / 22 |
+
+A saturating and a quadratic plant model do not change this (R^2 0.52-0.64, separation
+30-64% at 1-2 sd). The larger fault separates *less*: the planner realises a smaller
+fraction of a larger delta, so the offset is absorbed by the controller rather than
+passed to the motion, and the residual is dominated by the plant's own model error (median
+0.017, as large as the command). Compare LIBERO: 87-100% of the fault at >10 sd.
+
+**Decision: no paired cell.** Both conditions the paper states as necessary fail here at
+once: the healthy control is at the floor (2/10 against a published 46%), and the fault
+is not identifiable from the residual (Proposition 1's premise, an action-interface fault
+that reaches the measured motion through a plant the healthy data identifies, does not
+hold on a planner-interpolated controller). A cell would report a null on a floor, which
+Sec 33's protocol rejects. Recorded as a boundary: the method needs a plant the healthy
+log can model (R^2 well above 0.9 on the corrected channels), and the SimplerEnv Google
+robot's 3 Hz planner controller is not one. GPU released; server stopped. Total cost: 30
+episodes, 45 minutes.
+
+**What this does and does not say.** It does not say OpenVLA cannot be repaired: on
+LIBERO its OFT variant is (Sec 30, three families). It says the SimplerEnv Google-robot
+plant is outside the method's stated condition, for a reason measured before any repair
+was attempted, which is the point of stating the condition.

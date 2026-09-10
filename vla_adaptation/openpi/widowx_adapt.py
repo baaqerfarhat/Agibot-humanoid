@@ -51,12 +51,20 @@ class WidowX:
 
     @staticmethod
     def pose(obs):
-        return np.array([float(np.asarray(obs[f"state.{k}"]).reshape(-1)[0]) for k in POSE])
+        if "state.roll" in obs:                                   # WidowX wrapper: rpy given
+            return np.array([float(np.asarray(obs[f"state.{k}"]).reshape(-1)[0]) for k in POSE])
+        # Google-robot wrapper: quaternion xyzw -> rpy
+        from transforms3d.euler import quat2euler
+        q = [float(np.asarray(obs[f"state.{k}"]).reshape(-1)[0]) for k in ("rx", "ry", "rz", "rw")]
+        rpy = quat2euler([q[3], q[0], q[1], q[2]])                 # transforms3d wants wxyz
+        return np.array([float(np.asarray(obs[f"state.{k}"]).reshape(-1)[0]) for k in ("x", "y", "z")] + list(rpy))
 
     @staticmethod
     def policy_obs(obs):
-        st = np.array([float(np.asarray(obs[f"state.{k}"]).reshape(-1)[0]) for k in POSE + ["pad", "gripper"]], np.float32)
-        return {"wx/image": np.asarray(obs["video.image_0"], np.uint8), "wx/state": st, "prompt": str(obs[LANG_KEY])}
+        p = WidowX.pose(obs)
+        st = np.array(list(p) + [0.0, float(np.asarray(obs["state.gripper"]).reshape(-1)[0])], np.float32)
+        img = obs["video.image_0"] if "video.image_0" in obs else obs["video.image"]
+        return {"wx/image": np.asarray(img, np.uint8), "wx/state": st, "prompt": str(obs[LANG_KEY])}
 
     def step(self, u7):
         act = {f"action.{k}": np.asarray([u7[i]], float) for i, k in enumerate(POSE)}
