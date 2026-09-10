@@ -1,0 +1,485 @@
+{
+  "descriptive_total": {
+    "adaptive_successes": 153,
+    "broken": 5,
+    "cell_count": 8,
+    "fixed": 39,
+    "frozen_successes": 119,
+    "net_success_difference": 34,
+    "paired_rows": 160
+  },
+  "inputs": [
+    {
+      "bytes": 1349360,
+      "git_blob_id": "80f51c068440723b74e8f3779f1d0a71ec228b12",
+      "path": "results/sweep/spatial_j0.json",
+      "sha256": "4b1a47394fb3cd0a9ee7d754b03abd9e8a17bd821d10ef992bd29605d2c7de64"
+    },
+    {
+      "bytes": 1367783,
+      "git_blob_id": "025ada08a5882eea778fe75f6835882f8744ba11",
+      "path": "results/sweep/spatial_j1.json",
+      "sha256": "66945ed376ee53958dfcd0222a0b9b5b941ff0bfaf507e68d7d2da16a2efdcd0"
+    },
+    {
+      "bytes": 1565111,
+      "git_blob_id": "9447cbfc1fc41d921ab2648f921d222901d1fecc",
+      "path": "results/sweep/spatial_j2.json",
+      "sha256": "66b6e57482b0900c76aba0ddca3fde0690ba46ef8153690ea1175c70f434644e"
+    },
+    {
+      "bytes": 1752734,
+      "git_blob_id": "e36fa00f9ccf1b9f105f5a47cfcc42a4a7df642f",
+      "path": "results/sweep/spatial_j3.json",
+      "sha256": "fcfdb880965ecbb490ce25e5327da458e4d0b89ed66d2e78c69f0b74453a62a9"
+    },
+    {
+      "bytes": 1612563,
+      "git_blob_id": "e94a654fc17ed73beaad9b753f30564040807889",
+      "path": "results/sweep/spatial_j4.json",
+      "sha256": "5abd6a3e56b03bc6267247469359147a0147c02ae6d3748bca8514593fe38f28"
+    },
+    {
+      "bytes": 1699781,
+      "git_blob_id": "a1b47c9505995173a91b38c73931a6200cb887b5",
+      "path": "results/descriptor/g14_spatial_j5.json",
+      "sha256": "5e801adda78570688f6ba442f642fbbc04145798c7247ae711dfc1b7434ec963"
+    },
+    {
+      "bytes": 1748679,
+      "git_blob_id": "64f1669ac58c255e1e6b9d9955ae19fd74320844",
+      "path": "results/sweep/spatial_j6.json",
+      "sha256": "21e8c69d8bd39ca7e3dd3ffe57a3771daf96068cecbad92b821eb9f6a24d5128"
+    },
+    {
+      "bytes": 2453968,
+      "git_blob_id": "cbec4335525faa3fce00e89904437f7149ba88e2",
+      "path": "results/descriptor/g11_object_j3_unclipped.json",
+      "sha256": "21e2eb86001e3e4780b4259955ddef5c99cc3528c75ea63541888f85ba21786d"
+    }
+  ],
+  "naive_pooled_mcnemar": {
+    "p": {
+      "decimal": 1.4051624930289108e-07,
+      "denominator": 4398046511104,
+      "numerator": 617997
+    },
+    "status": "arithmetic reproduction only; repeated scenarios are not independent rows"
+  },
+  "per_cell": [
+    {
+      "adaptive_successes": 19,
+      "broken": 1,
+      "exact_raw_mcnemar_p": {
+        "decimal": 1.0,
+        "denominator": 1,
+        "numerator": 1
+      },
+      "fixed": 0,
+      "frozen_successes": 20,
+      "joint_fault": "torque:0:5.0",
+      "paired_rows": 20,
+      "path": "results/sweep/spatial_j0.json",
+      "suite": "libero_spatial"
+    },
+    {
+      "adaptive_successes": 20,
+      "broken": 0,
+      "exact_raw_mcnemar_p": {
+        "decimal": 1.0,
+        "denominator": 1,
+        "numerator": 1
+      },
+      "fixed": 1,
+      "frozen_successes": 19,
+      "joint_fault": "torque:1:5.0",
+      "paired_rows": 20,
+      "path": "results/sweep/spatial_j1.json",
+      "suite": "libero_spatial"
+    },
+    {
+      "adaptive_successes": 19,
+      "broken": 1,
+      "exact_raw_mcnemar_p": {
+        "decimal": 0.625,
+        "denominator": 8,
+        "numerator": 5
+      },
+      "fixed": 3,
+      "frozen_successes": 17,
+      "joint_fault": "torque:2:5.0",
+      "paired_rows": 20,
+      "path": "results/sweep/spatial_j2.json",
+      "suite": "libero_spatial"
+    },
+    {
+      "adaptive_successes": 19,
+      "broken": 1,
+      "exact_raw_mcnemar_p": {
+        "decimal": 0.21875,
+        "denominator": 32,
+        "numerator": 7
+      },
+      "fixed": 5,
+      "frozen_successes": 15,
+      "joint_fault": "torque:3:5.0",
+      "paired_rows": 20,
+      "path": "results/sweep/spatial_j3.json",
+      "suite": "libero_spatial"
+    },
+    {
+      "adaptive_successes": 19,
+      "broken": 1,
+      "exact_raw_mcnemar_p": {
+        "decimal": 0.375,
+        "denominator": 8,
+        "numerator": 3
+      },
+      "fixed": 4,
+      "frozen_successes": 16,
+      "joint_fault": "torque:4:5.0",
+      "paired_rows": 20,
+      "path": "results/sweep/spatial_j4.json",
+      "suite": "libero_spatial"
+    },
+    {
+      "adaptive_successes": 19,
+      "broken": 1,
+      "exact_raw_mcnemar_p": {
+        "decimal": 0.125,
+        "denominator": 8,
+        "numerator": 1
+      },
+      "fixed": 6,
+      "frozen_successes": 14,
+      "joint_fault": "torque:5:5.0",
+      "paired_rows": 20,
+      "path": "results/descriptor/g14_spatial_j5.json",
+      "suite": "libero_spatial"
+    },
+    {
+      "adaptive_successes": 20,
+      "broken": 0,
+      "exact_raw_mcnemar_p": {
+        "decimal": 0.00390625,
+        "denominator": 256,
+        "numerator": 1
+      },
+      "fixed": 9,
+      "frozen_successes": 11,
+      "joint_fault": "torque:6:5.0",
+      "paired_rows": 20,
+      "path": "results/sweep/spatial_j6.json",
+      "suite": "libero_spatial"
+    },
+    {
+      "adaptive_successes": 18,
+      "broken": 0,
+      "exact_raw_mcnemar_p": {
+        "decimal": 0.0009765625,
+        "denominator": 1024,
+        "numerator": 1
+      },
+      "fixed": 11,
+      "frozen_successes": 7,
+      "joint_fault": "torque:3:5",
+      "paired_rows": 20,
+      "path": "results/descriptor/g11_object_j3_unclipped.json",
+      "suite": "libero_object"
+    }
+  ],
+  "per_suite": {
+    "libero_object": {
+      "adaptive_successes": 18,
+      "broken": 0,
+      "cell_count": 1,
+      "fixed": 11,
+      "frozen_successes": 7,
+      "net_success_difference": 11,
+      "paired_rows": 20
+    },
+    "libero_spatial": {
+      "adaptive_successes": 135,
+      "broken": 5,
+      "cell_count": 7,
+      "fixed": 28,
+      "frozen_successes": 112,
+      "net_success_difference": 23,
+      "paired_rows": 140
+    }
+  },
+  "posthoc_cluster_sign_flip": {
+    "assumptions": [
+      "Scenario clusters are independent; dependence across joint conditions within a cluster is retained.",
+      "Under the tested null, each entire cluster contrast is sign-exchangeable.",
+      "The selected eight cells and fixed weighting define this descriptive panel, not a population of all tasks or robots."
+    ],
+    "cluster_count": 40,
+    "cluster_key": [
+      "suite",
+      "task",
+      "init"
+    ],
+    "cluster_weights": [
+      {
+        "init": 37,
+        "suite": "libero_object",
+        "task": 0,
+        "weight": 1
+      },
+      {
+        "init": 38,
+        "suite": "libero_object",
+        "task": 0,
+        "weight": 1
+      },
+      {
+        "init": 37,
+        "suite": "libero_object",
+        "task": 1,
+        "weight": 1
+      },
+      {
+        "init": 38,
+        "suite": "libero_object",
+        "task": 1,
+        "weight": 1
+      },
+      {
+        "init": 37,
+        "suite": "libero_object",
+        "task": 2,
+        "weight": 0
+      },
+      {
+        "init": 38,
+        "suite": "libero_object",
+        "task": 2,
+        "weight": 0
+      },
+      {
+        "init": 37,
+        "suite": "libero_object",
+        "task": 3,
+        "weight": 0
+      },
+      {
+        "init": 38,
+        "suite": "libero_object",
+        "task": 3,
+        "weight": 0
+      },
+      {
+        "init": 37,
+        "suite": "libero_object",
+        "task": 4,
+        "weight": 1
+      },
+      {
+        "init": 38,
+        "suite": "libero_object",
+        "task": 4,
+        "weight": 1
+      },
+      {
+        "init": 37,
+        "suite": "libero_object",
+        "task": 5,
+        "weight": 1
+      },
+      {
+        "init": 38,
+        "suite": "libero_object",
+        "task": 5,
+        "weight": 0
+      },
+      {
+        "init": 37,
+        "suite": "libero_object",
+        "task": 6,
+        "weight": 1
+      },
+      {
+        "init": 38,
+        "suite": "libero_object",
+        "task": 6,
+        "weight": 0
+      },
+      {
+        "init": 37,
+        "suite": "libero_object",
+        "task": 7,
+        "weight": 1
+      },
+      {
+        "init": 38,
+        "suite": "libero_object",
+        "task": 7,
+        "weight": 1
+      },
+      {
+        "init": 37,
+        "suite": "libero_object",
+        "task": 8,
+        "weight": 1
+      },
+      {
+        "init": 38,
+        "suite": "libero_object",
+        "task": 8,
+        "weight": 0
+      },
+      {
+        "init": 37,
+        "suite": "libero_object",
+        "task": 9,
+        "weight": 0
+      },
+      {
+        "init": 38,
+        "suite": "libero_object",
+        "task": 9,
+        "weight": 0
+      },
+      {
+        "init": 37,
+        "suite": "libero_spatial",
+        "task": 0,
+        "weight": 0
+      },
+      {
+        "init": 38,
+        "suite": "libero_spatial",
+        "task": 0,
+        "weight": 0
+      },
+      {
+        "init": 37,
+        "suite": "libero_spatial",
+        "task": 1,
+        "weight": -1
+      },
+      {
+        "init": 38,
+        "suite": "libero_spatial",
+        "task": 1,
+        "weight": 1
+      },
+      {
+        "init": 37,
+        "suite": "libero_spatial",
+        "task": 2,
+        "weight": 0
+      },
+      {
+        "init": 38,
+        "suite": "libero_spatial",
+        "task": 2,
+        "weight": 2
+      },
+      {
+        "init": 37,
+        "suite": "libero_spatial",
+        "task": 3,
+        "weight": 1
+      },
+      {
+        "init": 38,
+        "suite": "libero_spatial",
+        "task": 3,
+        "weight": 2
+      },
+      {
+        "init": 37,
+        "suite": "libero_spatial",
+        "task": 4,
+        "weight": 2
+      },
+      {
+        "init": 38,
+        "suite": "libero_spatial",
+        "task": 4,
+        "weight": 3
+      },
+      {
+        "init": 37,
+        "suite": "libero_spatial",
+        "task": 5,
+        "weight": 2
+      },
+      {
+        "init": 38,
+        "suite": "libero_spatial",
+        "task": 5,
+        "weight": 3
+      },
+      {
+        "init": 37,
+        "suite": "libero_spatial",
+        "task": 6,
+        "weight": 2
+      },
+      {
+        "init": 38,
+        "suite": "libero_spatial",
+        "task": 6,
+        "weight": 0
+      },
+      {
+        "init": 37,
+        "suite": "libero_spatial",
+        "task": 7,
+        "weight": 3
+      },
+      {
+        "init": 38,
+        "suite": "libero_spatial",
+        "task": 7,
+        "weight": -1
+      },
+      {
+        "init": 37,
+        "suite": "libero_spatial",
+        "task": 8,
+        "weight": 1
+      },
+      {
+        "init": 38,
+        "suite": "libero_spatial",
+        "task": 8,
+        "weight": 2
+      },
+      {
+        "init": 37,
+        "suite": "libero_spatial",
+        "task": 9,
+        "weight": 1
+      },
+      {
+        "init": 38,
+        "suite": "libero_spatial",
+        "task": 9,
+        "weight": 0
+      }
+    ],
+    "exact_two_sided_p": {
+      "decimal": 4.76837158203125e-06,
+      "denominator": 1048576,
+      "numerator": 5
+    },
+    "limitations": [
+      "Post-hoc grouping/test choice; no correction for sequential development, bound selection, or repeated evaluation.",
+      "Independent policy draws remain unmatched; fixed/broken labels are observed outcomes, not deterministic counterfactuals.",
+      "Does not isolate composite feedback, learned features, geometry, or causal fault recovery."
+    ],
+    "nonzero_cluster_count": 26,
+    "observed_absolute_sum": 34,
+    "statistic": "absolute sum of within-cluster adaptive-minus-frozen success differences",
+    "status": "exploratory sensitivity analysis, not preregistered confirmation",
+    "tail_assignments": 320,
+    "total_nonzero_sign_assignments": 67108864
+  },
+  "schema_version": 1,
+  "source_commit": "cda6c92357e884ef6e2b1195abda673fc18853ac",
+  "source_script_sha256": "4409bffe7d68548f2d63ae6d4e43e0714dc2ae6ecfbaf31886a1d4e75d8eb65b"
+}

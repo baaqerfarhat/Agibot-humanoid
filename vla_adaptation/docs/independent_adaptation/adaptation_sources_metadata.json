@@ -1,0 +1,392 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-09-08T23:11:49.543885+00:00",
+  "memo_path": "docs/independent_adaptation/adaptation_sources.md",
+  "memo_sha256": "a00c51b8422115b98c9e7913899d3c068e3ee3cf2d13474e168f02f7fcfdf0f0",
+  "scope": "Source reading plus independently derived continuous-time identities; no robot experiments, source-code attribution claims, manuscript edits, or repository merges",
+  "page_numbering": "one-based local PDF page, not journal pagination",
+  "records": [
+    {
+      "key": "magicvfm",
+      "pdf_path": "/home/fengze/online_adaptation_research/references/MAGIC-VFM: Meta-learning Adaptation for Ground Interaction Control with Visual Foundation Models/2407.12304v2.pdf",
+      "pdf_sha256": "64d7b65c6c7e753dffe07b13ffb82939f5866ad3de0f439d200096f324eb9aa2",
+      "pdf_bytes": 19579902,
+      "pdf_pages": 20,
+      "author_version_url": "https://arxiv.org/abs/2407.12304v2",
+      "published_doi": "10.1109/TRO.2024.3475212",
+      "publication_metadata_archives": [
+        {
+          "path": "paper/citation_sources/magicvfm.crossref.bib",
+          "sha256": "3186638a77b4717af999710fb0414e2253cd8cf6e54cb2483ecf2ca948edeb1a",
+          "source_url": "https://api.crossref.org/works/10.1109%2FTRO.2024.3475212/transform/application/x-bibtex",
+          "source_type": "publisher_deposited_crossref_bibtex"
+        },
+        {
+          "path": "paper/citation_sources/magicvfm.crossref.json",
+          "sha256": "e727b97547c1739974b962005129dfe372beb7231778dc6a6c2ab93df12443e8",
+          "source_url": "https://api.crossref.org/works/10.1109%2FTRO.2024.3475212",
+          "source_type": "publisher_deposited_crossref_metadata"
+        }
+      ],
+      "tex_sources": [
+        {
+          "path": "/home/fengze/online_adaptation_research/references/MAGIC-VFM: Meta-learning Adaptation for Ground Interaction Control with Visual Foundation Models/tex_source/root.tex",
+          "sha256": "5029f9ecb692a3ad411e4beaa9e28b4f41335240a1a8d3f1ef98c0245c591990",
+          "bytes": 108290
+        },
+        {
+          "path": "/home/fengze/online_adaptation_research/references/MAGIC-VFM: Meta-learning Adaptation for Ground Interaction Control with Visual Foundation Models/tex_source/alternate_training.tex",
+          "sha256": "119275a9f3ff05786e2bc003370b1f1de1d69f6bec1651fffdc8d0cdb9794469",
+          "bytes": 10833
+        },
+        {
+          "path": "/home/fengze/online_adaptation_research/references/MAGIC-VFM: Meta-learning Adaptation for Ground Interaction Control with Visual Foundation Models/tex_source/traxxas/dynamics_traxxas.tex",
+          "sha256": "3b1e77d2e6c3c5373ba6c0377c451f75cc3f9ce3c505b29055ed3b3f28ba17c8",
+          "bytes": 13025
+        }
+      ],
+      "read_anchors": {
+        "dynamics": {
+          "pages": [
+            3,
+            4
+          ],
+          "equations": [
+            "1",
+            "2",
+            "3"
+          ]
+        },
+        "learning": {
+          "pages": [
+            4,
+            5
+          ],
+          "equations": [
+            "unnumbered ridge solution before Eq.4",
+            "4"
+          ],
+          "algorithms": [
+            "1"
+          ]
+        },
+        "control": {
+          "pages": [
+            7,
+            8,
+            9
+          ],
+          "equations": [
+            "11",
+            "12",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "26"
+          ]
+        },
+        "visually_checked_pages": [
+          5
+        ]
+      }
+    },
+    {
+      "key": "neuralfly",
+      "pdf_path": "/home/fengze/online_adaptation_research/references/Neural-Fly Enables Rapid Learning for Agile Flight in Strong Winds/2205.06908v2.pdf",
+      "pdf_sha256": "5d99d80e648b47f1b9b92dd1228d23982c86be30c58dc8951d34df74c5977d88",
+      "pdf_bytes": 15498441,
+      "pdf_pages": 41,
+      "author_version_url": "https://arxiv.org/abs/2205.06908v2",
+      "published_doi": "10.1126/scirobotics.abm6597",
+      "publication_metadata_archives": [
+        {
+          "path": "paper/citation_sources/neuralfly.crossref.bib",
+          "sha256": "1c6152c9c289cb033b449dd5f00cee5429a4145ce37b98b71a57569f1bbe2461",
+          "source_url": "https://api.crossref.org/works/10.1126%2Fscirobotics.abm6597/transform/application/x-bibtex",
+          "source_type": "publisher_deposited_crossref_bibtex"
+        },
+        {
+          "path": "paper/citation_sources/neuralfly.crossref.json",
+          "sha256": "cc438fb67a0a31c48e61c7bd12e0088c151de1eaf11eb60cdc01a389580d2d1b",
+          "source_url": "https://api.crossref.org/works/10.1126%2Fscirobotics.abm6597",
+          "source_type": "publisher_deposited_crossref_metadata"
+        }
+      ],
+      "tex_sources": [
+        {
+          "path": "/home/fengze/online_adaptation_research/references/Neural-Fly Enables Rapid Learning for Agile Flight in Strong Winds/arXiv-2205.06908v2/root.tex",
+          "sha256": "8060af70fefd79e40e6ff406962043a83bec17341d0970895a99fa21136194f6",
+          "bytes": 10168
+        },
+        {
+          "path": "/home/fengze/online_adaptation_research/references/Neural-Fly Enables Rapid Learning for Agile Flight in Strong Winds/arXiv-2205.06908v2/sections/4_materials-and-methods.tex",
+          "sha256": "333a770be1c37de9ba78cc32f6c1378b785bac554384a269e17adfdfc6bc78db",
+          "bytes": 33923
+        },
+        {
+          "path": "/home/fengze/online_adaptation_research/references/Neural-Fly Enables Rapid Learning for Agile Flight in Strong Winds/arXiv-2205.06908v2/sections/5_supplementary-materials.tex",
+          "sha256": "cb8c5145dfa41e342170c8ddba3907323aa1a29e5f84df91fef78d695e0613ac",
+          "bytes": 51103
+        }
+      ],
+      "read_anchors": {
+        "dynamics": {
+          "pages": [
+            16,
+            17
+          ],
+          "equations": [
+            "1",
+            "2",
+            "3"
+          ]
+        },
+        "learning": {
+          "pages": [
+            18,
+            19,
+            23
+          ],
+          "equations": [
+            "4",
+            "5",
+            "6"
+          ],
+          "algorithms": [
+            "1"
+          ]
+        },
+        "control": {
+          "pages": [
+            20,
+            21,
+            22,
+            34,
+            35,
+            36,
+            37
+          ],
+          "equations": [
+            "7",
+            "8",
+            "9",
+            "10",
+            "12",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "22",
+            "23",
+            "24",
+            "25",
+            "31",
+            "39"
+          ]
+        },
+        "visually_checked_pages": [
+          34
+        ]
+      }
+    },
+    {
+      "key": "hmac2024",
+      "pdf_path": "/home/fengze/online_adaptation_research/references/Hierarchical meta-learning-based adaptive controller/2311.12367v2.pdf",
+      "pdf_sha256": "9f2a2a29f90455cce0cc8898ec696fc3877495a9b22f633dfe41df8e5760ec35",
+      "pdf_bytes": 1376245,
+      "pdf_pages": 7,
+      "author_version_url": "https://arxiv.org/abs/2311.12367v2",
+      "published_doi": "10.1109/ICRA57147.2024.10611562",
+      "publication_metadata_archives": [
+        {
+          "path": "paper/citation_sources/hmac2024.crossref.bib",
+          "sha256": "0874562c1762b65e95e0ba0d2a1d5e4059c9a6235bbe5a571d4e6b5702a53565",
+          "source_url": "https://api.crossref.org/works/10.1109%2FICRA57147.2024.10611562/transform/application/x-bibtex",
+          "source_type": "publisher_deposited_crossref_bibtex"
+        },
+        {
+          "path": "paper/citation_sources/hmac2024.crossref.json",
+          "sha256": "c25e07ea109f0e2d53fff1edc78d020988702a8f88072afb247be189e986f1e7",
+          "source_url": "https://api.crossref.org/works/10.1109%2FICRA57147.2024.10611562",
+          "source_type": "publisher_deposited_crossref_metadata"
+        }
+      ],
+      "tex_sources": [
+        {
+          "path": "/home/fengze/online_adaptation_research/references/Hierarchical meta-learning-based adaptive controller/tex_source/paper_draft_icra.tex",
+          "sha256": "3902ad96c56182e442c2577e3267df222fcaa272e48c0c6ac3debe42328d8331",
+          "bytes": 35689
+        }
+      ],
+      "read_anchors": {
+        "dynamics": {
+          "pages": [
+            2
+          ],
+          "equations": [
+            "1",
+            "2"
+          ]
+        },
+        "learning": {
+          "pages": [
+            3,
+            4,
+            6
+          ],
+          "equations": [
+            "3",
+            "4",
+            "5"
+          ],
+          "figures": [
+            "3"
+          ],
+          "algorithms": [
+            "1"
+          ]
+        },
+        "control": {
+          "pages": [
+            4
+          ],
+          "equations": [
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"
+          ]
+        },
+        "visually_checked_pages": [
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "key": "tang2025mirror",
+      "pdf_path": "/home/fengze/online_adaptation_research/references/Meta-Learning for Adaptive Control with Automated Mirror Descent/2407.20165v5.pdf",
+      "pdf_sha256": "79ba2835fca318c9346e6adbab6b7b107aaf528157e110c54c7472294aa3ca39",
+      "pdf_bytes": 2149511,
+      "pdf_pages": 20,
+      "author_version_url": "https://arxiv.org/abs/2407.20165v5",
+      "published_doi": null,
+      "publication_metadata_archives": [
+        {
+          "path": "paper/citation_sources/tang2025mirror.pmlr.html",
+          "sha256": "52ff0c47fa579e4ce97a80e78b306eb15be4204742bb1256454c586623806297",
+          "source_url": "https://proceedings.mlr.press/v283/tang25b.html",
+          "source_type": "official_proceedings_html"
+        },
+        {
+          "path": "paper/citation_sources/tang2025mirror.pmlr.bib",
+          "sha256": "63d05ee0f84283dd73f22608ee1a520d08cf665518d9c32942aa6ed7106b29bb",
+          "source_url": "https://proceedings.mlr.press/v283/tang25b.html",
+          "source_type": "official_proceedings_bibtex"
+        }
+      ],
+      "tex_sources": [
+        {
+          "path": "/home/fengze/online_adaptation_research/references/Meta-Learning for Adaptive Control with Automated Mirror Descent/arXiv-2407.20165v5/main.tex",
+          "sha256": "c35d591352c133264b72eff1f6d009aa15b4d4bab5ef7b79b619b93990efba59",
+          "bytes": 68211
+        }
+      ],
+      "read_anchors": {
+        "supplemental_geometry_source": true,
+        "pages": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          15
+        ],
+        "equations": [
+          "2",
+          "3",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10"
+        ],
+        "visually_checked_pages": [
+          4
+        ]
+      }
+    }
+  ],
+  "algebra_checks": {
+    "seed": 20260908,
+    "euclidean_I6": {
+      "trials": 30,
+      "max_absolute_derivative_error": 1.0658141036401503e-14,
+      "setup": "n=3, p=4; nontrivial B and W; F=W^-1(-I+J), J skew; Qx=2I; exact measurements and prior center=true coefficient"
+    },
+    "mirror_I7": {
+      "trials": 30,
+      "max_absolute_derivative_error": 7.105427357601002e-15,
+      "potential": "psi(z)=0.5||z||\u00b2+0.05 sum(z_i^4); Hessian=diag(1+0.6 z_i\u00b2); constant true coefficient=0"
+    },
+    "ridge_vs_augmented_lstsq_max_absolute_error": 3.885780586188048e-16,
+    "matrix_damping": {
+      "D": [
+        [
+          0.1,
+          0.0
+        ],
+        [
+          0.0,
+          0.4
+        ]
+      ],
+      "P": [
+        [
+          2.0,
+          0.5
+        ],
+        [
+          0.5,
+          1.0
+        ]
+      ],
+      "printed_form_max_asymmetry": 0.30000000000000004,
+      "symmetric_form_max_asymmetry": 0.0
+    },
+    "tracking_sign_scalar": {
+      "wrong_sign_largest_eigenvalue": 0.6180339887498948,
+      "correct_sign_largest_real_eigenvalue": -0.5
+    },
+    "positive_gain_counterexample": {
+      "lambda": 1,
+      "q": 1,
+      "H_Rinv_H": 1,
+      "gamma_0": 2,
+      "solution": "gamma(t)=1+1/(1-t), 0<=t<1",
+      "finite_escape_time": 1
+    },
+    "neuralfly_root_copy": {
+      "path": "/home/fengze/vla-adaptation/2205.06908v2.pdf",
+      "exists": true,
+      "sha256": "5d99d80e648b47f1b9b92dd1228d23982c86be30c58dc8951d34df74c5977d88",
+      "identical_to_reference_copy": true
+    }
+  },
+  "web_metadata_rechecked_urls": [
+    "https://arxiv.org/abs/2407.12304",
+    "https://arxiv.org/abs/2311.12367",
+    "https://arxiv.org/abs/2205.06908",
+    "https://proceedings.mlr.press/v283/tang25b.html"
+  ]
+}

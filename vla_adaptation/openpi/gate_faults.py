@@ -22,7 +22,7 @@ applies them to all seven if that reading is wanted instead. Every result record
 
 This file never edits openpi. Run it with openpi's LIBERO client venv:
 
-    cd /home/mtaheri/ws_AgibotX2/openpi
+    cd $OPENPI
     MUJOCO_GL=egl MUJOCO_EGL_DEVICE_ID=0 PYTHONPATH=$PWD/third_party/libero:$PWD/examples/libero \
       examples/libero/.venv/bin/python <this file> --fault gain --severity 0.5
 

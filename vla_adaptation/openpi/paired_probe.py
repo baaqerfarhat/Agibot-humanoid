@@ -58,6 +58,15 @@ class Probe:
         return self._envs[tid]
 
     def control(self, req):
+        # Parallel evaluation clients share one policy and control/ack pair.
+        # Serialize handshakes so one client cannot remove another's ack.
+        import fcntl
+        lock_path = self.a.control.with_name(self.a.control.name + ".client.lock")
+        with lock_path.open("a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            return self._control_locked(req)
+
+    def _control_locked(self, req):
         self.a.ack.unlink(missing_ok=True)
         self.a.control.write_text(json.dumps(req))
         t0 = time.time()

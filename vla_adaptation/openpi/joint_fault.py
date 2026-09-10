@@ -53,13 +53,14 @@ class JointFault:
         self.jids = [m.joint_name2id(j) for j in jn]
         self.acts = [m.actuator_name2id(a) for a in robot.robot_model.actuators]
         self.base = dict(fl=m.dof_frictionloss.copy(), dp=m.dof_damping.copy(),
-                         gp=m.actuator_gainprm.copy(), jr=m.jnt_range.copy())
+                         gp=m.actuator_gainprm.copy(), jr=m.jnt_range.copy(),
+                         qfrc=self.sim.data.qfrc_applied.copy())
 
     def restore(self):
         m = self.sim.model
         m.dof_frictionloss[:] = self.base["fl"]; m.dof_damping[:] = self.base["dp"]
         m.actuator_gainprm[:] = self.base["gp"]; m.jnt_range[:] = self.base["jr"]
-        self.sim.data.qfrc_applied[:] = 0.0
+        self.sim.data.qfrc_applied[:] = self.base["qfrc"]
 
     def apply(self):
         """Call after set_init_state. Torque faults are re-applied every step (see step)."""
@@ -82,4 +83,5 @@ class JointFault:
         if self.f is None:
             return
         if self.f["kind"] == "torque":
-            self.sim.data.qfrc_applied[self.dofs[self.f["joint"]]] = self.f["mag"] if live else 0.0
+            dof = self.dofs[self.f["joint"]]
+            self.sim.data.qfrc_applied[dof] = self.base["qfrc"][dof] + (self.f["mag"] if live else 0.0)

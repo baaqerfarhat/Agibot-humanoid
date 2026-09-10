@@ -25,14 +25,15 @@ made ACE incomparable across layers in the first place.
 """
 from __future__ import annotations
 
-import argparse, json, pathlib
+import argparse, os, json, pathlib
 import numpy as np
 import main as lm
 from openpi_client import image_tools
 from paired_probe import Probe
 from ace_screen_v2 import SITES
 
-NORM = ("/home/mtaheri/.cache/openpi/openpi-assets/checkpoints/pi05_libero/"
+NORM = (os.path.expanduser(os.environ.get("OPENPI_CACHE", "~/.cache/openpi"))
+        + "/openpi-assets/checkpoints/pi05_libero/"
         "assets/physical-intelligence/libero/norm_stats.json")
 
 

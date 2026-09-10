@@ -21,7 +21,7 @@ closed loop, where §0 only measured it open-loop on a synthetic observation.
 """
 from __future__ import annotations
 
-import argparse
+import argparse, os
 import json
 import pathlib
 import time
@@ -33,7 +33,8 @@ from ace_screen import Runner
 
 FAULT_ENV = 0.05
 ATTEN = 0.34
-NORM_STATS = ("/home/mtaheri/.cache/openpi/openpi-assets/checkpoints/pi05_libero/"
+NORM_STATS = (os.path.expanduser(os.environ.get("OPENPI_CACHE", "~/.cache/openpi"))
+              + "/openpi-assets/checkpoints/pi05_libero/"
               "assets/physical-intelligence/libero/norm_stats.json")
 
 

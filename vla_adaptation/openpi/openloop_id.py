@@ -14,25 +14,33 @@ No inference is involved, so this runs on CPU in seconds.
 """
 from __future__ import annotations
 
-import argparse, json, pathlib
+import argparse, datetime, hashlib, json, pathlib
 import numpy as np
-import main as lm
 from so3 import rot_delta
-from libero.libero import benchmark
+from error_signal import atomic_json, calibration_records, source_hashes
 
 OUT = np.array([0.05, 0.05, 0.05, 0.5, 0.5, 0.5])
 
 
-def replay(env, inits, init_idx, cmds, f):
-    env.reset()
-    obs = env.set_init_state(inits[init_idx])
+def replay(env, inits, init_idx, cmds, f, *, suite=None, task=0):
+    import main as lm
+    if suite is None:
+        env.reset()
+        obs = env.set_init_state(inits[init_idx])
+    else:
+        from libero_reset import reset_libero
+        obs, _ = reset_libero(env, inits[init_idx], suite=suite, task=task, init=init_idx)
     for _ in range(10):
         obs, *_ = env.step(lm.LIBERO_DUMMY_ACTION)
     D, X = [], []
     for a in cmds:
-        # the log kept only the 6 arm dims; the env expects 7, so re-attach the gripper
-        # channel (held open -- it plays no part in an arm-dim additive fault)
-        a = np.concatenate([np.asarray(a, float)[:6], [-1.0]])
+        # New logs preserve the policy's gripper command. Historical six-channel logs
+        # cannot recover it; their explicitly recorded fallback is held open.
+        a = np.asarray(a, float).copy()
+        if a.shape == (6,):
+            a = np.concatenate([a, [-1.0]])
+        if a.shape != (7,):
+            raise ValueError("replay commands must contain six arm channels or all seven channels")
         a[:6] += f
         x0 = np.array(obs["robot0_eef_pos"], float)
         q0 = np.array(obs["robot0_eef_quat"], float)
@@ -46,54 +54,136 @@ def replay(env, inits, init_idx, cmds, f):
     return np.array(D), np.array(X)
 
 
-def main():
+def nominal_commands(payload, episode=0, steps=80):
+    """Select one nominal episode; never join commands across reset boundaries."""
+    records = calibration_records(payload)
+    record_index = next((i for i, record in enumerate(records) if record.get("sev") == 0), None)
+    if record_index is None:
+        raise ValueError("source log contains no nominal (sev=0) record")
+    record = records[record_index]
+    lengths = record.get("ep_len")
+    if (not isinstance(lengths, list) or not lengths
+            or any(type(length) is not int or length < 1 for length in lengths)):
+        raise ValueError("source log needs positive ep_len entries to preserve episode boundaries")
+    if not 0 <= episode < len(lengths) or steps < 1:
+        raise ValueError("source episode or replay step count is invalid")
+    command_field = "raw_cmd" if "raw_cmd" in record else "raw_a"
+    commands = np.asarray(record.get(command_field), dtype=float)
+    if (commands.ndim != 2 or commands.shape[1] not in (6, 7)
+            or commands.shape[0] != sum(lengths) or not np.isfinite(commands).all()):
+        raise ValueError("recorded commands must be finite, have six/seven channels, and match ep_len")
+    raw_arm = np.asarray(record.get("raw_a"), dtype=float)
+    if raw_arm.shape != (len(commands), 6) or not np.array_equal(commands[:, :6], raw_arm):
+        raise ValueError("full command stream disagrees with recorded arm commands")
+    begin = sum(lengths[:episode])
+    end = begin + min(steps, lengths[episode])
+    keys = record.get("episode_keys")
+    if keys is None and isinstance(payload, dict):
+        keys = payload.get("calib_episodes")
+    key = None
+    if keys is not None:
+        if (not isinstance(keys, list) or len(keys) != len(lengths)
+                or any(not isinstance(k, (list, tuple)) or len(k) != 2
+                       or any(type(v) is not int or v < 0 for v in k) for k in keys)):
+            raise ValueError("source episode keys do not match episode boundaries")
+        key = list(keys[episode])
+    selected = np.asarray(commands[begin:end], dtype="<f8").copy()
+    provenance = dict(record_index=record_index, episode_index=episode, scenario=key,
+                      command_field=command_field, source_episode_steps=lengths[episode],
+                      requested_steps=steps, selected_steps=len(selected),
+                      flat_command_range=[begin, end],
+                      gripper="recorded" if selected.shape[1] == 7 else "legacy_missing_held_open_minus_one",
+                      command_sha256=hashlib.sha256(selected.tobytes()).hexdigest())
+    return selected, provenance
+
+
+def identify(env, inits, init_idx, cmds, probe, replay_fn=None):
+    """Measure sensitivity, aligning both signs to one common episode prefix."""
+    replay_fn = replay_fn or replay
+    if not np.isfinite(probe) or probe <= 0 or not 0 <= init_idx < len(inits):
+        raise ValueError("probe magnitude must be finite/positive and initial state must exist")
+    def rollout(fault):
+        motion, _ = replay_fn(env, inits, init_idx, cmds, fault)
+        motion = np.asarray(motion, dtype=float)
+        if motion.ndim != 2 or motion.shape[1] != 6 or not len(motion) or not np.isfinite(motion).all():
+            raise ValueError("sensitivity replay returned no finite six-dimensional motion")
+        return motion
+    base = rollout(np.zeros(6))
+    rows = []
+    for magnitude in (0.01, 0.02, 0.05, -0.05):
+        motion = rollout(np.full(6, magnitude))
+        count = min(len(motion), len(base))
+        delta = (motion[:count] - base[:count]).mean(0) / OUT
+        rows.append(dict(f=magnitude, d_motion=delta.tolist(), sens=(delta/magnitude).tolist(),
+                         replay_steps=len(motion), common_steps=count))
+    matrix = np.zeros((6, 6))
+    columns = []
+    for axis in range(6):
+        fault = np.zeros(6)
+        fault[axis] = probe
+        plus, minus = rollout(fault), rollout(-fault)
+        count = min(len(base), len(plus), len(minus))
+        matrix[:, axis] = (plus[:count] - minus[:count]).mean(0) / OUT / (2 * probe)
+        columns.append(dict(axis=axis, plus_steps=len(plus), minus_steps=len(minus), common_steps=count))
+    return dict(rows=rows, M=matrix.tolist(), baseline_steps=len(base), columns=columns,
+                sensitivity_method="central difference on common baseline/plus/minus prefix per input axis")
+
+
+def main(argv=None, environment_factory=None, replay_fn=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--log", type=pathlib.Path, required=True)
     ap.add_argument("--out", type=pathlib.Path, required=True)
     ap.add_argument("--suite", default="libero_spatial")
     ap.add_argument("--steps", type=int, default=80)
+    ap.add_argument("--source-episode", type=int, default=0,
+                    help="nominal recorded episode index; replay never crosses its reset boundary")
+    ap.add_argument("--probe-task", type=int,
+                    help="task for sensitivity probes; default source task if recorded, otherwise task 0")
     ap.add_argument("--probe", type=float, default=0.02,
                     help="central-difference magnitude for M. The default 0.02 sits in "
                          "the linear region; the experiments inject 0.05, where "
                          "translation does not respond linearly. Setting this to the "
                          "operating point measures M where it is actually used.")
-    a = ap.parse_args()
+    ap.add_argument("--probe-init", type=int, default=45,
+                    help="initial state to replay for the sensitivity probes. Default 45 "
+                         "reproduces every stored M, but 45 is ALSO adaptive_law.py's "
+                         "default --eval-init, so the default overlaps evaluation.")
+    a = ap.parse_args(argv)
+    if a.out.exists():
+        ap.error("--out already exists; use a fresh path to preserve calibration provenance")
+    if a.steps < 1 or a.source_episode < 0 or a.probe_init < 0 or not np.isfinite(a.probe) or a.probe <= 0:
+        ap.error("steps, episode/initial-state indices, and probe magnitude must be valid")
 
     d = json.loads(a.log.read_text())
-    cmds = np.array(d[0]["raw_a"])[: a.steps]        # a nominal episode's commands
-    suite = benchmark.get_benchmark_dict()[a.suite]()
-    task = suite.get_task(0)
-    env, desc = lm._get_libero_env(task, lm.LIBERO_ENV_RESOLUTION, 7)
-    inits = suite.get_task_init_states(0)
-
-    base, _ = replay(env, inits, 45, cmds, np.zeros(6))
-    print(f"replayed {len(base)} steps open loop\n")
-    print(f"{'fault f':>9} " + " ".join(f"{n:>9}" for n in ["dx", "dy", "dz", "drx", "dry", "drz"]))
-    rows = []
-    for f_mag in (0.01, 0.02, 0.05, -0.05):
-        f = np.full(6, f_mag)
-        D, _ = replay(env, inits, 45, cmds, f)
-        n = min(len(D), len(base))
-        dd = (D[:n] - base[:n]).mean(0) / OUT          # motion change, in action units
-        rows.append(dict(f=f_mag, d_motion=dd.tolist(), sens=(dd / f_mag).tolist()))
-        print(f"{f_mag:>9.3f} " + " ".join(f"{v:>9.4f}" for v in dd))
-    print("\nsensitivity d(motion)/df, per unit fault  (1.0 = fault passes straight through):")
-    for r in rows:
-        print(f"{r['f']:>9.3f} " + " ".join(f"{v:>9.3f}" for v in r["sens"]))
-
-    # The rows above perturb ALL six dims at once, so each column is a SUM over inputs, not
-    # a sensitivity. The map an adaptive law needs is the 6x6 matrix: perturb one input axis
-    # at a time and read the whole output response.
-    print(f"\nSENSITIVITY MATRIX  M[out, in] = d(motion_out)/d(fault_in), f = +-{a.probe}, central:")
-    M = np.zeros((6, 6))
-    for j in range(6):
-        acc = []
-        for sgn in (+1.0, -1.0):
-            f = np.zeros(6); f[j] = sgn * a.probe
-            D, _ = replay(env, inits, 45, cmds, f)
-            n = min(len(D), len(base))
-            acc.append((D[:n] - base[:n]).mean(0) / OUT / (sgn * a.probe))
-        M[:, j] = np.mean(acc, axis=0)
+    if isinstance(d, dict) and d.get("suite") is not None and d["suite"] != a.suite:
+        raise ValueError("source calibration suite differs from requested sensitivity suite")
+    cmds, command_source = nominal_commands(d, a.source_episode, a.steps)
+    if a.probe_task is None:
+        a.probe_task = command_source["scenario"][0] if command_source["scenario"] is not None else 0
+    if a.probe_task < 0:
+        ap.error("--probe-task must be nonnegative")
+    if environment_factory is None:
+        import main as lm
+        from libero.libero import benchmark
+        def environment_factory(suite_name, task_id):
+            suite = benchmark.get_benchmark_dict()[suite_name]()
+            if task_id >= suite.n_tasks:
+                raise ValueError("probe task is outside the selected suite")
+            task = suite.get_task(task_id)
+            env, _ = lm._get_libero_env(task, lm.LIBERO_ENV_RESOLUTION, 7)
+            return env, suite.get_task_init_states(task_id)
+    env, inits = environment_factory(a.suite, a.probe_task)
+    reset_protocol = "injected_replay_callable"
+    if replay_fn is None:
+        from functools import partial
+        replay_fn = partial(replay, suite=a.suite, task=a.probe_task)
+        reset_protocol = "libero-reset-v1"
+    try:
+        result = identify(env, inits, a.probe_init, cmds, a.probe, replay_fn)
+    finally:
+        env.close()
+    M = np.asarray(result["M"])
+    print(f"replayed {result['baseline_steps']} baseline steps; sensitivity matrix M[out, in]:")
     hdr = ["dx", "dy", "dz", "drx", "dry", "drz"]
     print("        " + " ".join(f"{h:>8}" for h in hdr) + "   <- fault applied to")
     for i in range(6):
@@ -102,7 +192,18 @@ def main():
     print(f"\noff-diagonal share of |M| = {off:.2f}   (0 = decoupled, per-axis gains suffice)")
     print(f"diagonal: {np.round(np.diag(M), 3)}")
     print(f"condition number of M = {np.linalg.cond(M):.1f}   (large = ill-posed to invert)")
-    a.out.write_text(json.dumps({"rows": rows, "M": M.tolist(), "probe": a.probe}, indent=1))
+    folder = pathlib.Path(__file__).resolve().parent
+    result.update(schema_version=2, status="complete", probe=a.probe, reset_protocol=reset_protocol,
+                  probe_init=int(a.probe_init), probe_task=int(a.probe_task), suite=a.suite,
+                  probe_episodes=[[int(a.probe_task), int(a.probe_init)]],
+                  command_source=command_source,
+                  source_calib_episodes=d.get("calib_episodes") if isinstance(d, dict) else None,
+                  args={key: str(value) if isinstance(value, pathlib.Path) else value
+                        for key, value in vars(a).items()},
+                  created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                  source_hashes=source_hashes([a.log, folder/"openloop_id.py", folder/"error_signal.py", folder/"so3.py", folder/"libero_reset.py"]))
+    atomic_json(a.out, result)
+    return result
 
 
 if __name__ == "__main__":

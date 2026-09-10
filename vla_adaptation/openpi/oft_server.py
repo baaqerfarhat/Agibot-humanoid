@@ -20,10 +20,10 @@ Conventions reconciled here, each verified against the two codebases rather than
            ace_server writes, so paired_probe.Probe works unmodified.
 """
 from __future__ import annotations
-import argparse, asyncio, json, logging, pathlib, sys, time, traceback
+import argparse, asyncio, json, logging, os, pathlib, sys, time, traceback
 import numpy as np
 
-OFT = pathlib.Path("/home/mtaheri/ws_AgibotX2/openvla-oft")
+OFT = pathlib.Path(os.environ.get("OPENVLA_OFT", "openvla-oft"))
 sys.path.insert(0, str(OFT))
 # TensorFlow is on OFT's inference path (center_crop -> tf.image.crop_and_resize) and by
 # default claims ALL GPU memory on import -- on a card shared with a 15 GB torch model and

@@ -2940,14 +2940,17 @@ distribution and the right test is unpaired (Fisher exact, two-sided):
 |---|---|---|
 | **identify-then-hold vs frozen** | **21/30 vs 2/30** | **5.5×10⁻⁷** |
 | identify-then-hold vs healthy | 21/30 vs 21/30 | 1 |
-| continuous adaptation vs frozen | 8/30 vs 2/30 | 0.08 (not significant) |
+| continuous adaptation vs its own frozen control | 8/30 vs 1/30 | 0.02569 |
+| continuous adaptation vs the held scheme's frozen control | 8/30 vs 2/30 | 0.07972 (cross-scheme comparison) |
 | continuous adaptation vs healthy | 8/30 vs 23/30 | 2.3×10⁻⁴ |
 
-The headline survives unchanged in substance — a held correction takes the humanoid from
-7 % to its healthy rate, seven orders of magnitude from chance — and the continuous-adaptation
-row loses its significance against frozen, which is the honest reading of a 27 % rate against
-7 % at n = 30. The paper's humanoid table now reports rates and Fisher p-values, no
-fixed/broken columns. Frozen and healthy are being run for 30 more episodes each on fresh
+The original version of this paragraph incorrectly used the held scheme's frozen
+2/30 for the continuous comparison and said its significance disappeared.
+Continuous adaptation improves over its own frozen 1/30 (p = 0.02569), while
+remaining below its healthy control. Held correction reaches the same observed
+21/30 as its healthy control; that unresolved difference does not establish
+equivalence. The humanoid table uses unpaired Fisher tests, without fixed/broken
+columns. Frozen and healthy are being run for 30 more episodes each on fresh
 seeds to tighten both ends.
 
 **A second error caught in the same hour.** The first humanoid video was rendered on the
@@ -2958,20 +2961,36 @@ from it is reported anywhere.
 
 ### 32.11 Frozen and healthy on thirty fresh seeds; the humanoid table, final
 
-Seeds 130–159, one process each: frozen under the right-arm +0.10 rad offset **1/30**;
-healthy **20/30**. Pooled over all processes on this task: frozen **4/90 = 4 %**, healthy
-**64/90 = 71 %**.
+The new standalone files report frozen under the right-arm +0.10 rad offset
+**1/30** and healthy **20/30**, documented as seeds 130–159. The episode-list
+files contain outcomes and trajectories but no embedded seed or run arguments;
+the seed assignment is documented here and in their filenames.
+
+The expanded controls pool the original continuous cohort (frozen 1/30, healthy
+23/30), original held cohort (2/30, 21/30), and these standalone controls (1/30,
+20/30): frozen **4/90 = 4 %**, healthy **64/90 = 71 %**. The original cohorts
+combine `p2p_right010_cont.json`/`p2p_right010_cont_s110.json` and
+`p2p_right010_hold.json`/`p2p_right010_hold_s110.json`; the new files are
+`p2p_frozen_right010_s130.json` and `p2p_healthy_s130.json`, all under `results/gr1`.
+The separate null-study healthy 18/30 below is not included. This pooling follows
+the observed corrected results; it is a subsequent unpaired analysis, not a new
+preregistered confirmation of the unchanged corrected cohorts.
 
 | arm | rate | Fisher p vs frozen (4/90) | Fisher p vs healthy (64/90) |
 |---|---|---|---|
 | frozen, right arm +0.10 rad | 4/90 | — | — |
 | healthy | 64/90 | — | — |
 | **identify episode 0, then hold** | **21/30 = 70 %** | **8.9×10⁻¹³** | 1.0 |
-| continuous adaptation | 8/30 = 27 % | 0.0016 | 2.3×10⁻⁴ (below) |
+| continuous adaptation | 8/30 = 27 % | 0.0016 | 2.8×10⁻⁵ (below) |
 
-With the floors and ceilings pinned by ninety episodes each, continuous adaptation is
-significant against frozen after all (27 % against 4 %) and the held correction sits exactly
-on the healthy rate. Every number in this section is unpaired and stated so.
+These pooled controls give continuous adaptation 27 % against frozen 4 %
+(Fisher p = 0.00159), while held correction reaches 70 % against healthy 71 %.
+The latter difference remains unresolved; this does not establish equivalence.
+The original same-process continuous comparison already favored adaptation:
+8/30 versus its own frozen 1/30 gives p = 0.02569. Every comparison here is
+unpaired. The pooled healthy comparison uses p = 2.7675×10⁻⁵; the earlier
+2.3×10⁻⁴ belonged to 8/30 versus the original healthy 23/30 and was stale after
+changing the table's denominator.
 
 ### 32.12 Video
 
@@ -2995,7 +3014,8 @@ healthy arm in the same process **18/30**, the law running on the healthy arm **
 (Fisher p = 1.0; against the pooled healthy 64/90, p = 0.5). The held phantom on the seven
 right-arm joints is 0.0005–0.0055 rad on six of them and **0.012 rad on the wrist (joint
 13)** — 12 % of the 0.10 fault on that one joint, under 6 % elsewhere — and applying it to a
-healthy humanoid changes nothing. (The first version of this paragraph said "at most 0.004
+healthy humanoid gives a numerically similar success rate, with the difference
+unresolved at this sample size. (The first version of this paragraph said "at most 0.004
 rad"; that was written before the number was read and is corrected here.) The clip warning is joint 24, a left-hand joint that is estimated as a
 by-product and never corrected. With this the humanoid cell has every row the protocol of
 §14.5 requires: floor (4/90), repair (21/30), ceiling (64/90), and a null for the law on
@@ -3013,6 +3033,11 @@ drift. A clean probe would need a free-space pose away from the table and a fixe
 neither is available from the benchmark wrapper without modifying it. Left here as a
 measured dead end; the humanoid section stands on the action-interface offset.
 
+Merge audit (2026-09-08): the numeric torque-repeatability/contact account in
+§32.14 is an exploratory report; these incoming commits do not include its raw
+probe trace or script. It is not counted as independently verified GR1 torque
+repair evidence in the all-joint follow-up.
+
 ### 32.15 Pairing restored: the scene comes from the env's own generator
 
 The scene randomness of §32.10 is `env.rng`, a numpy `Generator` the tabletop environment
@@ -3025,6 +3050,25 @@ humanoid run from here is **paired** in the LIBERO sense and the video's two pan
 same task and object. §32.10–32.13 stand as stated (unpaired); the plate-to-plate cell is
 being rerun paired (three arms, seeds 100–129) so the humanoid table can carry McNemar
 counts like every other table, and the tray-to-plate chain runs paired from the start.
+
+
+> **Audit-branch note kept from the 2026-09-08 merge on `review/dual-track-audit`** (written before the paired GR1 result files existed; the results below supersede its last sentence):
+>
+> and seed 101 still differs in 45 bodies. `gr1_adapt.GR1.reset` now does this, so new runs
+> can share the initial task and scene across comparison arms. The video's
+> two panels now show the same task and object. This change does not retroactively pair
+> historical results; new benchmark pairing still requires matching run provenance and
+> verification of the complete reset state. §32.10–32.13 stand as stated (unpaired).
+> The incoming main-branch notes report a plate-to-plate rerun in progress (three arms,
+> seeds 100–129) and a tray-to-plate chain using the reset change. These commits do not
+> include their benchmark result files; new McNemar counts are not available in this merge.
+>
+> Merge verification (2026-09-08): the reset change passes a nested-wrapper mock check
+> for repeated and distinct seeds, and both changed Python files compile. This audit did
+> not rerun the actual simulator or independently reproduce the reported 86-body probe.
+> A reset-only comparison of task, object poses, full physics and controller state across
+> repeated seeds and a fresh instance remains appropriate before treating new result files
+> as paired. No new paired GR1 benchmark counts are included in the manuscript.
 
 ### 32.16 Plate-to-plate, PAIRED (identical scenes), identify-then-hold, n = 30
 
@@ -3318,8 +3362,10 @@ healthy 17, frozen 0, adaptive 16.
 
 This is the same pattern as the humanoid (Sec 32.17-32.19): on a controller that keeps
 its target, the online scheme pays for its transient every episode, and identifying once
-and holding is the right deployment. On LIBERO and ALOHA the online scheme reaches the
-healthy rate because the delta controllers there forget the transient.
+and holding is the right deployment. On LIBERO the online scheme reaches the healthy rate
+because its delta controller forgets the transient; ALOHA sends absolute joint targets and
+needed the hold scheme for a different reason, the sub-centimetre margin (Sec 28.4). (Sentence
+corrected 2026-09-10 after the dual-track audit flagged it: ALOHA is not a delta controller.)
 
 ### 34.3 The transient explanation, tested: gamma 0.2 online (`cell_tra005_g02.json`, seeds 100-119)
 
@@ -3455,3 +3501,120 @@ episodes, 45 minutes.
 LIBERO its OFT variant is (Sec 30, three families). It says the SimplerEnv Google-robot
 plant is outside the method's stated condition, for a reason measured before any repair
 was attempted, which is the point of stating the condition.
+
+## 36. Integrating the dual-track audit branch (2026-09-10)
+
+`review/dual-track-audit` (120 commits, author fengze, Sept 7-9) was merged into
+`integrate/audit-fixes` following its own handoff (`docs/branch_comparison_20260909/CLAUDE_HANDOFF.md`).
+What came in: the McNemar relative-tolerance fix and duplicate-key guard, the independent
+cross-check of every printed p-value (15 cells reproduce), the fault-lifecycle and reset-fingerprint
+protocol with tests, the ALOHA telemetry and innovation variants, the weighted allocator and
+composite estimator (experimental, with their counterexamples), the all-joint physical-fault
+confirmation (1,440 Panda rollouts, 780 ALOHA), the matched-estimator tuning study (5,424
+rollouts: no estimator beats Kalman; the original law scores 50% balanced), the descriptor-form
+module `learned_adaptation/` (ARX identification, constant basis; 112/140 -> 135/140 on the seven
+Spatial torque cells against its own frozen controls), 51 bibliography entries, and the audit's
+paper draft with its conditional analysis.
+
+**Paper.** The audit draft is the base (it carries the corrected claims); main's newer evidence
+was ported into it: the paired two-task GR1 table and magnitude map with the time-varying
+paragraph (superseding the unpaired cohorts, which stay in Sec 32.10-32.13), the WidowX
+subsection, the OpenVLA Google-robot boundary, the SimplerEnv citation. The four-suite, three-backbone
+and hold-scheme results now sit in the appendix "Extended experiments and historical evidence",
+which is the audit's framing: the main text leads with the conditions under which identification
+becomes repair, the all-joint confirmation and the estimator study. Main-text page count 9,
+verified with the audit's `check_submission_layout.py` (backmatter boundary from the aux file).
+
+**A build defect found on the way.** This machine's tectonic bundle silently substitutes Latin
+Modern for the `times` package; every earlier page-9 check in this record (Secs 33-35) ran in a
+font about 6% wider than the submission font, so those checks were conservative, never
+permissive. `paper/build_tectonic.tex` loads `newtxtext` (Times-metric) at the end of the preamble
+without touching the submission source.
+
+**Not imported.** The branch's `AGENTS.md`, its canonical-repository declaration and dual-push
+policy (local configuration and project identity, per the handoff). Kept unchanged from main:
+`gr1_adapt.py`, the WidowX and Google-robot scripts, all GR1/WidowX/Google results and videos.
+
+**Tests in the merged tree.** joint-fault lifecycle, calibration pipeline, weighted DOB, composite
+observer and validation, tuning and summary preparers, the LIBERO and ALOHA selftests,
+`mcnemar_crosscheck`, and the 124 `learned_adaptation` tests (one skipped, MuJoCo optional): all pass.
+
+**Still open from the audit, needing GPU time.** (1) The channel mask: the rotation-only
+restriction on the headline cells came from a separation test on faulted rollouts; the audit's
+proposed fix is an online gate on the healthy phantom's standard deviation (healthy data only),
+one to two GPU-days, and it decides whether the "no faulted data" claim is true end to end.
+(2) Held-out recalibration: `M` was measured on init 45, which the headline cells evaluate.
+(3) Reruns of the historical friction/lock cells under the new fault-restoration protocol.
+
+## 37. The channel mask from healthy data alone (2026-09-10)
+
+**The objection** (audit §4.5): the headline cells correct rotation only, and that mask came from
+a separation test on faulted rollouts, so "no faulted data" was not true end to end.
+Preregistered in `prereg_records/PREREG_HEALTHY_GATE.md` before anything was measured.
+
+**The gate.** Healthy phantom from 20 healthy `--estimate-only` scenarios (the headline's 20
+(task, init) pairs, inits 45/46; healthy 20/20 in both arms), statistic = per-episode mean
+estimate over the last 50 steps, b = mean and sd = across-episode sd per channel
+(`results/gate/phantom_stats.json`):
+
+| channel | b | sd | 3 sd |
+|---|---|---|---|
+| x | +0.015 | 0.039 | 0.117 |
+| y | −0.003 | 0.015 | 0.045 |
+| z | +0.029 | 0.040 | 0.119 |
+| rx | +0.000 | 0.003 | 0.010 |
+| ry | −0.000 | 0.013 | 0.038 |
+| rz | +0.001 | 0.002 (floor) | 0.006 |
+
+Rule, every step, no memory: correct channel i iff |f̂_i − b_i| > 3 sd_i. The estimator runs on
+all six channels with the headline constants (legacy law, γ 0.08, dead 0.008, ρ 0.15, clip 0.15).
+Nothing in the rule has seen a fault. The translation phantom is wide (3 sd > the 0.05 fault on x
+and z), which is the healthy-data reason translation is untrustworthy on this plant.
+
+**The cell** (`results/gate/spatial_uniform005_gate3.json`): π0.5, `libero_spatial`, uniform +0.05
+on all six action dimensions, the headline's 20 scenarios, paired.
+
+| arm | successes / 20 |
+|---|---|
+| frozen under the fault | 9 |
+| gated correction, k = 3 | **19** |
+
+10 fixed, 0 broken, exact McNemar p = 0.0020. The rotation-only headline on the same scenarios
+was 8/20 → 18/20 (10 fixed / 0 broken). **Prediction 1 confirmed**: the healthy-only gate
+reproduces the headline, so the restriction to trustworthy channels needs no faulted rollout.
+
+**Prediction 2, half refuted.** Gate occupancy after step 20 (median over episodes): rx 100 %,
+rz 100 %, ry 28 %; x 17 %, y 36 %, z 20 %. Rotation was predicted > 80 % open: true for rx and
+rz, false for ry, whose estimate settles at 0.021 against a 3 sd threshold of 0.038 (the channel
+that lags on every backbone, §30, stays mostly closed). Translation was predicted < 20 % open:
+true for x and z, false for y at 36 %. So the gate applied a translation correction on a third
+of the steps on y and the cell still repaired 19/20 with no regression. §19.3's finding that
+correcting translation hurts under the uniform fault was about correcting it *always*; an
+intermittent, thresholded translation correction did not hurt here. That is a new fact, not
+a contradiction, and it is recorded as such.
+
+**What this changes in the paper.** The channel restriction is now derivable from the healthy
+calibration: measure the phantom, gate at 3 sd. The rotation-only mask of the headline cells
+stands as the fixed-mask version of the same decision. The sentence "our mask ... selection
+use faulted development outcomes" is amended to: the mask was first found by a faulted
+separation test and is reproduced by a healthy-only gate (§37), so the deployed method needs
+no faulted data; hyperparameters remain development-tuned.
+
+**Healthy control with the gate running** (`results/gate/healthy_gate3.json`, same 20 scenarios):
+healthy no-law 20/20, gated 19/20, 0 fixed / 1 broken, p = 1.0. The lost episode (task 5, init 45)
+ran to the 220-step cap with the gate open on 4–10 % of its steps per channel. **Prediction 3,
+half refuted:** the healthy rate is unchanged within the registered bound (one discordant), but
+the gate was predicted to open on < 5 % of healthy steps and opened on 30 % (any channel;
+per channel: z 12 %, rx 10 %, rz 9 %, y 7 %, x 3 %, ry 2 %, means over episodes). A 3 sd
+threshold on a statistic averaged over 50 steps is not a 3 sd threshold on the instantaneous
+estimate, which is what the gate reads; the instantaneous estimate is noisier, so the gate
+flickers open on a healthy arm. That flicker cost nothing measurable on 19 episodes and may
+have cost the twentieth: the same order of harm as the OFT healthy control (one in twenty,
+§25), and reported the same way. A dwell requirement (open only after m consecutive steps
+beyond the threshold) is the obvious fix and is NOT applied here, because k and the rule were
+fixed in the preregistration; it is a second preregistration if it is run.
+
+**Bottom line for §37.** With the mask derived from healthy data alone, the headline cell is
+9/20 → 19/20 (10/0, p = 0.002) and the healthy control 20/20 → 19/20 (0/1, p = 1.0). The
+"no faulted data" claim holds end to end for the channel selection; the hyperparameters
+remain development-tuned, and the gate's healthy-arm flicker is the stated cost.

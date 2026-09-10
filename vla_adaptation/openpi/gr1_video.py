@@ -115,8 +115,8 @@ def main():
         if a.only_repaired and not okR:
             print("    corrected run failed this render -> skipping"); continue
         kept += 1
-        # each panel carries ITS OWN task language: the scene (and the object) is redrawn at
-        # every reset, so the two rollouts of a seed are different draws (Sec 32.10)
+        # Keep each rollout's recorded task language in its own panel. The reseeded
+        # environment now supplies the same initial scene for a shared seed (Sec 32.15).
         lang = prompt.split(": ", 1)[-1]; langR = promptR.split(": ", 1)[-1]
         n = max(len(fL), len(fR))
         for k in range(n + a.fps):

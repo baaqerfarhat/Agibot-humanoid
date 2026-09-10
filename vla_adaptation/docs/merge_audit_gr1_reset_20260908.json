@@ -1,0 +1,51 @@
+{
+  "date": "2026-09-08",
+  "incoming_commits": [
+    "c367fb2",
+    "96555f3"
+  ],
+  "checks": {
+    "python_syntax": "passed",
+    "actual_reset_function_mock": "passed",
+    "same_seed_within_instance": true,
+    "same_seed_fresh_instance": true,
+    "different_seed_differs": true,
+    "delegated_seeds": [
+      [
+        100,
+        100,
+        101
+      ],
+      [
+        100
+      ]
+    ]
+  },
+  "video": {
+    "path": "results/phase05/adaptive_vs_frozen_gr1.mp4",
+    "bytes": 4088101,
+    "ffprobe": {
+      "programs": [],
+      "streams": [
+        {
+          "width": 768,
+          "height": 322,
+          "r_frame_rate": "20/1",
+          "duration": "148.000000",
+          "nb_frames": "2960"
+        }
+      ]
+    }
+  },
+  "source_sha256": {
+    "openpi/gr1_adapt.py": "bdc43130770e4029208f555223753564a3abc7fb2d707cbff00e89234d90d32d",
+    "openpi/gr1_video.py": "2ee246dd439366c266c705ab686cbcb7845d1a9d3903deeae784d42db3579b3d",
+    "results/phase05/adaptive_vs_frozen_gr1.mp4": "55a9826272963ba80b52619f1b2290eaf08fdbebd66d052b201eba938968ee25"
+  },
+  "limitations": [
+    "Mock check extracts the actual reset function but does not validate RoboCasa, MuJoCo or controller state.",
+    "The incoming reported 86-body probe was not independently rerun locally; required simulator dependencies are absent.",
+    "Historical GR1 cohorts remain unpaired; Fisher tests and aggregate outcomes are unchanged.",
+    "The replacement demonstration is selected qualitative evidence, not a new paired benchmark."
+  ]
+}

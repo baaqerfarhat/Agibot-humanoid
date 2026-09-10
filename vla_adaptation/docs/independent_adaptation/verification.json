@@ -1,0 +1,34 @@
+{
+  "date": "2026-09-08",
+  "status": "passed",
+  "validation_command": "python -m unittest learned_adaptation.test_core -v",
+  "tests_passed": 11,
+  "lyapunov_identity_random_cases": 128,
+  "lyapunov_random_seed": 49,
+  "independent_review": "Continuous derivation and implementation reviewed; coordinate/action metric, input dependence, units, stochastic versus pathwise scope, and sample timing clarified; final delta review passed.",
+  "source_hashes": {
+    "README.md": "a01bd095e139337d94f08ddcaa9f661a41fc31c86a84dbedc96bbbccbbdde5fa",
+    "AGENTS.md": "223f92ac0a21ee50244e3f398cfc1361f5adec4de3969c606b8c622b3b9aaf55",
+    "paper/INDEPENDENT_PAPER_PLAN.md": "967911bc4eb596002630ce33c812449a42d77329618cd77c129048343b564119",
+    "docs/independent_adaptation/README.md": "1c77a891bee428a55966fc940dc0f7a505db047c698afe1046803b6228b1b594",
+    "docs/independent_adaptation/FORMULATION.md": "66fa724e4e2a7d10cda473bc711da781792d09ceff7d53c976d469b518060c3f",
+    "docs/independent_adaptation/interface_model_audit.md": "bc17806e55a67893d2308b18c77e7b8e739a92fc3987856d73691e8611617025",
+    "docs/independent_adaptation/manifold_review.md": "e28c0f2893cab9bfadcdf6f597c6916bd450fae12cfedf77ad79237c5813c600",
+    "docs/independent_adaptation/adaptation_sources.md": "a00c51b8422115b98c9e7913899d3c068e3ee3cf2d13474e168f02f7fcfdf0f0",
+    "learned_adaptation/test_core.py": "1c13cad40a228fc1794a9a2ccd95fbd3570ac0344deb5e23f4bc58a369df756c",
+    "learned_adaptation/core.py": "221dfb22a962daec552f7e6c9182f056b7aa1d586c52084ca614a88f4c4e9f5d",
+    "learned_adaptation/__init__.py": "01d89f07aea53ba21c227e6bdfae8522c075a0470413a503c919152e3cd7fd2c",
+    "docs/independent_adaptation/adaptation_sources_metadata.json": "20974ad7e1a26e32ca254eaa86ad6daf3ff7ddee94c118fd8d9ce2adeac5ad65",
+    "docs/independent_adaptation/manifold_sources.json": "a61dd3d695d944979e3fca125bf592a610180d2ee1ea790d3ef2b386f582738b"
+  },
+  "all_relative_document_links_resolve": true,
+  "legacy_readme_preserved_exactly_from": "687650f",
+  "predecessor_pdf_sha256": "8129d0469d1f82095ef981764d81dbece8ac8a8c129db6acd4be02c02c456bf9",
+  "limits": [
+    "No learned feature network is trained.",
+    "No robot runner uses this mathematical reference module.",
+    "No new robot/simulator rollout was performed.",
+    "No global nonlinear, sampled-data, hybrid-contact, or Ito stability result is certified by these finite tests.",
+    "Historical performance results remain predecessor evidence."
+  ]
+}

@@ -29,7 +29,16 @@ def mcnemar_exact(b, c):
     obs = _binom_p(b, n)
     # Two-sided by the "sum of outcomes no more likely than observed" convention, which is
     # the exact analogue of Fisher's two-sided rule rather than a doubled one-tail.
-    return min(1.0, sum(_binom_p(k, n) for k in range(n + 1) if _binom_p(k, n) <= obs + 1e-12))
+    #
+    # The comparison must be RELATIVE. An absolute tolerance is wrong here because these
+    # probabilities span many orders of magnitude: at the pooled headline cell (b=1, c=51)
+    # the observed probability is 1.15e-14, so an absolute `+ 1e-12` was 87x larger than the
+    # quantity it toleranced and admitted k=2 and k=50 as well as the intended {0,1,51,52}.
+    # That inflated the pooled p-value from 2.35e-14 to 6.12e-13 -- conservative, so no claim
+    # was overstated, but wrong, and it is the number the abstract quotes. Individual cells
+    # were unaffected because their observed probabilities (>= 6.1e-5) dwarf 1e-12.
+    return min(1.0, sum(_binom_p(k, n) for k in range(n + 1)
+                        if _binom_p(k, n) <= obs * (1.0 + 1e-9)))
 
 
 def permutation_p(pairs, iters=200000, seed=0):
@@ -66,6 +75,18 @@ def load(path, a="frozen_faulted", b="adaptive"):
     pa, pb = arms[a].get("per_ep"), arms[b].get("per_ep")
     if not pa or not pb:
         return None, arms[a]["successes"], arms[b]["successes"], arms[a]["n"]
+    # Keying by (task, init) silently DROPS replicates: if an arm contains two episodes at the
+    # same (task, init) -- which pooling two blocks of a single cell would produce -- the dict
+    # comprehension keeps only the last and the pair count silently falls while `successes` and
+    # `n` still report the full total. No stored result in this project is affected (315 arms
+    # checked, all one episode per key), but the failure is silent, so it is now an error.
+    for nm, rows in ((a, pa), (b, pb)):
+        keys = [(e["task"], e["init"]) for e in rows]
+        if len(set(keys)) != len(keys):
+            raise SystemExit(
+                f"{path}: arm {nm!r} has {len(rows)} episodes but only {len(set(keys))} distinct "
+                f"(task, init) keys. Pairing by key would drop replicates. Score replicate blocks "
+                f"separately, or pair positionally with an explicit replicate index.")
     ka = {(e["task"], e["init"]): e["ok"] for e in pa}
     kb = {(e["task"], e["init"]): e["ok"] for e in pb}
     keys = sorted(set(ka) & set(kb))

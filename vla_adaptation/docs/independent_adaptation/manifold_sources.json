@@ -1,0 +1,171 @@
+{
+  "reviewed_at_utc": "2026-09-08T23:07:57.312569+00:00",
+  "scope": "Five user-provided local PDFs, substantive method/theorem/limitation reading with primary version-record verification. Numerical counterexamples in the memo are independent analytic checks, not new robot experiments. No source PDF was changed.",
+  "page_convention": "One-based pages of the supplied PDFs.",
+  "papers": [
+    {
+      "arxiv_version": "2211.07945v4",
+      "title": "Geometric Impedance Control on SE(3) for Robotic Manipulators",
+      "authors": [
+        "Joohwan Seo",
+        "Nikhil Potu Surya Prakash",
+        "Alexander Rose",
+        "Jongeun Choi",
+        "Roberto Horowitz"
+      ],
+      "version_date": "2025-03-05",
+      "primary_record_url": "https://arxiv.org/abs/2211.07945v4",
+      "supplied_pdf_path": "manipulator_manifold_paper/2211.07945v4.pdf",
+      "sha256": "624f9f5e6c553aa2fde1be9ebc1daea2ec77a9a21028c684cb040efa526f25d8",
+      "bytes": 237033,
+      "pages": 8,
+      "publication_note": "Primary record: presented at IFAC World Congress 2023; related DOI 10.1016/j.ifacol.2023.10.1581",
+      "substantive_reference_pages": [
+        3,
+        4,
+        5,
+        6,
+        8
+      ]
+    },
+    {
+      "arxiv_version": "2402.15552v4",
+      "title": "Morphological Symmetries in Robotics",
+      "authors": [
+        "Daniel Ordoñez-Apraez",
+        "Giulio Turrisi",
+        "Vladimir Kostic",
+        "Mario Martin",
+        "Antonio Agudo",
+        "Francesc Moreno-Noguer",
+        "Massimiliano Pontil",
+        "Claudio Semini",
+        "Carlos Mastalli"
+      ],
+      "version_date": "2025-03-24",
+      "primary_record_url": "https://arxiv.org/abs/2402.15552v4",
+      "supplied_pdf_path": "manipulator_manifold_paper/2402.15552v4.pdf",
+      "sha256": "73c1053cc4471cc4eb2b15c551e806dcc38a9588f351d497ace6666682ab5129",
+      "bytes": 2592775,
+      "pages": 22,
+      "publication_note": "Primary record: International Journal of Robotics Research, 0(0):1–22, 2025; DOI 10.1177/02783649241282422",
+      "substantive_reference_pages": [
+        6,
+        8,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ]
+    },
+    {
+      "arxiv_version": "2412.05197v3",
+      "title": "A Riemannian Take on Distance Fields and Geodesic Flows in Robotics",
+      "authors": [
+        "Yiming Li",
+        "Jiacheng Qiu",
+        "Sylvain Calinon"
+      ],
+      "version_date": "2026-01-27",
+      "primary_record_url": "https://arxiv.org/abs/2412.05197v3",
+      "supplied_pdf_path": "manipulator_manifold_paper/2412.05197v3.pdf",
+      "sha256": "04f67019280ec4447bfe2a768660546c2d1b8ba9a0d3b8179d53c4c82c06a91b",
+      "bytes": 7267761,
+      "pages": 27,
+      "publication_note": "Primary record comments identify IJRR; supplied PDF retains journal-template and DOI placeholders, so no finalized publication version inferred",
+      "substantive_reference_pages": [
+        3,
+        4,
+        7,
+        8,
+        14,
+        15,
+        17,
+        19,
+        20,
+        21,
+        24,
+        25,
+        26
+      ]
+    },
+    {
+      "arxiv_version": "2503.09829v3",
+      "title": "SE(3)-Equivariant Robot Learning and Control: A Tutorial Survey",
+      "authors": [
+        "Joohwan Seo",
+        "Soochul Yoo",
+        "Junwoo Chang",
+        "Hyunseok An",
+        "Hyunwoo Ryu",
+        "Soomi Lee",
+        "Arvind Kruthiventy",
+        "Jongeun Choi",
+        "Roberto Horowitz"
+      ],
+      "version_date": "2025-04-23",
+      "primary_record_url": "https://arxiv.org/abs/2503.09829v3",
+      "supplied_pdf_path": "manipulator_manifold_paper/2503.09829v3.pdf",
+      "sha256": "99b33f7d0021428291902b46c891f65317769bb5efa52d3aa0a9779f61eee1db",
+      "bytes": 2140813,
+      "pages": 34,
+      "publication_note": "Primary record states accepted to International Journal of Control, Automation and Systems; supplied PDF retains template fields",
+      "substantive_reference_pages": [
+        11,
+        13,
+        14,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26
+      ]
+    },
+    {
+      "arxiv_version": "2504.17080v3",
+      "title": "Geometric Formulation of Unified Force-Impedance Control on SE(3) for Robotic Manipulators",
+      "authors": [
+        "Joohwan Seo",
+        "Nikhil Potu Surya Prakash",
+        "Soomi Lee",
+        "Arvind Kruthiventy",
+        "Megan Teng",
+        "Jongeun Choi",
+        "Roberto Horowitz"
+      ],
+      "version_date": "2026-06-09",
+      "primary_record_url": "https://arxiv.org/abs/2504.17080v3",
+      "supplied_pdf_path": "manipulator_manifold_paper/2504.17080v3.pdf",
+      "sha256": "85a273eaa11eefef5052ed36178197ddeb578437ce0637a7ebb565b1b1fed362",
+      "bytes": 1888940,
+      "pages": 6,
+      "publication_note": "Reviewed exact supplied arXiv v3; author repository says accepted at IFAC World Congress 2026",
+      "substantive_reference_pages": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    }
+  ],
+  "supplementary_primary_code": {
+    "repository": "https://github.com/Joohwan-Seo/GUFIC_mujoco",
+    "commit": "b3a2afcef4ff93175b3327e51bc1cee31a7678aa",
+    "file": "gufic_env/env_gufic_velocity_field.py",
+    "url": "https://github.com/Joohwan-Seo/GUFIC_mujoco/blob/b3a2afcef4ff93175b3327e51bc1cee31a7678aa/gufic_env/env_gufic_velocity_field.py#L296",
+    "sha256": "0b57fea4146224212c4aad9aa0a4df64c70bdacaa3a674b1a2a2960cd8352cad",
+    "bytes": 20711,
+    "finding": "Lines 296–297 use negative zeta times the translation and orientation error. Supplied paper v3 equation 21, page 4, prints positive zeta times the same gradient. The printed page was visually checked."
+  }
+}
