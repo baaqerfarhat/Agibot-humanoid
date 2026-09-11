@@ -1,0 +1,114 @@
+{
+ "schema_version": "re4-v1",
+ "timing_file": "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/re4_evidence/C_healthy/shipped_libero_spatial/timing.jsonl",
+ "steps": 4259,
+ "rate_hz": 20.0,
+ "deadline_ms": 50.0,
+ "note": "wall-clock of a simulated robot: policy_ms and env_ms are this machine's GPU/CPU times, not a real-time controller's",
+ "adaptive": {
+  "policy_ms_replan_steps": {
+   "n": 426,
+   "median": 899.9786910135299,
+   "p95": 913.5891211917624,
+   "p99": 923.3542397851124,
+   "max": 940.7761681359261
+  },
+  "adapter_ms": {
+   "n": 2088,
+   "median": 0.1873484579846263,
+   "p95": 0.2995296963490546,
+   "p99": 0.4581347224302596,
+   "max": 0.7647750899195671
+  },
+  "env_ms": {
+   "n": 2088,
+   "median": 31.199849559925497,
+   "p95": 52.70710090408099,
+   "p99": 63.43033847166227,
+   "max": 84.73171200603247
+  },
+  "sensor_to_command_ms": {
+   "n": 2088,
+   "median": 2.9693214455619454,
+   "p95": 909.1801605420187,
+   "p99": 917.0735966879874,
+   "max": 944.009318947792
+  },
+  "loop_ms": {
+   "n": 2088,
+   "median": 34.153425483964384,
+   "p95": 957.897519133985,
+   "p99": 974.2952697584406,
+   "max": 1007.6438428368419
+  },
+  "deadline_misses": {
+   "all": 514,
+   "replan_steps": 426,
+   "non_replan_steps": 88,
+   "of_steps": 2088
+  },
+  "recovery": {
+   "threshold": "0.2 x ||f_true|| on channels [3, 4, 5]",
+   "window_steps": 20,
+   "recovered": 0,
+   "censored": 0,
+   "no_fault_episodes": 20,
+   "control_s": "no samples",
+   "wall_s": "no samples",
+   "per_episode": []
+  }
+ },
+ "frozen_faulted": {
+  "policy_ms_replan_steps": {
+   "n": 441,
+   "median": 899.3912108708173,
+   "p95": 916.9324149843305,
+   "p99": 938.6955339461566,
+   "max": 970.8830770105124
+  },
+  "adapter_ms": {
+   "n": 2171,
+   "median": 0.16991514712572098,
+   "p95": 0.29101897962391376,
+   "p99": 0.4030880518257621,
+   "max": 0.6988369859755039
+  },
+  "env_ms": {
+   "n": 2171,
+   "median": 37.38120314665139,
+   "p95": 60.11305097490549,
+   "p99": 71.75434627570223,
+   "max": 97.37232094630599
+  },
+  "sensor_to_command_ms": {
+   "n": 2171,
+   "median": 3.399797948077321,
+   "p95": 910.1336429594085,
+   "p99": 921.1536582792178,
+   "max": 1485.947882058099
+  },
+  "loop_ms": {
+   "n": 2171,
+   "median": 41.597465984523296,
+   "p95": 962.2360034845769,
+   "p99": 979.2130131972955,
+   "max": 1020.0794970151037
+  },
+  "deadline_misses": {
+   "all": 778,
+   "replan_steps": 441,
+   "non_replan_steps": 337,
+   "of_steps": 2171
+  },
+  "recovery": {
+   "threshold": "0.2 x ||f_true|| on channels [3, 4, 5]",
+   "window_steps": 20,
+   "recovered": 0,
+   "censored": 0,
+   "no_fault_episodes": 20,
+   "control_s": "no samples",
+   "wall_s": "no samples",
+   "per_episode": []
+  }
+ }
+}

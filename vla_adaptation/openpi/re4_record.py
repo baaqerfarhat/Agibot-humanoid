@@ -227,8 +227,9 @@ def cmd_timing(ns):
     res = json.loads(ns.result.read_text()) if ns.result else {}
     a = res.get("args") or {}
     ch = channels(a) if isinstance(channels(a), list) else list(range(6))
-    deadline = 1e3 / RATE_HZ
-    out = dict(schema_version="re4-v1", timing_file=str(ns.timing), steps=len(rows), rate_hz=RATE_HZ,
+    rate = RUNNERS[runner_of(a)]["rate_hz"] if a else RATE_HZ      # ALOHA runs at 50 Hz, LIBERO and GR1 at 20
+    deadline = 1e3 / rate
+    out = dict(schema_version="re4-v1", timing_file=str(ns.timing), steps=len(rows), rate_hz=rate,
                deadline_ms=deadline, note=("wall-clock of a simulated robot: policy_ms and env_ms are this "
                                            "machine's GPU/CPU times, not a real-time controller's"))
     for arm in sorted({r["arm"] for r in rows}):
@@ -253,9 +254,10 @@ def cmd_timing(ns):
             ok = err < tau; k = next((i for i in range(len(ok) - ns.window + 1) if ok[i:i + ns.window].all()), None)
             if k is None:
                 cens += 1; continue
-            rec.append(dict(episode=ep, step=int(E[k]["t"]), control_s=E[k]["t"] / RATE_HZ,
+            rec.append(dict(episode=ep, step=int(E[k]["t"]), control_s=E[k]["t"] / rate,
                             wall_s=float(E[k]["wall"] - E[0]["wall"])))
         blk["recovery"] = dict(threshold=f"{ns.frac:g} x ||f_true|| on channels {ch}", window_steps=ns.window,
+                               window_s=ns.window / rate,
                                recovered=len(rec), censored=cens, no_fault_episodes=none,
                                control_s=pct([x["control_s"] for x in rec]), wall_s=pct([x["wall_s"] for x in rec]),
                                per_episode=rec)
