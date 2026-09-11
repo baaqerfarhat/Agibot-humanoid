@@ -18,8 +18,9 @@ suites, **paired** episodes (same tasks, initial states and seeds in both arms):
 | `libero_10` (n=40) | 0/40 = 0% | 15/40 = 38% | 6.1×10⁻⁵ |
 | **pooled** | **28/120 = 23%** | **78/120 = 65%** | **6.1×10⁻¹³** |
 
-Across **690 paired episodes** spanning two backbones, four fault families, four suites, three
-severities each and four time profiles: **275 episodes fixed, 7 broken** — a 1.0% regression rate.
+Across **2,240 paired episodes in 110 stored cells** (faults, severities, profiles, controls and ablations,
+tallied by `openpi/aggregate_tally.py` with a written manifest): **625 fixed, 66 broken** — 2.9% of all
+episodes, 10.3% of the episodes the frozen policy was winning (the denominator that can regress).
 Every suite in the table above is individually significant.
 
 The three headline cells replicate on a second suite (`libero_object`) **without
@@ -140,7 +141,9 @@ hardware/         the same law applied to real X2 humanoid logs (see note below)
 docs/             ADAPTIVE_CONTROL_VLA.md is the primary record, §1–§28
 report/           LaTeX report (the full record in paper form), the external review, the response,
                   and the dual-track audit (FINDINGS.md, DUAL_TRACK_AUDIT.md, FOLLOWUP_STATUS.md, COMPOSITE_TUNING.md)
-paper/            the ICLR draft: 8 pages, built from the record, every number from stored outcomes
+paper/            the ICLR draft (9 main pages; original story, audit corrections folded in; build with build_tectonic.tex);
+                  iclr_draft_audit_framing.tex is the collaborator's framing of the same evidence; aggregate_tally.py
+                  computes the abstract's paired-episode count (results/aggregate_manifest.json)
 results/          every run behind every number above; results/phase05/*.mp4 are the
                   comparison videos (spatial, object, goal, libero_10, OpenVLA-OFT, GR00T rotation and translation, ALOHA, GR1 humanoid on two tasks and at 0.20 rad, WidowX in SimplerEnv); results/groot/ is the third backbone, results/gr1/ the humanoid, results/widowx/ the SimplerEnv WidowX
 prereg_records/   predictions registered before their experiments ran

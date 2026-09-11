@@ -1,0 +1,269 @@
+{
+ "rows": [
+  {
+   "f": 0.01,
+   "d_motion": [
+    0.002059720124916007,
+    0.0030825340980061445,
+    0.0007655210682500714,
+    0.0024311160429988476,
+    0.0026994224474910346,
+    0.0027170510998363855
+   ],
+   "sens": [
+    0.2059720124916007,
+    0.30825340980061444,
+    0.07655210682500714,
+    0.24311160429988476,
+    0.26994224474910344,
+    0.27170510998363856
+   ],
+   "replay_steps": 70,
+   "common_steps": 70
+  },
+  {
+   "f": 0.02,
+   "d_motion": [
+    0.003639358601441664,
+    0.006369808004513128,
+    0.0009530252512787957,
+    0.004991272639333314,
+    0.00517050624331942,
+    0.0054334537967837375
+   ],
+   "sens": [
+    0.1819679300720832,
+    0.3184904002256564,
+    0.047651262563939784,
+    0.2495636319666657,
+    0.258525312165971,
+    0.27167268983918685
+   ],
+   "replay_steps": 70,
+   "common_steps": 70
+  },
+  {
+   "f": 0.05,
+   "d_motion": [
+    0.006835089942795394,
+    0.015691078669444625,
+    0.004279704444394674,
+    0.012730857230686992,
+    0.011697812342440186,
+    0.012949130889591048
+   ],
+   "sens": [
+    0.13670179885590786,
+    0.3138215733888925,
+    0.08559408888789348,
+    0.2546171446137398,
+    0.2339562468488037,
+    0.25898261779182097
+   ],
+   "replay_steps": 70,
+   "common_steps": 70
+  },
+  {
+   "f": -0.05,
+   "d_motion": [
+    -0.01008201169293636,
+    -0.01084782307411861,
+    -7.515258485149952e-05,
+    -0.009547644187066466,
+    -0.015476157550836946,
+    -0.011431474950459571
+   ],
+   "sens": [
+    0.20164023385872717,
+    0.2169564614823722,
+    0.0015030516970299904,
+    0.1909528837413293,
+    0.3095231510167389,
+    0.2286294990091914
+   ],
+   "replay_steps": 70,
+   "common_steps": 70
+  }
+ ],
+ "M": [
+  [
+   0.26755913335647163,
+   0.014481422117469552,
+   -0.07414709109325009,
+   -0.03200874568512053,
+   0.017411845291808642,
+   0.004942132132295524
+  ],
+  [
+   -0.007108424883305505,
+   0.22057582097714754,
+   0.04615271606677772,
+   -0.008143187888872257,
+   0.038758493245206,
+   0.01948844749230415
+  ],
+  [
+   0.017702782535769148,
+   0.010433138884942746,
+   0.09962860623455023,
+   -0.007357694386811442,
+   -0.03206583852548234,
+   -0.0011731552758324952
+  ],
+  [
+   -0.0019374546721552255,
+   0.0025857025252589492,
+   0.004465289239199483,
+   0.23316882006169304,
+   -0.004791323878904666,
+   0.0015159977082352476
+  ],
+  [
+   0.00535382586381168,
+   -0.0018233958095272146,
+   -0.003696303106088681,
+   0.008165181296370597,
+   0.25949079975549155,
+   -0.0010808412035481878
+  ],
+  [
+   -0.0011709354714031417,
+   0.0005054939576127749,
+   0.006483279014284312,
+   0.0005484164379046322,
+   0.004394276844360293,
+   0.24350020507897513
+  ]
+ ],
+ "baseline_steps": 70,
+ "columns": [
+  {
+   "axis": 0,
+   "plus_steps": 69,
+   "minus_steps": 69,
+   "common_steps": 69
+  },
+  {
+   "axis": 1,
+   "plus_steps": 61,
+   "minus_steps": 69,
+   "common_steps": 61
+  },
+  {
+   "axis": 2,
+   "plus_steps": 70,
+   "minus_steps": 69,
+   "common_steps": 69
+  },
+  {
+   "axis": 3,
+   "plus_steps": 70,
+   "minus_steps": 70,
+   "common_steps": 70
+  },
+  {
+   "axis": 4,
+   "plus_steps": 69,
+   "minus_steps": 69,
+   "common_steps": 69
+  },
+  {
+   "axis": 5,
+   "plus_steps": 69,
+   "minus_steps": 70,
+   "common_steps": 69
+  }
+ ],
+ "sensitivity_method": "central difference on common baseline/plus/minus prefix per input axis",
+ "schema_version": 2,
+ "status": "complete",
+ "probe": 0.02,
+ "reset_protocol": "libero-reset-v1",
+ "probe_init": 25,
+ "probe_task": 0,
+ "suite": "libero_spatial",
+ "probe_episodes": [
+  [
+   0,
+   25
+  ]
+ ],
+ "command_source": {
+  "record_index": 0,
+  "episode_index": 0,
+  "scenario": [
+   0,
+   25
+  ],
+  "command_field": "raw_cmd",
+  "source_episode_steps": 70,
+  "requested_steps": 80,
+  "selected_steps": 70,
+  "flat_command_range": [
+   0,
+   70
+  ],
+  "gripper": "recorded",
+  "command_sha256": "8e0d2804a3ea3c8140cd0fe0930cff109a537e2463db6d61d63b82227770932d"
+ },
+ "source_calib_episodes": [
+  [
+   0,
+   25
+  ],
+  [
+   1,
+   25
+  ],
+  [
+   2,
+   25
+  ],
+  [
+   3,
+   25
+  ],
+  [
+   4,
+   25
+  ],
+  [
+   5,
+   25
+  ],
+  [
+   6,
+   25
+  ],
+  [
+   7,
+   25
+  ],
+  [
+   8,
+   25
+  ],
+  [
+   9,
+   25
+  ]
+ ],
+ "args": {
+  "log": "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/heldout/error_signal_init25.json",
+  "out": "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/heldout/openloop_init25.json",
+  "suite": "libero_spatial",
+  "steps": 80,
+  "source_episode": 0,
+  "probe_task": 0,
+  "probe": 0.02,
+  "probe_init": 25
+ },
+ "created_utc": "2026-09-11T00:32:34.477767+00:00",
+ "source_hashes": {
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/heldout/error_signal_init25.json": "77a71c70b118f5c67947f7dba912843a22abb5007495428aa669fecf16204ab7",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/openloop_id.py": "20c3bd87301e6790bd5247a6edf235a121216fcfaca154efd14e96b39ba02faa",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/error_signal.py": "d9c254952ce86ebd02ca4178b6e1ad5c7b723a5eb7c8c32bf2caa051bbb5e884",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/so3.py": "cd07c7d21abb0a6d2ba1de00e0ffc86263a9dcc4573bccdd7225a2f2ae9cc12c",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/libero_reset.py": "4308ae24d3cda9b7e411e6071e52548cb17ac11717b82c88c06eca86cf2934bb"
+ }
+}

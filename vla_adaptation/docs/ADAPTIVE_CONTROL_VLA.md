@@ -3618,3 +3618,48 @@ fixed in the preregistration; it is a second preregistration if it is run.
 9/20 → 19/20 (10/0, p = 0.002) and the healthy control 20/20 → 19/20 (0/1, p = 1.0). The
 "no faulted data" claim holds end to end for the channel selection; the hyperparameters
 remain development-tuned, and the gate's healthy-arm flicker is the stated cost.
+
+## 38. The paper: original story, audit corrections folded in (2026-09-10)
+
+The merged draft of Sec 36 carried the collaborator's framing (their all-joint and estimator
+studies in the main text, ours in an appendix). At the user's direction the main text now tells
+the original story again, from the pre-merge draft, with every audit correction folded in:
+
+- pooled four-suite p = 2.4e-14 (relative-tolerance instrument); "zero regressions in every cell"
+  → every regression sits in a ceiling cell (translation 0.05 is 1 fixed / 1 broken); fixed/broken
+  printed beside every healthy-control total (GR00T 1/1, ALOHA 5/8, GR1 7/6 on both tasks,
+  WidowX 3/2); "same (task, init, seed)" → same (task, init), policy sampling not pinned;
+  the proprioceptive bias damages nothing (15/15 frozen) and the wrist fault is an image roll;
+  the regression denominator that can regress (1 of 28 in the four-suite cell); M probed at
+  init 45 disclosed, held-out recalibration registered (`PREREG_HELDOUT_CALIBRATION.md`) and
+  pending in an appendix; the channel mask reproduced by the healthy gate (Sec 37).
+- related work rebuilt on the merged 51-entry bibliography; "the machinery earns its place" →
+  the plant model earns its place, matched estimators sharing it repair as well (19/17/17/18/15
+  of 20, oracle 20), the collaborator's 5,424-rollout ALOHA study finds no estimator beating
+  another; both their studies reported in an appendix with their tables, attributed.
+- the abstract's tally is now computed: `openpi/aggregate_tally.py` sweeps every stored paired
+  cell under written rules and writes `results/aggregate_manifest.json`: 110 cells, 2,240 paired
+  episodes, 625 fixed, 66 broken (2.9 % of all, 10.3 % of episodes the frozen policy was winning).
+  The old hand-assembled "690 / 275 / 7" is gone.
+- the audit's framing is kept verbatim as `paper/iclr_draft_audit_framing.tex`.
+- 9 main pages under Times metrics, no overfull boxes, verified with the audit's checker.
+
+## 39. Held-out calibration (2026-09-10, running)
+
+Prereg `PREREG_HELDOUT_CALIBRATION.md`. Healthy FIR log at `--init-base 25` (10 episodes,
+`results/heldout/error_signal_init25.json`), M by the same 0.02 probe at init 25
+(`openloop_init25.json`).
+
+| | shipped (init 45) | held-out (init 25) | ratio |
+|---|---|---|---|
+| M diagonal x, y, z | 0.297, 0.272, 0.126 | 0.268, 0.221, 0.100 | 0.90, 0.81, 0.79 |
+| M diagonal rx, ry, rz | 0.253, 0.276, 0.244 | 0.233, 0.259, 0.244 | 0.92, 0.94, 1.00 |
+| condition number | 3.0 | 3.1 | |
+
+**Third prediction (M within 15 %) refuted on y and z** (19–21 % lower at init 25); rotation
+within 8 %. The initial state matters to the translation sensitivity at the 20 % level, which
+is the magnitude the audit's "M is magnitude independent to 14 %" finding did not cover
+(different quantity: magnitude there, configuration here). The rotation-corrected headline
+cells depend on the rotation block, which held. The four cells are running with the held-out
+plant and M; the primary prediction (each cell within 3 of its original count, all
+significant) decides the calibration-overlap caveat.

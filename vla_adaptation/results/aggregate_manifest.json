@@ -1,0 +1,5658 @@
+{
+ "rules": "The aggregate paired-episode tally the abstract quotes, computed, not hand-assembled\n(dual-track audit finding 4.3). Sweeps every result file that carries paired per-episode\noutcomes for a frozen-faulted and an adaptive arm, assigns it to a category by path, applies\nthe EXCLUSION rules below, and writes a manifest naming every included and excluded file with\nits counts. Nothing here is hand-typed except the rules.\n\nRules (the only editorial content):\n  * excluded directories: diagnostics and other authors' studies that the paper does not sum\n    (ace*, oracle, gate04, observers, saturation, sweep, joint_followup, composite_*, descriptor,\n    mimo, norm_channels, joint_map, jointmap, hardware, suites/*_n20 superseded reruns);\n  * excluded files: integral/matched-baseline sweeps (arm tag 'integral' or args.baseline != none),\n    estimate-only probes, aborted/partial files (name contains 'aborted' or 'partial'), the\n    unpaired GR1 cohorts (files without per_ep in both arms are skipped anyway);\n  * a healthy control is counted (it is a paired comparison the paper reports).\nUsage: python aggregate_tally.py [--root results] [--out results/aggregate_manifest.json]\n",
+ "included": [
+  {
+   "file": "aloha/healthy.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 5,
+   "corrected": 7,
+   "fixed": 3,
+   "broken": 1
+  },
+  {
+   "file": "aloha/healthy_identify1_hold_n40.json",
+   "category": "ALOHA",
+   "n": 40,
+   "frozen": 17,
+   "corrected": 14,
+   "fixed": 5,
+   "broken": 8
+  },
+  {
+   "file": "aloha/off002_histfix.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off002_histfix_warm.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off002_identify1_hold.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 5,
+   "fixed": 5,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off002_identify1_hold_n40.json",
+   "category": "ALOHA",
+   "n": 40,
+   "frozen": 0,
+   "corrected": 15,
+   "fixed": 15,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off002_nr04.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off002_oracle.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 8,
+   "fixed": 8,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off002_static019.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 5,
+   "fixed": 5,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off002_warm_freeze100.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off002_warm_freeze200.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off002_warm_freeze30.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off005.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off005_histfix.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off005_histfix_warm.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off005_nr04.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off005_oracle.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 4,
+   "fixed": 4,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off005_static041.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off005_static045.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off005_warm.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off010.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "aloha/off010_nr04.json",
+   "category": "ALOHA",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "gate/healthy_gate3.json",
+   "category": "healthy-phantom channel gate",
+   "n": 20,
+   "frozen": 20,
+   "corrected": 19,
+   "fixed": 0,
+   "broken": 1
+  },
+  {
+   "file": "gate/spatial_uniform005_gate3.json",
+   "category": "healthy-phantom channel gate",
+   "n": 20,
+   "frozen": 9,
+   "corrected": 19,
+   "fixed": 10,
+   "broken": 0
+  },
+  {
+   "file": "gr1/left015_cont.json",
+   "category": "GR1 humanoid",
+   "n": 10,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "gr1/left015_identify1_hold.json",
+   "category": "GR1 humanoid",
+   "n": 10,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "gr1/left015_innov.json",
+   "category": "GR1 humanoid",
+   "n": 10,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "gr1/left015_oracle.json",
+   "category": "GR1 humanoid",
+   "n": 10,
+   "frozen": 0,
+   "corrected": 1,
+   "fixed": 1,
+   "broken": 0
+  },
+  {
+   "file": "gr1/p2p_null_hold_s160.json",
+   "category": "GR1 humanoid",
+   "n": 30,
+   "frozen": 18,
+   "corrected": 19,
+   "fixed": 7,
+   "broken": 6
+  },
+  {
+   "file": "gr1/p2p_right005_hold3w_paired.json",
+   "category": "GR1 humanoid",
+   "n": 30,
+   "frozen": 7,
+   "corrected": 24,
+   "fixed": 17,
+   "broken": 0
+  },
+  {
+   "file": "gr1/p2p_right010_cont.json",
+   "category": "GR1 humanoid",
+   "n": 10,
+   "frozen": 0,
+   "corrected": 3,
+   "fixed": 3,
+   "broken": 0
+  },
+  {
+   "file": "gr1/p2p_right010_cont_s110.json",
+   "category": "GR1 humanoid",
+   "n": 20,
+   "frozen": 1,
+   "corrected": 5,
+   "fixed": 5,
+   "broken": 1
+  },
+  {
+   "file": "gr1/p2p_right010_hold.json",
+   "category": "GR1 humanoid",
+   "n": 10,
+   "frozen": 1,
+   "corrected": 8,
+   "fixed": 7,
+   "broken": 0
+  },
+  {
+   "file": "gr1/p2p_right010_hold3w_paired.json",
+   "category": "GR1 humanoid",
+   "n": 30,
+   "frozen": 1,
+   "corrected": 19,
+   "fixed": 18,
+   "broken": 0
+  },
+  {
+   "file": "gr1/p2p_right010_hold_paired.json",
+   "category": "GR1 humanoid",
+   "n": 30,
+   "frozen": 2,
+   "corrected": 15,
+   "fixed": 13,
+   "broken": 0
+  },
+  {
+   "file": "gr1/p2p_right010_hold_s110.json",
+   "category": "GR1 humanoid",
+   "n": 20,
+   "frozen": 1,
+   "corrected": 13,
+   "fixed": 12,
+   "broken": 0
+  },
+  {
+   "file": "gr1/p2p_right020_hold3w_paired.json",
+   "category": "GR1 humanoid",
+   "n": 30,
+   "frozen": 0,
+   "corrected": 21,
+   "fixed": 21,
+   "broken": 0
+  },
+  {
+   "file": "gr1/p2p_tv_intermittent.json",
+   "category": "GR1 humanoid",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 4,
+   "fixed": 4,
+   "broken": 0
+  },
+  {
+   "file": "gr1/p2p_tv_ramp.json",
+   "category": "GR1 humanoid",
+   "n": 20,
+   "frozen": 1,
+   "corrected": 9,
+   "fixed": 9,
+   "broken": 1
+  },
+  {
+   "file": "gr1/p2p_tv_ramp_hold.json",
+   "category": "GR1 humanoid",
+   "n": 20,
+   "frozen": 1,
+   "corrected": 11,
+   "fixed": 10,
+   "broken": 0
+  },
+  {
+   "file": "gr1/p2p_tv_sine_bias.json",
+   "category": "GR1 humanoid",
+   "n": 20,
+   "frozen": 1,
+   "corrected": 6,
+   "fixed": 6,
+   "broken": 1
+  },
+  {
+   "file": "gr1/t2p_null_hold_s160.json",
+   "category": "GR1 humanoid",
+   "n": 30,
+   "frozen": 15,
+   "corrected": 16,
+   "fixed": 7,
+   "broken": 6
+  },
+  {
+   "file": "gr1/t2p_right010_hold3w_paired.json",
+   "category": "GR1 humanoid",
+   "n": 30,
+   "frozen": 1,
+   "corrected": 13,
+   "fixed": 12,
+   "broken": 0
+  },
+  {
+   "file": "gr1/t2p_right010_hold_paired.json",
+   "category": "GR1 humanoid",
+   "n": 30,
+   "frozen": 2,
+   "corrected": 6,
+   "fixed": 5,
+   "broken": 1
+  },
+  {
+   "file": "groot/groot_healthy.json",
+   "category": "GR00T N1.7",
+   "n": 20,
+   "frozen": 18,
+   "corrected": 18,
+   "fixed": 1,
+   "broken": 1
+  },
+  {
+   "file": "groot/groot_rot010.json",
+   "category": "GR00T N1.7",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 14,
+   "fixed": 14,
+   "broken": 0
+  },
+  {
+   "file": "groot/groot_tra015.json",
+   "category": "GR00T N1.7",
+   "n": 20,
+   "frozen": 2,
+   "corrected": 15,
+   "fixed": 13,
+   "broken": 0
+  },
+  {
+   "file": "groot/smoke_healthy_2ep.json",
+   "category": "GR00T N1.7",
+   "n": 2,
+   "frozen": 2,
+   "corrected": 2,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "oft/oft_healthy.json",
+   "category": "OpenVLA-OFT",
+   "n": 20,
+   "frozen": 20,
+   "corrected": 19,
+   "fixed": 0,
+   "broken": 1
+  },
+  {
+   "file": "oft/oft_rot010.json",
+   "category": "OpenVLA-OFT",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 11,
+   "fixed": 11,
+   "broken": 0
+  },
+  {
+   "file": "oft/oft_tra015.json",
+   "category": "OpenVLA-OFT",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 14,
+   "fixed": 14,
+   "broken": 0
+  },
+  {
+   "file": "oft/smoke_healthy_2ep.json",
+   "category": "OpenVLA-OFT",
+   "n": 2,
+   "frozen": 2,
+   "corrected": 2,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "phase05/abl_calib_1_episode.json",
+   "category": "constants ablation",
+   "n": 20,
+   "frozen": 10,
+   "corrected": 17,
+   "fixed": 8,
+   "broken": 1
+  },
+  {
+   "file": "phase05/abl_calib_2_episodes.json",
+   "category": "constants ablation",
+   "n": 20,
+   "frozen": 8,
+   "corrected": 17,
+   "fixed": 10,
+   "broken": 1
+  },
+  {
+   "file": "phase05/abl_dead_0.json",
+   "category": "constants ablation",
+   "n": 20,
+   "frozen": 8,
+   "corrected": 19,
+   "fixed": 11,
+   "broken": 0
+  },
+  {
+   "file": "phase05/abl_dead_0_03.json",
+   "category": "constants ablation",
+   "n": 20,
+   "frozen": 8,
+   "corrected": 17,
+   "fixed": 9,
+   "broken": 0
+  },
+  {
+   "file": "phase05/abl_gamma_0_02.json",
+   "category": "constants ablation",
+   "n": 20,
+   "frozen": 8,
+   "corrected": 17,
+   "fixed": 9,
+   "broken": 0
+  },
+  {
+   "file": "phase05/abl_gamma_0_32.json",
+   "category": "constants ablation",
+   "n": 20,
+   "frozen": 7,
+   "corrected": 18,
+   "fixed": 11,
+   "broken": 0
+  },
+  {
+   "file": "phase05/abl_norm_r_0_05.json",
+   "category": "constants ablation",
+   "n": 20,
+   "frozen": 11,
+   "corrected": 14,
+   "fixed": 5,
+   "broken": 2
+  },
+  {
+   "file": "phase05/abl_norm_r_0_50.json",
+   "category": "constants ablation",
+   "n": 20,
+   "frozen": 8,
+   "corrected": 20,
+   "fixed": 12,
+   "broken": 0
+  },
+  {
+   "file": "phase05/base_ki0.001.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 4,
+   "corrected": 5,
+   "fixed": 2,
+   "broken": 1
+  },
+  {
+   "file": "phase05/base_ki0.005.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 3,
+   "corrected": 7,
+   "fixed": 4,
+   "broken": 0
+  },
+  {
+   "file": "phase05/base_ki0.02.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 5,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 5
+  },
+  {
+   "file": "phase05/base_ki0.05.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 2,
+   "corrected": 1,
+   "fixed": 1,
+   "broken": 2
+  },
+  {
+   "file": "phase05/base_ki0.15.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 4,
+   "corrected": 1,
+   "fixed": 1,
+   "broken": 4
+  },
+  {
+   "file": "phase05/dmg_rothalf.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 13,
+   "corrected": 18,
+   "fixed": 5,
+   "broken": 0
+  },
+  {
+   "file": "phase05/dmg_transhalf.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 18,
+   "corrected": 18,
+   "fixed": 1,
+   "broken": 1
+  },
+  {
+   "file": "phase05/jf_friction_3_10_0_paired.json",
+   "category": "faults below the controller",
+   "n": 20,
+   "frozen": 11,
+   "corrected": 14,
+   "fixed": 6,
+   "broken": 3
+  },
+  {
+   "file": "phase05/jf_friction_3_20_0_paired.json",
+   "category": "faults below the controller",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 8,
+   "fixed": 8,
+   "broken": 0
+  },
+  {
+   "file": "phase05/jf_friction_3_4_0_paired.json",
+   "category": "faults below the controller",
+   "n": 20,
+   "frozen": 20,
+   "corrected": 20,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "phase05/jf_lock_3_0_05_paired.json",
+   "category": "faults below the controller",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "phase05/jf_torque_3_5_0_n40.json",
+   "category": "faults below the controller",
+   "n": 40,
+   "frozen": 20,
+   "corrected": 32,
+   "fixed": 15,
+   "broken": 3
+  },
+  {
+   "file": "phase05/jf_torque_3_5_0_paired.json",
+   "category": "faults below the controller",
+   "n": 20,
+   "frozen": 11,
+   "corrected": 17,
+   "fixed": 8,
+   "broken": 2
+  },
+  {
+   "file": "phase05/law_innov_0.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 10,
+   "frozen": 10,
+   "corrected": 10,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "phase05/law_innov_f.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 10,
+   "frozen": 3,
+   "corrected": 3,
+   "fixed": 1,
+   "broken": 1
+  },
+  {
+   "file": "phase05/law_legacy_0.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 10,
+   "frozen": 10,
+   "corrected": 10,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "phase05/law_legacy_f.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 10,
+   "frozen": 2,
+   "corrected": 2,
+   "fixed": 1,
+   "broken": 1
+  },
+  {
+   "file": "phase05/map_rot005_n40.json",
+   "category": "map cells n=40",
+   "n": 40,
+   "frozen": 27,
+   "corrected": 39,
+   "fixed": 12,
+   "broken": 0
+  },
+  {
+   "file": "phase05/map_rot010.json",
+   "category": "map cells n=40",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 17,
+   "fixed": 17,
+   "broken": 0
+  },
+  {
+   "file": "phase05/map_rot015.json",
+   "category": "map cells n=40",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 9,
+   "fixed": 9,
+   "broken": 0
+  },
+  {
+   "file": "phase05/map_tra010_n40.json",
+   "category": "map cells n=40",
+   "n": 40,
+   "frozen": 30,
+   "corrected": 38,
+   "fixed": 9,
+   "broken": 1
+  },
+  {
+   "file": "phase05/map_uni010.json",
+   "category": "map cells n=40",
+   "n": 20,
+   "frozen": 2,
+   "corrected": 11,
+   "fixed": 9,
+   "broken": 0
+  },
+  {
+   "file": "phase05/map_uni015.json",
+   "category": "map cells n=40",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 2,
+   "fixed": 2,
+   "broken": 0
+  },
+  {
+   "file": "phase05/obj_rot010.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 10,
+   "fixed": 10,
+   "broken": 0
+  },
+  {
+   "file": "phase05/obj_tra015.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 15,
+   "fixed": 15,
+   "broken": 0
+  },
+  {
+   "file": "phase05/rule_rot.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 18,
+   "corrected": 19,
+   "fixed": 2,
+   "broken": 1
+  },
+  {
+   "file": "phase05/rule_trans.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 19,
+   "corrected": 19,
+   "fixed": 1,
+   "broken": 1
+  },
+  {
+   "file": "phase05/single_rx_0.02.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 10,
+   "frozen": 10,
+   "corrected": 10,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "phase05/single_rx_none2.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 10,
+   "frozen": 10,
+   "corrected": 9,
+   "fixed": 0,
+   "broken": 1
+  },
+  {
+   "file": "phase05/single_x005_0.05.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 10,
+   "frozen": 10,
+   "corrected": 9,
+   "fixed": 0,
+   "broken": 1
+  },
+  {
+   "file": "phase05/single_x_0.02.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 10,
+   "frozen": 10,
+   "corrected": 10,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "phase05/single_x_none.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 10,
+   "frozen": 10,
+   "corrected": 10,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "phase05/tmag_010.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 13,
+   "corrected": 19,
+   "fixed": 6,
+   "broken": 0
+  },
+  {
+   "file": "phase05/tmag_015.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 4,
+   "corrected": 19,
+   "fixed": 15,
+   "broken": 0
+  },
+  {
+   "file": "phase05/tv2_intermit.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 12,
+   "corrected": 19,
+   "fixed": 8,
+   "broken": 1
+  },
+  {
+   "file": "phase05/tv2_sinebias.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 13,
+   "corrected": 20,
+   "fixed": 7,
+   "broken": 0
+  },
+  {
+   "file": "phase05/tv_intermittent.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 17,
+   "corrected": 20,
+   "fixed": 3,
+   "broken": 0
+  },
+  {
+   "file": "phase05/tv_ramp.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 12,
+   "corrected": 18,
+   "fixed": 6,
+   "broken": 0
+  },
+  {
+   "file": "phase05/tv_sine.json",
+   "category": "LIBERO pi0.5: fault families, severities, profiles, controls",
+   "n": 20,
+   "frozen": 20,
+   "corrected": 19,
+   "fixed": 0,
+   "broken": 1
+  },
+  {
+   "file": "suites/libero_10_rotonly_n40.json",
+   "category": "headline four suites",
+   "n": 40,
+   "frozen": 0,
+   "corrected": 15,
+   "fixed": 15,
+   "broken": 0
+  },
+  {
+   "file": "suites/libero_90_nofault_paired.json",
+   "category": "headline four suites",
+   "n": 20,
+   "frozen": 6,
+   "corrected": 5,
+   "fixed": 0,
+   "broken": 1
+  },
+  {
+   "file": "suites/libero_90_rotonly_paired.json",
+   "category": "headline four suites",
+   "n": 20,
+   "frozen": 4,
+   "corrected": 5,
+   "fixed": 1,
+   "broken": 0
+  },
+  {
+   "file": "suites/libero_goal_rotonly_n40.json",
+   "category": "headline four suites",
+   "n": 40,
+   "frozen": 15,
+   "corrected": 29,
+   "fixed": 15,
+   "broken": 1
+  },
+  {
+   "file": "suites/libero_object_rotonly_paired.json",
+   "category": "headline four suites",
+   "n": 20,
+   "frozen": 5,
+   "corrected": 16,
+   "fixed": 11,
+   "broken": 0
+  },
+  {
+   "file": "suites/libero_spatial_rotonly_paired.json",
+   "category": "headline four suites",
+   "n": 20,
+   "frozen": 8,
+   "corrected": 18,
+   "fixed": 10,
+   "broken": 0
+  },
+  {
+   "file": "widowx/cell_tra003_hold3w.json",
+   "category": "WidowX / SimplerEnv",
+   "n": 23,
+   "frozen": 2,
+   "corrected": 14,
+   "fixed": 12,
+   "broken": 0
+  },
+  {
+   "file": "widowx/cell_tra005.json",
+   "category": "WidowX / SimplerEnv",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 6,
+   "fixed": 6,
+   "broken": 0
+  },
+  {
+   "file": "widowx/cell_tra005_g02.json",
+   "category": "WidowX / SimplerEnv",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 12,
+   "fixed": 12,
+   "broken": 0
+  },
+  {
+   "file": "widowx/cell_tra005_hold3w.json",
+   "category": "WidowX / SimplerEnv",
+   "n": 23,
+   "frozen": 0,
+   "corrected": 16,
+   "fixed": 16,
+   "broken": 0
+  },
+  {
+   "file": "widowx/null_tra000.json",
+   "category": "WidowX / SimplerEnv",
+   "n": 20,
+   "frozen": 15,
+   "corrected": 16,
+   "fixed": 3,
+   "broken": 2
+  }
+ ],
+ "excluded": [
+  {
+   "file": "ace_confirm/confirm_A.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "ace_confirm/confirm_B.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "ace_confirm/confound_check.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "ace_confirm/reachability.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "ace_confirm/repairability.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "ace_screen/screen.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "ace_screen/site_norms.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "ace_v2/antithetic.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "ace_v2/antithetic_v2.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "ace_v2/matched_c.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "ace_v2/paired_probe.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "ace_v2/screen_v2_c0.5.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "ace_v2/screen_v3_matched.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "ace_v2/site_calibration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "ace_v2/subspace_probe.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/analysis/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/analysis_final/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/collected_family_manifests/legacy_vs_off.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/collected_family_manifests/scores_legacy_vs_off.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/collected_family_manifests/scores_weighted_vs_legacy.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/collected_family_manifests/scores_weighted_vs_off.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/collected_family_manifests/weighted_vs_legacy.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/collected_family_manifests/weighted_vs_off.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/collection_operations.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/collector_plan.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/healthy/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/healthy/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/healthy/weighted.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint0/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint0/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint0/weighted.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint1/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint1/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint1/weighted.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint10/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint10/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint10/weighted.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint11/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint11/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint11/weighted.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint2/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint2/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint2/weighted.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint3/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint3/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint3/weighted.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint4/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint4/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint4/weighted.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint5/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint5/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint5/weighted.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint6/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint6/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint6/weighted.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint7/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint7/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint7/weighted.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint8/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint8/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint8/weighted.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint9/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint9/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/compact/joint9/weighted.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/diagnostics.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/execution.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/frozen_inputs/inputs/aloha_healthy_seed2600.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/frozen_inputs/inputs/aloha_healthy_seed2600_provenance.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/frozen_inputs/inputs/aloha_reference.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/frozen_inputs/inputs/aloha_reference_bimanual_rejected.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/frozen_inputs/inputs/historical_sensitivity.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/frozen_inputs/inputs/transfer_selection.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/healthy_diagnostics.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/launch_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/operations/environment_startup.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/operations/final/operational_restart.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/operations/final/status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/operations/final_input_audit.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/operations/operational_restart.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/provenance_index.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/score_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/scores.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/aloha_weighted_confirmation_plan/transfer_selection.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/calibration/aloha_healthy_seed2600.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/calibration/aloha_healthy_seed2600_provenance.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/calibration/aloha_reference.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/calibration/aloha_reference_bimanual.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/healthy_composite_001.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/healthy_composite_005.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/healthy_composite_010.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/healthy_composite_025.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/healthy_dob.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/healthy_kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/healthy_legacy_all.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/healthy_legacy_corrected.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/offset_composite_001.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/offset_composite_005.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/offset_composite_010.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/offset_composite_025.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/offset_dob.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/offset_kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/offset_legacy_all.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/offset_legacy_corrected.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_composite/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/healthy/kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/healthy/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/healthy/legacy_correctedchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/healthy/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint0/kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint0/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint0/legacy_correctedchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint0/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint1/kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint1/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint1/legacy_correctedchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint1/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint10/kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint10/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint10/legacy_correctedchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint10/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint11/kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint11/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint11/legacy_correctedchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint11/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint2/kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint2/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint2/legacy_correctedchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint2/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint3/kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint3/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint3/legacy_correctedchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint3/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint4/kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint4/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint4/legacy_correctedchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint4/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint5/kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint5/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint5/legacy_correctedchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint5/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint6/kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint6/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint6/legacy_correctedchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint6/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint7/kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint7/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint7/legacy_correctedchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint7/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint8/kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint8/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint8/legacy_correctedchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint8/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint9/kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint9/legacy_allchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint9/legacy_correctedchannels.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint/joint9/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint_manifests/alternative_vs_legacy.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint_manifests/alternative_vs_legacy_scores.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint_manifests/candidate_vs_off.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/aloha_joint_manifests/candidate_vs_off_scores.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/composite_manifests/alternative_vs_legacy.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/composite_manifests/alternative_vs_legacy_scores.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/composite_manifests/candidate_vs_off.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/composite_manifests/candidate_vs_off_scores.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/composite_manifests/composite_vs_kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/composite_manifests/composite_vs_kalman_scores.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/dynamic_residual_diagnostics.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/development/observer_diagnostics.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/diagnostics/aloha_contraction_probe.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/diagnostics/aloha_reference_model_diagnostic.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/libero_contraction_probe.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_followup/manifests/aloha_joint_dev.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/additional_server8004_attempt1/execution.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/additional_server8004_attempt1/identity_verification.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/additional_server8004_attempt1/warmup.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/calibration_audit.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/cleanup_added_server.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/cleanup_resource_recheck.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/confirmation_independent_statistics_v1/crosscheck.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/confirmation_independent_statistics_v1/extracted_outcomes.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/diagnosis_confirmation_v1_run_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/diagnosis_tools_v1_confirmation_sources.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/diagnosis_tools_v1_confirmation_verified_deployment.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/diagnosis_tools_v1_sources.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/diagnosis_tools_v1_verified_deployment.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/diagnosis_validation_v1_run_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/final_composite_correctness_sources.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/kf_dob_alias_check.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/lambda_policy_fingerprint.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/policy_server_readiness.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/policy_server_registry.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/portability_fix.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/reference_all12_12command_scope_check.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/reference_all12_scope_check.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/riccati_solver_fix.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/search_boundary_review.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/search_plot_initial_layout/figures_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/search_plot_initial_layout/plot_data.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/selected_parser_smoke_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/smoke_integrity_v3/diagnostic_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/smoke_integrity_v3/receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/tuning_coverage_calculations.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/validation_independent_statistics_v1/crosscheck.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/audit/validation_independent_statistics_v1/extracted_outcomes.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/environment.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/healthy_all.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/healthy_execution.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/healthy_provenance.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/healthy_seed3100/healthy.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/healthy_seed3100/reset_audit.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/healthy_seed3110/healthy.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/healthy_seed3110/reset_audit.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/healthy_seed3120/healthy.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/healthy_seed3120/reset_audit.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/reference_left6.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/sensitivity_execution.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/sensitivity_mean.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/sensitivity_seed3100/M.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/sensitivity_seed3100/donor.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/sensitivity_seed3100/reset_audit.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/sensitivity_seed3107/M.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/sensitivity_seed3107/donor.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/sensitivity_seed3107/reset_audit.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/sensitivity_seed3114/M.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/sensitivity_seed3114/donor.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/sensitivity_seed3114/reset_audit.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/calibration/telemetry_archives.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/candidate_bank.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/candidate_specs.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/analysis/analysis.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/analysis_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/collection_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/healthy_seed3400/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/healthy_seed3400/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/healthy_seed3405/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/healthy_seed3405/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/healthy_seed3410/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/healthy_seed3410/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/healthy_seed3415/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/healthy_seed3415/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/healthy_seed3420/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/healthy_seed3420/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/healthy_seed3425/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/healthy_seed3425/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint0_seed3400/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint0_seed3400/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint0_seed3405/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint0_seed3405/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint0_seed3410/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint0_seed3410/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint0_seed3415/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint0_seed3415/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint0_seed3420/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint0_seed3420/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint0_seed3425/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint0_seed3425/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint1_seed3400/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint1_seed3400/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint1_seed3405/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint1_seed3405/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint1_seed3410/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint1_seed3410/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint1_seed3415/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint1_seed3415/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint1_seed3420/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint1_seed3420/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint1_seed3425/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint1_seed3425/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint2_seed3400/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint2_seed3400/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint2_seed3405/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint2_seed3405/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint2_seed3410/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint2_seed3410/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint2_seed3415/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint2_seed3415/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint2_seed3420/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint2_seed3420/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint2_seed3425/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint2_seed3425/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint3_seed3400/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint3_seed3400/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint3_seed3405/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint3_seed3405/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint3_seed3410/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint3_seed3410/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint3_seed3415/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint3_seed3415/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint3_seed3420/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint3_seed3420/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint3_seed3425/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint3_seed3425/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint4_seed3400/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint4_seed3400/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint4_seed3405/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint4_seed3405/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint4_seed3410/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint4_seed3410/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint4_seed3415/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint4_seed3415/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint4_seed3420/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint4_seed3420/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint4_seed3425/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint4_seed3425/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint5_seed3400/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint5_seed3400/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint5_seed3405/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint5_seed3405/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint5_seed3410/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint5_seed3410/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint5_seed3415/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint5_seed3415/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint5_seed3420/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint5_seed3420/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint5_seed3425/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/joint5_seed3425/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/offset_seed3400/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/offset_seed3400/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/offset_seed3405/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/offset_seed3405/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/offset_seed3410/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/offset_seed3410/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/offset_seed3415/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/offset_seed3415/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/offset_seed3420/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/offset_seed3420/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/offset_seed3425/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/collected/offset_seed3425/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/deployment_files.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/deployment_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/diagnosis_v1/all_step_clipping.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/diagnosis_v1/artifact_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/diagnosis_v1/diagnostic_comparison.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/diagnosis_v1/projection_events.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/diagnosis_v1/summary_compact.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/download_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/finalization_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/finalizer_claim.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/finalizer_launch_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/launch_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/monitor_launch_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/operational_launch/endpoint_0_port8002_launch.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/operational_launch/endpoint_0_port8002_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/operational_launch/endpoint_0_port8002_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/operational_launch/endpoint_1_port8004_launch.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/operational_launch/endpoint_1_port8004_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/operational_launch/endpoint_1_port8004_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/operational_launch/launch_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/healthy_seed3400.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/healthy_seed3405.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/healthy_seed3410.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/healthy_seed3415.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/healthy_seed3420.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/healthy_seed3425.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint0_seed3400.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint0_seed3405.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint0_seed3410.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint0_seed3415.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint0_seed3420.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint0_seed3425.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint1_seed3400.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint1_seed3405.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint1_seed3410.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint1_seed3415.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint1_seed3420.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint1_seed3425.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint2_seed3400.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint2_seed3405.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint2_seed3410.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint2_seed3415.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint2_seed3420.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint2_seed3425.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint3_seed3400.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint3_seed3405.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint3_seed3410.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint3_seed3415.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint3_seed3420.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint3_seed3425.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint4_seed3400.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint4_seed3405.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint4_seed3410.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint4_seed3415.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint4_seed3420.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint4_seed3425.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint5_seed3400.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint5_seed3405.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint5_seed3410.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint5_seed3415.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint5_seed3420.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/joint5_seed3425.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/offset_seed3400.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/offset_seed3405.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/offset_seed3410.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/offset_seed3415.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/offset_seed3420.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/plans/offset_seed3425.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/confirmation/preflight_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/figures/confirmation/figures_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/figures/confirmation/plot_data.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/figures/confirmation/verification_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/figures/search/figures_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/figures/search/plot_data.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/figures/search/verification_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/figures/validation/figures_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/figures/validation/plot_data.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/figures/validation/selected_recipes.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/figures/validation/verification_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/STATUS.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/runtime_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/analysis_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/launch_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/healthy_seed3200.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/healthy_seed3201.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/healthy_seed3202.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/healthy_seed3203.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/joint1_seed3200.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/joint1_seed3201.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/joint1_seed3202.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/joint1_seed3203.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/joint3_seed3200.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/joint3_seed3201.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/joint3_seed3202.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/joint3_seed3203.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/offset_seed3200.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/offset_seed3201.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/offset_seed3202.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/search/plans/offset_seed3203.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/smoke/analysis_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/smoke/deployment_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/smoke/launch_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/smoke/plans/healthy_seed3190.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/smoke/plans/joint3_seed3190.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/smoke/plans/offset_seed3190.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v1/smoke/portable_preflight_failure.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/STATUS.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/candidate_bank.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/deployment_receipt_v2.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/portable_preflight_failure_v2.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/riccati_diagnostics_v2.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/runtime_manifest_v2.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/analysis_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/launch_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/healthy_seed3200.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/healthy_seed3201.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/healthy_seed3202.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/healthy_seed3203.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/joint1_seed3200.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/joint1_seed3201.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/joint1_seed3202.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/joint1_seed3203.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/joint3_seed3200.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/joint3_seed3201.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/joint3_seed3202.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/joint3_seed3203.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/offset_seed3200.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/offset_seed3201.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/offset_seed3202.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/search/plans/offset_seed3203.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/smoke/analysis_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/smoke/launch_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/smoke/plans/healthy_seed3190.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/smoke/plans/joint3_seed3190.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operational_preflight_v2/smoke/plans/offset_seed3190.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/operations/deployment_operational_tools_v1.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/runtime_manifest_v3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/analysis/selection.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/analysis_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/collection_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/healthy_seed3200/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/healthy_seed3200/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/healthy_seed3201/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/healthy_seed3201/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/healthy_seed3202/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/healthy_seed3202/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/healthy_seed3203/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/healthy_seed3203/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint1_seed3200/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint1_seed3200/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint1_seed3201/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint1_seed3201/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint1_seed3202/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint1_seed3202/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint1_seed3203/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint1_seed3203/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint3_seed3200/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint3_seed3200/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint3_seed3201/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint3_seed3201/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint3_seed3202/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint3_seed3202/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint3_seed3203/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/joint3_seed3203/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/offset_seed3200/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/offset_seed3200/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/offset_seed3201/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/offset_seed3201/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/offset_seed3202/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/offset_seed3202/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/offset_seed3203/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/collected/offset_seed3203/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/download_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/finalization_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/finalizer_claim.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/gpu_monitor_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/launch_group_a.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/launch_group_b.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/launch_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/launch_manifest_group_a.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/launch_manifest_group_b.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/launcher_group_a_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/launcher_group_b_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/healthy_seed3200.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/healthy_seed3201.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/healthy_seed3202.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/healthy_seed3203.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/joint1_seed3200.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/joint1_seed3201.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/joint1_seed3202.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/joint1_seed3203.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/joint3_seed3200.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/joint3_seed3201.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/joint3_seed3202.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/joint3_seed3203.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/offset_seed3200.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/offset_seed3201.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/offset_seed3202.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/plans/offset_seed3203.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/progress_monitor_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/search/resource_decision.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/seed_provenance_local.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/seed_provenance_remote.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/analysis_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/cells/healthy_seed3190/study.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/cells/joint3_seed3190/study.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/cells/offset_seed3190/study.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/collection_complete_v1/collection_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/collection_complete_v1/healthy_seed3190/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/collection_complete_v1/healthy_seed3190/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/collection_complete_v1/joint3_seed3190/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/collection_complete_v1/joint3_seed3190/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/collection_complete_v1/offset_seed3190/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/collection_complete_v1/offset_seed3190/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/collection_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/deployment_receipt_v3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/launch_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/launch_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/launcher_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/plans/healthy_seed3190.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/plans/joint3_seed3190.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/plans/offset_seed3190.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke/portable_preflight_v3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/smoke_candidates.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/stage_inputs/confirmation_candidates.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/stage_inputs/confirmation_family_pools.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/stage_inputs/search_selection.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/stage_inputs/validation_candidates.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/stage_inputs/validation_family_pools.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/stage_inputs/validation_selection.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/analysis/selection.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/analysis_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/collection_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/healthy_seed3300/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/healthy_seed3300/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/healthy_seed3302/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/healthy_seed3302/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/healthy_seed3304/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/healthy_seed3304/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/healthy_seed3306/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/healthy_seed3306/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint0_seed3300/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint0_seed3300/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint0_seed3302/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint0_seed3302/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint0_seed3304/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint0_seed3304/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint0_seed3306/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint0_seed3306/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint1_seed3300/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint1_seed3300/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint1_seed3302/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint1_seed3302/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint1_seed3304/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint1_seed3304/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint1_seed3306/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint1_seed3306/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint2_seed3300/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint2_seed3300/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint2_seed3302/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint2_seed3302/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint2_seed3304/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint2_seed3304/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint2_seed3306/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint2_seed3306/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint3_seed3300/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint3_seed3300/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint3_seed3302/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint3_seed3302/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint3_seed3304/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint3_seed3304/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint3_seed3306/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint3_seed3306/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint4_seed3300/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint4_seed3300/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint4_seed3302/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint4_seed3302/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint4_seed3304/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint4_seed3304/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint4_seed3306/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint4_seed3306/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint5_seed3300/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint5_seed3300/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint5_seed3302/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint5_seed3302/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint5_seed3304/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint5_seed3304/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint5_seed3306/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/joint5_seed3306/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/offset_seed3300/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/offset_seed3300/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/offset_seed3302/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/offset_seed3302/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/offset_seed3304/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/offset_seed3304/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/offset_seed3306/run_config.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/collected/offset_seed3306/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/deployment_files.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/deployment_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/diagnosis_v1/all_step_clipping.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/diagnosis_v1/artifact_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/diagnosis_v1/diagnostic_findings.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/diagnosis_v1/summary_compact.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/download_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/finalization_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/finalizer_claim.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/finalizer_launch_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/launch_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/monitor_launch_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/operational_launch/endpoint_0_port8002_launch.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/operational_launch/endpoint_0_port8002_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/operational_launch/endpoint_0_port8002_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/operational_launch/endpoint_1_port8004_launch.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/operational_launch/endpoint_1_port8004_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/operational_launch/endpoint_1_port8004_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/operational_launch/launch_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/healthy_seed3300.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/healthy_seed3302.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/healthy_seed3304.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/healthy_seed3306.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint0_seed3300.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint0_seed3302.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint0_seed3304.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint0_seed3306.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint1_seed3300.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint1_seed3302.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint1_seed3304.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint1_seed3306.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint2_seed3300.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint2_seed3302.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint2_seed3304.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint2_seed3306.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint3_seed3300.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint3_seed3302.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint3_seed3304.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint3_seed3306.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint4_seed3300.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint4_seed3302.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint4_seed3304.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint4_seed3306.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint5_seed3300.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint5_seed3302.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint5_seed3304.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/joint5_seed3306.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/offset_seed3300.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/offset_seed3302.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/offset_seed3304.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/plans/offset_seed3306.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "composite_tuning/validation/preflight_receipt.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "descriptor/g11_object_j3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "descriptor/g11_object_j3_unclipped.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "descriptor/g14_spatial_j5.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "gate/healthy_phantom_n20.json",
+   "why": "baseline=none estimate_only=True"
+  },
+  {
+   "file": "gate04/brightness_0.1.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "gate04/brightness_0.2.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "gate04/brightness_0.4.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "gate04/gain_0.3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "gate04/gain_0.5.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "gate04/gain_0.7.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "gate04/nominal.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "gate04/offset_0.05.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "gate04/offset_0.10.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "gate04/offset_0.20.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "gr1/t2p_frozen_right010_probe.json",
+   "why": "probe / aborted / partial"
+  },
+  {
+   "file": "hardware/hw_detect.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "hardware/hw_sensitivity.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "hardware/hw_within_run.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/aloha_local_probe_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/calibration/libero_goal/M.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/calibration/libero_goal/fir.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/calibration/libero_goal/pipeline.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/calibration/libero_object/M.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/calibration/libero_object/fir.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/calibration/libero_object/pipeline.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/calibration/libero_spatial/M.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/calibration/libero_spatial/fir.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/calibration/libero_spatial/pipeline.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/analysis/provenance_index.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/analysis/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/collector_plan.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/healthy/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/healthy/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/healthy/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint0/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint0/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint0/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint1/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint1/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint1/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint2/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint2/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint2/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint3/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint3/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint3/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint4/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint4/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint4/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint5/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint5/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint5/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint6/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint6/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_goal/joint6/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/healthy/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/healthy/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/healthy/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint0/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint0/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint0/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint1/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint1/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint1/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint2/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint2/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint2/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint3/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint3/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint3/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint4/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint4/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint4/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint5/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint5/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint5/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint6/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint6/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_object/joint6/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/healthy/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/healthy/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/healthy/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint0/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint0/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint0/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint1/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint1/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint1/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint2/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint2/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint2/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint3/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint3/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint3/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint4/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint4/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint4/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint5/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint5/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint5/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint6/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint6/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/compact/libero_spatial/joint6/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/environment.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/execution.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/launch_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T092646.321392_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T092732.034433_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T092817.555154_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T092903.037279_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T092948.652983_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T093034.194962_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T093119.722353_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T093205.280266_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T093250.842054_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T093336.422917_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T093422.000100_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T093507.775652_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T093553.465497_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T093639.058407_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T093724.663497_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T093810.247754_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T093855.942778_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T093941.619576_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T094027.248667_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T094112.893722_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T094158.553985_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T094244.353645_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T094330.184883_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T094415.892012_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T094501.654570_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T094547.374844_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T094633.059152_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T094718.747507_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T094804.440644_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T094850.154454_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T094935.860398_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T095021.539007_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T095107.254035_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T095152.967241_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T095238.700003_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T095324.519149_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T095410.300421_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T095456.054026_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T095541.840189_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T095627.618648_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T095713.559284_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T095759.392312_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T095845.331030_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T095931.188656_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T100017.099399_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T100102.962591_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T100148.840889_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T100234.819483_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T100320.644891_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T100406.495666_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T100452.330775_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T100538.195982_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T100624.046084_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T100709.901780_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T100755.745048_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T100841.599790_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T100927.461283_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T101013.324281_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T101059.200821_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T101145.180159_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T101231.062377_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T101317.081905_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T101403.020691_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T101449.057222_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T101535.008611_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T101620.887694_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/receipts/2026-09-08T101706.942187_0000.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T092646.321392_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T092732.034433_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T092817.555154_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T092903.037279_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T092948.652983_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T093034.194962_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T093119.722353_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T093205.280266_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T093250.842054_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T093336.422917_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T093422.000100_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T093507.775652_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T093553.465497_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T093639.058407_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T093724.663497_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T093810.247754_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T093855.942778_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T093941.619576_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T094027.248667_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T094112.893722_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T094158.553985_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T094244.353645_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T094330.184883_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T094415.892012_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T094501.654570_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T094547.374844_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T094633.059152_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T094718.747507_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T094804.440644_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T094850.154454_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T094935.860398_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T095021.539007_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T095107.254035_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T095152.967241_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T095238.700003_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T095324.519149_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T095410.300421_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T095456.054026_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T095541.840189_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T095627.618648_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T095713.559284_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T095759.392312_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T095845.331030_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T095931.188656_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T100017.099399_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T100102.962591_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T100148.840889_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T100234.819483_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T100320.644891_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T100406.495666_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T100452.330775_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T100538.195982_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T100624.046084_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T100709.901780_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T100755.745048_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T100841.599790_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T100927.461283_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T101013.324281_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T101059.200821_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T101145.180159_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T101231.062377_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T101317.081905_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T101403.020691_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T101449.057222_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T101535.008611_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T101620.887694_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/operations/snapshots/2026-09-08T101706.942187_0000_status.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/score_manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_plan/scores.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/confirmation_statistics_crosscheck.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/joint5_manifests/alternative_vs_legacy.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/joint5_manifests/candidate_vs_off.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/joint5_plan.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/joint5_resetfixed/dob_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/joint5_resetfixed/legacy_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/joint5_resetfixed/legacy_half.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/joint5_resetfixed/legacy_hold30.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/joint5_resetfixed/legacy_rotation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/joint5_resetfixed/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/joint5_resetfixed/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/joint5_vs_legacy_scores.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/joint5_vs_off_scores.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/analysis_plan.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/candidate_vs_off_scores.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/healthy/legacy_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/healthy/legacy_rotation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/healthy/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/healthy/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/healthy/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/healthy/weighted_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/joint3/legacy_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/joint3/legacy_rotation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/joint3/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/joint3/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/joint3/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/joint3/weighted_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/joint5/legacy_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/joint5/legacy_rotation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/joint5/legacy_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/joint5/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/joint5/weighted_full.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/joint5/weighted_translation.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/manifests/candidate_vs_off.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/manifests/weighted_vs_same_mask_legacy.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/provenance_index.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/development/weighted_dev/weighted_vs_same_mask_legacy_scores.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/failed_reset_screen/study.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i45_s0_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i45_s0_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i45_s0_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i45_s0_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i45_s20_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i45_s20_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i45_s20_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i45_s20_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i45_s60_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i45_s60_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i45_s60_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i45_s60_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i46_s0_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i46_s0_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i46_s0_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i46_s0_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i46_s20_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i46_s20_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i46_s20_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i46_s20_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i46_s60_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i46_s60_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i46_s60_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t0_i46_s60_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t6_i45_s0_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t6_i45_s0_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t6_i45_s0_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t6_i45_s0_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t6_i45_s20_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t6_i45_s20_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t6_i45_s20_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t6_i45_s20_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t6_i45_s60_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t6_i45_s60_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t6_i45_s60_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/j3_t6_i45_s60_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j3/manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i45_s0_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i45_s0_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i45_s0_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i45_s0_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i45_s20_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i45_s20_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i45_s20_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i45_s20_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i45_s60_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i45_s60_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i45_s60_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i45_s60_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i46_s0_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i46_s0_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i46_s0_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i46_s0_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i46_s20_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i46_s20_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i46_s20_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i46_s20_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i46_s60_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i46_s60_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i46_s60_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t0_i46_s60_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t6_i45_s0_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t6_i45_s0_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t6_i45_s0_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t6_i45_s0_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t6_i45_s20_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t6_i45_s20_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t6_i45_s20_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t6_i45_s20_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t6_i45_s60_h1_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t6_i45_s60_h1_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t6_i45_s60_h5_raw.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/j5_t6_i45_s60_h5_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_j5/manifest.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/local_probe_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/manifests/calibration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/manifests/weighted_dev.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/original_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/paired_drift_joint3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/paired_drift_joint5.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/panda_authority_grid_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/panda_authority_weighted_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/reset_integrity_seed_only_failed.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/reset_integrity_task4_fixed.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/validation_final_20260908.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/validation_milestone_20260908.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_followup/weighted_full_selection.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/cell_torque_0.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/cell_torque_1.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/cell_torque_2.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/cell_torque_3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/cell_torque_4.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/cell_torque_5.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/cell_torque_6.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/instruments.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/probe_torque_0.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/probe_torque_1.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/probe_torque_2.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/probe_torque_3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/probe_torque_4.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/probe_torque_5.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/probe_torque_6.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "joint_map/r_by_joint.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "jointmap/probe_torque_0.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "jointmap/probe_torque_1.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "jointmap/probe_torque_2.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "jointmap/probe_torque_3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "jointmap/probe_torque_4.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "jointmap/probe_torque_5.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "jointmap/probe_torque_6.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "mimo/M3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "mimo/M5.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "norm_channels/armA_baseline.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "norm_channels/armD_healthy.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "norm_channels/armE_legacy.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "norm_channels/armF_innov.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/eval/D_dob.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/eval/I_integral.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/eval/K_kalman.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/eval/O_oracle.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/eval/P_proposed.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/eval/R_rls.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/dob_0.02.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/dob_0.04.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/dob_0.08.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/dob_0.16.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/dob_0.32.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/int_0.001.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/kf_1e-2.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/kf_1e-3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/kf_1e-4.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/kf_1e-5.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/kf_1e-6.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/rls_0.90.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/rls_0.95.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/rls_0.99.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/rls_0.995.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "observers/sweep/rls_0.999.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "oracle/oracle_sweep.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "phase05/adaptive.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/adaptive_debias.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/adaptive_final.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/adaptive_mimo.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/adaptive_nofault.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/adaptive_nofault_all10.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/adaptive_robust.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/adaptive_rotonly.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/adaptive_sev010.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/adaptive_so3.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/adaptive_structured.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/adaptive_tuned.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/ceiling_init40.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/confirm_n40.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/jf_probe_friction_3_10_0.json",
+   "why": "probe / aborted / partial"
+  },
+  {
+   "file": "phase05/jf_probe_friction_3_20_0.json",
+   "why": "probe / aborted / partial"
+  },
+  {
+   "file": "phase05/jf_probe_friction_3_2_0.json",
+   "why": "probe / aborted / partial"
+  },
+  {
+   "file": "phase05/jf_probe_lock_3_0_05.json",
+   "why": "probe / aborted / partial"
+  },
+  {
+   "file": "phase05/jf_probe_none.json",
+   "why": "probe / aborted / partial"
+  },
+  {
+   "file": "phase05/jf_probe_torque_1_5_0.json",
+   "why": "probe / aborted / partial"
+  },
+  {
+   "file": "phase05/jf_probe_torque_3_5_0.json",
+   "why": "probe / aborted / partial"
+  },
+  {
+   "file": "phase05/nofault_debias.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/nofault_estonly.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/onset.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/onset_early.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/openloop_probe0.02.json",
+   "why": "probe / aborted / partial"
+  },
+  {
+   "file": "phase05/openloop_probe0.05.json",
+   "why": "probe / aborted / partial"
+  },
+  {
+   "file": "phase05/sensor_fault.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/sensor_fault_big.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/static_matched.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/static_mismatched.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "phase05/wrist_fault.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "saturation/S3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "saturation/S5.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "suites/libero_10_adaptive.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "suites/libero_10_rotonly.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "suites/libero_goal_adaptive.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "suites/libero_goal_rotonly.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "suites/libero_object_adaptive.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "suites/libero_object_rotonly.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "suites/libero_object_transonly.json",
+   "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "sweep/spatial_j0.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "sweep/spatial_j1.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "sweep/spatial_j2.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "sweep/spatial_j3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "sweep/spatial_j4.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "sweep/spatial_j6.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "widowx/cell_tra005_probeM_aborted.json",
+   "why": "probe / aborted / partial"
+  },
+  {
+   "file": "suites/libero_10_rotonly_paired.json",
+   "why": "superseded by the n=40 rerun"
+  },
+  {
+   "file": "suites/libero_goal_rotonly_paired.json",
+   "why": "superseded by the n=40 rerun"
+  }
+ ],
+ "totals": {
+  "ALOHA": {
+   "files": 22,
+   "n": 480,
+   "fixed": 45,
+   "broken": 9
+  },
+  "healthy-phantom channel gate": {
+   "files": 2,
+   "n": 40,
+   "fixed": 10,
+   "broken": 1
+  },
+  "GR1 humanoid": {
+   "files": 20,
+   "n": 420,
+   "fixed": 157,
+   "broken": 16
+  },
+  "GR00T N1.7": {
+   "files": 4,
+   "n": 62,
+   "fixed": 28,
+   "broken": 1
+  },
+  "OpenVLA-OFT": {
+   "files": 4,
+   "n": 62,
+   "fixed": 25,
+   "broken": 1
+  },
+  "constants ablation": {
+   "files": 8,
+   "n": 160,
+   "fixed": 75,
+   "broken": 4
+  },
+  "LIBERO pi0.5: fault families, severities, profiles, controls": {
+   "files": 27,
+   "n": 450,
+   "fixed": 89,
+   "broken": 21
+  },
+  "faults below the controller": {
+   "files": 6,
+   "n": 140,
+   "fixed": 37,
+   "broken": 8
+  },
+  "map cells n=40": {
+   "files": 6,
+   "n": 160,
+   "fixed": 58,
+   "broken": 1
+  },
+  "headline four suites": {
+   "files": 6,
+   "n": 160,
+   "fixed": 52,
+   "broken": 2
+  },
+  "WidowX / SimplerEnv": {
+   "files": 5,
+   "n": 106,
+   "fixed": 49,
+   "broken": 2
+  }
+ },
+ "grand": {
+  "files": 110,
+  "n": 2240,
+  "fixed": 625,
+  "broken": 66,
+  "frozen_successes": 643,
+  "regression_rate_all": 0.029464285714285714,
+  "regression_rate_vs_frozen_successes": 0.1026438569206843
+ }
+}
