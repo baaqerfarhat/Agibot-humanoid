@@ -15,7 +15,7 @@ export MUJOCO_GL=egl MUJOCO_EGL_DEVICE_ID=1 PYTHONPATH=$REPO/openpi
 cd $OPENPI && CUDA_VISIBLE_DEVICES=1 nohup $OPENPI/.venv/bin/python $OPENPI/scripts/serve_policy.py --env ALOHA_SIM --port 8002 > $SP/aloha_server.log 2>&1 &
 ASRV=$!; wait_ready $SP/aloha_server.log || exit 1
 AL="$OPENPI/examples/aloha_sim/.venv/bin/python -u $REPO/openpi/aloha_adapt.py run --port 8002 --episodes 40 --seed 200 --log $REPO/results/aloha/healthy_log.json --openloop $REPO/results/aloha/openloop.json --fault-vec 0.02,0.02,0.02,0.02,0.02,0.02,0,0,0,0,0,0,0,0 --corr-joints 0,1,2,3,4,5 --gamma 0.08 --dead 0.002 --norm-r 0.4 --clip 0.08 --f-init=0.0193,0.0202,0.0190,0.0191,0.0192,0.0192,0,0,0,0,0,0,0,0"
-arun() { local id=$1; shift; mkdir -p $R/$id; echo "#### F $id  $(date +%T)"; timeout 28800 $AL "$@" --out $R/$id/result.json > $R/$id/run.log 2>&1; echo "exit $?  $(grep -E ': [0-9]+/[0-9]+ =' $R/$id/run.log | tr '\n' ' ')"; echo "RUN DONE F $id"; }
+arun() { local id=$1; shift; mkdir -p $R/$id; echo "#### F $id  $(date +%T)"; timeout 28800 $AL "$@" --timing $R/$id/timing.jsonl --out $R/$id/result.json > $R/$id/run.log 2>&1; echo "exit $?  $(grep -E ': [0-9]+/[0-9]+ =' $R/$id/run.log | tr '\n' ' ')"; echo "RUN DONE F $id"; }
 arun aloha_held --freeze-after 0
 arun aloha_cont_legacy --skip-frozen
 arun aloha_cont_innov --skip-frozen --law innov

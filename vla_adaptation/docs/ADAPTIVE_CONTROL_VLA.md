@@ -3787,3 +3787,41 @@ paper (`paper/iclr_draft_audit_framing.tex`: the n = 40 row's 0.12 cm and the al
 in a historical preregistration (`prereg_records/PREREG_GR1_MARGIN.md`: "σ measured? yes (0.019
 cm/step)"). They are not edited: the first two are another author's documents kept verbatim, and a
 preregistration is a timestamped record. This section is the correction of record for all three.
+
+## 42. What the re4 provenance map found (2026-09-11)
+
+`results/re4_evidence/A_provenance/implementation_map.{md,json}` (re4 plan Part A and G.2)
+recovers, for all nine cohorts, the code path, gate convention, clipping order, K, law and
+constants, and calibration. Every field was recovered; for the older result files, which store
+no settings, the exact launch commands came from this project's session transcript (outside the
+repository) and were cross-checked against the stored per-step estimates. The paper cannot cite
+that transcript; the cross-check against stored data is what it can cite.
+
+**Answers to the plan's questions.** Every published cohort subtracts the correction outside
+the network; the native `action_out_proj/bias` edit exists only in the ACE, oracle and G.1
+scripts, so re4's "code transition" hedge can go. K = 6 in every cohort, ALOHA and GR1
+included. Gate convention: leakage deadzone on LIBERO (π0.5, OFT, GR00T, joint-level) and
+ALOHA; innovation law with a hold deadzone on GR1 and WidowX. The deadzone never fired in the
+four headline samples or in ALOHA's identification episodes, so the convention did not affect
+those outcomes; it did fire on some steps of the joint-level cells, the healthy controls, the
+deadzone-0.03 ablation row, and GR1/WidowX. All four headline suites used the spatial
+calibration. M used 17 replays on LIBERO, 29 on ALOHA, 29 on the GR1 right arm, none on WidowX
+(DC gain from the healthy log). G.2: only the joint-level cohort subtracts a healthy phantom,
+the settled attenuated estimate, measured open-loop and applied closed-loop.
+
+**Inconsistencies, and what was done** (✓ = verified independently before acting):
+
+| finding | action |
+|---|---|
+| ✓ report said the correction edits `action_out_proj/bias`; the runner adds it externally | report corrected |
+| ✓ paper said the norms run over the corrected channels; LIBERO uses all 6, ALOHA all 14 (runner default, no stored override) | paper corrected per robot |
+| ✓ paper never said WidowX runs the innovation law | paper corrected |
+| ✓ ALOHA "M ≈ I, cond 7.3": cond is 1.17 on the arm; 7.3 comes from the right gripper's 0.145 | report corrected |
+| ✓ GR1 plate-to-plate null (§32.13) predates the reseeding fix (§32.15), so it is unpaired; I had attached paired fixed/broken counts to it | paper now gives Fisher for it, paired counts only for the tray-to-plate null (§32.19) |
+| ✓ WidowX +0.003 cell compared against the healthy arm of the +0.005 run, a different process | paper wording states it |
+| unpaired four-suite tables (§7.1–7.2) used per-suite calibration, the paired headline the spatial one, a switch the record never mentioned; §23.2 says object re-identification "has not been run" though it had | recorded here |
+| the shipped M replay ran past the end of healthy episode 0 (75 steps) into 5 commands from another task | recorded; the held-out M of §39 does not share this |
+| calibration–evaluation overlap, precisely: 2 of the 20 spatial episodes share a (task, init) with the plant log, and constants were tuned on the same init band | recorded; §39's held-out cells are the answer |
+| OFT ran 5 of each 8-step chunk (default), not 8 as the record says | record corrected here |
+| the ablation's "reference" row is the 09-01 headline file, not a run made with the ablation | recorded |
+| the runner's default constants never matched the published ones | recorded; `run_configuration.json` now stores every constant |

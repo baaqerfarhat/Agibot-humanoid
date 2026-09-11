@@ -179,6 +179,11 @@ def main():
     ap.add_argument("--identify-episodes", type=int, default=None)
     ap.add_argument("--freeze-after", type=int, default=None)
     ap.add_argument("--warm-start", action="store_true")
+    ap.add_argument("--f-init", default=None,
+                    help="comma-separated estimate; every adaptive episode starts from it, no carry across "
+                         "episodes (re4 Part F: held vs continued from a matched initial estimate)")
+    ap.add_argument("--skip-frozen", action="store_true",
+                    help="run only the adaptive arm; its paired frozen arm is run elsewhere on the same seeds")
     ap.add_argument("--law", choices=["legacy", "innov"], default="legacy")
     ap.add_argument("--with-healthy", action="store_true",
                     help="also run a HEALTHY arm (no fault, no correction) on the same seeds in the same process. "
@@ -236,7 +241,9 @@ def main():
     fvec = fault(a.fault_vec); corr = joints(a.corr_joints)
     sc = [float(x) for x in a.static_corr.split(",")] if a.static_corr else None
     res = dict(args={k: (str(v) if isinstance(v, pathlib.Path) else v) for k, v in vars(a).items()}, arms={})
-    arms = [("frozen_faulted", False), ("adaptive", True)]
+    f_fixed = np.array([float(x) for x in a.f_init.split(",")]) if a.f_init else None
+    assert f_fixed is None or len(f_fixed) == NJ, f"--f-init needs {NJ} values"
+    arms = [("adaptive", True)] if a.skip_frozen else [("frozen_faulted", False), ("adaptive", True)]
     if a.with_healthy:
         arms = [("healthy", None)] + arms
     for tag, adapt in arms:
@@ -251,7 +258,7 @@ def main():
                 a.out.write_text(json.dumps(res)); continue
             s, f_hat, traj = episode(A, ep, W, M_inv, fvec, a.gain, adapt, a.gamma, a.dead, a.norm_r, a.clip,
                                      corr, a.profile, a.prof_p, a.onset, static_corr=(sc if adapt else None),
-                                     f_init=(f_carry if (adapt and (a.warm_start or a.identify_episodes is not None)) else None),
+                                     f_init=(f_fixed if (adapt and f_fixed is not None) else (f_carry if (adapt and (a.warm_start or a.identify_episodes is not None)) else None)),
                                      freeze_after=(0 if (a.identify_episodes is not None and ep >= a.identify_episodes) else a.freeze_after),
                                      horizon=a.horizon, max_steps=a.max_steps, law=a.law, M=M)
             if a.hold_stat == "last" or not traj:

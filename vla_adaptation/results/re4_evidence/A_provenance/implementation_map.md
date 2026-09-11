@@ -1,0 +1,468 @@
+# Part A: implementation map of every published cohort (re4 provenance backfill)
+
+Produced 2026-09-11 by inspection only (no simulator, server or GPU; no code or result file modified). Answers docs/RE4_EVIDENCE_PLAN.md Part A and item G.2. Every cell cites evidence or says 'not recoverable'.
+
+**Bottom line.** Every published cohort used **external action subtraction**; none used the native `action_out_proj/bias` edit. **K = 6 everywhere**, including ALOHA and GR1. LIBERO (pi0.5, OFT, GR00T, joint-level) and ALOHA ran the **legacy attenuation law with a zero-observation (leakage) deadzone**; GR1 and WidowX ran the **innovation law with a hold deadzone**. In the four headline samples the deadzone never fired, so the leakage/hold question does not affect those outcomes. The exact launch command of every LIBERO cell was recovered from the operator's session transcript and cross-checked against the stored estimate trajectories, which pin rho, M and b independently.
+
+## Evidence sources
+
+- **VA**: this repo, /home/mtaheri/ws_AgibotX2/vla-adaptation (git); `VA <sha>:<file>:<line>` = `git show <sha>:<file>`
+- **AH**: the older repo the runs were launched from, /home/mtaheri/ws_AgibotX2/Agibot-humanoid (git, subdir vla_adaptation/); every LIBERO/ALOHA/GR1/WidowX run executed the AH working-tree copy of the runner (G=/home/mtaheri/ws_AgibotX2/Agibot-humanoid/vla_adaptation/openpi) and wrote results there before they were copied into VA
+- **TX**: operator session transcript /home/mtaheri/.claude/projects/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915.jsonl; Bash tool_use launch commands, cited by UTC timestamp (PDT = UTC-7). The same launch scripts and run logs also survive (ephemeral) in /tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad
+- **ARGS**: the result JSON's own 'args' dict
+- **FOR**: trajectory forensics on the stored per-step estimate f_hat (method in section 'Forensic tests'); reproducible from the result files alone
+- **REC**: docs/ADAPTIVE_CONTROL_VLA.md:<line>
+- **PAPER**: paper/iclr_draft.tex:<line> (the re4 draft itself is not in this tree)
+
+## Implementation map
+
+Constants: gamma = update gain, delta = deadzone, rho = normaliser, kappa = projection box, b = subtracted healthy phantom. 'Leakage' = zero-observation deadzone (chi = 1, s = 0: f_hat decays by (1 - gamma) when the gate fires); 'hold' = the update is skipped (chi = 0).
+
+| cohort | runner script | code path | gate convention | clipping order / projection box / units | K (FIR order) | update law + gamma, deadzone, normaliser rho and channel set | calibration id | evidence |
+|---|---|---|---|---|---|---|---|---|
+| 1. Headline four LIBERO suites (pi0.5, uniform +0.05 on all six Cartesian channels, rotation-only correction) | openpi/adaptive_law.py (frozen_faulted arm then adaptive arm on one episode list), client venv, against openpi/ace_server.py serving pi05_libero on port 8000. Executed copy: AH working tree. n=20 cells: nearest prior commit AH 4f4ff14 (2026-09-01 02:42 PDT; launch 03:15 PDT); its output schema (per_ep, no f_true) matches the spatial/object files exactly. n=40 cells: AH 181eed9 era (output carries f_true, as the n40 files do). Committed to VA at f9d27fb (n=20) and fcc72b7 / 0d8e5ae (n=40). | External action subtraction. c_t = -m*f_hat_t with m = (0,0,0,1,1,1), a_corr = a_policy + c (arm dims only, gripper never corrected), then the fault a_exec = a_corr + 0.05 on dims 0-5, then env.step. The server receives control {site: None, pin_rng: False} and serves the unedited base state; no action_out_proj/bias edit. | Implemented: zero-observation leakage (chi=1, s=0): if \|\|r_t\|\| < delta the observation is set to 0 and f_hat <- (1-gamma) f_hat. Deadzone tested on the raw six-channel residual norm. Executed: the gate never fired in any stored step of the four samples (0 firings in 2,478 / 3,588 / 6,525 / 18,077 adaptive steps), so hold vs leakage does not affect these outcomes. | Order per step: projection Pi_[-kappa,kappa] on all six f_hat entries after each update; next step c = -m*f_hat added to the policy action; fault added after the correction; the robosuite OSC controller then clips the full command to its input box [-1,1] and scales it (neither correction nor fault is clipped by the client). kappa = 0.15. Units: normalised OSC input (action) units, 1 unit = 0.05 m (x,y,z) or 0.5 rad (rx,ry,rz) of per-step target delta, so kappa = 7.5 mm / 0.075 rad per step. Executed: the box binds only on uncorrected translation (x, z, and y on goal/libero_10: rails at exactly 0.15); the corrected rotation channels never reach it. | K = 6 (7 taps + intercept), per-channel (mimo off) FIR on the OUT-normalised increment. | Legacy attenuation: e = M^-1 r (no b), zeroed if \|\|r\|\| < delta, divided by 1+\|\|r\|\|^2/rho^2, f_hat <- Pi(f_hat + gamma(e - f_hat)). gamma = 0.08, delta = 0.008, rho = 0.15, kappa = 0.15; normaliser and deadzone on all six residual channels (no --norm-channels option existed); estimate on all six, correction mask 3,4,5. Law default in code was never these values (defaults gamma 0.05, dead 0.05, norm_r 0.5), so the flags were load-bearing. | W: results/phase05/error_signal_so3.json, record 0 only (3 nominal episodes, 75+116+94 = 285 steps; scenarios (task, init) = (0,45), (1,46), (2,47)), sha256 9010c845...099d. M: results/phase05/openloop_so3.json (probe 0.02, libero_spatial task 0, init 45), sha256 2e9fb696...887e. The spatial calibration is used unchanged for object, goal and libero_10 (not the per-suite results/suites/libero_*_{plant,M}.json). | TX 2026-09-01T10:15Z paired_rerun.sh and 2026-09-04T21:29Z n40.sh; VA f9d27fb:openpi/adaptive_law.py:122-130, 157, 206-218, 294; FOR rho/2 pin with openloop_so3 and b=0, 0 firings, rails; §C1 |
+| 2. Severity / recoverability map (pi0.5, libero_spatial) | openpi/adaptive_law.py against ace_server.py port 8000; AH working copy. dmg/tmag ran 2026-09-01 ~13:51-14:41 PDT (nearest commit AH 4f4ff14), map n=20 on 2026-09-02 ~08:17 PDT (AH e16513e), n=40 cells on 2026-09-06/07 (AH 9248e53 = VA 15b8504). Same law lines in all. | External action subtraction (as cohort 1). Faults injected with --fault-vec (a_exec[:6] += f_true after the correction). No server edit. | Leakage (chi=1, s=0) implemented. Executed firings: 0 in every map n=20 cell and both tmag cells; 1 in map_tra010_n40; 15 in dmg_transhalf (2,243 steps); 0 in dmg_rothalf. | Same order as cohort 1. kappa = 0.30 for map_* and tmag_* (so the box sits at twice the largest fault), 0.15 for dmg_*. Rails observed at exactly 0.30 (map/tmag, uncorrected or translation z) and 0.15 (dmg). Units: action units (0.05 m / 0.5 rad per unit). | K = 6, per-channel FIR, increment plant. | Legacy attenuation, gamma 0.08, delta 0.008, rho 0.15 (all-six norm), no b. Masks: rotation and uniform faults corrected on 3,4,5; translation faults on 0,1,2. | W = phase05/error_signal_so3.json, M = phase05/openloop_so3.json (as cohort 1). | TX map.sh 2026-09-02T15:17Z, transmag.sh 2026-09-01T21:41Z, damage.sh 2026-09-01T20:51Z, ablate.sh 2026-09-07T02:12Z; stored f_true; FOR; §C2 |
+| 3. Constants and calibration-size ablation (pi0.5, libero_spatial, uniform +0.05, rotation-only) | openpi/adaptive_law.py; the --calib-episodes option was patched into the AH working copy in the same command that launched the ablation (TX 2026-09-07T02:12:24Z), committed as AH 9248e53 / VA 15b8504 (fit_plant(episodes=...)). | External action subtraction; no server edit. | Leakage implemented. Executed firings: 751 / 2,664 steps in abl_dead_0_03 (the only cell where the gate matters); 0 in every other row (0 by construction in abl_dead_0). | As cohort 1; kappa 0.15; rails at 0.15 on x, z only. Action units. | K = 6. | Legacy attenuation. One constant changed per row from gamma 0.08 / delta 0.008 / rho 0.15: gamma 0.02, 0.32; rho 0.05, 0.50; delta 0, 0.03; plant fitted on healthy episode 0 only (75 steps) or episodes 0,1. All-six norm, mask 3,4,5, no b. | W from error_signal_so3.json (all 3 episodes, or --calib-episodes 0 / 0,1), M = openloop_so3.json. | TX ablate.sh 2026-09-07T02:12Z; stored gamma; VA 15b8504:openpi/adaptive_law.py:256-268; FOR rho pin (0.025 at rho 0.05); §C3 |
+| 4. Gain / multiplicative cells (adaptive_gain.py): pi0.5 spatial and object, OpenVLA-OFT and GR00T N1.7 gain cells | openpi/adaptive_gain.py (FIR regressor added at VA 1d97e11 / AH ~09-02; clip_report added VA cf0ea1b); AH working copy; server ace_server (8000), oft_server (8001), groot_server (8003). | External multiplicative pre-compensation: g_hat = clip(1+beta, g_min, g_max), c = a_policy*(1/g_hat - 1) on masked dims, a_corr = a + c, then the gain fault a_exec = gain * a_corr on dims 0-5. No server edit. | No deadzone and no leakage. Per-channel excitation gate: if \|phi_i\| < pe_min the channel update is skipped and beta_i is held (a hold, chi=0 in the plan's terms). | beta projected to [-clip, clip] after each update; at use g_hat clipped to [g_min, 3.0]; correction computed from the raw policy action and applied before the fault; the OSC controller clips to [-1,1] after. beta is dimensionless (gain - 1). clip 0.8 (gfir, gsev, obj; default), 0.95 (OFT, GR00T). g_min 0.35 (gfir_fault), 0.20 (gsev_g030), 0.12 (gsev_g020, obj, OFT, GR00T), default 0.05 (gfir_healthy). | K = 6, imported from adaptive_law.py; per-channel FIR; the FIR prediction is the regressor. | Per-channel RLS on y_i - pred_i = beta_i*phi_i with phi_i = pred_i - W[i,-1] (FIR-weighted command history), forgetting lambda = 0.995, P0 = 1e3, pe_min = 0.04; gamma unused (LMS path only); no normaliser; no bias. Mask 0,1,2 on fault cells, all six on gfir_healthy. | W = phase05/error_signal_so3.json (fit_plant). M from openloop_so3.json is loaded but not used by the FIR regressor (z = M^-1 r feeds only the 'cmd' branch). | TX gainfir.sh, gainsev.sh, suite2.sh, oft_exp.sh, groot_cells.sh; VA 1d97e11:openpi/adaptive_gain.py:80-162; FOR beta rails 0.8/0.95; §C4 |
+| 5. Joint-level cells below the controller (pi0.5, libero_spatial, elbow/shoulder faults, translation correction) | openpi/adaptive_law.py with --joint-fault (openpi/joint_fault.py edits the MuJoCo model after reset or applies qfrc). Historical cells: VA 64453d2 / AH d8820ed (JointFault.apply/step; no finally-restore; env.reset(); set_init_state). Reruns: VA ccec0cb (--scenario-reset via libero_reset.reset_libero; JointFault restore in finally from VA c32f318). | External Cartesian action subtraction (same law); the fault itself is a plant-model edit below the OSC controller. No server edit. | Leakage implemented and executed on a few steps per cell: firings 6 (torque n=20), 19 (torque n=40), 11 (lock), 28 (friction +4), 4 (friction +20), 12 (friction +10); reruns 5 / 2 / 6 and 105 (healthy control, 2,159 steps). | Same order as cohort 1. kappa 0.30 (0.50 for friction +10). Rails at exactly 0.30 on x/z. Action units. | K = 6. | Legacy attenuation, gamma 0.08, delta 0.008, rho 0.15 (all-six norm), mask 0,1,2, b = (0.007, -0.008, 0.016, 0, 0, 0) subtracted after M^-1 and before the deadzone zeroing and attenuation. | W = error_signal_so3.json, M = openloop_so3.json; b from results/phase05/jf_probe_none.json (sha256 2d99a5ee...0279): mean over 3 healthy estimate-only episodes (tasks 0-2, init 45) of the last-50-step mean of f_hat. | TX jf_probe/jf_paired/jf_n40/jf_friction(10).sh 2026-09-06; ARGS in results/jf_rerun; VA 64453d2:openpi/adaptive_law.py:251-263; FOR bias feasibility; §C5 |
+| 6. Transfer to OpenVLA-OFT and GR00T N1.7 (additive cells; gain cells are in cohort 4) | openpi/adaptive_law.py unchanged, against openpi/oft_server.py (port 8001) and openpi/groot_server.py (port 8003). OFT ran 2026-09-03 16:19-18:35 PDT (AH 181eed9 working copy; VA 0822c60 adds the raw-image keys the OFT bridge needs); GR00T ran 2026-09-06/07 (AH d8820ed / 9248e53). | External action subtraction. Both bridges acknowledge only site None / bias_add None and refuse any edit request ('has no ACE sites'). | Leakage implemented. Executed: 0 firings in the four faulted cells; 107 (OFT healthy, 2,097 steps) and 114 (GR00T healthy, 2,369 steps) in the healthy controls. | As cohort 1. kappa 0.15 (healthy controls), 0.30 (rot010, tra015). Action units. Replan: OFT server returns an 8-step chunk and the client executes the first 5 (default --replan-steps 5); GR00T --replan-steps 8. | K = 6. | Legacy attenuation, gamma 0.08, delta 0.008, rho 0.15 (all-six norm), no b. Mask 3,4,5 (healthy, rot010), 0,1,2 (tra015). | pi0.5 spatial calibration, not re-fitted: W = error_signal_so3.json, M = openloop_so3.json. | TX oft_exp.sh 2026-09-03T23:00Z, groot_healthy.sh 2026-09-06T18:57Z, groot_cells.sh 2026-09-07T07:43Z; openpi/oft_server.py:96-99, groot_server.py:102-105; FOR; §C6 |
+| 7. ALOHA transfer-cube (pi0_aloha_sim, 14 absolute joint targets) | openpi/aloha_adapt.py run (code as of VA 273b52e, the version inside the n=40 commit 7cbda4f; args key set matches that argparse exactly), from openpi/examples/aloha_sim venv, against openpi scripts/serve_policy.py --env ALOHA_SIM on port 8002. | External joint-target subtraction: c = -f_hat*m (m = joints 0-5), a_corr = a_cmd + c, a_exec = a_corr + f, env.step(a_exec). No model access from the client; no bias edit. | Identification episode (episode 0): legacy leakage (chi=1, s=0) on the 14-channel residual norm, delta 0.002; executed firings 0 (300 and 242 identification steps). Episodes >= 1: identify-then-hold, freeze_after = 0 and f_init = final f_hat of episode 0, so the correction is constant (verified: f_hat identical in all 39 held episodes of both n=40 files). | f_hat projected to +-0.08 on all 14 entries after each update, before negation, masking and addition; the client does not clip the command; MuJoCo ctrllimited actuators clamp to ctrlrange (binds on grippers, not on the corrected arm joints). Units: rad (arm joints), normalised gripper units (joints 6, 13). | K = 6 (NJ, HORIZON, K_FIR, DT = 14, 10, 6, 0.02): 7 taps + intercept, per joint, on absolute joint POSITION (not increment). | Legacy attenuation, gamma 0.08, delta 0.002, rho 0.4, kappa 0.08; normaliser and deadzone over all 14 channels including grippers (no --norm-channels yet; added VA f801087). Defaults at the time: rho 0.05, kappa 0.3. | W: results/aloha/healthy_log.json (8 episodes, reset seeds 100-107, 4/8 successes), sha256 d4dd0222...5e4f. M: results/aloha/openloop.json (probe 0.02 rad), sha256 b09669da...0e7a. | ARGS in both n=40 files; VA 273b52e:openpi/aloha_adapt.py:29, 93-124, 195-207; TX 2026-09-05T19:51Z; FOR 0 firings, constant hold; §C7 |
+| 8. GR1 humanoid (GR00T N1.5 on RoboCasa GR1 tabletop, right-arm offset) | openpi/gr1_adapt.py run (paired cells at VA ac510d3 = HEAD; the episode() loop is identical in all four commits of the file; p2p_null_hold_s160 at 8c06a40 and the n=30 continuous/hold cohort at f962e18, both without the scene reseed), robocasa-gr1 venv, against openpi/groot15_server.py (port 8004). | External joint-target subtraction (c = -f_hat*m, a_corr = a_cmd + c, fault added after). groot15_server returns policy.get_action unchanged; its control hook only acknowledges. | Innovation law with a HOLD gate (chi=0): step = 0 if \|\|e[sel]\|\| < delta, gated on the innovation norm over the corrected joints, not on \|\|r\|\|. Executed holds during identification: 33/986 (p2p 0.10), 232/2,157 (t2p 0.10), 37/1,052 (0.05), 59/1,070 (0.20), 293/5,530 (continuous) steps. Then identify-then-hold: per identification episode the median of f_hat over steps 50-199, median across the 3 episodes, applied from step 0 of every later episode with no updates. | f_hat projected to +-clip after each update, clip = 0.2 rad (0.10 cells), 0.1 (0.05), 0.4 (0.20); the innov update is not masked, so the 22 uncorrected joints drift to the box and are never applied; the corrected command is not clipped by the client or the wrapper. Units: rad. | K = 6 (gr1_adapt.py:31): 7 taps + intercept per joint on absolute joint position; history seeded with q0. | Innovation: e = r - M(f_hat*m), step = M^-1 e/(1+(\|\|e[sel]\|\|/rho)^2), f_hat <- Pi(f_hat + gamma*step). gamma 0.08, delta 0.013, rho 0.11; normaliser and deadzone over the corrected (right-arm, 7) joints. Code defaults (unused): legacy, delta 0.002, rho 0.05, clip 0.3. | Plate-to-plate W: results/gr1/screen_PosttrainPnPNovelFromPlateToPlateSplitA.json (6 episodes), sha256 8d8ae23e...e1b1. Tray-to-plate W: results/gr1/t2p_healthy_log.json (10 episodes), sha256 685918b2...2d4a. M: results/gr1/openloop_arms_clean.json (sha256 01f94045...4527) = right block of openloop_arms_direct.json (plate-to-plate held pose) + left block of openloop_left_direct.json (can-drawer), identity elsewhere; right diagonal 0.990-0.997, cond 1.016. | ARGS in every cell; openpi/gr1_adapt.py:31, 108-146, 250-266; TX 2026-09-08T01:07Z (direct probe); FOR hold counts; §C8 |
+| 9. WidowX (GR00T N1.7 Bridge in SimplerEnv, spoon-on-towel, translation offset) | openpi/widowx_adapt.py run (VA 7ca2f26; 9c1a2fd changed only the Google-robot pose/obs helpers), simpler-venv, against openpi/groot_widowx_server.py (port 8005). | External action subtraction (a_corr[:6] += -f_hat*m; fault added after). Server returns the raw chunk. | Innovation law with a HOLD gate on \|\|e[sel]\|\|; executed holds 406/2,526 (continuous), 502/2,317 (gamma 0.2), 56/252 and 63/339 identification steps (hold3w cells), 216/1,262 (null). Hold scheme: median of f_hat over steps 30-149 of each of 3 identification episodes, median across episodes, then frozen. | f_hat projected to +-0.03 after each masked update (step*m; rotation entries stay 0); no client clip of the command; GR00T wrapper passes it through. Units: normalised Bridge action units (per-step EE delta). | K = 6 (widowx_adapt.py:26), FIR on the measured pose increment divided by a per-channel scale; history seeded at zero. | Innovation, gamma 0.08 (0.2 in cell_tra005_g02), delta 0.001, rho 0.009, norm over corrected x,y,z. Code defaults delta 0.01, rho 0.15. | W: results/widowx/healthy_log.json (10 episodes, seeds 100-109; sha256 cfad7059...8b68) with results/widowx/healthy_log_scale.json. M: results/widowx/openloop_dc.json = diag(sum of FIR taps) from the same healthy log (sha256 6c6812f1...55ef); no probe rollouts. | ARGS in every cell; openpi/widowx_adapt.py:26, 113-134, 217-219; TX 2026-09-09T21:14Z (DC-gain M); FOR hold counts; §C9 |
+
+## Per-cohort detail and evidence
+
+### C1. Headline four LIBERO suites (pi0.5, uniform +0.05 on all six Cartesian channels, rotation-only correction)
+
+Cells:
+- results/suites/libero_spatial_rotonly_paired.json (n=20, 8/20 -> 18/20)
+- results/suites/libero_object_rotonly_paired.json (n=20, 5/20 -> 16/20)
+- results/suites/libero_goal_rotonly_n40.json (n=40, 15/40 -> 29/40)
+- results/suites/libero_10_rotonly_n40.json (n=40, 0/40 -> 15/40)
+- superseded n=20 rows: results/suites/libero_goal_rotonly_paired.json, libero_10_rotonly_paired.json (same command)
+
+- **Runner.** openpi/adaptive_law.py (frozen_faulted arm then adaptive arm on one episode list), client venv, against openpi/ace_server.py serving pi05_libero on port 8000. Executed copy: AH working tree. n=20 cells: nearest prior commit AH 4f4ff14 (2026-09-01 02:42 PDT; launch 03:15 PDT); its output schema (per_ep, no f_true) matches the spatial/object files exactly. n=40 cells: AH 181eed9 era (output carries f_true, as the n40 files do). Committed to VA at f9d27fb (n=20) and fcc72b7 / 0d8e5ae (n=40).
+- **Code path.** External action subtraction. c_t = -m*f_hat_t with m = (0,0,0,1,1,1), a_corr = a_policy + c (arm dims only, gripper never corrected), then the fault a_exec = a_corr + 0.05 on dims 0-5, then env.step. The server receives control {site: None, pin_rng: False} and serves the unedited base state; no action_out_proj/bias edit.
+- **Gate convention.** Implemented: zero-observation leakage (chi=1, s=0): if ||r_t|| < delta the observation is set to 0 and f_hat <- (1-gamma) f_hat. Deadzone tested on the raw six-channel residual norm. Executed: the gate never fired in any stored step of the four samples (0 firings in 2,478 / 3,588 / 6,525 / 18,077 adaptive steps), so hold vs leakage does not affect these outcomes.
+- **Clipping.** Order per step: projection Pi_[-kappa,kappa] on all six f_hat entries after each update; next step c = -m*f_hat added to the policy action; fault added after the correction; the robosuite OSC controller then clips the full command to its input box [-1,1] and scales it (neither correction nor fault is clipped by the client). kappa = 0.15. Units: normalised OSC input (action) units, 1 unit = 0.05 m (x,y,z) or 0.5 rad (rx,ry,rz) of per-step target delta, so kappa = 7.5 mm / 0.075 rad per step. Executed: the box binds only on uncorrected translation (x, z, and y on goal/libero_10: rails at exactly 0.15); the corrected rotation channels never reach it.
+- **K.** K = 6 (7 taps + intercept), per-channel (mimo off) FIR on the OUT-normalised increment.
+- **Update law.** Legacy attenuation: e = M^-1 r (no b), zeroed if ||r|| < delta, divided by 1+||r||^2/rho^2, f_hat <- Pi(f_hat + gamma(e - f_hat)). gamma = 0.08, delta = 0.008, rho = 0.15, kappa = 0.15; normaliser and deadzone on all six residual channels (no --norm-channels option existed); estimate on all six, correction mask 3,4,5. Law default in code was never these values (defaults gamma 0.05, dead 0.05, norm_r 0.5), so the flags were load-bearing.
+- **Calibration id.** W: results/phase05/error_signal_so3.json, record 0 only (3 nominal episodes, 75+116+94 = 285 steps; scenarios (task, init) = (0,45), (1,46), (2,47)), sha256 9010c845...099d. M: results/phase05/openloop_so3.json (probe 0.02, libero_spatial task 0, init 45), sha256 2e9fb696...887e. The spatial calibration is used unchanged for object, goal and libero_10 (not the per-suite results/suites/libero_*_{plant,M}.json).
+
+Evidence:
+- TX 2026-09-01T10:15:02Z paired_rerun.sh: `adaptive_law.py --port 8000 --suite $S --sev 0.05 --episodes 20 --gamma 0.08 --dead 0.008 --norm-r 0.15 --clip 0.15 --corr-dims 3,4,5 --log phase05/error_signal_so3.json --openloop phase05/openloop_so3.json` for S in spatial, goal, object, libero_10 (surviving log SP/paired.log: starts 03:15, 03:37, 04:04, 04:34 PDT)
+- TX 2026-09-04T21:29:12Z n40.sh: same flags with --episodes 40 for goal and libero_10 (SP/n40.log: 14:29, 15:41 PDT)
+- no --bias, --eval-init, --task-stride, --replan-steps, --law, --mimo in either command -> defaults eval_init 45, stride 1, replan 5, legacy, per-axis
+- result JSON key 'gamma' = 0.08 in all four files; f_true = 0.05 x 6 stored in the n40 files
+- VA f9d27fb:openpi/adaptive_law.py:33-34 (OUT, K_FIR=6), :122-130 (c = -f_hat, mask, a_corr[:6] += c), :157 (fault after correction), :206-218 (legacy law, deadzone on ||r||, clip), :294 (control site=None), :296 (episode list); identical law lines in AH a141d65, AH 4f4ff14, AH 181eed9, VA 15b8504:256-268; current openpi/adaptive_law.py:169-183
+- openpi/gate_faults.py:58-65 (offset added to dims 0-5); openpi/ace_server.py:266-268 (site None -> base_state, no edit)
+- robosuite (client venv) controllers/base_controller.py:120 np.clip(action, input_min, input_max); controllers/config/osc_pose.json:3-6 input +-1, output_max 0.05 x3, 0.5 x3; LIBERO loads that default config (openpi/third_party/libero/libero/libero/envs/env_wrapper.py:17,47 controller OSC_POSE)
+- FOR: leakage firings 0 in all four; max_t ||M e_hat_t|| = 0.07500 = rho/2 exactly in all four with M = openloop_so3 and b = 0 (with openloop.json, openloop_probe0.05, or any per-suite M: 0.076-0.168, never pinned); b = jf phantom makes 10 spatial steps infeasible, b = 0 none; rails at 0.15 on x,z (+y) only
+- calibration origin: TX 2026-08-27T17:01:41Z `error_signal.py --port 8000 --episodes 3 --out error_signal_so3.json`; AH c7f8dbb:vla_adaptation/openpi/error_signal.py:106 `log_episode(pr, k % 10, 45 + k, sev)`; TX 2026-08-27T17:04Z `openloop_id.py --log error_signal_so3.json --out openloop_so3.json` (no --steps, no --probe: defaults 80, 0.02)
+- REC:3675 (held-out cells: 'only --log/--openloop changed'), REC:3666 ('shipped 3-episode log (init 45)'); PAPER:773 (reference constants); SETUP.md:69-73
+
+### C2. Severity / recoverability map (pi0.5, libero_spatial)
+
+Cells:
+- results/phase05/map_rot010.json, map_rot015.json, map_uni010.json, map_uni015.json (n=20)
+- results/phase05/map_rot005_n40.json, map_tra010_n40.json (n=40)
+- results/phase05/tmag_010.json, tmag_015.json (translation 0.10 / 0.15, n=20)
+- results/phase05/dmg_rothalf.json (rotation 0.05), dmg_transhalf.json (translation 0.05) (n=20)
+- uniform 0.05 cell = results/suites/libero_spatial_rotonly_paired.json (cohort 1)
+
+- **Runner.** openpi/adaptive_law.py against ace_server.py port 8000; AH working copy. dmg/tmag ran 2026-09-01 ~13:51-14:41 PDT (nearest commit AH 4f4ff14), map n=20 on 2026-09-02 ~08:17 PDT (AH e16513e), n=40 cells on 2026-09-06/07 (AH 9248e53 = VA 15b8504). Same law lines in all.
+- **Code path.** External action subtraction (as cohort 1). Faults injected with --fault-vec (a_exec[:6] += f_true after the correction). No server edit.
+- **Gate convention.** Leakage (chi=1, s=0) implemented. Executed firings: 0 in every map n=20 cell and both tmag cells; 1 in map_tra010_n40; 15 in dmg_transhalf (2,243 steps); 0 in dmg_rothalf.
+- **Clipping.** Same order as cohort 1. kappa = 0.30 for map_* and tmag_* (so the box sits at twice the largest fault), 0.15 for dmg_*. Rails observed at exactly 0.30 (map/tmag, uncorrected or translation z) and 0.15 (dmg). Units: action units (0.05 m / 0.5 rad per unit).
+- **K.** K = 6, per-channel FIR, increment plant.
+- **Update law.** Legacy attenuation, gamma 0.08, delta 0.008, rho 0.15 (all-six norm), no b. Masks: rotation and uniform faults corrected on 3,4,5; translation faults on 0,1,2.
+- **Calibration id.** W = phase05/error_signal_so3.json, M = phase05/openloop_so3.json (as cohort 1).
+
+Evidence:
+- TX 2026-09-02T15:17:37Z map.sh: `--episodes 20 --gamma 0.08 --dead 0.008 --norm-r 0.15 --clip 0.30 --fault-vec <cell> --corr-dims 3,4,5` for rot010 (0,0,0,.1,.1,.1), rot015, uni010 (.1 x6), uni015
+- TX 2026-09-07T02:12:24Z ablate.sh part 1: map_rot005_n40 `--episodes 40 --clip 0.30 --fault-vec 0,0,0,0.05,0.05,0.05 --corr-dims 3,4,5`; map_tra010_n40 `--fault-vec 0.10,0.10,0.10,0,0,0 --corr-dims 0,1,2`
+- TX 2026-09-01T21:41:32Z transmag.sh: `--clip 0.30 --fault-vec $m,$m,$m,0,0,0 --corr-dims 0,1,2`, m = 0.10, 0.15
+- TX 2026-09-01T20:51:53Z damage.sh: `--clip 0.15`; transhalf `--fault-vec 0.05,0.05,0.05,0,0,0 --corr-dims 0,1,2`; rothalf `--fault-vec 0,0,0,0.05,0.05,0.05 --corr-dims 3,4,5`
+- stored f_true confirms the fault vector in all map_* files; tmag/dmg store no f_true (fault from TX only)
+- FOR: max_t ||M e_hat_t|| = 0.07500 in every map/tmag/dmg file except dmg_transhalf (0.0737, bound not reached) -> rho 0.15, b = 0, M = openloop_so3; rails 0.30 / 0.15
+- REC:982 ('--clip 0.30'), REC:1289-1300; code lines as cohort 1
+
+### C3. Constants and calibration-size ablation (pi0.5, libero_spatial, uniform +0.05, rotation-only)
+
+Cells:
+- results/phase05/abl_gamma_0_02.json, abl_gamma_0_32.json, abl_norm_r_0_05.json, abl_norm_r_0_50.json, abl_dead_0.json, abl_dead_0_03.json, abl_calib_1_episode.json, abl_calib_2_episodes.json (n=20 each)
+- reference row = results/suites/libero_spatial_rotonly_paired.json (2026-09-01), not re-run with the ablation
+
+- **Runner.** openpi/adaptive_law.py; the --calib-episodes option was patched into the AH working copy in the same command that launched the ablation (TX 2026-09-07T02:12:24Z), committed as AH 9248e53 / VA 15b8504 (fit_plant(episodes=...)).
+- **Code path.** External action subtraction; no server edit.
+- **Gate convention.** Leakage implemented. Executed firings: 751 / 2,664 steps in abl_dead_0_03 (the only cell where the gate matters); 0 in every other row (0 by construction in abl_dead_0).
+- **Clipping.** As cohort 1; kappa 0.15; rails at 0.15 on x, z only. Action units.
+- **K.** K = 6.
+- **Update law.** Legacy attenuation. One constant changed per row from gamma 0.08 / delta 0.008 / rho 0.15: gamma 0.02, 0.32; rho 0.05, 0.50; delta 0, 0.03; plant fitted on healthy episode 0 only (75 steps) or episodes 0,1. All-six norm, mask 3,4,5, no b.
+- **Calibration id.** W from error_signal_so3.json (all 3 episodes, or --calib-episodes 0 / 0,1), M = openloop_so3.json.
+
+Evidence:
+- TX 2026-09-07T02:12:24Z ablate.sh: H='--episodes 20 --sev 0.05 --corr-dims 3,4,5 --clip 0.15' plus '--gamma 0.02 --dead 0.008 --norm-r 0.15', '--gamma 0.32 ...', '--gamma 0.08 --dead 0.008 --norm-r 0.05', '... --norm-r 0.50', '--gamma 0.08 --dead 0.0 --norm-r 0.15', '... --dead 0.03 ...', '... --calib-episodes 0', '... --calib-episodes 0,1'
+- stored 'gamma' key 0.02 / 0.32 / 0.08; f_true 0.05 x6 in every file
+- FOR: max_t ||M e_hat_t|| = 0.02500 in abl_norm_r_0_05 (rho 0.05 confirmed), 0.1352 in abl_norm_r_0_50 (consistent with 0.5), 0.0750 in every other row; the reference row's last-50-step rotation means (0.044, 0.020, 0.044) equal the paired spatial file's
+- VA 15b8504:openpi/adaptive_law.py:256-268 (law), fit_plant episodes subset; REC:2638-2670; PAPER:771-803
+
+### C4. Gain / multiplicative cells (adaptive_gain.py): pi0.5 spatial and object, OpenVLA-OFT and GR00T N1.7 gain cells
+
+Cells:
+- results/phase05/gfir_healthy.json (gain 1.0, n=10), gfir_fault.json (gain 0.5, n=20)
+- results/phase05/gsev_g030.json, gsev_g020.json (gain 0.30 / 0.20, n=20)
+- results/phase05/obj_gain020.json (libero_object)
+- results/oft/oft_gain020.json, results/groot/groot_gain020.json
+- development only (instantaneous-command regressor, superseded): adaptive_gain05*.json, gain_nofault, gain_rotonly, gain_transonly(_proj), gfix_*
+
+- **Runner.** openpi/adaptive_gain.py (FIR regressor added at VA 1d97e11 / AH ~09-02; clip_report added VA cf0ea1b); AH working copy; server ace_server (8000), oft_server (8001), groot_server (8003).
+- **Code path.** External multiplicative pre-compensation: g_hat = clip(1+beta, g_min, g_max), c = a_policy*(1/g_hat - 1) on masked dims, a_corr = a + c, then the gain fault a_exec = gain * a_corr on dims 0-5. No server edit.
+- **Gate convention.** No deadzone and no leakage. Per-channel excitation gate: if |phi_i| < pe_min the channel update is skipped and beta_i is held (a hold, chi=0 in the plan's terms).
+- **Clipping.** beta projected to [-clip, clip] after each update; at use g_hat clipped to [g_min, 3.0]; correction computed from the raw policy action and applied before the fault; the OSC controller clips to [-1,1] after. beta is dimensionless (gain - 1). clip 0.8 (gfir, gsev, obj; default), 0.95 (OFT, GR00T). g_min 0.35 (gfir_fault), 0.20 (gsev_g030), 0.12 (gsev_g020, obj, OFT, GR00T), default 0.05 (gfir_healthy).
+- **K.** K = 6, imported from adaptive_law.py; per-channel FIR; the FIR prediction is the regressor.
+- **Update law.** Per-channel RLS on y_i - pred_i = beta_i*phi_i with phi_i = pred_i - W[i,-1] (FIR-weighted command history), forgetting lambda = 0.995, P0 = 1e3, pe_min = 0.04; gamma unused (LMS path only); no normaliser; no bias. Mask 0,1,2 on fault cells, all six on gfir_healthy.
+- **Calibration id.** W = phase05/error_signal_so3.json (fit_plant). M from openloop_so3.json is loaded but not used by the FIR regressor (z = M^-1 r feeds only the 'cmd' branch).
+
+Evidence:
+- TX 2026-09-03T06:13:09Z gainfir.sh: `adaptive_gain.py --regressor fir --pe-min 0.04 --lam 0.995 --dither 0.0`; healthy `--gain 1.0 --episodes 10`; fault `--gain 0.5 --episodes 20 --corr-dims 0,1,2 --g-min 0.35`
+- TX 2026-09-03T07:56:59Z gainsev.sh: `--gain 0.30 --g-min 0.20` / `--gain 0.20 --g-min 0.12`, `--episodes 20 --regressor fir --pe-min 0.04 --lam 0.995 --dither 0.0 --corr-dims 0,1,2` (no --clip -> 0.8)
+- TX 2026-09-03T18:05:50Z suite2.sh: obj_gain020 `--suite libero_object --gain 0.20 ... --g-min 0.12` (clip 0.8)
+- TX 2026-09-03T23:00:09Z oft_exp.sh (launched 23:19:38Z): `--port 8001 --gain 0.20 ... --g-min 0.12 --clip 0.95`; TX 2026-09-07T07:43:39Z groot_cells.sh: `--port 8003 --replan-steps 8 ... --g-min 0.12 --clip 0.95`
+- VA 1d97e11:openpi/adaptive_gain.py:38 (K_FIR import), :80-81 (g_hat clip, c), :89 (a_corr), :98 (gain fault after correction), :126 (excitation hold), :130 (RLS), :162 (beta clip), :181-193 (defaults gamma 0.02, pe_min 0.15, clip 0.8, lam 0.999, g_min 0.05); openpi/gate_faults.py:61-62
+- FOR (stored beta): rails at exactly 0.8 (gsev, obj) and 0.95 (OFT, GR00T); rx and ry receive 0 updates in every FIR-regressor cell (the instantaneous-command cells update ry), consistent with the FIR regressor and pe_min 0.04
+- REC:1430-1440 (pe_min 0.04), REC:1511 (clip 0.8), REC:1736, REC:2690 (g-min 0.12, clip 0.95)
+
+### C5. Joint-level cells below the controller (pi0.5, libero_spatial, elbow/shoulder faults, translation correction)
+
+Cells:
+- historical: results/phase05/jf_torque_3_5_0_paired.json, jf_torque_3_5_0_n40.json, jf_lock_3_0_05_paired.json, jf_friction_3_4_0_paired.json, jf_friction_3_20_0_paired.json, jf_friction_3_10_0_paired.json
+- probes (estimate-only, 3 episodes): results/phase05/jf_probe_none.json, jf_probe_torque_1_5_0, jf_probe_torque_3_5_0, jf_probe_friction_3_2_0, jf_probe_lock_3_0_05, jf_probe_friction_3_10_0, jf_probe_friction_3_20_0
+- reruns under the corrected protocol: results/jf_rerun/jf_friction_3_20_reset.json, jf_friction_3_20_reset_n40.json, jf_lock_3_005_reset.json, jf_healthy_reset.json (args stored)
+
+- **Runner.** openpi/adaptive_law.py with --joint-fault (openpi/joint_fault.py edits the MuJoCo model after reset or applies qfrc). Historical cells: VA 64453d2 / AH d8820ed (JointFault.apply/step; no finally-restore; env.reset(); set_init_state). Reruns: VA ccec0cb (--scenario-reset via libero_reset.reset_libero; JointFault restore in finally from VA c32f318).
+- **Code path.** External Cartesian action subtraction (same law); the fault itself is a plant-model edit below the OSC controller. No server edit.
+- **Gate convention.** Leakage implemented and executed on a few steps per cell: firings 6 (torque n=20), 19 (torque n=40), 11 (lock), 28 (friction +4), 4 (friction +20), 12 (friction +10); reruns 5 / 2 / 6 and 105 (healthy control, 2,159 steps).
+- **Clipping.** Same order as cohort 1. kappa 0.30 (0.50 for friction +10). Rails at exactly 0.30 on x/z. Action units.
+- **K.** K = 6.
+- **Update law.** Legacy attenuation, gamma 0.08, delta 0.008, rho 0.15 (all-six norm), mask 0,1,2, b = (0.007, -0.008, 0.016, 0, 0, 0) subtracted after M^-1 and before the deadzone zeroing and attenuation.
+- **Calibration id.** W = error_signal_so3.json, M = openloop_so3.json; b from results/phase05/jf_probe_none.json (sha256 2d99a5ee...0279): mean over 3 healthy estimate-only episodes (tasks 0-2, init 45) of the last-50-step mean of f_hat.
+
+Evidence:
+- TX 2026-09-06T18:56:50Z jf_probe.sh: `--episodes 3 --sev 0.0 --gamma 0.08 --dead 0.008 --norm-r 0.15 --clip 0.30 --estimate-only`, faults none, torque:1:5.0, torque:3:5.0, friction:3:2.0, lock:3:0.05 (no --bias)
+- TX 2026-09-06T19:19:56Z jf_paired.sh: `--episodes 20 --sev 0.0 --gamma 0.08 --dead 0.008 --norm-r 0.15 --clip 0.30 --corr-dims 0,1,2 --bias 0.007,-0.008,0.016,0,0,0` with lock:3:0.05, torque:3:5.0, friction:3:4.0
+- TX 2026-09-06T20:30:21Z jf_n40.sh (torque n=40, same flags); TX 2026-09-06T20:52:11Z jf_friction.sh (friction 10/20 probes estimate-only 3 episodes with --bias and --corr-dims, then friction:3:20.0 paired n=20); TX 2026-09-06T23:52:50Z jf_friction10.sh (`--clip 0.50`, friction:3:10.0)
+- ARGS in results/jf_rerun/*.json: gamma 0.08, dead 0.008, norm_r 0.15, clip 0.3, corr_dims 0,1,2, bias 0.007,-0.008,0.016,0,0,0, law legacy, deadzone_mode zero, norm_channels all, scenario_reset true, log/openloop so3
+- VA 64453d2:openpi/adaptive_law.py:104 (jf.apply), :145-153 (correction), :186-190 (fault, jf.step), :251-263 (law with bias)
+- FOR: jf_probe_none last-50 mean = (0.0069, -0.0082, 0.0159) reproduces b; with b the rho/2 bound is attained exactly (0.07500) and every step admits a consistent attenuation, with b = 0 there are 21 (torque n40), 398 (friction +20), 157 (lock), 543 (friction +10) infeasible steps -> the historical cells subtracted b
+- REC:2432-2460 (probe, phantom), REC:2462-2590, REC:3704-3753 (reruns)
+
+### C6. Transfer to OpenVLA-OFT and GR00T N1.7 (additive cells; gain cells are in cohort 4)
+
+Cells:
+- results/oft/oft_healthy.json, oft_rot010.json, oft_tra015.json (n=20)
+- results/groot/groot_healthy.json, groot_rot010.json, groot_tra015.json (n=20)
+
+- **Runner.** openpi/adaptive_law.py unchanged, against openpi/oft_server.py (port 8001) and openpi/groot_server.py (port 8003). OFT ran 2026-09-03 16:19-18:35 PDT (AH 181eed9 working copy; VA 0822c60 adds the raw-image keys the OFT bridge needs); GR00T ran 2026-09-06/07 (AH d8820ed / 9248e53).
+- **Code path.** External action subtraction. Both bridges acknowledge only site None / bias_add None and refuse any edit request ('has no ACE sites').
+- **Gate convention.** Leakage implemented. Executed: 0 firings in the four faulted cells; 107 (OFT healthy, 2,097 steps) and 114 (GR00T healthy, 2,369 steps) in the healthy controls.
+- **Clipping.** As cohort 1. kappa 0.15 (healthy controls), 0.30 (rot010, tra015). Action units. Replan: OFT server returns an 8-step chunk and the client executes the first 5 (default --replan-steps 5); GR00T --replan-steps 8.
+- **K.** K = 6.
+- **Update law.** Legacy attenuation, gamma 0.08, delta 0.008, rho 0.15 (all-six norm), no b. Mask 3,4,5 (healthy, rot010), 0,1,2 (tra015).
+- **Calibration id.** pi0.5 spatial calibration, not re-fitted: W = error_signal_so3.json, M = openloop_so3.json.
+
+Evidence:
+- TX 2026-09-03T23:00:09Z oft_exp.sh (launched 23:19:38Z; SP/oft_exp.log): `adaptive_law.py --port 8001 --suite libero_spatial --episodes 20 --gamma 0.08 --dead 0.008 --norm-r 0.15 --clip $c --fault-vec $f --corr-dims $d`: healthy (0 x6, 3,4,5, 0.15), rot010 (0,0,0,.1,.1,.1, 3,4,5, 0.30), tra015 (.15,.15,.15,0,0,0, 0,1,2, 0.30); no --replan-steps
+- TX 2026-09-06T18:57:48Z groot_healthy.sh: `--port 8003 --episodes 20 --replan-steps 8 --gamma 0.08 --dead 0.008 --norm-r 0.15 --corr-dims 3,4,5`, healthy `--sev 0.0 --clip 0.15`, rot010 `--fault-vec 0,0,0,0.10,0.10,0.10 --clip 0.30`; TX 2026-09-07T07:43:39Z groot_cells.sh: tra015 `--clip 0.30 --fault-vec 0.15,0.15,0.15,0,0,0 --corr-dims 0,1,2`
+- openpi/oft_server.py:16, :49 (num_open_loop_steps 8), :80 (8 x 7 chunk), :96-99 (refuses site/bias_add); openpi/groot_server.py:102-105
+- FOR: max_t ||M e_hat_t|| = 0.07500 (rot010, tra015 on both backbones, GR00T healthy) and 0.0738 (OFT healthy) with M = openloop_so3, b = 0; stored f_true confirms fault vectors
+- REC:1717-1721, REC:2503-2507
+
+### C7. ALOHA transfer-cube (pi0_aloha_sim, 14 absolute joint targets)
+
+Cells:
+- results/aloha/off002_identify1_hold_n40.json (15/40), results/aloha/healthy_identify1_hold_n40.json (healthy, law running)
+- supporting rows: off002_identify1_hold.json (n=20, convergence figure), off002_static019.json, off002_histfix_warm.json, off002_nr04.json, off005_nr04.json, off005_static045.json, off005_oracle.json, healthy.json
+
+- **Runner.** openpi/aloha_adapt.py run (code as of VA 273b52e, the version inside the n=40 commit 7cbda4f; args key set matches that argparse exactly), from openpi/examples/aloha_sim venv, against openpi scripts/serve_policy.py --env ALOHA_SIM on port 8002.
+- **Code path.** External joint-target subtraction: c = -f_hat*m (m = joints 0-5), a_corr = a_cmd + c, a_exec = a_corr + f, env.step(a_exec). No model access from the client; no bias edit.
+- **Gate convention.** Identification episode (episode 0): legacy leakage (chi=1, s=0) on the 14-channel residual norm, delta 0.002; executed firings 0 (300 and 242 identification steps). Episodes >= 1: identify-then-hold, freeze_after = 0 and f_init = final f_hat of episode 0, so the correction is constant (verified: f_hat identical in all 39 held episodes of both n=40 files).
+- **Clipping.** f_hat projected to +-0.08 on all 14 entries after each update, before negation, masking and addition; the client does not clip the command; MuJoCo ctrllimited actuators clamp to ctrlrange (binds on grippers, not on the corrected arm joints). Units: rad (arm joints), normalised gripper units (joints 6, 13).
+- **K.** K = 6 (NJ, HORIZON, K_FIR, DT = 14, 10, 6, 0.02): 7 taps + intercept, per joint, on absolute joint POSITION (not increment).
+- **Update law.** Legacy attenuation, gamma 0.08, delta 0.002, rho 0.4, kappa 0.08; normaliser and deadzone over all 14 channels including grippers (no --norm-channels yet; added VA f801087). Defaults at the time: rho 0.05, kappa 0.3.
+- **Calibration id.** W: results/aloha/healthy_log.json (8 episodes, reset seeds 100-107, 4/8 successes), sha256 d4dd0222...5e4f. M: results/aloha/openloop.json (probe 0.02 rad), sha256 b09669da...0e7a.
+
+Evidence:
+- ARGS in both n=40 files (and TX 2026-09-05T19:51:26Z): `aloha_adapt.py run --port 8002 --episodes 40 --seed 200 --log healthy_log.json --openloop openloop.json --fault-vec 0.02 x6,0 x8 --corr-joints 0,1,2,3,4,5 --clip 0.08 --gamma 0.08 --dead 0.002 --norm-r 0.4 --identify-episodes 1` (healthy: all-zero fault)
+- VA 273b52e:openpi/aloha_adapt.py:29 (K_FIR 6), :93-110 (external correction, fault after correction), :117-124 (position residual, legacy law, clip), :140-146 (defaults), :174-190 (openloop probe), :195-207 (identify-then-hold)
+- TX 2026-09-03T23:29:57Z `aloha_adapt.py log --port 8002 --episodes 8 --out healthy_log.json`; `aloha_adapt.py openloop --log healthy_log.json --probe 0.02 --out openloop.json`
+- FOR: 0 leakage firings in both identification episodes; held f_hat constant across held episodes
+- REC:1662-2260, REC:2369-2398; paper/aloha_residual_receipt.json (fir_lags 6)
+
+### C8. GR1 humanoid (GR00T N1.5 on RoboCasa GR1 tabletop, right-arm offset)
+
+Cells:
+- headline: results/gr1/p2p_right010_hold3w_paired.json (plate-to-plate), t2p_right010_hold3w_paired.json (tray-to-plate)
+- map: p2p_right005_hold3w_paired.json, p2p_right020_hold3w_paired.json; time-varying: p2p_tv_ramp.json, p2p_tv_ramp_hold.json, p2p_tv_sine_bias.json, p2p_tv_intermittent.json
+- nulls: p2p_null_hold_s160.json, t2p_null_hold_s160.json; continuous: p2p_right010_cont.json + p2p_right010_cont_s110.json
+
+- **Runner.** openpi/gr1_adapt.py run (paired cells at VA ac510d3 = HEAD; the episode() loop is identical in all four commits of the file; p2p_null_hold_s160 at 8c06a40 and the n=30 continuous/hold cohort at f962e18, both without the scene reseed), robocasa-gr1 venv, against openpi/groot15_server.py (port 8004).
+- **Code path.** External joint-target subtraction (c = -f_hat*m, a_corr = a_cmd + c, fault added after). groot15_server returns policy.get_action unchanged; its control hook only acknowledges.
+- **Gate convention.** Innovation law with a HOLD gate (chi=0): step = 0 if ||e[sel]|| < delta, gated on the innovation norm over the corrected joints, not on ||r||. Executed holds during identification: 33/986 (p2p 0.10), 232/2,157 (t2p 0.10), 37/1,052 (0.05), 59/1,070 (0.20), 293/5,530 (continuous) steps. Then identify-then-hold: per identification episode the median of f_hat over steps 50-199, median across the 3 episodes, applied from step 0 of every later episode with no updates.
+- **Clipping.** f_hat projected to +-clip after each update, clip = 0.2 rad (0.10 cells), 0.1 (0.05), 0.4 (0.20); the innov update is not masked, so the 22 uncorrected joints drift to the box and are never applied; the corrected command is not clipped by the client or the wrapper. Units: rad.
+- **K.** K = 6 (gr1_adapt.py:31): 7 taps + intercept per joint on absolute joint position; history seeded with q0.
+- **Update law.** Innovation: e = r - M(f_hat*m), step = M^-1 e/(1+(||e[sel]||/rho)^2), f_hat <- Pi(f_hat + gamma*step). gamma 0.08, delta 0.013, rho 0.11; normaliser and deadzone over the corrected (right-arm, 7) joints. Code defaults (unused): legacy, delta 0.002, rho 0.05, clip 0.3.
+- **Calibration id.** Plate-to-plate W: results/gr1/screen_PosttrainPnPNovelFromPlateToPlateSplitA.json (6 episodes), sha256 8d8ae23e...e1b1. Tray-to-plate W: results/gr1/t2p_healthy_log.json (10 episodes), sha256 685918b2...2d4a. M: results/gr1/openloop_arms_clean.json (sha256 01f94045...4527) = right block of openloop_arms_direct.json (plate-to-plate held pose) + left block of openloop_left_direct.json (can-drawer), identity elsewhere; right diagonal 0.990-0.997, cond 1.016.
+
+Evidence:
+- ARGS in the paired files: `--task ...PlateToPlateSplitA (or TrayToPlate) --episodes 30 --seed 100 --horizon 16 --max-steps 720 --fault-vec arm:right:0.10 --corr-joints arm:right --law innov --gamma 0.08 --dead 0.013 --norm-r 0.11 --clip 0.2 --identify-episodes 3 --hold-stat window --with-healthy`, log and openloop paths as in 'calibration id'
+- openpi/gr1_adapt.py:31 (K_FIR), :108-121 (correction, fault), :139-146 (sel, innov law, hold gate, clip), :250-266 (identify-then-hold, window statistic)
+- TX 2026-09-08T01:07:01Z (openloop_arms_direct: reset(seed=100), 30 settle + 30 probe steps, +-0.02 rad per joint j = 0..13) and TX 2026-09-08T01:09:31Z (openloop_arms_clean assembled; plant R^2; dead ~ 0.5 x median, rho ~ 2 x 90th pct of the healthy right-arm residual)
+- FOR: exact-hold counts above; held f_hat reconstructed from stored traces equals the applied vector (agent check)
+- REC:2721-3260
+
+### C9. WidowX (GR00T N1.7 Bridge in SimplerEnv, spoon-on-towel, translation offset)
+
+Cells:
+- results/widowx/cell_tra005.json (continuous), cell_tra005_g02.json (continuous, gamma 0.2), cell_tra005_hold3w.json (identify 3 then hold), cell_tra003_hold3w.json, null_tra000.json
+- not published: cell_tra005_probeM_aborted.json
+
+- **Runner.** openpi/widowx_adapt.py run (VA 7ca2f26; 9c1a2fd changed only the Google-robot pose/obs helpers), simpler-venv, against openpi/groot_widowx_server.py (port 8005).
+- **Code path.** External action subtraction (a_corr[:6] += -f_hat*m; fault added after). Server returns the raw chunk.
+- **Gate convention.** Innovation law with a HOLD gate on ||e[sel]||; executed holds 406/2,526 (continuous), 502/2,317 (gamma 0.2), 56/252 and 63/339 identification steps (hold3w cells), 216/1,262 (null). Hold scheme: median of f_hat over steps 30-149 of each of 3 identification episodes, median across episodes, then frozen.
+- **Clipping.** f_hat projected to +-0.03 after each masked update (step*m; rotation entries stay 0); no client clip of the command; GR00T wrapper passes it through. Units: normalised Bridge action units (per-step EE delta).
+- **K.** K = 6 (widowx_adapt.py:26), FIR on the measured pose increment divided by a per-channel scale; history seeded at zero.
+- **Update law.** Innovation, gamma 0.08 (0.2 in cell_tra005_g02), delta 0.001, rho 0.009, norm over corrected x,y,z. Code defaults delta 0.01, rho 0.15.
+- **Calibration id.** W: results/widowx/healthy_log.json (10 episodes, seeds 100-109; sha256 cfad7059...8b68) with results/widowx/healthy_log_scale.json. M: results/widowx/openloop_dc.json = diag(sum of FIR taps) from the same healthy log (sha256 6c6812f1...55ef); no probe rollouts.
+
+Evidence:
+- ARGS: `--task simpler_env_widowx/widowx_spoon_on_towel --horizon 8 --max-steps 150 --fault-vec 0.005,0.005,0.005,0,0,0 --corr-dims 0,1,2 --law innov --gamma 0.08 --dead 0.001 --norm-r 0.009 --clip 0.03 --identify-episodes 3 --hold-stat window --log healthy_log.json --openloop openloop_dc.json`
+- openpi/widowx_adapt.py:26, :113-120, :132-134, :160-162, :217-219
+- TX 2026-09-09T21:14:14Z (openloop_dc.json computed offline from healthy_log.json: M = diag(DC gain), 1.04/1.04/1.12/1.01/1.02/1.07); TX 2026-09-09T21:14:36Z (update masked to corrected dims; probe-M cell aborted)
+- FOR: hold counts above
+- REC:3262-3435
+
+## K for ALOHA and GR1 (re4 prints 'K unrecorded')
+
+- ALOHA: K = 6. VA 273b52e:openpi/aloha_adapt.py:29 `NJ, HORIZON, K_FIR, DT = 14, 10, 6, 0.02`, unchanged from the first commit of the file (16a0517) to HEAD; 7 taps (lags 0-6) + intercept per joint on absolute position; paper/aloha_residual_receipt.json records fir_lags 6. The re4 'K unrecorded' can be replaced by K = 6.
+- GR1: K = 6. openpi/gr1_adapt.py:31 `K_FIR = 6` at every commit (f962e18, 8c06a40, c367fb2, ac510d3 = HEAD); 7 taps + intercept per joint on absolute position. The re4 'K unrecorded' can be replaced by K = 6.
+- For completeness: every other published cohort also used K = 6 (LIBERO adaptive_law.py:34 at VA f9d27fb, imported by adaptive_gain.py; WidowX widowx_adapt.py:26). The --fir-k flag (K = 0 static observer) exists only from VA 2fe42b9 (2026-09-11) and no published result used it.
+
+## Probe episodes and resets behind each sensitivity matrix M
+
+- **LIBERO, all pi0.5 / OFT / GR00T cohorts (shipped M = results/phase05/openloop_so3.json).** Produced 2026-08-27T17:04Z by openloop_id.py as of AH c7f8dbb (TX). One libero_spatial scene (task 0, init 45), one command sequence (the first 80 arm commands of the nominal record of error_signal_so3.json), replayed open loop 17 times: 1 baseline + 4 uniform-magnitude diagnostic replays (+0.01, +0.02, +0.05, -0.05 on all six) + 12 per-axis replays (+-0.02 on each of 6 axes). Each replay = env.reset() + set_init_state(init 45) + 10 dummy steps + up to 80 replay steps, so 17 resets and at most 17 x 90 = 1,530 environment steps. M's columns use 13 of them (baseline + 12; each column averages (D+ - base)/(+p) and (D- - base)/(-p)). The healthy plant log behind it: 3 policy episodes (tasks 0,1,2 at inits 45,46,47); the same error_signal.py run also recorded 3 faulted episodes (+0.05), not used by fit_plant. Total calibration resets: 17 replays + 6 policy episodes = 23.
+- **LIBERO held-out (Part B, results/heldout/openloop_init25.json).** Same 17-replay design at task 0, init 25, from a 70-step single-episode command sequence (baseline 70 steps; per-axis common steps 61-70, stored in 'columns'); plant from 10 healthy episodes (tasks 0-9 at init 25). 27 resets.
+- **LIBERO per-suite M (results/suites/libero_{object,goal,10}_M.json; NOT used by any published cohort).** 17 replays each, from 10-episode per-suite plant logs (error_signal.py --episodes 10 --init-base 30), TX 2026-08-31T04:32:08Z suite_sweep.sh. Used only by the unpaired 2026-08-31 all-six and rotation-only cells (record 7.1-7.2).
+- **Gain cohort.** No M is needed by the FIR regressor (the openloop_so3 M is loaded but unused); plant log as above.
+- **ALOHA (results/aloha/openloop.json).** 29 open-loop replays (1 baseline + 14 joints x 2 signs, probe 0.02 rad), each reset to env seed 100, 120 commands of logged healthy episode 0 per replay, steady state = steps 60-119 used: 29 resets, 3,480 environment steps. Plus the 8-episode healthy log (seeds 100-107). Total calibration resets: 37.
+- **GR1 (results/gr1/openloop_arms_clean.json).** Right-arm block (the only block that enters the published right-arm cells, M being block-diagonal): openloop_arms_direct.json, direct step response in the plate-to-plate scene, env.reset(seed=100) + 30 settle steps for the baseline, then for each of joints 0-13 and each sign: reset(seed=100) + 30 hold + 30 steps at +-0.02 rad: 1 + 28 = 29 resets, 1,710 environment steps (14 of the probe rollouts produce the right block). Left block: openloop_left_direct.json, can-drawer scene, 1 + 14 = 15 resets (TX 2026-09-07T23:35:04Z). Plants: 6 healthy episodes (plate-to-plate) and 10 (tray-to-plate). Not recoverable: whether the probe runs were repeated before the stored files (only the final commands are in TX).
+- **WidowX (results/widowx/openloop_dc.json).** Zero probe rollouts: M = diag(DC gain of the FIR plant) computed offline from the 10-episode healthy log (seeds 100-109). Two earlier probe-based M files (openloop.json replay at 0.02, openloop_p005.json held-pose) were measured and rejected; only the aborted cell used one.
+
+## Fault-development selection budget
+
+What was tried before the published configuration, per cohort. Counts are from launch commands (TX), stored result files and the record.
+
+- **LIBERO fault family and magnitude (all LIBERO cohorts).** Preregistered frozen-only screen on 2026-08-20 (prereg_records/PREREG_OPENPI_ACE_SCREEN.md:67-73 design, :286-298 results): 9 cells x 20 episodes (libero_spatial, inits 0-1): action gain {0.7, 0.5, 0.3}, offset {0.05, 0.10, 0.20}, brightness {0.1, 0.2, 0.4}; exactly one cell kept (offset 0.05, 11/20). The headline fault (uniform +0.05) was fixed here, before any adaptive-law run.
+- **LIBERO law constants (cohorts 1-3, 5, 6).** Four constant settings were run on the headline fault (libero_spatial, uniform +0.05, all six channels corrected, pre-SO3 calibration error_signal.json + openloop.json) before the constants were frozen on 2026-08-27T07:28Z: adaptive.json (gamma 0.05, n=6; the bare law per REC:250-256), adaptive_robust.json (gamma 0.08, n=10, delta/rho/kappa at the runner defaults; the first committed defaults, AH 8ccbd77 26 min later, are 0.05/0.5/0.15, so that this run used them is inferred, not proven), adaptive_tuned.json (gamma 0.05, delta 0.010, rho 0.05, kappa 0.15, n=10), adaptive_final.json (gamma 0.08, delta 0.008, rho 0.15, kappa 0.15, n=15). Episodes were (task i mod 10, init 45 + i div 10): tasks 0-9 at init 45 and tasks 0-4 at init 46, i.e. the same (task, init) band later used to evaluate the headline spatial sample. After 2026-08-27T07:28Z gamma/delta/rho were never changed for a published LIBERO additive cell (TX); kappa was changed per cell (0.15, 0.22 for sev 0.10, 0.30 for 0.10-0.15 faults, 0.50 for friction +10). Source: TX 2026-08-27T06:32Z-07:28Z (flags) and result 'gamma' keys.
+- **LIBERO calibration variants.** Pre-SO3 chart (error_signal.json / openloop.json, rotation diagonals ~0.01) replaced by the SO(3) calibration (error_signal_so3 / openloop_so3) on 2026-08-27 (adaptive_so3.json); MIMO plant (adaptive_mimo.json) and a 10-task plant (error_signal_all10.json, adaptive_nofault_all10.json) tried and rejected; per-suite calibrations used on 2026-08-31 for the unpaired four-suite cells and then abandoned; probe 0.02 vs 0.05 compared (openloop_probe0.02/0.05.json).
+- **LIBERO correction mask.** Three masks run on the headline fault before the published one was fixed: all six (adaptive_final/so3, confirm_n40 at inits 40-43, libero_*_adaptive on per-suite calibration), rotation-only (adaptive_rotonly.json 2026-08-28, 14/15; libero_*_rotonly.json 2026-08-31), translation-only (libero_object_transonly.json, TX 2026-08-31T19:08Z). The record states the rotation restriction was chosen after seeing that rotation identified (REC:508-510). The healthy-only gate (record 37) reproduces the mask post hoc.
+- **LIBERO other development conditions (diagnostic, not selection of the headline).** uniform 0.10 (adaptive_sev010, kappa 0.22, n=8), structured (0,0,0,.06,-.06,.03) (n=12), onset 15/45 (n=20/15, init 47), no fault (n=15; 10-task plant n=12), estimate-only and debiased no-fault (n=10/12/15), sensor offsets (n=15/12), wrist shift (n=12), static corrections (n=15/12, init 40), ceiling_init40 (sev 0, init 40, runner defaults gamma 0.05 / delta 0.05 / rho 0.5), rule_trans/rule_rot (single-axis x 0.05, corrected on 0,1,2 or 3,4,5, clip 0.15, TX 2026-09-01T20:14:46Z), single-axis estimate-only x 0.02 / x 0.05 / rx 0.02 + controls (n=10), law_legacy/innov (estimate-only, n=10).
+- **Severity map (cohort 2).** Designed as a full 3 x 3 grid {translation, rotation, uniform} x {0.05, 0.10, 0.15}; every cell run and reported, masks fixed by family before the runs (map.sh comment, TX 2026-09-02T15:17:37Z). Two cells extended to n=40 after n=20 (map_rot005 at the exact-test floor, map_tra010). kappa raised to 0.30 for the 0.10/0.15 cells before running (transmag.sh comment).
+- **Gain cohort.** Before the published FIR-regressor cells: gain 0.5 on the instantaneous-command law in 4 variants (LMS, RLS, RLS no-dither, SO(3) calibration; n=10 each), a no-fault control (n=10), masks translation / rotation / translation + g_min 0.35 (n=20 each), the intercept fix (gfix healthy n=10, fault n=20). Published sweep: gain 0.5, 0.3, 0.2 (g_min set below the true gain per cell, TX gainsev.sh comment).
+- **Joint-level cohort.** 5 kinematic configurations measured without the policy (REC:2411-2430: torque 5 N m on shoulder and elbow, friction +2 elbow, actuator gain 0.5 shoulder (rejected), lock +-0.05 rad elbow); 7 estimate-only probe files x 3 episodes (none, torque j1, torque j3, friction j3 +2, lock j3, friction j3 +10, +20); then 5 paired cells on the elbow (lock, torque, friction +4 (never probed), +20, +10 at clip 0.5) and one n=40 extension; the shoulder was dropped after the probe. Probe inits (tasks 0-2, init 45) overlap the evaluation inits.
+- **OFT / GR00T.** No re-tuning of W, M, gamma, delta or rho; per-cell kappa, g_min and replan changes as listed in cohorts 4 and 6; a 2-episode healthy smoke test and a 20-episode healthy control were run first on each backbone. Neither backbone ran the uniform +0.05 headline cell.
+- **ALOHA.** Before the n=40 cells (all transfer-cube, left-arm joints 0-5, constant offset): 22 stored run files + 2 logs + M, 971 rollouts plus 29 replays. 14 adaptive configurations, 5 static/oracle cells; fault 0.02 / 0.05 / 0.10 rad; rho 0.05 / 0.4; clip tied to the fault; FIR history initialisation zeros vs current position; warm start on/off; freeze after 30 / 100 / 200 steps; identify-then-hold n=20 then n=40. gamma, delta, joints and task never varied. No preregistration for these development comparisons (REC:1794-2398).
+- **GR1.** 7 tasks (can-drawer + a 5-task screen + tray/plate), 7 frozen side/magnitude damage probes (can-drawer: right 0.05, right 0.15, left 0.15; plate-to-plate: left 0.10, left 0.20, right 0.10, and right 0.20 = p2p_faulted_right0.20.json, which the record never mentions), 3 constant sets, 2 laws (legacy then innov), 3 hold statistics (last, mean50, median/window); the reach-window statistic was picked after comparing statistics offline on 4 stored identification episodes whose outcomes were known (REC:3123-3139).
+- **WidowX.** 1 task, no screen recorded; 5 frozen fault magnitudes (0.04, 0.02, 0.01, 0.005, 0.003; all 0/10 frozen); 3 ways of measuring M (replay 0.02 saturated, held-pose 0.005, DC gain); 1 aborted cell before the M switch and the update-mask change (REC:3273-3317).
+
+## Complete (task, init) identity lists of the four primary samples
+
+- Episode rule: episode i runs (task i mod 10, init 45 + i div 10) (VA f9d27fb:296; identical with --task-stride 1 on these 10-task suites). 'init' indexes LIBERO's fixed initial-state list for that task (suite.get_task_init_states(task)). Both arms run the identical list, frozen arm first; pairing is by list position and by (task, init).
+- Env seed 7 for every episode (paired_probe.py:56); policy RNG not pinned; reset protocol env.reset() + set_init_state(init) (no scenario reset: libero_reset.py did not exist yet).
+- Step caps: 220 (spatial), 280 (object), 300 (goal), 520 (libero_10) control steps after 10 warm-up steps (paired_probe.py:23-24, MAXS).
+
+### libero_spatial (results/suites/libero_spatial_rotonly_paired.json): n = 20, frozen 8/20 -> adaptive 18/20, 10 fixed / 0 broken
+
+| episode | task | init | frozen | adaptive |
+|---|---|---|---|---|
+| 0 | 0 | 45 | 1 | 1 |
+| 1 | 1 | 45 | 0 | 1 |
+| 2 | 2 | 45 | 1 | 1 |
+| 3 | 3 | 45 | 1 | 1 |
+| 4 | 4 | 45 | 0 | 1 |
+| 5 | 5 | 45 | 0 | 0 |
+| 6 | 6 | 45 | 1 | 1 |
+| 7 | 7 | 45 | 0 | 1 |
+| 8 | 8 | 45 | 0 | 1 |
+| 9 | 9 | 45 | 0 | 1 |
+| 10 | 0 | 46 | 1 | 1 |
+| 11 | 1 | 46 | 0 | 1 |
+| 12 | 2 | 46 | 1 | 1 |
+| 13 | 3 | 46 | 1 | 1 |
+| 14 | 4 | 46 | 0 | 1 |
+| 15 | 5 | 46 | 0 | 0 |
+| 16 | 6 | 46 | 0 | 1 |
+| 17 | 7 | 46 | 0 | 1 |
+| 18 | 8 | 46 | 1 | 1 |
+| 19 | 9 | 46 | 0 | 1 |
+
+### libero_object (results/suites/libero_object_rotonly_paired.json): n = 20, frozen 5/20 -> adaptive 16/20, 11 fixed / 0 broken
+
+| episode | task | init | frozen | adaptive |
+|---|---|---|---|---|
+| 0 | 0 | 45 | 0 | 0 |
+| 1 | 1 | 45 | 0 | 1 |
+| 2 | 2 | 45 | 0 | 1 |
+| 3 | 3 | 45 | 0 | 1 |
+| 4 | 4 | 45 | 0 | 1 |
+| 5 | 5 | 45 | 0 | 1 |
+| 6 | 6 | 45 | 0 | 1 |
+| 7 | 7 | 45 | 0 | 1 |
+| 8 | 8 | 45 | 1 | 1 |
+| 9 | 9 | 45 | 1 | 1 |
+| 10 | 0 | 46 | 1 | 1 |
+| 11 | 1 | 46 | 0 | 1 |
+| 12 | 2 | 46 | 1 | 1 |
+| 13 | 3 | 46 | 0 | 0 |
+| 14 | 4 | 46 | 0 | 1 |
+| 15 | 5 | 46 | 0 | 1 |
+| 16 | 6 | 46 | 0 | 1 |
+| 17 | 7 | 46 | 0 | 0 |
+| 18 | 8 | 46 | 0 | 0 |
+| 19 | 9 | 46 | 1 | 1 |
+
+### libero_goal (results/suites/libero_goal_rotonly_n40.json): n = 40, frozen 15/40 -> adaptive 29/40, 15 fixed / 1 broken
+
+| episode | task | init | frozen | adaptive |
+|---|---|---|---|---|
+| 0 | 0 | 45 | 0 | 0 |
+| 1 | 1 | 45 | 0 | 1 |
+| 2 | 2 | 45 | 0 | 0 |
+| 3 | 3 | 45 | 0 | 0 |
+| 4 | 4 | 45 | 1 | 1 |
+| 5 | 5 | 45 | 0 | 1 |
+| 6 | 6 | 45 | 0 | 1 |
+| 7 | 7 | 45 | 1 | 1 |
+| 8 | 8 | 45 | 1 | 1 |
+| 9 | 9 | 45 | 0 | 0 |
+| 10 | 0 | 46 | 0 | 0 |
+| 11 | 1 | 46 | 0 | 1 |
+| 12 | 2 | 46 | 0 | 1 |
+| 13 | 3 | 46 | 0 | 0 |
+| 14 | 4 | 46 | 1 | 1 |
+| 15 | 5 | 46 | 1 | 0 |
+| 16 | 6 | 46 | 0 | 1 |
+| 17 | 7 | 46 | 1 | 1 |
+| 18 | 8 | 46 | 1 | 1 |
+| 19 | 9 | 46 | 0 | 1 |
+| 20 | 0 | 47 | 0 | 0 |
+| 21 | 1 | 47 | 1 | 1 |
+| 22 | 2 | 47 | 0 | 1 |
+| 23 | 3 | 47 | 0 | 0 |
+| 24 | 4 | 47 | 1 | 1 |
+| 25 | 5 | 47 | 1 | 1 |
+| 26 | 6 | 47 | 0 | 1 |
+| 27 | 7 | 47 | 1 | 1 |
+| 28 | 8 | 47 | 0 | 1 |
+| 29 | 9 | 47 | 0 | 1 |
+| 30 | 0 | 48 | 0 | 0 |
+| 31 | 1 | 48 | 0 | 1 |
+| 32 | 2 | 48 | 0 | 1 |
+| 33 | 3 | 48 | 0 | 0 |
+| 34 | 4 | 48 | 1 | 1 |
+| 35 | 5 | 48 | 1 | 1 |
+| 36 | 6 | 48 | 0 | 1 |
+| 37 | 7 | 48 | 1 | 1 |
+| 38 | 8 | 48 | 1 | 1 |
+| 39 | 9 | 48 | 0 | 1 |
+
+### libero_10 (results/suites/libero_10_rotonly_n40.json): n = 40, frozen 0/40 -> adaptive 15/40, 15 fixed / 0 broken
+
+| episode | task | init | frozen | adaptive |
+|---|---|---|---|---|
+| 0 | 0 | 45 | 0 | 1 |
+| 1 | 1 | 45 | 0 | 1 |
+| 2 | 2 | 45 | 0 | 0 |
+| 3 | 3 | 45 | 0 | 1 |
+| 4 | 4 | 45 | 0 | 0 |
+| 5 | 5 | 45 | 0 | 1 |
+| 6 | 6 | 45 | 0 | 0 |
+| 7 | 7 | 45 | 0 | 0 |
+| 8 | 8 | 45 | 0 | 0 |
+| 9 | 9 | 45 | 0 | 0 |
+| 10 | 0 | 46 | 0 | 0 |
+| 11 | 1 | 46 | 0 | 0 |
+| 12 | 2 | 46 | 0 | 0 |
+| 13 | 3 | 46 | 0 | 0 |
+| 14 | 4 | 46 | 0 | 0 |
+| 15 | 5 | 46 | 0 | 1 |
+| 16 | 6 | 46 | 0 | 0 |
+| 17 | 7 | 46 | 0 | 0 |
+| 18 | 8 | 46 | 0 | 0 |
+| 19 | 9 | 46 | 0 | 1 |
+| 20 | 0 | 47 | 0 | 1 |
+| 21 | 1 | 47 | 0 | 0 |
+| 22 | 2 | 47 | 0 | 1 |
+| 23 | 3 | 47 | 0 | 0 |
+| 24 | 4 | 47 | 0 | 0 |
+| 25 | 5 | 47 | 0 | 1 |
+| 26 | 6 | 47 | 0 | 1 |
+| 27 | 7 | 47 | 0 | 1 |
+| 28 | 8 | 47 | 0 | 0 |
+| 29 | 9 | 47 | 0 | 1 |
+| 30 | 0 | 48 | 0 | 1 |
+| 31 | 1 | 48 | 0 | 1 |
+| 32 | 2 | 48 | 0 | 0 |
+| 33 | 3 | 48 | 0 | 0 |
+| 34 | 4 | 48 | 0 | 0 |
+| 35 | 5 | 48 | 0 | 1 |
+| 36 | 6 | 48 | 0 | 0 |
+| 37 | 7 | 48 | 0 | 0 |
+| 38 | 8 | 48 | 0 | 0 |
+| 39 | 9 | 48 | 0 | 0 |
+
+## G.2 Centering convention: what was subtracted as the healthy bias, how it was averaged, units, order
+
+- **1 Headline four suites.** Nothing subtracted (b = 0): no --bias in either launch command, and b = 0 is the only value consistent with the stored estimates (rho/2 bound attained; a non-zero phantom makes steps infeasible). The healthy phantom therefore remains inside f_hat; the rotation phantom is small (spatial no-fault settled f_hat -0.009, 0.017, -0.001 on rx, ry, rz, REC:294-302) and translation is not corrected. The only healthy offset removed is the FIR intercept W[:,-1], fitted on healthy data and inside the prediction, i.e. before M^-1, the deadzone and the normaliser.
+- **2 Severity map / 3 Ablation / 6 OFT-GR00T additive.** Same as cohort 1: b = 0, FIR intercept only (launch commands carry no --bias; forensic bound attained with b = 0).
+- **4 Gain.** No bias term (--intercept not passed). The FIR intercept is excluded from the regressor by construction (phi = pred - W[:,-1]) and remains in pred for the residual.
+- **5 Joint-level (the only published cohort that subtracts a phantom).** Quantity: b = (0.007, -0.008, 0.016, 0, 0, 0) in normalised action units (1 unit = 0.05 m per step on x,y,z). Averaging: the settled, attenuated estimate, not a raw-residual mean: per-episode mean of f_hat over the last 50 steps of 3 healthy --estimate-only episodes (tasks 0-2, init 45; correction never applied, so open-loop), averaged over episodes (jf_probe_none.json gives 0.0069, -0.0082, 0.0159). Subtraction order: e = M^-1 r - b (after M^-1), then the deadzone test on the raw, uncentred ||r|| (b does not enter it), then zeroing if fired, then division by 1+||r||^2/rho^2, then the gamma update and projection (VA 64453d2:251-263; current adaptive_law.py:169-183). This matches the paper's definition (PAPER:185-197: eq. (law) at :185-189, b defined at :195 as 'the value f_hat settles at with no fault present', subtracted inside e_t = M^-1 r_t - b).
+- **Where the two conventions differ (applies to cohort 5).** With a healthy raw residual mean b0 = E[M^-1 r] and a mean effective attenuation s0 (including zeroed steps), the settled healthy estimate is s0*b0. Subtracting a raw-mean b = b0 inside the attenuation would settle healthy f_hat at 0; subtracting the settled estimate b = s0*b0 (what was run) settles it at s0*(b0 - s0*b0) = s0(1-s0)b0. From jf_probe_none (e_hat_t recovered as above, small root for ||r||), s0 ~ 0.876 over the last 50 steps, so b0 ~ (0.0080, -0.0091, 0.0183) and s0(1-s0)b0 ~ (0.0009, -0.0010, 0.0020) action units (<= 0.1 mm per step). This is an order-of-magnitude estimate: s is state-dependent and correlated with r. Larger in practice: b was measured open-loop (estimate-only) but applied closed-loop, where the record measured the phantom about 1.9x the open-loop value (REC:308-325); the healthy rerun with b subtracted still settles at a large translation phantom (final |f_hat| medians 0.055, 0.015, 0.080, REC:3738-3740). Also: the two friction probes jf_probe_friction_3_10/20 were themselves run with --bias and --corr-dims (TX 2026-09-06T20:52Z), unlike the other probes.
+- **7 ALOHA, 8 GR1, 9 WidowX.** No phantom subtracted (no --bias option at any commit); the per-joint/per-channel FIR intercept fitted on healthy data is the only healthy offset removed, inside the prediction, before M^-1, the deadzone/innovation gate and the normaliser. ALOHA's paper statement b_f = 0 matches. GR1/WidowX null cells report the phantom but do not subtract it.
+- **Part B healthy-only channel gate (record 37; not a Part A cohort, listed because the plan names the 'gate phantom').** b_gate = mean over 20 healthy estimate-only scenarios of the per-episode last-50-step mean f_hat (settled attenuated estimate; openpi/gate_stats.py:23-25), sd floored at 0.002. It is not subtracted from f_hat: it centres the per-step channel test |f_hat_i - b_i| > k*sd_i (k = 3) that selects which channels are corrected (openpi/adaptive_law.py:483). A raw-residual-mean centre would move the gate threshold by (1-s0)b0 per channel.
+
+## Native bias edit: which cohorts used it
+
+- The only native action_out_proj/bias edit is ace_server.py:104-125 (bias_edited_state), reached only when a control request carries 'bias_add' (ace_server.py:256-265). Clients that send bias_add: cem_search.py, oracle_sweep.py (ACE / oracle experiments) and g1_decoder.py (re4 G.1 measurement, VA 2f64525, 2026-09-11).
+- No published adaptation cohort used it. adaptive_law.py sends control {site: None, pin_rng: False} in every version (VA f9d27fb:294; no commit of the file on any AH branch contains 'bias_add' (git log -p --all)); adaptive_gain.py the same; oft_server.py and groot_server.py refuse any site or bias_add; ALOHA (openpi serve_policy), GR1 (groot15_server) and WidowX (groot_widowx_server) servers have no edit path. Every cohort's correction is an external addition to the command before the fault.
+- The early report states the opposite: report/vla_adaptation_report.tex at VA f9d27fb, line 690 (line 721 today): 'The correction is applied by editing action_out_proj/bias inside the network.' The runner committed in the same commit adds the correction externally (f9d27fb:122-130, :294). No code transition exists: the earliest recoverable adaptive_law.py (AH 8ccbd77, 2026-08-27) already subtracts externally. The report sentence is wrong for every adaptation cohort; the re4 'code transition' hedge can be replaced by this statement.
+
+## Inconsistencies between the record/paper and the code
+
+1. Early report vs code (native bias edit): see 'Native bias edit' above.
+2. Normaliser channel set. The paper (PAPER:212, 'The norms in eq. (law) are taken over the channels being corrected') does not hold for LIBERO or ALOHA: every LIBERO cohort normalises and gates on all six residual channels (the forensic rho/2 bound is attained only with the all-six norm), and ALOHA on all 14 channels including both grippers. Only GR1 and WidowX use corrected-channel norms.
+3. Law form. The paper's eq. (law) (legacy, leakage deadzone on ||r||, phantom b) describes LIBERO and ALOHA. GR1 and WidowX ran the innovation law with a hold gate on ||e[sel]|| and no b; the paper states the innovation form for the humanoid but not for WidowX.
+4. Calibration of the four-suite results. The unpaired four-suite tables (REC:362-386, 2026-08-31/09-01) used per-suite calibrations (TX suite_sweep.sh and rot_suites.sh pass --log $S_plant.json --openloop $S_M.json; forensic: libero_object_rotonly.json pins only with libero_object_M.json), whereas the paired headline (REC:705-760, 2262-2310) used the spatial calibration for all four suites. The record never states the switch, and REC:1585-1589 says object re-identification 'has not been run' although libero_object_{plant,M}.json existed and had been used.
+5. Shipped M replay crosses an episode boundary. openloop_id.py at AH c7f8dbb replays `d[0]['raw_a'][:80]` from the concatenated nominal log; episode 0 of error_signal_so3.json has 75 steps, so commands 76-80 come from episode 1 (task 1, init 46) and are replayed in the task 0 / init 45 scene; the gripper is held open (-1) during the replay. The 2026-08-27T17:04Z command passed no --steps (default 80). The current openloop_id.py forbids crossing (nominal_commands).
+6. Calibration-evaluation overlap, stated precisely. The shipped plant used (task, init) = (0,45), (1,46), (2,47) (AH c7f8dbb error_signal.py:106, rule k mod 10, 45 + k) and M was probed at (0,45). Of the 20 spatial evaluation episodes, exactly 2 share a (task, init) pair with the plant log and 1 with the M probe; all 20 share an initial-state index (45 or 46) with it. The current code comment ('half its episodes sit on the state the plant was fitted on', openpi/adaptive_law.py:1153) assumes the later rule (k mod count, init_base + k div count). The law constants were also tuned on tasks 0-9 at init 45 and 0-4 at init 46 (see budget).
+7. OFT replan horizon. REC:1748-1749 says OFT's chunk is executed 8 steps before replanning against 5 for pi0.5. The launch (oft_exp.sh) passed no --replan-steps, so the client executed the first 5 of each 8-step OFT chunk (adaptive_law.py `[: pr.a.replan_steps]`, default 5; oft_server.py:49,80).
+8. Ablation reference row. The 'reference' row of the constants ablation (PAPER:777, REC:2647) is the 2026-09-01 headline file, not a concurrent run; the ablation rows ran on 2026-09-07. The comparison 'one constant changed per row' is therefore across separate runs (frozen arms 7-11/20).
+9. Runner defaults never matched the published constants (gamma 0.05, dead 0.05, norm_r 0.5 in every version, VA f9d27fb:236,265-267 through HEAD). ceiling_init40.json was in fact run at those defaults (TX 2026-08-30T23:15Z, no constants passed).
+10. ALOHA (agent check): M[13,13] = 0.145, so cond(M) = 7.3 comes entirely from the right gripper, while the record/paper say M ~ I and diagonals 0.98-1.02; the plant-fit claim 'R^2 0.989-1.000 on all joints' conflicts with the grippers' 0.75-0.77; the n=20 healthy control ran at rho 0.05 / clip 0.15, not the repair settings; the healthy phantom '< 0.001 rad' holds only for joints 0-5 (uncorrected gripper 0.023).
+11. GR1 (agent check): p2p_null_hold_s160 was run without the scene reseed (unpaired) yet reported with fixed/broken counts; it and t2p_null used 1 identification episode with the mean50 statistic, not the published 3-episode window scheme; tray-to-plate's plant used 10 episodes (paper says 6) and its residual is ~2x plate-to-plate's but the constants were not re-derived; the window statistic was chosen after outcomes were known.
+12. WidowX (agent check): the +0.003 cell has no healthy arm; its 'healthy 14/20 on the same seeds' comparator comes from another process, and SAPIEN resets are not bit-repeatable across processes.
+
+## Not recoverable
+
+- Exact bytes of the runner that executed each LIBERO/ALOHA/GR1/WidowX run: all runs executed the AH working-tree copy and no source hash was recorded before schema v2 (2026-09-10). Bracketing commits and output-schema matches are given per cohort; the law/gate/clip lines are identical in every bracketing version, so no field in the map depends on this.
+- Per-step residual norms ||r_t|| for any pre-telemetry cell (not stored), so delta is established from the launch commands plus the forensic facts that the gate never fired (headline) or fired only on some steps; delta itself cannot be re-derived from the stored data.
+- Policy sampling randomness: pi0.5 / OFT / GR00T flow samplers were not pinned (control pin_rng False); the LIBERO env seed is 7 for every episode (paired_probe.py:56 via openpi examples/libero/main.py:195). Per-episode policy draws cannot be reconstructed.
+- delta, rho and kappa for the two earliest development runs (adaptive.json, adaptive_robust.json): the launch commands pass only gamma and the runner code of that hour is not in git (first commit AH 8ccbd77 is 26 minutes later).
+- Whether the GR1 direct-probe M was measured more than once before the stored files (only the final commands survive).
+
+## Forensic tests used
+
+- Leakage-firing detector (legacy law). When the deadzone fires the legacy update is f_{t+1} = f_t + gamma(0 - f_t) = (1-gamma) f_t on all six channels at once. A step is counted as a firing when f_{t+1} == (1-gamma) f_t to 1e-12 relative on every channel. Validated on the ablation: abl_dead_0_03.json (deadzone 0.03, at the residual scale) gives 751 firings in 2,664 steps; abl_dead_0.json gives 0.
+- Normaliser / M / bias test (legacy law). From two stored estimates, e_hat_t = (f_{t+1} - (1-gamma) f_t)/gamma = s_t (M^-1 r_t - b) with s_t = 1/(1+||r_t||^2/rho^2) (unclipped steps only). With b = 0, ||M e_hat_t|| = s_t ||r_t|| = x/(1+x^2/rho^2) <= rho/2, with equality at ||r_t|| = rho, and only when the norm in s_t is taken over the same channels as ||M e_hat_t|| (all six). So max_t ||M e_hat_t|| must sit at exactly rho/2 for the right (M, rho, b, channel set). Validated: abl_norm_r_0_05.json gives max 0.02500 (rho = 0.05); abl_norm_r_0_50.json gives 0.1352 <= 0.25 (rho = 0.5, bound not reached). For b != 0 the test solves s_t = 1/(1+||M e_hat_t/s_t + M b||^2/rho^2) per step and counts steps with no solution in (0,1] (infeasible = wrong b).
+- Rail test. The projection value is read off the stored estimates as the magnitude at which a channel sits repeatedly (>= 3 steps) at its maximum.
+- Hold detector (innovation law, GR1/WidowX). With the innovation gate a fired step leaves f_hat bit-identical: counted as f_{t+1} == f_t (non-zero vector) during identification/adaptation episodes.

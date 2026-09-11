@@ -188,7 +188,7 @@ def fit_plant(log_path):
 def episode(A, ep, W=None, M_inv=None, fvec=None, gain=None, adapt=False, gamma=0.08, dead=0.002,
             norm_r=0.05, clip=0.3, corr=None, profile="step", prof_p=60.0, onset=0, log=None,
             static_corr=None, f_init=None, freeze_after=None, norm_channels="all",
-            deadzone_mode="zero", telemetry=None, arm=None, law="legacy", M=None,
+            deadzone_mode="zero", telemetry=None, arm=None, law="legacy", M=None, timing=None,
             baseline="none", kf_q=None, kf_r=None, reference_model=None,
             tracking_rate=0.0, damping=0.0, ki=0.02, rls_lambda=0.95,
             initial_covariance=1.0, rls_p0=1.0):
@@ -211,10 +211,14 @@ def episode(A, ep, W=None, M_inv=None, fvec=None, gain=None, adapt=False, gamma=
             raise ValueError("composite adaptation requires a qualified joint reference model")
         q_ref = q[np.asarray(reference_model["state_indices"], int)].copy()
         tracking_map = masked_tracking_map(reference_model, m)
+    import time as _time
+    _t_obs = _time.perf_counter()
     for t in range(MAX_STEPS):
+        _tl0 = _time.perf_counter(); _wall0 = _time.time(); _replan = not plan
         if not plan:
             chunk = np.asarray(A.client.infer(A.policy_obs(obs))["actions"], float)
             plan.extend(chunk[:HORIZON])
+        _policy_ms = (_time.perf_counter() - _tl0) * 1e3 if _replan else 0.0
         a_cmd = np.asarray(plan.popleft(), float)
         q_before = q.copy()
         if baseline == "composite":
@@ -222,8 +226,10 @@ def episode(A, ep, W=None, M_inv=None, fvec=None, gain=None, adapt=False, gamma=
         # oracle baseline: a FIXED correction equal to minus a known fault, no estimator.
         # If the task still fails with this, the failure is not the adaptive transient.
         f_hat_before = f_hat.copy() if telemetry is not None else None
+        _tc0 = _time.perf_counter()
         c = applied_correction(f_hat, m, adapt=adapt, static_corr=static_corr)
         a_corr = a_cmd + c
+        _tc1 = _time.perf_counter()
         live = t >= onset; u = t - onset
         scale = {"step": 1.0, "ramp": min(1.0, u / max(prof_p, 1e-9)),
                  "sine_bias": 0.5 * (1 + np.sin(2 * np.pi * u / max(prof_p, 1e-9))),
@@ -234,7 +240,9 @@ def episode(A, ep, W=None, M_inv=None, fvec=None, gain=None, adapt=False, gamma=
             # loss of effectiveness on the commanded MOTION, not the absolute target: the
             # controller receives q + g (target - q), i.e. it only gets a fraction of the way
             a_exec = q + gain * (a_exec - q)
+        _t_cmd = _time.perf_counter(); _t_obs_prev = _t_obs
         obs, r, term, trunc, info = A.env.step(a_exec)
+        _t_obs = _time.perf_counter()
         q1 = np.asarray(obs["agent_pos"], float); dq = q1 - q; q = q1
         tracking_error = (q1[np.asarray(reference_model["state_indices"], int)] - q_ref
                           if baseline == "composite" else None)
@@ -271,6 +279,14 @@ def episode(A, ep, W=None, M_inv=None, fvec=None, gain=None, adapt=False, gamma=
                                                  norm_channels=norm_channels, deadzone_mode=deadzone_mode,
                                                  law=law, M=M)
             traj.append(dict(t=t, f_hat=f_hat.tolist(), f_true=f_now.tolist()))
+        _tad1 = _time.perf_counter()
+        if timing is not None:
+            timing.write(json.dumps(dict(type="step", arm=arm, episode=ep, task=0, init=int(ep), t=int(t),
+                wall=_wall0, replan=bool(_replan), policy_ms=_policy_ms,
+                adapter_ms=((_tc1 - _tc0) + (_tad1 - _t_obs)) * 1e3, env_ms=(_t_obs - _t_cmd) * 1e3,
+                s2c_ms=(_t_cmd - _t_obs_prev) * 1e3, loop_ms=(_tad1 - _tl0) * 1e3, live=bool(live),
+                f_true=np.asarray(f_now, float).round(6).tolist(), correction=np.asarray(c, float).round(6).tolist(),
+                f_hat=np.asarray(f_hat, float).round(6).tolist())) + "\n")
         if telemetry is not None:
             write_telemetry(telemetry, dict(type="step", arm=arm, episode=ep, task=TASK,
                                            init=A.seed + ep, phase="rollout", t=t,
@@ -622,6 +638,13 @@ def main():
                          "mid-episode updating, not the estimate itself, is what breaks a tight-margin task")
     ap.add_argument("--warm-start", action="store_true",
                     help="carry f_hat from one episode into the next (a persistent fault has a persistent estimate)")
+    ap.add_argument("--f-init", default=None,
+                    help="comma-separated estimate; every adaptive episode starts from it, no carry across "
+                         "episodes (re4 Part F: held vs continued from a matched initial estimate)")
+    ap.add_argument("--skip-frozen", action="store_true",
+                    help="run only the adaptive arm; its paired frozen arm is run elsewhere on the same seeds")
+    ap.add_argument("--timing", type=pathlib.Path, default=None,
+                    help="per-step timing JSONL (re4 Part E)")
     a = ap.parse_args()
     if a.selftest:
         selftest()
@@ -756,18 +779,21 @@ def run_cli(a, telemetry, W=None, r2=None, M_inv=None, M=None, observer=None, re
     corr = [int(x) for x in a.corr_joints.split(",")] if a.corr_joints else None
     sc = [float(x) for x in a.static_corr.split(",")] if a.static_corr else None
     res = dict(args=json.loads(json.dumps(vars(a), default=json_value)), arms={})
-    for tag, adapt in (("frozen_faulted", False), ("adaptive", True)):
+    f_fixed = np.array([float(x) for x in a.f_init.split(",")]) if a.f_init else None
+    assert f_fixed is None or len(f_fixed) == NJ, f"--f-init needs {NJ} values"
+    arm_list = (("adaptive", True),) if a.skip_frozen else (("frozen_faulted", False), ("adaptive", True))
+    for tag, adapt in arm_list:
         ok, fh, per_ep, trajs = 0, [], [], []
         f_carry = None
         for ep in range(a.episodes):
             s, f_hat, traj = episode(A, ep, W, M_inv, fvec, a.gain, adapt, a.gamma, a.dead, a.norm_r, a.clip,
                                      corr, a.profile, a.prof_p, a.onset,
                                      static_corr=(sc if adapt else None),
-                                     f_init=(f_carry if (adapt and (a.warm_start or a.identify_episodes is not None)) else None),
+                                     f_init=(f_fixed if (adapt and f_fixed is not None) else (f_carry if (adapt and (a.warm_start or a.identify_episodes is not None)) else None)),
                                      freeze_after=(0 if (a.identify_episodes is not None
                                                          and ep >= a.identify_episodes) else a.freeze_after),
                                      norm_channels=a.norm_channels, deadzone_mode=a.deadzone_mode,
-                                     telemetry=telemetry, arm=tag, law=a.law, M=M,
+                                     telemetry=telemetry, arm=tag, law=a.law, M=M, timing=timing_fh,
                                      baseline=getattr(a, "baseline", "none"),
                                      kf_q=None if observer is None else observer["Q"],
                                      kf_r=None if observer is None else observer["R"],
