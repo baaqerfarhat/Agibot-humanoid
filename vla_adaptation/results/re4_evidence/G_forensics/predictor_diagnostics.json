@@ -1,0 +1,1660 @@
+{
+ "item": "RE4 evidence plan G.3 -- predictor diagnostics for the joint-space robots",
+ "script": "results/re4_evidence/G_forensics/predictor_diagnostics.py",
+ "fit_plant_provenance": {
+  "aloha": "imported openpi/aloha_adapt.py: fit_plant (module level is stdlib + numpy only)",
+  "gr1": "openpi/gr1_adapt.py imports gymnasium/robocasa at module level, so fit_plant was extracted verbatim with ast and executed with the module's NJ=29, K_FIR=6; its body is token-identical to aloha_adapt.fit_plant apart from the docstring",
+  "K_FIR": 6
+ },
+ "definitions": {
+  "rows": "t >= K_FIR (=6) of every episode, the exact rows fit_plant uses",
+  "fir": "q_hat[t] = sum_{k=0..6} h_k u[t-k] + c   (u = command applied at step t, q[t] measured after it)",
+  "persistence": "q_hat[t] = q[t-1]",
+  "increment": "dy[t] = q[t] - q[t-1]; FIR increment = q_hat_FIR[t] - q[t-1]; persistence increment = 0",
+  "const_velocity": "extra command-free baseline: dy_hat[t] = q[t-1] - q[t-2]",
+  "r2": "1 - SSE / sum (y - mean y)^2 on the quantity named",
+  "skill_vs_persistence": "1 - SSE_FIR / SSE_persistence on absolute position; because the FIR position error equals its increment error, this is also the uncentred incremental R^2"
+ },
+ "datasets": {
+  "aloha_transfer_cube": {
+   "robot": "ALOHA",
+   "role": "primary",
+   "log": "results/aloha/healthy_log.json",
+   "md5": "14c9d92ec9ff3cb118b8bd31ffd0af9b",
+   "used_by": "every results/aloha/off*.json and healthy*.json cell (args.log)",
+   "control_hz": 50,
+   "joints": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "n_episodes": 8,
+   "episode_lengths": [
+    300,
+    225,
+    279,
+    300,
+    300,
+    274,
+    275,
+    300
+   ],
+   "episode_success": [
+    false,
+    true,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false
+   ],
+   "shipped_fit_plant_r2_all_joints": [
+    0.995881795803929,
+    0.9996962125990702,
+    0.9999988045346854,
+    0.9986780648190497,
+    0.9999844611646301,
+    0.9999932579352926,
+    0.9914870879056705,
+    0.997262809611958,
+    0.9993431544329471,
+    0.9995064646683883,
+    0.9956148435158945,
+    0.989059354642156,
+    0.9995857420118474,
+    0.7680157753931831
+   ],
+   "shipped_r2_corrected_joints_range": [
+    0.995881795803929,
+    0.9999988045346854
+   ],
+   "shipped_r2_first14_range": [
+    0.7680157753931831,
+    0.9999988045346854
+   ],
+   "fir_dc_gain_corrected_joints": {
+    "j0": 0.9837869534685844,
+    "j1": 0.9975737936222614,
+    "j2": 1.0003803317786495,
+    "j3": 1.0147753825639765,
+    "j4": 1.0003181559547525,
+    "j5": 1.000901934456651
+   },
+   "in_sample": {
+    "note": "shipped W = fit_plant(full log); evaluated on the same rows it was fitted on",
+    "per_joint": {
+     "j0": {
+      "n": 2205,
+      "r2_abs_fir": 0.995881795803929,
+      "r2_abs_persistence": 0.9996849141763318,
+      "r2_inc_fir": -12.265195089671597,
+      "r2_inc_persistence": -0.014926584975147428,
+      "r2_inc_const_velocity": 0.8856240520247589,
+      "skill_vs_persistence": -12.070103085334416,
+      "rms_abs_err_fir": 0.00025025581865127574,
+      "rms_abs_err_persistence": 6.922208519275763e-05,
+      "rms_dy": 6.922208519275763e-05,
+      "std_y": 0.0038996914436291393,
+      "corr_inc_fir": 0.6928850952873943
+     },
+     "j1": {
+      "n": 2205,
+      "r2_abs_fir": 0.9996962125990702,
+      "r2_abs_persistence": 0.9995521827481519,
+      "r2_inc_fir": 0.09817088051631673,
+      "r2_inc_persistence": -0.32939890425888385,
+      "r2_inc_const_velocity": 0.7723843356678106,
+      "skill_vs_persistence": 0.3216264007781494,
+      "rms_abs_err_fir": 0.003994571996250032,
+      "rms_abs_err_persistence": 0.00484993350416697,
+      "rms_dy": 0.00484993350416697,
+      "std_y": 0.22918456937971762,
+      "corr_inc_fir": 0.7107503825058167
+     },
+     "j2": {
+      "n": 2205,
+      "r2_abs_fir": 0.9999988045346854,
+      "r2_abs_persistence": 0.9994651880257859,
+      "r2_inc_fir": 0.997369896789761,
+      "r2_inc_persistence": -0.17662191701818197,
+      "r2_inc_const_velocity": 0.9677433259286333,
+      "skill_vs_persistence": 0.9977646997967671,
+      "rms_abs_err_fir": 0.0001405010109135452,
+      "rms_abs_err_persistence": 0.00297174486009461,
+      "rms_dy": 0.00297174486009461,
+      "std_y": 0.12850231718522984,
+      "corr_inc_fir": 0.9986862233674748
+     },
+     "j3": {
+      "n": 2205,
+      "r2_abs_fir": 0.9986780648190497,
+      "r2_abs_persistence": 0.9980045510238198,
+      "r2_inc_fir": 0.3304453300535567,
+      "r2_inc_persistence": -0.010686605436193819,
+      "r2_inc_const_velocity": 0.8687179097704544,
+      "skill_vs_persistence": 0.3375249396349961,
+      "rms_abs_err_fir": 0.0013302534142782376,
+      "rms_abs_err_persistence": 0.0016343671160312363,
+      "rms_dy": 0.0016343671160312363,
+      "std_y": 0.03658721074110256,
+      "corr_inc_fir": 0.7577320702846064
+     },
+     "j4": {
+      "n": 2205,
+      "r2_abs_fir": 0.9999844611646301,
+      "r2_abs_persistence": 0.9993623273778327,
+      "r2_inc_fir": 0.9714629001806578,
+      "r2_inc_persistence": -0.1710869468492311,
+      "r2_inc_const_velocity": 0.8755668147203834,
+      "skill_vs_persistence": 0.9756319546587722,
+      "rms_abs_err_fir": 0.0004859475583088839,
+      "rms_abs_err_persistence": 0.00311299954548463,
+      "rms_dy": 0.00311299954548463,
+      "std_y": 0.12327646478709697,
+      "corr_inc_fir": 0.9856987101339296
+     },
+     "j5": {
+      "n": 2205,
+      "r2_abs_fir": 0.9999932579352926,
+      "r2_abs_persistence": 0.9989538503874025,
+      "r2_inc_fir": 0.9930068649162547,
+      "r2_inc_persistence": -0.085107585910285,
+      "r2_inc_const_velocity": 0.7282442039737765,
+      "skill_vs_persistence": 0.9935553532437258,
+      "rms_abs_err_fir": 0.0002050765493839002,
+      "rms_abs_err_persistence": 0.0025545619699084395,
+      "rms_dy": 0.0025545619699084395,
+      "std_y": 0.07898043897177912,
+      "corr_inc_fir": 0.9965113312718163
+     }
+    },
+    "pooled": {
+     "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+     "r2_abs_fir": 0.9998030350316672,
+     "r2_abs_persistence": 0.9994419344102211,
+     "r2_inc_fir": 0.5707512104459722,
+     "r2_inc_persistence": -0.21620093629859705,
+     "r2_inc_const_velocity": 0.827202417108579,
+     "skill_vs_persistence": 0.6470576721800515,
+     "n": 13230
+    }
+   },
+   "held_out_loeo": {
+    "note": "leave-one-episode-out: for each episode, W is refit by the runner's fit_plant on the other 7 episodes and evaluated on the held-out one; R^2 is computed on the concatenated held-out predictions (all episodes, each predicted by a model that never saw it)",
+    "per_joint": {
+     "j0": {
+      "n": 2205,
+      "r2_abs_fir": 0.9950053882851816,
+      "r2_abs_persistence": 0.9996849141763318,
+      "r2_inc_fir": -15.088201468357497,
+      "r2_inc_persistence": -0.014926584975147428,
+      "r2_inc_const_velocity": 0.8856240520247589,
+      "skill_vs_persistence": -14.851591343182179,
+      "rms_abs_err_fir": 0.00027560120451051393,
+      "rms_abs_err_persistence": 6.922208519275763e-05,
+      "rms_dy": 6.922208519275763e-05,
+      "std_y": 0.0038996914436291393,
+      "corr_inc_fir": 0.6799860810323581
+     },
+     "j1": {
+      "n": 2205,
+      "r2_abs_fir": 0.9996685622855876,
+      "r2_abs_persistence": 0.9995521827481519,
+      "r2_inc_fir": 0.016087628264625287,
+      "r2_inc_persistence": -0.32939890425888385,
+      "r2_inc_const_velocity": 0.7723843356678106,
+      "skill_vs_persistence": 0.259881764169282,
+      "rms_abs_err_fir": 0.004172403842181137,
+      "rms_abs_err_persistence": 0.00484993350416697,
+      "rms_dy": 0.00484993350416697,
+      "std_y": 0.22918456937971762,
+      "corr_inc_fir": 0.6897311718676558
+     },
+     "j2": {
+      "n": 2205,
+      "r2_abs_fir": 0.9999986237111322,
+      "r2_abs_persistence": 0.9994651880257859,
+      "r2_inc_fir": 0.9969720729452879,
+      "r2_inc_persistence": -0.17662191701818197,
+      "r2_inc_const_velocity": 0.9677433259286333,
+      "skill_vs_persistence": 0.997426593019459,
+      "rms_abs_err_fir": 0.00015075292854953857,
+      "rms_abs_err_persistence": 0.00297174486009461,
+      "rms_dy": 0.00297174486009461,
+      "std_y": 0.12850231718522984,
+      "corr_inc_fir": 0.9984876923309182
+     },
+     "j3": {
+      "n": 2205,
+      "r2_abs_fir": 0.9985287400273409,
+      "r2_abs_persistence": 0.9980045510238198,
+      "r2_inc_fir": 0.25481294423900414,
+      "r2_inc_persistence": -0.010686605436193819,
+      "r2_inc_const_velocity": 0.8687179097704544,
+      "skill_vs_persistence": 0.2626922611293667,
+      "rms_abs_err_fir": 0.0014033758921452115,
+      "rms_abs_err_persistence": 0.0016343671160312363,
+      "rms_dy": 0.0016343671160312363,
+      "std_y": 0.03658721074110256,
+      "corr_inc_fir": 0.7384979919688847
+     },
+     "j4": {
+      "n": 2205,
+      "r2_abs_fir": 0.9999839713623931,
+      "r2_abs_persistence": 0.9993623273778327,
+      "r2_inc_fir": 0.9705633774689664,
+      "r2_inc_persistence": -0.1710869468492311,
+      "r2_inc_const_velocity": 0.8755668147203834,
+      "skill_vs_persistence": 0.9748638454128177,
+      "rms_abs_err_fir": 0.0004935469547287975,
+      "rms_abs_err_persistence": 0.00311299954548463,
+      "rms_dy": 0.00311299954548463,
+      "std_y": 0.12327646478709697,
+      "corr_inc_fir": 0.9852352437783918
+     },
+     "j5": {
+      "n": 2205,
+      "r2_abs_fir": 0.9999928847229806,
+      "r2_abs_persistence": 0.9989538503874025,
+      "r2_inc_fir": 0.9926197544054839,
+      "r2_inc_persistence": -0.085107585910285,
+      "r2_inc_const_velocity": 0.7282442039737765,
+      "skill_vs_persistence": 0.9931986047371285,
+      "rms_abs_err_fir": 0.00021067618712898473,
+      "rms_abs_err_persistence": 0.0025545619699084395,
+      "rms_dy": 0.0025545619699084395,
+      "std_y": 0.07898043897177912,
+      "corr_inc_fir": 0.9963146828651385
+     }
+    },
+    "pooled": {
+     "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+     "r2_abs_fir": 0.9997847580615494,
+     "r2_abs_persistence": 0.9994419344102211,
+     "r2_inc_fir": 0.5309199279279856,
+     "r2_inc_persistence": -0.21620093629859705,
+     "r2_inc_const_velocity": 0.827202417108579,
+     "skill_vs_persistence": 0.614307095092675,
+     "n": 13230
+    },
+    "per_fold": [
+     {
+      "held_out_episode": 0,
+      "length": 300,
+      "success": false,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9999041761110974,
+       "r2_abs_persistence": 0.999645456222733,
+       "r2_inc_fir": 0.6586971265293345,
+       "r2_inc_persistence": -0.26280420611372857,
+       "r2_inc_const_velocity": 0.696312196198618,
+       "skill_vs_persistence": 0.729726214231561,
+       "n": 1764
+      }
+     },
+     {
+      "held_out_episode": 1,
+      "length": 225,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9995239542724794,
+       "r2_abs_persistence": 0.9992089658959397,
+       "r2_inc_fir": 0.2298474017687222,
+       "r2_inc_persistence": -0.2797446449203047,
+       "r2_inc_const_velocity": 0.9277582086314407,
+       "skill_vs_persistence": 0.3981982254911186,
+       "n": 1314
+      }
+     },
+     {
+      "held_out_episode": 2,
+      "length": 279,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9997125244162329,
+       "r2_abs_persistence": 0.9995102678128475,
+       "r2_inc_fir": 0.2704794454431525,
+       "r2_inc_persistence": -0.24278275070961386,
+       "r2_inc_const_velocity": 0.7642468964742044,
+       "skill_vs_persistence": 0.4129943031955503,
+       "n": 1638
+      }
+     },
+     {
+      "held_out_episode": 3,
+      "length": 300,
+      "success": false,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9997544054192111,
+       "r2_abs_persistence": 0.9993600163463924,
+       "r2_inc_fir": 0.5171243639620942,
+       "r2_inc_persistence": -0.2583034723201023,
+       "r2_inc_const_velocity": 0.8353711664957849,
+       "skill_vs_persistence": 0.6162486660331918,
+       "n": 1764
+      }
+     },
+     {
+      "held_out_episode": 4,
+      "length": 300,
+      "success": false,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9997531321028033,
+       "r2_abs_persistence": 0.998966086252903,
+       "r2_inc_fir": 0.7183556768130225,
+       "r2_inc_persistence": -0.17956178523604782,
+       "r2_inc_const_velocity": 0.8003676707679181,
+       "skill_vs_persistence": 0.7612296984251518,
+       "n": 1764
+      }
+     },
+     {
+      "held_out_episode": 5,
+      "length": 274,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9997787928993218,
+       "r2_abs_persistence": 0.9993364164983103,
+       "r2_inc_fir": 0.5798566545141441,
+       "r2_inc_persistence": -0.26035824145961106,
+       "r2_inc_const_velocity": 0.7316318415411642,
+       "skill_vs_persistence": 0.6666476786796021,
+       "n": 1608
+      }
+     },
+     {
+      "held_out_episode": 6,
+      "length": 275,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.99983981749678,
+       "r2_abs_persistence": 0.9994685925347986,
+       "r2_inc_fir": 0.6409051876708711,
+       "r2_inc_persistence": -0.19130154761436025,
+       "r2_inc_const_velocity": 0.8993542525536814,
+       "skill_vs_persistence": 0.6985693395192563,
+       "n": 1614
+      }
+     },
+     {
+      "held_out_episode": 7,
+      "length": 300,
+      "success": false,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9994706346806002,
+       "r2_abs_persistence": 0.9977508343545729,
+       "r2_inc_fir": 0.7326167865070079,
+       "r2_inc_persistence": -0.1360569268764773,
+       "r2_inc_const_velocity": 0.9274487207141844,
+       "skill_vs_persistence": 0.7646392472354825,
+       "n": 1764
+      }
+     }
+    ]
+   }
+  },
+  "gr1_plate_to_plate": {
+   "robot": "GR1",
+   "role": "primary",
+   "log": "results/gr1/screen_PosttrainPnPNovelFromPlateToPlateSplitA.json",
+   "md5": "df12c5468349086bdbabe7d2854aa7c5",
+   "used_by": "results/gr1/p2p_*.json cells (args.log)",
+   "control_hz": 20,
+   "joints": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13
+   ],
+   "n_episodes": 6,
+   "episode_lengths": [
+    177,
+    162,
+    720,
+    182,
+    178,
+    164
+   ],
+   "episode_success": [
+    true,
+    true,
+    false,
+    true,
+    true,
+    true
+   ],
+   "shipped_fit_plant_r2_all_joints": [
+    0.9996558975905321,
+    0.9997344016394978,
+    0.9997940290405313,
+    0.9994538884771066,
+    0.9996918971080344,
+    0.9998677614845031,
+    0.9996636989642429,
+    0.999476481455817,
+    0.99846554570828,
+    0.9992965160040744,
+    0.9989863527248342,
+    0.9990132896791429,
+    0.9983377235359169,
+    0.9979608394132763,
+    0.24126134643595054,
+    0.44016880076950227,
+    0.31891663344094423,
+    0.3920874413889551,
+    0.0013500390150200658,
+    0.0245270570383469,
+    0.8987927235119141,
+    0.896405771153971,
+    0.8886431859107065,
+    0.9138979087334497,
+    0.22712027846580984,
+    0.0021902293862224864,
+    0.9928582061535597,
+    0.9545428497833471,
+    0.7527129199960934
+   ],
+   "shipped_r2_corrected_joints_range": [
+    0.9979608394132763,
+    0.999476481455817
+   ],
+   "shipped_r2_first14_range": [
+    0.9979608394132763,
+    0.9998677614845031
+   ],
+   "fir_dc_gain_corrected_joints": {
+    "j7": 0.9885506834224514,
+    "j8": 0.9864523588140119,
+    "j9": 0.9882259090096261,
+    "j10": 0.9900255358597954,
+    "j11": 0.9914594466878042,
+    "j12": 0.9775057673456968,
+    "j13": 0.9684167594106614
+   },
+   "in_sample": {
+    "note": "shipped W = fit_plant(full log); evaluated on the same rows it was fitted on",
+    "per_joint": {
+     "j7": {
+      "n": 1547,
+      "r2_abs_fir": 0.999476481455817,
+      "r2_abs_persistence": 0.9980546447767719,
+      "r2_inc_fir": 0.7306505348393988,
+      "r2_inc_persistence": -0.0008821936606657754,
+      "r2_inc_const_velocity": 0.9704921442113442,
+      "skill_vs_persistence": 0.7308879437893966,
+      "rms_abs_err_fir": 0.010229733049032096,
+      "rms_abs_err_persistence": 0.019719582841130005,
+      "rms_dy": 0.019719582841130005,
+      "std_y": 0.4470934070575997,
+      "corr_inc_fir": 0.8969585091489192
+     },
+     "j8": {
+      "n": 1547,
+      "r2_abs_fir": 0.99846554570828,
+      "r2_abs_persistence": 0.9970070412421995,
+      "r2_inc_fir": 0.48584890524365487,
+      "r2_inc_persistence": -0.002853607427275362,
+      "r2_inc_const_velocity": 0.8539787254942058,
+      "skill_vs_persistence": 0.4873119157686928,
+      "rms_abs_err_fir": 0.010776399579173762,
+      "rms_abs_err_persistence": 0.015050366449913125,
+      "rms_dy": 0.015050366449913125,
+      "std_y": 0.2751038752726035,
+      "corr_inc_fir": 0.8478846949969219
+     },
+     "j9": {
+      "n": 1547,
+      "r2_abs_fir": 0.9992965160040744,
+      "r2_abs_persistence": 0.9981216690768663,
+      "r2_inc_fir": 0.6254677919544194,
+      "r2_inc_persistence": -1.6250769106163077e-05,
+      "r2_inc_const_velocity": 0.9161875762429974,
+      "skill_vs_persistence": 0.6254738782919476,
+      "rms_abs_err_fir": 0.007178323982772139,
+      "rms_abs_err_persistence": 0.011729567503481416,
+      "rms_dy": 0.011729567503481416,
+      "std_y": 0.2706424677605512,
+      "corr_inc_fir": 0.8739810008379453
+     },
+     "j10": {
+      "n": 1547,
+      "r2_abs_fir": 0.9989863527248342,
+      "r2_abs_persistence": 0.9973693794500393,
+      "r2_inc_fir": 0.6124190534457618,
+      "r2_inc_persistence": -0.005851273671092949,
+      "r2_inc_const_velocity": 0.9767403282964259,
+      "skill_vs_persistence": 0.6146737030618159,
+      "rms_abs_err_fir": 0.015721952556457794,
+      "rms_abs_err_persistence": 0.02532749025729911,
+      "rms_dy": 0.02532749025729911,
+      "std_y": 0.49381360704408145,
+      "corr_inc_fir": 0.8593420838180563
+     },
+     "j11": {
+      "n": 1547,
+      "r2_abs_fir": 0.9990132896791429,
+      "r2_abs_persistence": 0.9976848547439863,
+      "r2_inc_fir": 0.5688219962858959,
+      "r2_inc_persistence": -0.0116846745143524,
+      "r2_inc_const_velocity": 0.8875579258597195,
+      "skill_vs_persistence": 0.5738019814117614,
+      "rms_abs_err_fir": 0.013208141318973882,
+      "rms_abs_err_persistence": 0.02023186850992397,
+      "rms_dy": 0.02023186850992397,
+      "std_y": 0.42048147937457275,
+      "corr_inc_fir": 0.8669468527400994
+     },
+     "j12": {
+      "n": 1547,
+      "r2_abs_fir": 0.9983377235359169,
+      "r2_abs_persistence": 0.9984937489871927,
+      "r2_inc_fir": -0.12054387192475291,
+      "r2_inc_persistence": -0.015366804770776898,
+      "r2_inc_const_velocity": 0.9542420909972549,
+      "skill_vs_persistence": -0.10358529219174151,
+      "rms_abs_err_fir": 0.020412167262963334,
+      "rms_abs_err_persistence": 0.019430597987790222,
+      "rms_dy": 0.019430597987790222,
+      "std_y": 0.5006537696300497,
+      "corr_inc_fir": 0.7259165901973789
+     },
+     "j13": {
+      "n": 1547,
+      "r2_abs_fir": 0.9979608394132763,
+      "r2_abs_persistence": 0.9971936422331894,
+      "r2_inc_fir": 0.27323032494015786,
+      "r2_inc_persistence": -0.00020358159410283072,
+      "r2_inc_const_velocity": 0.9586825881519565,
+      "skill_vs_persistence": 0.2733782517539757,
+      "rms_abs_err_fir": 0.018622226651206924,
+      "rms_abs_err_persistence": 0.02184627578963621,
+      "rms_dy": 0.02184627578963621,
+      "std_y": 0.4123878809187817,
+      "corr_inc_fir": 0.7814999483919737
+     }
+    },
+    "pooled": {
+     "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+     "r2_abs_fir": 0.9987755087263426,
+     "r2_abs_persistence": 0.9977662710613527,
+     "r2_inc_fir": 0.44865277350241417,
+     "r2_inc_persistence": -0.005772994520431007,
+     "r2_inc_const_velocity": 0.9421051163150872,
+     "skill_vs_persistence": 0.4518174284839719,
+     "n": 10829
+    }
+   },
+   "held_out_loeo": {
+    "note": "leave-one-episode-out: for each episode, W is refit by the runner's fit_plant on the other 5 episodes and evaluated on the held-out one; R^2 is computed on the concatenated held-out predictions (all episodes, each predicted by a model that never saw it)",
+    "per_joint": {
+     "j7": {
+      "n": 1547,
+      "r2_abs_fir": 0.999348902577266,
+      "r2_abs_persistence": 0.9980546447767719,
+      "r2_inc_fir": 0.6650114030735435,
+      "r2_inc_persistence": -0.0008821936606657754,
+      "r2_inc_const_velocity": 0.9704921442113442,
+      "skill_vs_persistence": 0.6653066674098216,
+      "rms_abs_err_fir": 0.011408308424225185,
+      "rms_abs_err_persistence": 0.019719582841130005,
+      "rms_dy": 0.019719582841130005,
+      "std_y": 0.4470934070575997,
+      "corr_inc_fir": 0.8937373038961531
+     },
+     "j8": {
+      "n": 1547,
+      "r2_abs_fir": 0.9983606919026634,
+      "r2_abs_persistence": 0.9970070412421995,
+      "r2_inc_fir": 0.4507154384222304,
+      "r2_inc_persistence": -0.002853607427275362,
+      "r2_inc_const_velocity": 0.8539787254942058,
+      "skill_vs_persistence": 0.4522784207887466,
+      "rms_abs_err_fir": 0.011138507463563244,
+      "rms_abs_err_persistence": 0.015050366449913125,
+      "rms_dy": 0.015050366449913125,
+      "std_y": 0.2751038752726035,
+      "corr_inc_fir": 0.8470979296308488
+     },
+     "j9": {
+      "n": 1547,
+      "r2_abs_fir": 0.9992091816389044,
+      "r2_abs_persistence": 0.9981216690768663,
+      "r2_inc_fir": 0.5789713075783149,
+      "r2_inc_persistence": -1.6250769106163077e-05,
+      "r2_inc_const_velocity": 0.9161875762429974,
+      "skill_vs_persistence": 0.578978149507196,
+      "rms_abs_err_fir": 0.007610870226764903,
+      "rms_abs_err_persistence": 0.011729567503481416,
+      "rms_dy": 0.011729567503481416,
+      "std_y": 0.2706424677605512,
+      "corr_inc_fir": 0.8600676247023407
+     },
+     "j10": {
+      "n": 1547,
+      "r2_abs_fir": 0.9989182253913774,
+      "r2_abs_persistence": 0.9973693794500393,
+      "r2_inc_fir": 0.586369699756094,
+      "r2_inc_persistence": -0.005851273671092949,
+      "r2_inc_const_velocity": 0.9767403282964259,
+      "skill_vs_persistence": 0.5887758845954789,
+      "rms_abs_err_fir": 0.016241698508107145,
+      "rms_abs_err_persistence": 0.02532749025729911,
+      "rms_dy": 0.02532749025729911,
+      "std_y": 0.49381360704408145,
+      "corr_inc_fir": 0.8503890495913751
+     },
+     "j11": {
+      "n": 1547,
+      "r2_abs_fir": 0.9989526050219739,
+      "r2_abs_persistence": 0.9976848547439863,
+      "r2_inc_fir": 0.5423036871315698,
+      "r2_inc_persistence": -0.0116846745143524,
+      "r2_inc_const_velocity": 0.8875579258597195,
+      "skill_vs_persistence": 0.547589951297679,
+      "rms_abs_err_fir": 0.013608244859633186,
+      "rms_abs_err_persistence": 0.02023186850992397,
+      "rms_dy": 0.02023186850992397,
+      "std_y": 0.42048147937457275,
+      "corr_inc_fir": 0.8687053643223547
+     },
+     "j12": {
+      "n": 1547,
+      "r2_abs_fir": 0.9981769398407626,
+      "r2_abs_persistence": 0.9984937489871927,
+      "r2_inc_fir": -0.2289284807448586,
+      "r2_inc_persistence": -0.015366804770776898,
+      "r2_inc_const_velocity": 0.9542420909972549,
+      "skill_vs_persistence": -0.21032958234467203,
+      "rms_abs_err_fir": 0.021376568489305633,
+      "rms_abs_err_persistence": 0.019430597987790222,
+      "rms_dy": 0.019430597987790222,
+      "std_y": 0.5006537696300497,
+      "corr_inc_fir": 0.7379641860531502
+     },
+     "j13": {
+      "n": 1547,
+      "r2_abs_fir": 0.9975490318389076,
+      "r2_abs_persistence": 0.9971936422331894,
+      "r2_inc_fir": 0.12645951200877337,
+      "r2_inc_persistence": -0.00020358159410283072,
+      "r2_inc_const_velocity": 0.9586825881519565,
+      "skill_vs_persistence": 0.1266373125769089,
+      "rms_abs_err_fir": 0.020416191410865953,
+      "rms_abs_err_persistence": 0.02184627578963621,
+      "rms_dy": 0.02184627578963621,
+      "std_y": 0.4123878809187817,
+      "corr_inc_fir": 0.7582290921530661
+     }
+    },
+    "pooled": {
+     "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+     "r2_abs_fir": 0.9986263639464735,
+     "r2_abs_persistence": 0.9977662710613527,
+     "r2_inc_fir": 0.3814978966189041,
+     "r2_inc_persistence": -0.005772994520431007,
+     "r2_inc_const_velocity": 0.9421051163150872,
+     "skill_vs_persistence": 0.3850480110812601,
+     "n": 10829
+    },
+    "per_fold": [
+     {
+      "held_out_episode": 0,
+      "length": 177,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9986336353891401,
+       "r2_abs_persistence": 0.9977987369869482,
+       "r2_inc_fir": 0.3669787012680453,
+       "r2_inc_persistence": -0.01982030293931225,
+       "r2_inc_const_velocity": 0.938016422637262,
+       "skill_vs_persistence": 0.3792815293954541,
+       "n": 1197
+      }
+     },
+     {
+      "held_out_episode": 1,
+      "length": 162,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9981355548970681,
+       "r2_abs_persistence": 0.9961238612269827,
+       "r2_inc_fir": 0.5111289911090935,
+       "r2_inc_persistence": -0.016351658510240563,
+       "r2_inc_const_velocity": 0.9041029591814612,
+       "skill_vs_persistence": 0.5189942331500799,
+       "n": 1092
+      }
+     },
+     {
+      "held_out_episode": 2,
+      "length": 720,
+      "success": false,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9982361106799945,
+       "r2_abs_persistence": 0.9977407085645787,
+       "r2_inc_fir": 0.21876804782289616,
+       "r2_inc_persistence": -0.0006470579603099491,
+       "r2_inc_const_velocity": 0.9609257522178652,
+       "skill_vs_persistence": 0.2192732232985879,
+       "n": 4998
+      }
+     },
+     {
+      "held_out_episode": 3,
+      "length": 182,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9991682978181126,
+       "r2_abs_persistence": 0.9976346039316052,
+       "r2_inc_fir": 0.6351290696713834,
+       "r2_inc_persistence": -0.03770830817382276,
+       "r2_inc_const_velocity": 0.9247646221572029,
+       "skill_vs_persistence": 0.6483877719253084,
+       "n": 1232
+      }
+     },
+     {
+      "held_out_episode": 4,
+      "length": 178,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9983424964206661,
+       "r2_abs_persistence": 0.996635718244885,
+       "r2_inc_fir": 0.4888621176393858,
+       "r2_inc_persistence": -0.0374709734654215,
+       "r2_inc_const_velocity": 0.9329845759911727,
+       "skill_vs_persistence": 0.5073231970497628,
+       "n": 1204
+      }
+     },
+     {
+      "held_out_episode": 5,
+      "length": 164,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9985502060073468,
+       "r2_abs_persistence": 0.9959155971417574,
+       "r2_inc_fir": 0.6393084883818299,
+       "r2_inc_persistence": -0.016150879685363106,
+       "r2_inc_const_velocity": 0.9160232911015527,
+       "skill_vs_persistence": 0.645041382309433,
+       "n": 1106
+      }
+     }
+    ]
+   }
+  },
+  "gr1_tray_to_plate": {
+   "robot": "GR1",
+   "role": "primary",
+   "log": "results/gr1/t2p_healthy_log.json",
+   "md5": "4cb117c15a436da92b62915be145098c",
+   "used_by": "results/gr1/t2p_*.json cells (args.log)",
+   "control_hz": 20,
+   "joints": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13
+   ],
+   "n_episodes": 10,
+   "episode_lengths": [
+    720,
+    720,
+    168,
+    312,
+    176,
+    720,
+    178,
+    168,
+    202,
+    720
+   ],
+   "episode_success": [
+    false,
+    false,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    false
+   ],
+   "shipped_fit_plant_r2_all_joints": [
+    0.9502643384441994,
+    0.9972843350036796,
+    0.9844823697911936,
+    0.9770204749280476,
+    0.9911736181078029,
+    0.9983289639755701,
+    0.9984900254299133,
+    0.9985318944771098,
+    0.9989517362352895,
+    0.9996997473733771,
+    0.9991520612972261,
+    0.998884040218625,
+    0.9942659265716391,
+    0.9964424399826782,
+    5.303132464751226e-05,
+    0.5096239234522664,
+    0.7297148569662333,
+    0.7038525427744896,
+    0.007070112588751676,
+    0.3772370960658529,
+    0.8352141185512233,
+    0.8651238506917621,
+    0.8877511076082572,
+    0.9080253314625257,
+    0.25955319660200926,
+    0.05002608990003654,
+    0.9875825388460217,
+    0.8485963511582632,
+    0.6779248988061504
+   ],
+   "shipped_r2_corrected_joints_range": [
+    0.9942659265716391,
+    0.9996997473733771
+   ],
+   "shipped_r2_first14_range": [
+    0.9502643384441994,
+    0.9996997473733771
+   ],
+   "fir_dc_gain_corrected_joints": {
+    "j7": 0.9878386804638571,
+    "j8": 0.9905799246442306,
+    "j9": 0.9950603459854461,
+    "j10": 0.9958156211143933,
+    "j11": 0.9893462814416634,
+    "j12": 0.9131820226100202,
+    "j13": 0.9371316260997815
+   },
+   "in_sample": {
+    "note": "shipped W = fit_plant(full log); evaluated on the same rows it was fitted on",
+    "per_joint": {
+     "j7": {
+      "n": 4024,
+      "r2_abs_fir": 0.9985318944771098,
+      "r2_abs_persistence": 0.9983814727177981,
+      "r2_inc_fir": 0.09167775535809797,
+      "r2_inc_persistence": -0.0013887360695910012,
+      "r2_inc_const_velocity": 0.9270363843975493,
+      "skill_vs_persistence": 0.09293742587216536,
+      "rms_abs_err_fir": 0.012773064313935453,
+      "rms_abs_err_persistence": 0.013411472853114765,
+      "rms_dy": 0.013411472853114765,
+      "std_y": 0.33336228376673926,
+      "corr_inc_fir": 0.757122548981811
+     },
+     "j8": {
+      "n": 4024,
+      "r2_abs_fir": 0.9989517362352895,
+      "r2_abs_persistence": 0.9989861475532981,
+      "r2_inc_fir": -0.03452697248489178,
+      "r2_inc_persistence": -0.0005665916752701783,
+      "r2_inc_const_velocity": 0.7852876034917875,
+      "skill_vs_persistence": -0.03394115003656184,
+      "rms_abs_err_fir": 0.0116228073290042,
+      "rms_abs_err_persistence": 0.011430444740948975,
+      "rms_dy": 0.011430444740948975,
+      "std_y": 0.35898454494041915,
+      "corr_inc_fir": 0.7577341334697015
+     },
+     "j9": {
+      "n": 4024,
+      "r2_abs_fir": 0.9996997473733771,
+      "r2_abs_persistence": 0.9996148599477009,
+      "r2_inc_fir": 0.2168908547209154,
+      "r2_inc_persistence": -0.004509770858427631,
+      "r2_inc_const_velocity": 0.8671379017177115,
+      "skill_vs_persistence": 0.2204066421276718,
+      "rms_abs_err_fir": 0.009648777157945492,
+      "rms_abs_err_persistence": 0.01092793771888549,
+      "rms_dy": 0.01092793771888549,
+      "std_y": 0.5568380047781504,
+      "corr_inc_fir": 0.7926429291373813
+     },
+     "j10": {
+      "n": 4024,
+      "r2_abs_fir": 0.9991520612972261,
+      "r2_abs_persistence": 0.9991375953898493,
+      "r2_inc_fir": 0.004291790803660489,
+      "r2_inc_persistence": -0.01269507709302875,
+      "r2_inc_const_velocity": 0.9543291649888446,
+      "skill_vs_persistence": 0.0167739216679621,
+      "rms_abs_err_fir": 0.01801707280147327,
+      "rms_abs_err_persistence": 0.018170109265648122,
+      "rms_dy": 0.018170109265648122,
+      "std_y": 0.6187311829090391,
+      "corr_inc_fir": 0.7327895465022696
+     },
+     "j11": {
+      "n": 4024,
+      "r2_abs_fir": 0.998884040218625,
+      "r2_abs_persistence": 0.997747436792378,
+      "r2_inc_fir": 0.5012976745048323,
+      "r2_inc_persistence": -0.006629924047839131,
+      "r2_inc_const_velocity": 0.869805901133971,
+      "skill_vs_persistence": 0.5045822565160825,
+      "rms_abs_err_fir": 0.011362193879535928,
+      "rms_abs_err_persistence": 0.016142708972014218,
+      "rms_dy": 0.016142708972014218,
+      "std_y": 0.34012450602856514,
+      "corr_inc_fir": 0.8510734356761247
+     },
+     "j12": {
+      "n": 4024,
+      "r2_abs_fir": 0.9942659265716391,
+      "r2_abs_persistence": 0.9989807698105204,
+      "r2_inc_fir": -4.626211929318576,
+      "r2_inc_persistence": -5.783365261025075e-05,
+      "r2_inc_const_velocity": 0.93298232241192,
+      "skill_vs_persistence": -4.6258865637494235,
+      "rms_abs_err_fir": 0.03693229120722911,
+      "rms_abs_err_persistence": 0.015570794237986935,
+      "rms_dy": 0.015570794237986935,
+      "std_y": 0.48772456071739767,
+      "corr_inc_fir": 0.39370973417409455
+     },
+     "j13": {
+      "n": 4024,
+      "r2_abs_fir": 0.9964424399826782,
+      "r2_abs_persistence": 0.999139744509791,
+      "r2_inc_fir": -3.145567841301758,
+      "r2_inc_persistence": -0.002441976565221271,
+      "r2_inc_const_velocity": 0.945255607052241,
+      "skill_vs_persistence": -3.1354691226181286,
+      "rms_abs_err_fir": 0.03389604751179324,
+      "rms_abs_err_persistence": 0.016668121920291146,
+      "rms_dy": 0.016668121920291146,
+      "std_y": 0.5682938313994766,
+      "corr_inc_fir": 0.4503724915655256
+     }
+    },
+    "pooled": {
+     "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+     "r2_abs_fir": 0.9979135335908552,
+     "r2_abs_persistence": 0.9990425350975964,
+     "r2_inc_fir": -1.1896801045094625,
+     "r2_inc_persistence": -0.00482894829752345,
+     "r2_inc_const_velocity": 0.9106970892596356,
+     "skill_vs_persistence": -1.179157067697369,
+     "n": 28168
+    }
+   },
+   "held_out_loeo": {
+    "note": "leave-one-episode-out: for each episode, W is refit by the runner's fit_plant on the other 9 episodes and evaluated on the held-out one; R^2 is computed on the concatenated held-out predictions (all episodes, each predicted by a model that never saw it)",
+    "per_joint": {
+     "j7": {
+      "n": 4024,
+      "r2_abs_fir": 0.9983540311940466,
+      "r2_abs_persistence": 0.9983814727177981,
+      "r2_inc_fir": -0.01836690695829124,
+      "r2_inc_persistence": -0.0013887360695910012,
+      "r2_inc_const_velocity": 0.9270363843975493,
+      "skill_vs_persistence": -0.016954625388876154,
+      "rms_abs_err_fir": 0.013524688238061983,
+      "rms_abs_err_persistence": 0.013411472853114765,
+      "rms_dy": 0.013411472853114765,
+      "std_y": 0.33336228376673926,
+      "corr_inc_fir": 0.7607281067506005
+     },
+     "j8": {
+      "n": 4024,
+      "r2_abs_fir": 0.9989158680252603,
+      "r2_abs_persistence": 0.9989861475532981,
+      "r2_inc_fir": -0.06992515372435681,
+      "r2_inc_persistence": -0.0005665916752701783,
+      "r2_inc_const_velocity": 0.7852876034917875,
+      "skill_vs_persistence": -0.06931928631852302,
+      "rms_abs_err_fir": 0.011819982359231991,
+      "rms_abs_err_persistence": 0.011430444740948975,
+      "rms_dy": 0.011430444740948975,
+      "std_y": 0.35898454494041915,
+      "corr_inc_fir": 0.754016439900108
+     },
+     "j9": {
+      "n": 4024,
+      "r2_abs_fir": 0.9996860822978805,
+      "r2_abs_persistence": 0.9996148599477009,
+      "r2_inc_fir": 0.18125004880146955,
+      "r2_inc_persistence": -0.004509770858427631,
+      "r2_inc_const_velocity": 0.8671379017177115,
+      "skill_vs_persistence": 0.18492584646653232,
+      "rms_abs_err_fir": 0.009865901427336255,
+      "rms_abs_err_persistence": 0.01092793771888549,
+      "rms_dy": 0.01092793771888549,
+      "std_y": 0.5568380047781504,
+      "corr_inc_fir": 0.786012055958497
+     },
+     "j10": {
+      "n": 4024,
+      "r2_abs_fir": 0.9990524027332861,
+      "r2_abs_persistence": 0.9991375953898493,
+      "r2_inc_fir": -0.11273418042168615,
+      "r2_inc_persistence": -0.01269507709302875,
+      "r2_inc_const_velocity": 0.9543291649888446,
+      "skill_vs_persistence": -0.09878501988557353,
+      "rms_abs_err_fir": 0.01904644398898384,
+      "rms_abs_err_persistence": 0.018170109265648122,
+      "rms_dy": 0.018170109265648122,
+      "std_y": 0.6187311829090391,
+      "corr_inc_fir": 0.7059318947015599
+     },
+     "j11": {
+      "n": 4024,
+      "r2_abs_fir": 0.998804084425467,
+      "r2_abs_persistence": 0.997747436792378,
+      "r2_inc_fir": 0.46556687071585623,
+      "r2_inc_persistence": -0.006629924047839131,
+      "r2_inc_const_velocity": 0.869805901133971,
+      "skill_vs_persistence": 0.4690867850072522,
+      "rms_abs_err_fir": 0.01176218985010458,
+      "rms_abs_err_persistence": 0.016142708972014218,
+      "rms_dy": 0.016142708972014218,
+      "std_y": 0.34012450602856514,
+      "corr_inc_fir": 0.8511653951560546
+     },
+     "j12": {
+      "n": 4024,
+      "r2_abs_fir": 0.9925227457073091,
+      "r2_abs_persistence": 0.9989807698105204,
+      "r2_inc_fir": -6.336602473908616,
+      "r2_inc_persistence": -5.783365261025075e-05,
+      "r2_inc_const_velocity": 0.93298232241192,
+      "skill_vs_persistence": -6.336178195927346,
+      "rms_abs_err_fir": 0.0421740881668483,
+      "rms_abs_err_persistence": 0.015570794237986935,
+      "rms_dy": 0.015570794237986935,
+      "std_y": 0.48772456071739767,
+      "corr_inc_fir": 0.36088352727907824
+     },
+     "j13": {
+      "n": 4024,
+      "r2_abs_fir": 0.9952088187381929,
+      "r2_abs_persistence": 0.999139744509791,
+      "r2_inc_fir": -4.583086965247614,
+      "r2_inc_persistence": -0.002441976565221271,
+      "r2_inc_const_velocity": 0.945255607052241,
+      "skill_vs_persistence": -4.569486409954188,
+      "rms_abs_err_fir": 0.03933636660002565,
+      "rms_abs_err_persistence": 0.016668121920291146,
+      "rms_dy": 0.016668121920291146,
+      "std_y": 0.5682938313994766,
+      "corr_inc_fir": 0.409731392947108
+     }
+    },
+    "pooled": {
+     "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+     "r2_abs_fir": 0.9973611002283158,
+     "r2_abs_persistence": 0.9990425350975964,
+     "r2_inc_fir": -1.76944133992553,
+     "r2_inc_persistence": -0.00482894829752345,
+     "r2_inc_const_velocity": 0.9106970892596356,
+     "skill_vs_persistence": -1.7561321204149025,
+     "n": 28168
+    },
+    "per_fold": [
+     {
+      "held_out_episode": 0,
+      "length": 720,
+      "success": false,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9947049712323541,
+       "r2_abs_persistence": 0.9963496015302803,
+       "r2_inc_fir": -0.451297280146971,
+       "r2_inc_persistence": -0.0005258900438853686,
+       "r2_inc_const_velocity": 0.9516023291188052,
+       "skill_vs_persistence": -0.4505344585169242,
+       "n": 4998
+      }
+     },
+     {
+      "held_out_episode": 1,
+      "length": 720,
+      "success": false,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9966142034947487,
+       "r2_abs_persistence": 0.9995565472727584,
+       "r2_inc_fir": -6.794124283649856,
+       "r2_inc_persistence": -0.020830893021209995,
+       "r2_inc_const_velocity": 0.8165877579552883,
+       "skill_vs_persistence": -6.635078774489945,
+       "n": 4998
+      }
+     },
+     {
+      "held_out_episode": 2,
+      "length": 168,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9926726455520922,
+       "r2_abs_persistence": 0.9964661558718173,
+       "r2_inc_fir": -1.1878460529435553,
+       "r2_inc_persistence": -0.05515667114614131,
+       "r2_inc_const_velocity": 0.8851175082757555,
+       "skill_vs_persistence": -1.0734798089908812,
+       "n": 1134
+      }
+     },
+     {
+      "held_out_episode": 3,
+      "length": 312,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.996574318492364,
+       "r2_abs_persistence": 0.995972561748093,
+       "r2_inc_fir": 0.14745155016091016,
+       "r2_inc_persistence": -0.002307491467704592,
+       "r2_inc_const_velocity": 0.9257649515054488,
+       "skill_vs_persistence": 0.14941426947664416,
+       "n": 2142
+      }
+     },
+     {
+      "held_out_episode": 4,
+      "length": 176,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9946737931072794,
+       "r2_abs_persistence": 0.9979736589725486,
+       "r2_inc_fir": -1.8335165720649056,
+       "r2_inc_persistence": -0.07800372715257797,
+       "r2_inc_const_velocity": 0.8560482993116958,
+       "skill_vs_persistence": -1.628484949258303,
+       "n": 1190
+      }
+     },
+     {
+      "held_out_episode": 5,
+      "length": 720,
+      "success": false,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.994041574895279,
+       "r2_abs_persistence": 0.999083565209788,
+       "r2_inc_fir": -5.601278005714536,
+       "r2_inc_persistence": -0.01530869616944508,
+       "r2_inc_const_velocity": 0.8416303822666733,
+       "skill_vs_persistence": -5.501744770452402,
+       "n": 4998
+      }
+     },
+     {
+      "held_out_episode": 6,
+      "length": 178,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9973435471858421,
+       "r2_abs_persistence": 0.9962904010744322,
+       "r2_inc_fir": 0.26385516001348186,
+       "r2_inc_persistence": -0.02798818519271662,
+       "r2_inc_const_velocity": 0.9504287514895957,
+       "skill_vs_persistence": 0.28389756751094053,
+       "n": 1204
+      }
+     },
+     {
+      "held_out_episode": 7,
+      "length": 168,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9972190424625033,
+       "r2_abs_persistence": 0.9966736534828021,
+       "r2_inc_fir": 0.14923292333434424,
+       "r2_inc_persistence": -0.017615718419356163,
+       "r2_inc_const_velocity": 0.913921775772195,
+       "skill_vs_persistence": 0.16396036218157406,
+       "n": 1134
+      }
+     },
+     {
+      "held_out_episode": 8,
+      "length": 202,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9954234083579843,
+       "r2_abs_persistence": 0.9979443848135914,
+       "r2_inc_fir": -1.3099557862856286,
+       "r2_inc_persistence": -0.037536351425432324,
+       "r2_inc_const_velocity": 0.9339879001141074,
+       "skill_vs_persistence": -1.2263854014484088,
+       "n": 1372
+      }
+     },
+     {
+      "held_out_episode": 9,
+      "length": 720,
+      "success": false,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9941382841976355,
+       "r2_abs_persistence": 0.9993730043711203,
+       "r2_inc_fir": -8.469302331999078,
+       "r2_inc_persistence": -0.01287939758329859,
+       "r2_inc_const_velocity": 0.8074091279202842,
+       "skill_vs_persistence": -8.34889420654874,
+       "n": 4998
+      }
+     }
+    ]
+   }
+  },
+  "gr1_can_to_drawer_left_arm": {
+   "robot": "GR1",
+   "role": "supplementary",
+   "log": "results/gr1/healthy_log.json",
+   "md5": "4580349ff26b71f3634cc8a25f223e1e",
+   "used_by": "results/gr1/left015_*.json cells (record sec 32.1-32.5; not a paper table cell)",
+   "control_hz": 20,
+   "joints": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "n_episodes": 5,
+   "episode_lengths": [
+    264,
+    564,
+    720,
+    720,
+    278
+   ],
+   "episode_success": [
+    true,
+    true,
+    false,
+    false,
+    true
+   ],
+   "shipped_fit_plant_r2_all_joints": [
+    0.9873374979957039,
+    0.9850517132731432,
+    0.9474830133474362,
+    0.9989375037123941,
+    0.9985100084678551,
+    0.9943714373499438,
+    0.995882659158477,
+    0.9985277635497292,
+    0.9864185024417328,
+    0.9966221764513082,
+    0.9989604616890198,
+    0.9996501214887358,
+    0.9995331113087984,
+    0.9931137461871472,
+    0.9582288093514354,
+    0.9511941045056397,
+    0.9449341451910926,
+    0.940481965729228,
+    0.3916369991731069,
+    0.07286204634900029,
+    0.0014163324351310624,
+    0.0011478582930555259,
+    0.03011569484262555,
+    0.04239422370699153,
+    0.12759667264111618,
+    0.00748612107452995,
+    0.9472216100527264,
+    0.7172578393761413,
+    0.189472598182306
+   ],
+   "shipped_r2_corrected_joints_range": [
+    0.9474830133474362,
+    0.9989375037123941
+   ],
+   "shipped_r2_first14_range": [
+    0.9474830133474362,
+    0.9996501214887358
+   ],
+   "fir_dc_gain_corrected_joints": {
+    "j0": 1.0148536125031784,
+    "j1": 1.0023829928435548,
+    "j2": 1.0118218861184953,
+    "j3": 0.9906697311497169,
+    "j4": 0.998142321912701,
+    "j5": 0.9608850797635808,
+    "j6": 0.9766095891173434
+   },
+   "in_sample": {
+    "note": "shipped W = fit_plant(full log); evaluated on the same rows it was fitted on",
+    "per_joint": {
+     "j0": {
+      "n": 2516,
+      "r2_abs_fir": 0.9873374979957039,
+      "r2_abs_persistence": 0.9995270304087429,
+      "r2_inc_fir": -25.93090283129855,
+      "r2_inc_persistence": -0.005922692054335599,
+      "r2_inc_const_velocity": 0.8989705939420694,
+      "skill_vs_persistence": -25.77233851470155,
+      "rms_abs_err_fir": 0.08104287028520654,
+      "rms_abs_err_persistence": 0.015662881425098463,
+      "rms_dy": 0.015662881425098463,
+      "std_y": 0.7202032061852385,
+      "corr_inc_fir": 0.224487290143966
+     },
+     "j1": {
+      "n": 2516,
+      "r2_abs_fir": 0.9850517132731432,
+      "r2_abs_persistence": 0.9992980234511328,
+      "r2_inc_fir": -20.366445349380715,
+      "r2_inc_persistence": -0.0033754263604020007,
+      "r2_inc_const_velocity": 0.8032010880693807,
+      "skill_vs_persistence": -20.294567106236972,
+      "rms_abs_err_fir": 0.0403738590078963,
+      "rms_abs_err_persistence": 0.008749149834733483,
+      "rms_dy": 0.008749149834733483,
+      "std_y": 0.3302208966260753,
+      "corr_inc_fir": 0.2673396515185315
+     },
+     "j2": {
+      "n": 2516,
+      "r2_abs_fir": 0.9474830133474362,
+      "r2_abs_persistence": 0.9991902310698004,
+      "r2_inc_fir": -63.87864469081322,
+      "r2_inc_persistence": -0.0003755747001854548,
+      "r2_inc_const_velocity": 0.8808280896268655,
+      "skill_vs_persistence": -63.8542870613944,
+      "rms_abs_err_fir": 0.08666402299178182,
+      "rms_abs_err_persistence": 0.010761417995070736,
+      "rms_dy": 0.010761417995070736,
+      "std_y": 0.37817163036537244,
+      "corr_inc_fir": 0.10803169855914106
+     },
+     "j3": {
+      "n": 2516,
+      "r2_abs_fir": 0.9989375037123941,
+      "r2_abs_persistence": 0.9992208687344751,
+      "r2_inc_fir": -0.3749429016696897,
+      "r2_inc_persistence": -0.008249172725323328,
+      "r2_inc_const_velocity": 0.9517045676551242,
+      "skill_vs_persistence": -0.3636935579656204,
+      "rms_abs_err_fir": 0.02126560806405323,
+      "rms_abs_err_persistence": 0.018210396876444906,
+      "rms_dy": 0.018210396876444906,
+      "std_y": 0.652400213817206,
+      "corr_inc_fir": 0.6794036549613428
+     },
+     "j4": {
+      "n": 2516,
+      "r2_abs_fir": 0.9985100084678551,
+      "r2_abs_persistence": 0.9993741251482048,
+      "r2_inc_fir": -1.3899472340068346,
+      "r2_inc_persistence": -0.0039036052300640556,
+      "r2_inc_const_velocity": 0.8147046807098973,
+      "skill_vs_persistence": -1.3806541002102803,
+      "rms_abs_err_fir": 0.017692714692005916,
+      "rms_abs_err_persistence": 0.011466907914616053,
+      "rms_dy": 0.011466907914616053,
+      "std_y": 0.4583556341657018,
+      "corr_inc_fir": 0.621052567729043
+     },
+     "j5": {
+      "n": 2516,
+      "r2_abs_fir": 0.9943714373499438,
+      "r2_abs_persistence": 0.999417332041945,
+      "r2_inc_fir": -8.693899546409735,
+      "r2_inc_persistence": -0.003511021457678787,
+      "r2_inc_const_velocity": 0.8534243412131582,
+      "skill_vs_persistence": -8.659983138330242,
+      "rms_abs_err_fir": 0.04014506782411002,
+      "rms_abs_err_persistence": 0.012916475122033819,
+      "rms_dy": 0.012916475122033819,
+      "std_y": 0.5350981429285527,
+      "corr_inc_fir": 0.34285649946537444
+     },
+     "j6": {
+      "n": 2516,
+      "r2_abs_fir": 0.995882659158477,
+      "r2_abs_persistence": 0.9991040181943891,
+      "r2_inc_fir": -3.596305560852209,
+      "r2_inc_persistence": -0.00021016332196110987,
+      "r2_inc_const_velocity": 0.7611539571501225,
+      "skill_vs_persistence": -3.5953397889766174,
+      "rms_abs_err_fir": 0.03423773985519048,
+      "rms_abs_err_persistence": 0.01597152085807358,
+      "rms_dy": 0.01597152085807358,
+      "std_y": 0.5335764799628112,
+      "corr_inc_fir": 0.4989920610477336
+     }
+    },
+    "pooled": {
+     "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+     "r2_abs_fir": 0.9902615750256802,
+     "r2_abs_persistence": 0.9993311183127669,
+     "r2_inc_fir": -13.621245908839844,
+     "r2_inc_persistence": -0.004257224216943412,
+     "r2_inc_const_velocity": 0.8641826992939046,
+     "skill_vs_persistence": -13.559263858162007,
+     "n": 17612
+    }
+   },
+   "held_out_loeo": {
+    "note": "leave-one-episode-out: for each episode, W is refit by the runner's fit_plant on the other 4 episodes and evaluated on the held-out one; R^2 is computed on the concatenated held-out predictions (all episodes, each predicted by a model that never saw it)",
+    "per_joint": {
+     "j0": {
+      "n": 2516,
+      "r2_abs_fir": 0.9840959238535013,
+      "r2_abs_persistence": 0.9995270304087429,
+      "r2_inc_fir": -32.82515786987531,
+      "r2_inc_persistence": -0.005922692054335599,
+      "r2_inc_const_velocity": 0.8989705939420694,
+      "skill_vs_persistence": -32.626001418455154,
+      "rms_abs_err_fir": 0.09082580873647429,
+      "rms_abs_err_persistence": 0.015662881425098463,
+      "rms_dy": 0.015662881425098463,
+      "std_y": 0.7202032061852385,
+      "corr_inc_fir": 0.18519039453483466
+     },
+     "j1": {
+      "n": 2516,
+      "r2_abs_fir": 0.9809108807369863,
+      "r2_abs_persistence": 0.9992980234511328,
+      "r2_inc_fir": -26.28517528153911,
+      "r2_inc_persistence": -0.0033754263604020007,
+      "r2_inc_const_velocity": 0.8032010880693807,
+      "skill_vs_persistence": -26.19338600957381,
+      "rms_abs_err_fir": 0.04562443485401469,
+      "rms_abs_err_persistence": 0.008749149834733483,
+      "rms_dy": 0.008749149834733483,
+      "std_y": 0.3302208966260753,
+      "corr_inc_fir": 0.24824865994060624
+     },
+     "j2": {
+      "n": 2516,
+      "r2_abs_fir": 0.9343357330599805,
+      "r2_abs_persistence": 0.9991902310698004,
+      "r2_inc_fir": -80.12058431433756,
+      "r2_inc_persistence": -0.0003755747001854548,
+      "r2_inc_const_velocity": 0.8808280896268655,
+      "skill_vs_persistence": -80.09012891348289,
+      "rms_abs_err_fir": 0.09690663113645409,
+      "rms_abs_err_persistence": 0.010761417995070736,
+      "rms_dy": 0.010761417995070736,
+      "std_y": 0.37817163036537244,
+      "corr_inc_fir": 0.08483655489228555
+     },
+     "j3": {
+      "n": 2516,
+      "r2_abs_fir": 0.9989034931888864,
+      "r2_abs_persistence": 0.9992208687344751,
+      "r2_inc_fir": -0.4189548463932504,
+      "r2_inc_persistence": -0.008249172725323328,
+      "r2_inc_const_velocity": 0.9517045676551242,
+      "skill_vs_persistence": -0.4073454110136081,
+      "rms_abs_err_fir": 0.02160328333236588,
+      "rms_abs_err_persistence": 0.018210396876444906,
+      "rms_dy": 0.018210396876444906,
+      "std_y": 0.652400213817206,
+      "corr_inc_fir": 0.6735097277280792
+     },
+     "j4": {
+      "n": 2516,
+      "r2_abs_fir": 0.9981829308581497,
+      "r2_abs_persistence": 0.9993741251482048,
+      "r2_inc_fir": -1.914579899197728,
+      "r2_inc_persistence": -0.0039036052300640556,
+      "r2_inc_const_velocity": 0.8147046807098973,
+      "skill_vs_persistence": -1.9032467699224922,
+      "rms_abs_err_fir": 0.01953836869744898,
+      "rms_abs_err_persistence": 0.011466907914616053,
+      "rms_dy": 0.011466907914616053,
+      "std_y": 0.4583556341657018,
+      "corr_inc_fir": 0.5787406479525157
+     },
+     "j5": {
+      "n": 2516,
+      "r2_abs_fir": 0.9929501954995912,
+      "r2_abs_persistence": 0.999417332041945,
+      "r2_inc_fir": -11.141660473142062,
+      "r2_inc_persistence": -0.003511021457678787,
+      "r2_inc_const_velocity": 0.8534243412131582,
+      "skill_vs_persistence": -11.099179992567839,
+      "rms_abs_err_fir": 0.04492850633712447,
+      "rms_abs_err_persistence": 0.012916475122033819,
+      "rms_dy": 0.012916475122033819,
+      "std_y": 0.5350981429285527,
+      "corr_inc_fir": 0.32250131567796014
+     },
+     "j6": {
+      "n": 2516,
+      "r2_abs_fir": 0.9950502541204997,
+      "r2_abs_persistence": 0.9991040181943891,
+      "r2_inc_fir": -4.525543156717735,
+      "r2_inc_persistence": -0.00021016332196110987,
+      "r2_inc_const_velocity": 0.7611539571501225,
+      "skill_vs_persistence": -4.524382134216625,
+      "rms_abs_err_fir": 0.03753946933244872,
+      "rms_abs_err_persistence": 0.01597152085807358,
+      "rms_dy": 0.01597152085807358,
+      "std_y": 0.5335764799628112,
+      "corr_inc_fir": 0.4370791841736482
+     }
+    },
+    "pooled": {
+     "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+     "r2_abs_fir": 0.9878644659778497,
+     "r2_abs_persistence": 0.9993311183127669,
+     "r2_inc_fir": -17.220259193951,
+     "r2_inc_persistence": -0.004257224216943412,
+     "r2_inc_const_velocity": 0.8641826992939046,
+     "skill_vs_persistence": -17.143020288609833,
+     "n": 17612
+    },
+    "per_fold": [
+     {
+      "held_out_episode": 0,
+      "length": 264,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9954847465979162,
+       "r2_abs_persistence": 0.9988535448595189,
+       "r2_inc_fir": -3.0839676507397744,
+       "r2_inc_persistence": -0.03694860283764312,
+       "r2_inc_const_velocity": 0.9387519694837632,
+       "skill_vs_persistence": -2.9384475176145335,
+       "n": 1806
+      }
+     },
+     {
+      "held_out_episode": 1,
+      "length": 564,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9972414581920861,
+       "r2_abs_persistence": 0.9991961052960928,
+       "r2_inc_fir": -2.4656198663330375,
+       "r2_inc_persistence": -0.00995150709995185,
+       "r2_inc_const_velocity": 0.9224858575692705,
+       "skill_vs_persistence": -2.431471552811947,
+       "n": 3906
+      }
+     },
+     {
+      "held_out_episode": 2,
+      "length": 720,
+      "success": false,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9705953476465664,
+       "r2_abs_persistence": 0.9993860927955422,
+       "r2_inc_fir": -46.93486963947592,
+       "r2_inc_persistence": -0.0007791101457705896,
+       "r2_inc_const_velocity": 0.740005234889783,
+       "skill_vs_persistence": -46.897552170622205,
+       "n": 4998
+      }
+     },
+     {
+      "held_out_episode": 3,
+      "length": 720,
+      "success": false,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9957649848480968,
+       "r2_abs_persistence": 0.9992915477689793,
+       "r2_inc_fir": -4.9870563354051205,
+       "r2_inc_persistence": -0.0015414977105987493,
+       "r2_inc_const_velocity": 0.9018955250429659,
+       "skill_vs_persistence": -4.977841506408669,
+       "n": 4998
+      }
+     },
+     {
+      "held_out_episode": 4,
+      "length": 278,
+      "success": true,
+      "pooled": {
+       "definition": "1 - sum_j SSE_j / sum_j SST_j, each joint centred on its own mean",
+       "r2_abs_fir": 0.9979165372347013,
+       "r2_abs_persistence": 0.9989606860834147,
+       "r2_inc_fir": -1.0560307557360855,
+       "r2_inc_persistence": -0.02562974148357755,
+       "r2_inc_const_velocity": 0.945403629414517,
+       "skill_vs_persistence": -1.0046520421317235,
+       "n": 1904
+      }
+     }
+    ]
+   }
+  }
+ }
+}
