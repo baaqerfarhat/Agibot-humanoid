@@ -995,6 +995,10 @@ def main():
     p.add_argument("--joint-fault", default=None,
                    help="kind:joint:magnitude, a fault BELOW the controller in the MuJoCo model "
                         "(torque N.m bias, friction, damping, gain scale, lock +-rad); see joint_fault.py")
+    p.add_argument("--scenario-reset", action="store_true",
+                   help="reset through libero_reset.reset_libero: clears applied/external forces, "
+                        "seeds the cached env per scenario and records the model/state fingerprint, "
+                        "so paired arms provably start from the same physical scene (audit protocol)")
     p.add_argument("--gate-stats", type=pathlib.Path, default=None,
                    help="healthy phantom stats (gate_stats.py): correct channel i iff |f_hat_i-b_i| > k sd_i")
     p.add_argument("--gate-k", type=float, default=3.0)
@@ -1180,7 +1184,8 @@ def main():
                                      norm_channels=a.norm_channels, deadzone_mode=a.deadzone_mode,
                                      telemetry=telemetry, episode=episode, arm=tag,
                                      rls_lambda=a.rls_lambda, rls_p0=a.rls_p0,
-                                     kf_q=kf_q, kf_r=kf_r, gate=gate)
+                                     kf_q=kf_q, kf_r=kf_r, gate=gate,
+                                     scenario_reset=a.scenario_reset)
                 ok += int(s); fh.append(f_hat.tolist())
                 # Per-episode outcome, keyed by (task, init). The arms run on the SAME episode
                 # list, so these pair up -- which is what McNemar needs and what the earlier

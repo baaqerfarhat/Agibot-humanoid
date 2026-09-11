@@ -26,3 +26,22 @@ healthy FIR log was also collected at `--init-base 45`. Calibration and evaluati
 
 No constants change. The original cells stay as historical evidence; the held-out cells become
 the reported ones if the prediction holds.
+
+---
+
+## Outcome (appended 2026-09-11, after all four cells; nothing above was edited)
+
+| suite | original | held-out | delta corrected |
+|---|---|---|---|
+| spatial n=20 | 8→18, 10/0, p=0.0020 | 9→18, 9/0, p=0.0039 | 0 |
+| object n=20 | 5→16, 11/0, p=0.00098 | 7→15, 10/2, p=0.039 | −1 |
+| goal n=40 | 15→29, 15/1, p=0.00052 | 18→28, 11/1, p=0.0063 | −1 |
+| libero_10 n=40 | 0→15, 15/0, p=6.1e−5 | 0→7, 7/0, p=0.016 | **−8** |
+| pooled n=120 | 28→78, 51 fixed, 1 broken | 34→68, 37 fixed, 3 broken | −10 |
+
+- **Prediction 1 (each cell within 3): refuted on `libero_10`** (−8, threshold was −5); holds on
+  the other three. Every cell remains individually significant; pooled broken 3 ≤ 5.
+- **Prediction 3 (M within 15 %): refuted on y and z** (19–21 % lower at init 25); rotation
+  within 8 %.
+- Conclusion registered in advance for this case: "the calibration overlap was load-bearing and
+  the paper says so." It says so, per suite: unchanged on three, 15→7 on the long-horizon suite.

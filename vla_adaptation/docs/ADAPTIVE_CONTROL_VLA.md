@@ -3660,6 +3660,43 @@ Prereg `PREREG_HELDOUT_CALIBRATION.md`. Healthy FIR log at `--init-base 25` (10 
 within 8 %. The initial state matters to the translation sensitivity at the 20 % level, which
 is the magnitude the audit's "M is magnitude independent to 14 %" finding did not cover
 (different quantity: magnitude there, configuration here). The rotation-corrected headline
-cells depend on the rotation block, which held. The four cells are running with the held-out
-plant and M; the primary prediction (each cell within 3 of its original count, all
-significant) decides the calibration-overlap caveat.
+cells depend on the rotation block, which held.
+
+**The held-out plant fits as well, and the provenance is better.** FIR R^2 on the shipped
+3-episode log (init 45) vs the held-out 10-episode log (init 25): translation
+0.96/0.98/0.98 vs 0.95/0.98/0.96; rotation 0.52/0.33/0.97 vs 0.81/0.42/0.97 (rx improves
+with more episodes). `ry` is the worst-fit channel in both (0.33-0.42) and is the channel
+whose estimate lags on all three backbones and stays mostly closed under the healthy gate
+(Sec 37): one explanation, three symptoms. The held-out log is schema v2: source hashes for
+all five scripts, `reset_protocol: libero-reset-v1`, the calibration episode list, and
+`policy_rng_pinned: false` recorded. The shipped log has none of that, which is the
+provenance gap the audit named.
+
+**The cells** (same faults, channels and constants; only `--log`/`--openloop` changed):
+
+| suite | original | held-out calibration |
+|---|---|---|
+| `libero_spatial` n=20 | 8/20 -> 18/20, 10 fixed / 0 broken, p = 0.0020 | 9/20 -> 18/20, 9 / 0, p = 0.0039 |
+| `libero_object` n=20 | 5/20 -> 16/20, 11 / 0, p = 0.00098 | 7/20 -> 15/20, 10 / 2, p = 0.039 |
+| `libero_goal` n=40 | 15/40 -> 29/40, 15 / 1, p = 0.00052 | 18/40 -> 28/40, 11 / 1, p = 0.0064 |
+| `libero_10` n=40 | 0/40 -> 15/40, 15 / 0, p = 6.1e-5 | **0/40 -> 7/40, 7 / 0, p = 0.016** |
+
+**Prediction 1 holds on three suites and is refuted on the fourth.** Corrected counts 18, 15,
+28, 7 against 18, 16, 29, 15: within the registered +-3 on spatial, object and goal, and
+**8 below** on `libero_10`, where the registered refutation threshold was a drop of more than 5.
+Every cell is still individually significant and the pooled broken count is 3 against a
+threshold of 5, so repair still happens everywhere; it is *weaker on the long-horizon suite*
+when the calibration has not seen the evaluated initial state. Pooled: held-out
+34/120 -> 68/120 (37 fixed, 3 broken) against the original 28/120 -> 78/120 (51 fixed, 1 broken).
+
+**What this means, stated as the refutation it is.** The audit was right that calibration and
+evaluation overlapped, and the overlap was partly load-bearing: not on the three shorter
+suites, where the corrected count is unchanged to within one episode, but on `libero_10`,
+whose 40 episodes are long-horizon compositions where a 20 % error in the translation block
+of M (Sec 39 above) has 200+ steps to accumulate. The honest headline is therefore two
+numbers, not one: with a calibration probed at the evaluated initial state, 28 -> 78; with one
+identified on disjoint initial states, 34 -> 68. The paper reports the held-out row as the
+primary result for `libero_10` and keeps both for the other three.
+
+The frozen arms differ by 0-3 episodes (9 vs 8, 7 vs 5, 18 vs 15, 0 vs 0) with no calibration
+involved at all, which is the unpinned policy sampling the protocol section now states.
