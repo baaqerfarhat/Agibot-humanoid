@@ -1,0 +1,91 @@
+{
+ "schema_version": "re4-v1",
+ "run_id": "gate_spatial_healthy",
+ "part": "B_gate",
+ "cohort": "libero_spatial",
+ "created_utc": "2026-09-11T20:08:36.851534+00:00",
+ "result_file": "results/gate/healthy_gate3.json",
+ "result_sha256": "1168c26427657ab4f4b426613251644f56a884d6e4a06432517cfbc0d12e055f",
+ "runner": "openpi/adaptive_law.py",
+ "code_path": "external action subtraction: the frozen policy's action a is sent as a + c with c = -f_hat on the corrected channels; the policy network is not edited (the native action_out_proj/bias edit exists only in the ACE experiments)",
+ "gate_convention": "zero-observation leakage (chi=1, s=0): below the deadzone the observation is zeroed, so f_hat decays by (1-gamma) per step",
+ "clipping_order": "f_hat is updated, then projected onto the box [-clip, clip]^6; the correction is -f_hat times the channel mask; clipping precedes masking; the gripper is never corrected",
+ "projection_box": 0.15,
+ "units_per_channel": {
+  "x": "LIBERO OSC_POSE normalised action units (policy output space); measured motion is divided by OUT=[0.05 0.05 0.05 0.5  0.5  0.5 ] to the same units",
+  "y": "LIBERO OSC_POSE normalised action units (policy output space); measured motion is divided by OUT=[0.05 0.05 0.05 0.5  0.5  0.5 ] to the same units",
+  "z": "LIBERO OSC_POSE normalised action units (policy output space); measured motion is divided by OUT=[0.05 0.05 0.05 0.5  0.5  0.5 ] to the same units",
+  "rx": "LIBERO OSC_POSE normalised action units (policy output space); measured motion is divided by OUT=[0.05 0.05 0.05 0.5  0.5  0.5 ] to the same units",
+  "ry": "LIBERO OSC_POSE normalised action units (policy output space); measured motion is divided by OUT=[0.05 0.05 0.05 0.5  0.5  0.5 ] to the same units",
+  "rz": "LIBERO OSC_POSE normalised action units (policy output space); measured motion is divided by OUT=[0.05 0.05 0.05 0.5  0.5  0.5 ] to the same units"
+ },
+ "update_law": {
+  "law": "legacy",
+  "baseline": "none",
+  "gamma": 0.08,
+  "deadzone": 0.008,
+  "normaliser_rho": 0.15,
+  "normaliser_channels": "all",
+  "deadzone_mode": "zero",
+  "bias_subtracted": "none: no bias vector subtracted",
+  "static_correction": "none: estimator-driven correction",
+  "estimate_only": false
+ },
+ "corrected_channels": "healthy-phantom gate, re-evaluated every step (see gate_stats)",
+ "fir_order_K": 6,
+ "snapshot_application_rule": "the policy returns a chunk; 5 actions are executed per chunk; the correction is recomputed and applied at every control step (tau_k = k, 20 Hz)",
+ "calibration": {
+  "healthy_log": "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/phase05/error_signal_so3.json",
+  "healthy_log_sha256": "9010c84546505db347fed92acf0a78ed515cdc16e2b4a7944e5b0eaba551099d",
+  "openloop": "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/phase05/openloop_so3.json",
+  "openloop_sha256": "2e9fb696c16e567c232d9caef7fcd18ebd2d4a71403f7774a420b2c6191b887e",
+  "calib_episodes": "all episodes of the healthy log"
+ },
+ "reset_protocol": "env.reset() + set_init_state(init) (historical protocol)",
+ "policy_rng_pinned": false,
+ "policy_seed": "not applicable: pin_rng=False, policy sampling unpinned",
+ "fault": {
+  "family": "none (healthy)",
+  "magnitude": "0",
+  "profile": "step",
+  "onset": 0
+ },
+ "episodes_per_arm": 20,
+ "suite": "libero_spatial",
+ "eval_init_base": 45,
+ "source_sha256": {
+  "adaptive_law.py": "37d279699e265320b8839c01b86bac30141d45737c9f33de876f4d2ba6a71f7e",
+  "so3.py": "cd07c7d21abb0a6d2ba1de00e0ffc86263a9dcc4573bccdd7225a2f2ae9cc12c",
+  "joint_fault.py": "e5890fcf83e2158ccb1a90b482846170d69497a0ea1b7374dc5f14842ea9cef7",
+  "libero_reset.py": "4308ae24d3cda9b7e411e6071e52548cb17ac11717b82c88c06eca86cf2934bb",
+  "gate_faults.py": "3129cf38cc45f54f39455e4ebd24c80f0a81fec683367e30bab7fe6b0639110b",
+  "paired_probe.py": "7631ae2e64ed9b50cbd43fefee220ef30bb1dc988012d24119a23ed669ce78e9",
+  "weighted_dob.py": "458206fb78c08d2245819dca693ffbc07df26445b343eb7d611c8e1128e25c09",
+  "mcnemar.py": "63b51821ad1ddee2b2afffaff869cb5ce4ad1bfc418fc138b581f269c6c406d0",
+  "error_signal.py": "d9c254952ce86ebd02ca4178b6e1ad5c7b723a5eb7c8c32bf2caa051bbb5e884",
+  "openloop_id.py": "20c3bd87301e6790bd5247a6edf235a121216fcfaca154efd14e96b39ba02faa",
+  "re4_record.py": "24205ba4673d1c149d38e9cdc478afbe331f65da3004229241bdc9c07d178f40"
+ },
+ "timing_file": "not recorded for this run",
+ "arms": {
+  "frozen_faulted": {
+   "successes": 20,
+   "n": 20
+  },
+  "adaptive": {
+   "successes": 19,
+   "n": 20
+  }
+ },
+ "paired": {
+  "adaptive_vs_frozen_faulted": {
+   "pairs": 20,
+   "frozen": 20,
+   "arm": 19,
+   "fixed": 0,
+   "broken": 1,
+   "exact_mcnemar_p": 1.0
+  }
+ },
+ "command": "python openpi/adaptive_law.py --ack /tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad/ack.json --baseline none --clip 0.15 --control /tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad/ctl.json --dead 0.008 --deadzone-mode zero --episodes 20 --eval-init 45 --gamma 0.08 --gate-k 3.0 --gate-stats /home/mtaheri/ws_AgibotX2/vla-adaptation/results/gate/phantom_stats.json --host 0.0.0.0 --kf-r 1.0 --ki 0.05 --law legacy --log /home/mtaheri/ws_AgibotX2/vla-adaptation/results/phase05/error_signal_so3.json --norm-channels all --norm-r 0.15 --openloop /home/mtaheri/ws_AgibotX2/vla-adaptation/results/phase05/openloop_so3.json --out /home/mtaheri/ws_AgibotX2/vla-adaptation/results/gate/healthy_gate3.json --port 8000 --prof-p 60.0 --profile step --replan-steps 5 --rls-lambda 0.99 --rls-p0 1.0 --suite libero_spatial --task-stride 1"
+}

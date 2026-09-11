@@ -391,8 +391,11 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
         deadzone_mode="zero", telemetry=None, episode=0, arm=None,
         rls_lambda=0.99, rls_p0=1.0, kf_q=None, kf_r=None,
         step_observer=None, freeze_after=None, correction_scale=1.0, scenario_reset=False,
-        gate=None):
+        gate=None, timing=None):
     # Keep simulator/client dependencies out of the pure helpers and --selftest.
+    # timing: an open line-buffered file; one JSON line per control step (re4 Part E):
+    # policy_ms (replan steps only), adapter_ms (correction + FIR prediction + estimator update),
+    # env_ms (simulator step), s2c_ms (observation acquired -> command issued), loop_ms.
     # gate: dict(b, sd, k) -- the healthy-phantom channel gate (prereg_records/PREREG_HEALTHY_GATE.md):
     # channel i is corrected at a step iff |f_hat_i - b_i| > k sd_i. Measured on healthy data only;
     # the estimator still runs on all six channels. Re-evaluated every step, no memory.
@@ -402,6 +405,7 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
     from openpi_client import image_tools
     from gate_faults import apply_action_fault
     import paired_probe as _pp
+    import time as _time
     max_steps = max_steps or _pp.MAXS
     env, desc, inits = pr.env_for(tid)
     if scenario_reset:
@@ -424,12 +428,13 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
         step_meta = dict(type="step", arm=arm or ("adaptive" if adapt else "frozen_faulted"),
                          episode=episode, task=int(tid), init=int(init))
         traj = []
+        _t_obs = _time.perf_counter()
         while t < max_steps + WARMUP_STEPS:
             if t < WARMUP_STEPS:
                 if telemetry is not None:
                     x0 = np.array(obs["robot0_eef_pos"], float)
                     q0 = np.array(obs["robot0_eef_quat"], float)
-                obs, _, done, _ = env.step(lm.LIBERO_DUMMY_ACTION)
+                obs, _, done, _ = env.step(lm.LIBERO_DUMMY_ACTION); _t_obs = _time.perf_counter()
                 if telemetry is not None:
                     x1 = np.array(obs["robot0_eef_pos"], float)
                     q1 = np.array(obs["robot0_eef_quat"], float)
@@ -442,6 +447,7 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
                         f_hat_before=f_hat, f_hat=f_hat, f_true=np.zeros(6), done=bool(done)))
                 t += 1
                 continue
+            _tl0 = _time.perf_counter(); _wall0 = _time.time()
             img = image_tools.convert_to_uint8(image_tools.resize_with_pad(
                 np.ascontiguousarray(obs["agentview_image"][::-1, ::-1]), IMAGE_SIZE, IMAGE_SIZE))
             wr = image_tools.convert_to_uint8(image_tools.resize_with_pad(
@@ -451,6 +457,7 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
                 # the plant untouched, so the command-motion residual stays clean -- the quadrant
                 # the sensor-bias test could not reach, because that one did no damage.
                 wr = np.roll(wr, wrist_shift, axis=1)
+            _replan = not plan; _tp0 = _time.perf_counter()
             if not plan:
                 plan.extend(pr.client.infer({
                     "observation/image": img, "observation/wrist_image": wr,
@@ -464,11 +471,13 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
                         np.array(obs["robot0_eef_pos"], float) + (obs_off if obs_off is not None else 0.0),
                         lm._quat2axisangle(obs["robot0_eef_quat"]), obs["robot0_gripper_qpos"])),
                     "prompt": str(desc)})["actions"][: pr.a.replan_steps])
+            _policy_ms = (_time.perf_counter() - _tp0) * 1e3 if _replan else 0.0
             a_cmd = np.asarray(plan.popleft(), float)
             # apply_corr=False estimates but does NOT act. r = M f + eps(a+c): with an
             # imperfect plant the residual carries the model error evaluated at the operating
             # point, so once c moves that point the estimate chases its own correction. Freezing
             # c at zero separates open-loop model bias from that feedback.
+            _tc0 = _time.perf_counter()
             gmask = None
             if gate is not None:
                 gmask = (np.abs(f_hat - gate["b"]) > gate["k"] * gate["sd"]).astype(float)
@@ -478,6 +487,7 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
             if correction_scale != 1.0:
                 c = c * correction_scale
             a_corr = a_cmd.copy(); a_corr[:6] += c                      # our correction
+            _tc1 = _time.perf_counter()
             # onset > 0: the fault appears mid-episode. This is the deployment case -- a robot
             # that degrades while running -- and it tests the estimator as a TRACKER rather than
             # just asking whether it converges from step 1.
@@ -524,7 +534,10 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
                     joint_position=joint_before, f_hat=f_hat.copy(), joint_fault=joint_fault))
             if jf is not None:
                 jf.step(live)
+            _t_cmd = _time.perf_counter()
             obs, _, done, _ = env.step(a_exec.tolist())
+            _t_obs_prev = _t_obs if "_t_obs" in dir() else _t_cmd
+            _t_obs = _time.perf_counter()
             x1 = np.array(obs["robot0_eef_pos"], float)
             q1 = np.array(obs["robot0_eef_quat"], float)
             y = np.concatenate([x1 - x0, rot_delta(q0, q1)]) / OUT
@@ -548,6 +561,16 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
                     state=estimator_state, rls_lambda=rls_lambda, rls_p0=rls_p0,
                     kf_q=kf_q, kf_r=kf_r)
                 estimator_state = diag.get("estimator_state")
+            _tad1 = _time.perf_counter()
+            if timing is not None:
+                timing.write(json.dumps(dict(step_meta, t=int(t - WARMUP_STEPS), wall=_wall0,
+                    replan=bool(_replan), policy_ms=_policy_ms,
+                    adapter_ms=((_tc1 - _tc0) + (_tad1 - _t_obs)) * 1e3,
+                    env_ms=(_t_obs - _t_cmd) * 1e3, s2c_ms=(_t_cmd - _t_obs_prev) * 1e3,
+                    loop_ms=(_tad1 - _tl0) * 1e3, live=bool(live),
+                    f_true=np.asarray(f_true_now, float).round(6).tolist(),
+                    correction=np.asarray(c, float).round(6).tolist(),
+                    f_hat=np.asarray(f_hat, float).round(6).tolist())) + "\n")
             joint_after = None
             if telemetry is not None or step_observer is not None:
                 joint_after = np.asarray(robot._joint_positions, float).copy()
@@ -995,6 +1018,10 @@ def main():
     p.add_argument("--joint-fault", default=None,
                    help="kind:joint:magnitude, a fault BELOW the controller in the MuJoCo model "
                         "(torque N.m bias, friction, damping, gain scale, lock +-rad); see joint_fault.py")
+    p.add_argument("--fir-k", type=int, default=None,
+                   help="FIR order K for the plant (default the module's K_FIR=6); 0 = static observer")
+    p.add_argument("--timing", type=pathlib.Path, default=None,
+                   help="per-step timing JSONL (re4 Part E)")
     p.add_argument("--scenario-reset", action="store_true",
                    help="reset through libero_reset.reset_libero: clears applied/external forces, "
                         "seeds the cached env per scenario and records the model/state fingerprint, "
@@ -1054,6 +1081,9 @@ def main():
     import paired_probe as pp
 
     calib = [int(x) for x in a.calib_episodes.split(",")] if a.calib_episodes else None
+    if a.fir_k is not None:
+        globals()["K_FIR"] = int(a.fir_k)
+        print(f"FIR order K = {K_FIR} (--fir-k)")
     W = fit_plant(a.log, mimo=a.mimo, episodes=calib)
     if calib is not None:
         print(f"plant fitted on healthy episodes {calib} only")
@@ -1168,6 +1198,10 @@ def main():
             runner_source=pathlib.Path(__file__).read_text())
         if estimator_config is not None:
             header["config"]["estimator"] = estimator_config
+    timing_fh = None
+    if a.timing is not None:
+        a.timing.parent.mkdir(parents=True, exist_ok=True)
+        timing_fh = open(a.timing, "w", buffering=1)
     with telemetry_stream(a.telemetry, header) as telemetry:
         pr.control(dict(site=None, pin_rng=False))
         for tag, adapt in (("frozen_faulted", False), ("adaptive", True)):
@@ -1185,7 +1219,7 @@ def main():
                                      telemetry=telemetry, episode=episode, arm=tag,
                                      rls_lambda=a.rls_lambda, rls_p0=a.rls_p0,
                                      kf_q=kf_q, kf_r=kf_r, gate=gate,
-                                     scenario_reset=a.scenario_reset)
+                                     scenario_reset=a.scenario_reset, timing=timing_fh)
                 ok += int(s); fh.append(f_hat.tolist())
                 # Per-episode outcome, keyed by (task, init). The arms run on the SAME episode
                 # list, so these pair up -- which is what McNemar needs and what the earlier
