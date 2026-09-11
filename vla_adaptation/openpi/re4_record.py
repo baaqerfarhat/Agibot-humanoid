@@ -20,7 +20,22 @@ from mcnemar import mcnemar_exact
 
 SOURCES = ["adaptive_law.py", "so3.py", "joint_fault.py", "libero_reset.py", "gate_faults.py",
            "paired_probe.py", "weighted_dob.py", "mcnemar.py", "error_signal.py", "openloop_id.py",
-           "re4_record.py"]
+           "re4_record.py", "aloha_adapt.py", "gr1_adapt.py"]
+# Per-runner interface facts, read from the runners (aloha_adapt.py: NJ=14, HORIZON=10, K_FIR=6,
+# DT=0.02; gr1_adapt.py: NJ=29, K_FIR=6, 20 Hz, executes --horizon of each 16-step chunk).
+RUNNERS = dict(
+    libero=dict(script="openpi/adaptive_law.py", rate_hz=20.0, K=None, nj=6,
+                units="LIBERO OSC_POSE normalised action units (policy output space)"),
+    aloha=dict(script="openpi/aloha_adapt.py", rate_hz=50.0, K=6, nj=14,
+               units="absolute joint targets: rad for the 12 arm joints, normalised gripper for joints 6 and 13"),
+    gr1=dict(script="openpi/gr1_adapt.py", rate_hz=20.0, K=6, nj=29,
+             units="absolute joint targets in rad (29: two 7-joint arms, two 6-joint hands, 3 waist)"))
+
+
+def runner_of(a):
+    if a.get("corr_joints") is not None or a.get("fault_vec", "") and len(str(a.get("fault_vec")).split(",")) in (14, 29):
+        return "gr1" if str(a.get("task", "")).startswith("gr1") or "arm:" in str(a.get("fault_vec", "")) else "aloha"
+    return "libero"
 RATE_HZ = 20.0                       # LIBERO control rate
 NAMES = ["x", "y", "z", "rx", "ry", "rz"]
 
@@ -37,6 +52,8 @@ def now():
 def gate_convention(a):
     if a.get("static_corr"):
         return "not applicable: fixed correction, no estimator, no deadzone"
+    # the same rule holds in all three runners: legacy+zero deadzone zeroes the observation
+    # (leakage), legacy+hold skips the update, innovation zeroes its step (hold)
     if a.get("baseline") not in (None, "none"):
         return f"baseline estimator '{a.get('baseline')}': see estimator_step in openpi/adaptive_law.py"
     if a.get("law") == "innov":
@@ -59,6 +76,11 @@ def fault_of(a):
 
 
 def channels(a):
+    if a.get("corr_joints"):
+        cj = str(a["corr_joints"])
+        if cj.startswith("arm:"):
+            return {"left": list(range(0, 7)), "right": list(range(7, 14))}.get(cj.split(":")[1], cj)
+        return [int(x) for x in cj.split(",")]
     if a.get("corr_dims"):
         return [int(x) for x in str(a["corr_dims"]).split(",")]
     if a.get("gate_stats"):
@@ -92,39 +114,51 @@ def cmd_record(ns):
     out = ns.root / ns.part / ns.run_id
     out.mkdir(parents=True, exist_ok=True)
     fam, mag = fault_of(a)
-    K = int(a["fir_k"]) if a.get("fir_k") is not None else AL.K_FIR
+    rn = runner_of(a); RN = RUNNERS[rn]
+    K = int(a["fir_k"]) if a.get("fir_k") is not None else (RN["K"] if RN["K"] is not None else AL.K_FIR)
+    rate = RN["rate_hz"]
     cfg = dict(
         schema_version="re4-v1", run_id=ns.run_id, part=ns.part, cohort=ns.cohort or a.get("suite"),
         created_utc=now(), result_file=str(ns.result), result_sha256=sha(ns.result),
-        runner="openpi/adaptive_law.py",
+        runner=RN["script"], interface=rn,
         code_path=("external action subtraction: the frozen policy's action a is sent as a + c with "
                    "c = -f_hat on the corrected channels; the policy network is not edited "
                    "(the native action_out_proj/bias edit exists only in the ACE experiments)"),
         gate_convention=gate_convention(a),
-        clipping_order=("f_hat is updated, then projected onto the box [-clip, clip]^6; the correction is "
-                        "-f_hat times the channel mask; clipping precedes masking; the gripper is never corrected"
+        clipping_order=(("f_hat is updated, then projected onto the box [-clip, clip]^n; the correction is "
+                         "-f_hat times the channel mask; clipping precedes masking"
+                         + ("; the gripper is never corrected" if rn == "libero" else ""))
                         if not a.get("static_corr") else
-                        "fixed correction times the channel mask; no estimate, no projection"),
+                        ("fixed correction times the channel mask; no estimate, no projection"
+                         + ("" if rn == "libero" else "; the joint-space runners negate --static-corr internally "
+                            "(they are given the positive fault)"))),
         projection_box=float(a.get("clip")) if a.get("clip") is not None else "not recorded",
-        units_per_channel={n: ("LIBERO OSC_POSE normalised action units (policy output space); measured "
-                               f"motion is divided by OUT={AL.OUT} to the same units") for n in NAMES},
+        units_per_channel=({n: ("LIBERO OSC_POSE normalised action units (policy output space); measured "
+                                f"motion is divided by OUT={AL.OUT} to the same units") for n in NAMES}
+                           if rn == "libero" else RN["units"]),
         update_law=dict(law=a.get("law", "legacy"), baseline=a.get("baseline", "none"),
                         gamma=a.get("gamma"), deadzone=a.get("dead"), normaliser_rho=a.get("norm_r"),
                         normaliser_channels=a.get("norm_channels", "all"),
                         deadzone_mode=a.get("deadzone_mode", "zero"),
                         bias_subtracted=a.get("bias") or "none: no bias vector subtracted",
                         static_correction=a.get("static_corr") or "none: estimator-driven correction",
-                        estimate_only=bool(a.get("estimate_only"))),
+                        estimate_only=bool(a.get("estimate_only")),
+                        initial_estimate=a.get("f_init") or "zero at every episode start",
+                        freeze_after=a.get("freeze_after") if a.get("freeze_after") is not None else "never (updates throughout)",
+                        identify_episodes=a.get("identify_episodes") if a.get("identify_episodes") is not None else "none"),
         corrected_channels=channels(a), fir_order_K=K,
-        snapshot_application_rule=(f"the policy returns a chunk; {a.get('replan_steps', 5)} actions are executed "
+        snapshot_application_rule=(f"the policy returns a chunk; "
+                                   f"{a.get('replan_steps', a.get('horizon', 10 if rn == 'aloha' else 5))} actions are executed "
                                    "per chunk; the correction is recomputed and applied at every control step "
-                                   f"(tau_k = k, {RATE_HZ:g} Hz)"),
+                                   f"(tau_k = k, {rate:g} Hz)"),
         calibration=dict(healthy_log=a.get("log"), healthy_log_sha256=sha(a["log"]) if a.get("log") else "none",
                          openloop=a.get("openloop"), openloop_sha256=sha(a["openloop"]) if a.get("openloop") else "none",
                          calib_episodes=a.get("calib_episodes") or "all episodes of the healthy log"),
-        reset_protocol=("libero-reset-v1 (libero_reset.reset_libero: forces cleared, cached env seeded per "
-                        "scenario, state fingerprint)" if a.get("scenario_reset") else
-                        "env.reset() + set_init_state(init) (historical protocol)"),
+        reset_protocol=(("libero-reset-v1 (libero_reset.reset_libero: forces cleared, cached env seeded per "
+                         "scenario, state fingerprint)" if a.get("scenario_reset") else
+                         "env.reset() + set_init_state(init) (historical protocol)") if rn == "libero" else
+                        ("gym_aloha env.reset(seed=seed+episode)" if rn == "aloha" else
+                         "robocasa env rng reseeded per reset: env.unwrapped.env.rng = default_rng(seed+episode) (gr1_adapt.GR1.reset)")),
         policy_rng_pinned=False, policy_seed="not applicable: pin_rng=False, policy sampling unpinned",
         fault=dict(family=fam, magnitude=mag, profile=a.get("profile", "step"), onset=a.get("onset", 0)),
         episodes_per_arm=a.get("episodes"), suite=a.get("suite"), eval_init_base=a.get("eval_init", 45),
@@ -150,9 +184,11 @@ def cmd_record(ns):
         w = csv.writer(fh)
         w.writerow(["task", "init", "scenario_seed", "policy_seed", "arm", "outcome",
                     "fault_family", "fault_magnitude", "fall_flag", "violation_flag"])
-        scen = "libero-reset-v1 per (suite, task, init)" if a.get("scenario_reset") else "init state only"
+        base = int(a.get("seed") or 0)
         for arm, v in res["arms"].items():
             for e in v.get("per_ep") or []:
+                scen = ((f"libero-reset-v1 ({a.get('suite')}, task {e['task']}, init {e['init']})" if a.get("scenario_reset")
+                         else "init state only") if rn == "libero" else base + int(e["init"]))
                 w.writerow([e["task"], e["init"], scen, "unpinned", arm, int(bool(e["ok"])),
                             fam, mag, "not applicable (fixed-base arm)", "not applicable (no limit monitor)"])
     print(f"wrote {out}/run_configuration.json and episodes.csv")

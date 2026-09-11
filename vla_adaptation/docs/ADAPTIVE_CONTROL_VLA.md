@@ -3751,3 +3751,39 @@ across three runs, which is exactly the ±11-point noise of a single n = 20 LIBE
 reason the n = 20 rerun could not decide the question. The audit's rerun item is closed: the
 damage is real, the lock boundary is reproduced, the friction repair holds at a measured 33 %
 rather than the historical 40 %, and the law does no harm on a healthy arm.
+
+## 41. Figures corrected by the re4 forensics (2026-09-11)
+
+The re4 evidence plan's items G.3 and G.4 (`results/re4_evidence/G_forensics/`, a CPU-only
+recomputation from stored data) found five figures in the paper and report that the stored data
+do not support. Each was recomputed independently before correcting it:
+
+| figure | where | stored data say | correction |
+|---|---|---|---|
+| ALOHA plant R² "0.989–1.000 on all joints" | §26, paper ALOHA subsection | runner's own `fit_plant`: arm joints 0.9891–1.0000; grippers j6 0.9915, **j13 0.768** | "on the twelve arm joints; the uncorrected right gripper 0.77" |
+| n = 40 identify-then-hold "mean residual 0.12 cm" | paper ALOHA table | held vector (0.0193, 0.0202, 0.0190, 0.0191, 0.0192, 0.0192) against 0.02 at 106 cm/rad: **0.071–0.078 cm**; 0.12 cm is the n = 20 run's value | 0.07 cm |
+| GR1 "R² ≥ 0.998 on the arm" | paper GR1 subsection | true of the plate-to-plate plant; tray-to-plate cells use `t2p_healthy_log.json`, a separate ten-episode plant, 0.994–0.9997 | both plants named |
+| ALOHA identification "92–96 %" | Figure 1 caption | n = 20 run: 0.01835–0.01907 rad = **92–95 %** | 92–95 % |
+| LIBERO "σ of 0.019 cm per step" set against ALOHA "σ = 0.43 cm" | Prop. 2 discussion; report criterion table | 0.019 reproduces from `tmag_015.json` as the **mean per-step change of the translation correction** after step 15, × 5 cm per commanded unit (0.0191); the arm achieves **0.0044 cm**. It is a per-step change of a *velocity* offset, while ALOHA's 0.43 cm is the **median within-episode range** (not an SD; SD 0.13 cm) of a *position* offset at the uniform-offset 106 cm/rad | the two are not on one scale; the Prop. 2 comparison across the interfaces is qualitative |
+
+The last row matters for the argument, not just the arithmetic. Proposition 2 says repair
+needs the correction's within-episode variation to fit inside the task margin. On ALOHA both
+sides of that inequality are positions and the comparison is quantitative (0.43 cm range
+against a sub-centimetre margin). On LIBERO the correction commands a velocity, so its
+variation integrates into position drift that the vision loop keeps re-closing; no single
+number on the LIBERO side is directly comparable to ALOHA's. The criterion's prediction for
+LIBERO (repair) holds, but the paper no longer presents the two figures as one scale.
+
+G.3's reading is recorded here as well: the FIR's position R² is within 0.001 of the
+persistence predictor's, so position R² does not show that the model captures command-induced
+motion. On increments, the held-out FIR reaches 0.53 (ALOHA left arm) and 0.38 (GR1
+plate-to-plate) against persistence at about 0, and −1.77 on GR1 tray-to-plate, where it is
+worse than persistence. The correction relies on the plant's steady-state gain, which is about
+1 on every corrected joint except the tray-to-plate wrist (0.91 and 0.94).
+
+**Documents left as written.** The same superseded figures appear in the collaborator's audit
+(`report/DUAL_TRACK_AUDIT.md`: the 0.019 cm / 0.43 cm comparison), in the audit's framing of the
+paper (`paper/iclr_draft_audit_framing.tex`: the n = 40 row's 0.12 cm and the all-joints R²), and
+in a historical preregistration (`prereg_records/PREREG_GR1_MARGIN.md`: "σ measured? yes (0.019
+cm/step)"). They are not edited: the first two are another author's documents kept verbatim, and a
+preregistration is a timestamped record. This section is the correction of record for all three.
