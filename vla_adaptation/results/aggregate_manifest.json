@@ -1,5 +1,5 @@
 {
- "rules": "The aggregate paired-episode tally the abstract quotes, computed, not hand-assembled\n(dual-track audit finding 4.3). Sweeps every result file that carries paired per-episode\noutcomes for a frozen-faulted and an adaptive arm, assigns it to a category by path, applies\nthe EXCLUSION rules below, and writes a manifest naming every included and excluded file with\nits counts. Nothing here is hand-typed except the rules.\n\nRules (the only editorial content):\n  * excluded directories: diagnostics and other authors' studies that the paper does not sum\n    (ace*, oracle, gate04, observers, saturation, sweep, joint_followup, composite_*, descriptor,\n    mimo, norm_channels, joint_map, jointmap, hardware, suites/*_n20 superseded reruns);\n  * excluded files: integral/matched-baseline sweeps (arm tag 'integral' or args.baseline != none),\n    estimate-only probes, aborted/partial files (name contains 'aborted' or 'partial'), the\n    unpaired GR1 cohorts (files without per_ep in both arms are skipped anyway);\n  * a healthy control is counted (it is a paired comparison the paper reports).\nUsage: python aggregate_tally.py [--root results] [--out results/aggregate_manifest.json]\n",
+ "rules": "The aggregate paired-episode tally the abstract quotes, computed, not hand-assembled\n(dual-track audit finding 4.3). Sweeps every result file that carries paired per-episode\noutcomes for a frozen-faulted and an adaptive arm, assigns it to a category by path, applies\nthe EXCLUSION rules below, and writes a manifest naming every included and excluded file with\nits counts. Nothing here is hand-typed except the rules.\n\nRules (the only editorial content):\n  * excluded directories: diagnostics and other authors' studies that the paper does not sum\n    (ace*, oracle, gate04, observers, saturation, sweep, joint_followup, composite_*, descriptor,\n    mimo, norm_channels, joint_map, jointmap, hardware, suites/*_n20 superseded reruns);\n  * excluded files: integral/matched-baseline sweeps (arm tag 'integral' or args.baseline != none),\n    estimate-only probes, aborted/partial files (name contains 'aborted' or 'partial'), the\n    unpaired GR1 cohorts (files without per_ep in both arms are skipped anyway);\n  * a healthy control is counted (it is a paired comparison the paper reports);\n  * a corrected-protocol rerun extended to n=40 supersedes its own n=20 version (jf_rerun/X.json\n    is dropped when jf_rerun/X_n40.json exists: same scenarios, counted once).\nUsage: python aggregate_tally.py [--root results] [--out results/aggregate_manifest.json]\n",
  "included": [
   {
    "file": "aloha/healthy.json",
@@ -430,6 +430,69 @@
    "n": 2,
    "frozen": 2,
    "corrected": 2,
+   "fixed": 0,
+   "broken": 0
+  },
+  {
+   "file": "heldout/libero_10_rotonly_heldout.json",
+   "category": "held-out calibration",
+   "n": 40,
+   "frozen": 0,
+   "corrected": 7,
+   "fixed": 7,
+   "broken": 0
+  },
+  {
+   "file": "heldout/libero_goal_rotonly_heldout.json",
+   "category": "held-out calibration",
+   "n": 40,
+   "frozen": 18,
+   "corrected": 28,
+   "fixed": 11,
+   "broken": 1
+  },
+  {
+   "file": "heldout/libero_object_rotonly_heldout.json",
+   "category": "held-out calibration",
+   "n": 20,
+   "frozen": 7,
+   "corrected": 15,
+   "fixed": 10,
+   "broken": 2
+  },
+  {
+   "file": "heldout/libero_spatial_rotonly_heldout.json",
+   "category": "held-out calibration",
+   "n": 20,
+   "frozen": 9,
+   "corrected": 18,
+   "fixed": 9,
+   "broken": 0
+  },
+  {
+   "file": "jf_rerun/jf_friction_3_20_reset_n40.json",
+   "category": "joint-level reruns, corrected fault protocol",
+   "n": 40,
+   "frozen": 0,
+   "corrected": 13,
+   "fixed": 13,
+   "broken": 0
+  },
+  {
+   "file": "jf_rerun/jf_healthy_reset.json",
+   "category": "joint-level reruns, corrected fault protocol",
+   "n": 20,
+   "frozen": 19,
+   "corrected": 20,
+   "fixed": 1,
+   "broken": 0
+  },
+  {
+   "file": "jf_rerun/jf_lock_3_005_reset.json",
+   "category": "joint-level reruns, corrected fault protocol",
+   "n": 20,
+   "frozen": 0,
+   "corrected": 0,
    "fixed": 0,
    "broken": 0
   },
@@ -5576,6 +5639,10 @@
   {
    "file": "suites/libero_goal_rotonly_paired.json",
    "why": "superseded by the n=40 rerun"
+  },
+  {
+   "file": "jf_rerun/jf_friction_3_20_reset.json",
+   "why": "superseded by its n=40 extension"
   }
  ],
  "totals": {
@@ -5602,6 +5669,18 @@
    "n": 62,
    "fixed": 28,
    "broken": 1
+  },
+  "held-out calibration": {
+   "files": 4,
+   "n": 120,
+   "fixed": 37,
+   "broken": 3
+  },
+  "joint-level reruns, corrected fault protocol": {
+   "files": 3,
+   "n": 80,
+   "fixed": 14,
+   "broken": 0
   },
   "OpenVLA-OFT": {
    "files": 4,
@@ -5647,12 +5726,12 @@
   }
  },
  "grand": {
-  "files": 110,
-  "n": 2240,
-  "fixed": 625,
-  "broken": 66,
-  "frozen_successes": 643,
-  "regression_rate_all": 0.029464285714285714,
-  "regression_rate_vs_frozen_successes": 0.1026438569206843
+  "files": 117,
+  "n": 2440,
+  "fixed": 676,
+  "broken": 69,
+  "frozen_successes": 696,
+  "regression_rate_all": 0.028278688524590163,
+  "regression_rate_vs_frozen_successes": 0.09913793103448276
  }
 }

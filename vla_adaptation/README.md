@@ -18,9 +18,9 @@ suites, **paired** episodes (same tasks, initial states and seeds in both arms):
 | `libero_10` (n=40) | 0/40 = 0% | 15/40 = 38% | 6.1×10⁻⁵ |
 | **pooled** | **28/120 = 23%** | **78/120 = 65%** | **6.1×10⁻¹³** |
 
-Across **2,240 paired episodes in 110 stored cells** (faults, severities, profiles, controls and ablations,
-tallied by `openpi/aggregate_tally.py` with a written manifest): **625 fixed, 66 broken** — 2.9% of all
-episodes, 10.3% of the episodes the frozen policy was winning (the denominator that can regress).
+Across **2,440 paired episodes in 117 stored cells** (faults, severities, profiles, controls and ablations,
+tallied by `openpi/aggregate_tally.py` with a written manifest): **676 fixed, 69 broken** — 2.8% of all
+episodes, 9.9% of the episodes the frozen policy was winning (the denominator that can regress).
 Every suite in the table above is individually significant.
 
 The three headline cells replicate on a second suite (`libero_object`) **without
@@ -112,7 +112,7 @@ control steps.
 | **a second simulator (WidowX in SimplerEnv / SAPIEN, GR00T N1.7 Bridge)** | a +0.005 pose-increment offset on x,y,z zeroes the policy (0/20); identify over three episodes then hold: 0/20 → 14/20 on the next 20 paired episodes, healthy 14/20 (14 fixed / 0 broken, p = 1.2×10⁻⁴); continuous adaptation 6/20 at γ = 0.08 and 12/20 at γ = 0.2 because this controller keeps the transient drift; +0.003 held: 2/20 → 13/20 (11 / 0, p = 9.8×10⁻⁴); null 16/20 vs 15/20 (§34) |
 | **channel mask from healthy data alone (answers audit §4.5)** | a per-channel gate at 3 sd of the healthy phantom, measured on 20 healthy episodes, reproduces the rotation-only headline on the same scenarios: uniform +0.05, 9/20 → **19/20**, 10 fixed / 0 broken, p = 0.002; nothing in the rule has seen a fault (§37, prereg `PREREG_HEALTHY_GATE.md`) |
 | **not a result: base OpenVLA on the SimplerEnv Google robot** | healthy 2/10 (published 46%), plant R² 0.57 on a planner-interpolated 3 Hz delta controller, a +0.02 offset reaches the residual at 20–60% of its linear signature (1–2 sd): both stated conditions fail, no cell run, recorded as a boundary (§35) |
-| **faults below the controller (joint-level, in the MuJoCo model)** | elbow torque bias 20/40 → 32/40 (p = 0.0075, 3 broken); heavy friction 0/20 → 8/20 (p = 0.0078, 0 broken); a joint lock is identified and not repairable, a rank change rather than an input (§29) |
+| **faults below the controller (joint-level, in the MuJoCo model)** | elbow torque bias 20/40 → 32/40 (p = 0.0075, 3 broken); heavy friction 0/40 → 13/40 (p = 2.4×10⁻⁴, 0 broken; rerun at n = 40 under guaranteed fault restoration, §40); a joint lock is identified and not repairable, a rank change rather than an input (§29) |
 | intermittent | solved — 12/20 → 19/20, `p` = 0.039 |
 | multiplicative (loss of effectiveness) | solved — 0/20 → 17/20 at 80% authority loss, `p` = 1.5×10⁻⁵ |
 | sensor bias, camera misalignment | structurally invisible to this residual |

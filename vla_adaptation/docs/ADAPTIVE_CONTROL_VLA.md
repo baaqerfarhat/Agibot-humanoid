@@ -3700,3 +3700,54 @@ primary result for `libero_10` and keeps both for the other three.
 
 The frozen arms differ by 0-3 episodes (9 vs 8, 7 vs 5, 18 vs 15, 0 vs 0) with no calibration
 involved at all, which is the unpinned policy sampling the protocol section now states.
+
+## 40. Joint-level cells under the corrected fault protocol (2026-09-11)
+
+Prereg `PREREG_JOINT_RERUN.md`. The audit's last rerun item: the historical friction and lock
+cells (§29.3) ran with model mutation on a cached environment without guaranteed restoration,
+and with `reset(); set_init_state(...)`, which does not prove the two arms start from the same
+physical scene. Reruns use `JointFault`'s `finally`-restoration and `--scenario-reset`
+(exposed today; the merged branch shipped `libero_reset` with the flag off, the partial fix the
+handoff warned about). Everything else is unchanged: π0.5, `libero_spatial`, n = 20, elbow,
+translation corrected, phantom subtracted, clip 0.30.
+
+| cell | historical | rerun, corrected protocol |
+|---|---|---|
+| elbow friction +20 | 0/20 → 8/20, 8 fixed / 0 broken, p = 0.0078 | 1/20 → 4/20, 3 / 0, **p = 0.25** |
+| elbow lock ±0.05 rad | 0/20 → 0/20, 0 / 0 | 0/20 → 0/20, 0 / 0 |
+| healthy control, law running | not previously run | 19/20 → 20/20, 1 / 0, p = 1.0 |
+
+**The damage was not an artefact.** Every frozen arm reproduces: friction 1/20 against 0/20,
+lock 0/20 against 0/20. The audit's first worry, that the historical damage came partly from
+uncleared force state, is answered: it did not.
+
+**The lock cell is reproduced exactly, estimate included.** Final estimate x −0.232, z −0.189
+against the recorded −0.23, −0.16, one clip hit in sixty channel-episodes. Identified,
+corrected, not repaired — the rank argument survives the corrected protocol, which is the
+result the paper leans on for Proposition 1's boundary.
+
+**The friction repair does not reproduce at n = 20** (prediction 1 required ≥ 5 corrected;
+4/20). The estimate is nearly unchanged between runs (final median x, z: −0.23, −0.23
+historical against −0.19, −0.20 rerun), so identification is not what differs; the task
+outcome is. At n = 20 on a benchmark with ±11 points of noise, 4/20 against 8/20 cannot
+separate "the protocol removed the effect" from "the effect is half this size and noisy", so
+an n = 40 extension was registered before running it (amendment in the prereg) with the
+decision rule written down: ≥ 10/40 with ≤ 2 broken and p < 0.05 keeps the row, anything else
+withdraws the friction claim from the paper's joint-fault table.
+
+**A phantom that does no harm.** On a healthy arm the translation law holds a large phantom
+(final |f̂| median 0.055, 0.015, 0.080 on x, y, z; max 0.167) after the §29.2 bias subtraction,
+and costs nothing: 20/20 against 19/20. Consistent with §19's reading that a Cartesian reach
+tolerates centimetres of translation jitter, and a contrast with ALOHA, where 0.43 cm of
+within-episode variation was the whole margin.
+
+**Resolved at n = 40: the friction repair survives the corrected protocol.** `0/40 → 13/40`,
+13 fixed / 0 broken, exact McNemar p = 2.4e−4 (`results/jf_rerun/jf_friction_3_20_reset_n40.json`).
+The registered keep-rule is met, so the row stays, with these numbers replacing the historical
+n = 20 ones: 33 % from a floor of zero, no regression in forty paired episodes, and a p-value
+thirty times smaller than the historical cell's on a cleaner protocol. By block: inits 45/46
+give 6/20, inits 47/48 give 7/20. The same twenty 45/46 scenarios therefore scored 8, 4 and 6
+across three runs, which is exactly the ±11-point noise of a single n = 20 LIBERO cell and the
+reason the n = 20 rerun could not decide the question. The audit's rerun item is closed: the
+damage is real, the lock boundary is reproduced, the friction repair holds at a measured 33 %
+rather than the historical 40 %, and the law does no harm on a healthy arm.

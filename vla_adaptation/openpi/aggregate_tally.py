@@ -11,7 +11,9 @@ Rules (the only editorial content):
   * excluded files: integral/matched-baseline sweeps (arm tag 'integral' or args.baseline != none),
     estimate-only probes, aborted/partial files (name contains 'aborted' or 'partial'), the
     unpaired GR1 cohorts (files without per_ep in both arms are skipped anyway);
-  * a healthy control is counted (it is a paired comparison the paper reports).
+  * a healthy control is counted (it is a paired comparison the paper reports);
+  * a corrected-protocol rerun extended to n=40 supersedes its own n=20 version (jf_rerun/X.json
+    is dropped when jf_rerun/X_n40.json exists: same scenarios, counted once).
 Usage: python aggregate_tally.py [--root results] [--out results/aggregate_manifest.json]
 """
 import argparse, glob, json, os, pathlib, re
@@ -23,7 +25,8 @@ CATS = [("suites", "headline four suites"), ("phase05/jf_", "faults below the co
         ("phase05", "LIBERO pi0.5: fault families, severities, profiles, controls"),
         ("oft", "OpenVLA-OFT"), ("groot", "GR00T N1.7"), ("aloha", "ALOHA"), ("gr1", "GR1 humanoid"),
         ("widowx", "WidowX / SimplerEnv"), ("gate", "healthy-phantom channel gate"),
-        ("heldout", "held-out calibration"), ("google", "SimplerEnv Google robot")]
+        ("heldout", "held-out calibration"), ("jf_rerun", "joint-level reruns, corrected fault protocol"),
+        ("google", "SimplerEnv Google robot")]
 
 def category(rel):
     for pre, name in CATS:
@@ -72,6 +75,12 @@ def main():
             if any(suite in x for x in n40):
                 inc.remove(i); exc.append(dict(file=i["file"], why="superseded by the n=40 rerun"))
                 t = totals[i["category"]]; t["files"] -= 1; t["n"] -= i["n"]; t["fixed"] -= i["fixed"]; t["broken"] -= i["broken"]
+    names = {i["file"] for i in inc}
+    for i in list(inc):
+        if i["file"].startswith("jf_rerun") and not i["file"].endswith("_n40.json") \
+                and i["file"].replace(".json", "_n40.json") in names:
+            inc.remove(i); exc.append(dict(file=i["file"], why="superseded by its n=40 extension"))
+            t = totals[i["category"]]; t["files"] -= 1; t["n"] -= i["n"]; t["fixed"] -= i["fixed"]; t["broken"] -= i["broken"]
     grand = dict(files=len(inc), n=sum(i["n"] for i in inc), fixed=sum(i["fixed"] for i in inc), broken=sum(i["broken"] for i in inc),
                  frozen_successes=sum(i["frozen"] for i in inc))
     # audit finding 1.4: a regression can only occur on an episode the frozen policy was winning

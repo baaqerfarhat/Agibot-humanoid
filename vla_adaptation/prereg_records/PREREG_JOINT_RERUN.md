@@ -57,3 +57,22 @@ whether the corrected protocol removed the effect or merely halved a noisy one.
   reproduced under fault restoration**: the historical significant cell is relabelled as run
   under the old protocol, and the claim is withdrawn from the paper's joint-fault table.
 - Either way the n = 20 rerun above is reported, not discarded.
+
+---
+
+## Outcome (appended 2026-09-11, after all runs; nothing above was edited)
+
+- **Prediction 1 (friction +20 stays a repair): refuted at n = 20, resolved at n = 40.**
+  n = 20: 1/20 → 4/20, 3 fixed / 0 broken, p = 0.25 (threshold was ≥ 5 corrected). Per the
+  amendment registered before it ran, n = 40: **0/40 → 13/40, 13 fixed / 0 broken, p = 2.4e−4**.
+  The keep-rule (≥ 10/40, ≤ 2 broken, p < 0.05) is met; the paper row stays, with the n = 40
+  corrected-protocol numbers. The same twenty scenarios (inits 45/46) scored 8, 4 and 6 across
+  the historical run, the n = 20 rerun and the n = 40 run: one cell's measurement noise.
+- **Prediction 2 (lock not repaired): confirmed.** 0/20 → 0/20; estimate x −0.232, z −0.189
+  against the recorded −0.23, −0.16.
+- **Prediction 3 (healthy control changes by ≤ 2): confirmed.** 19/20 → 20/20, 1 fixed / 0 broken.
+- **Prediction 4 (fields restored after every episode): not checked directly** from the
+  fingerprint fields. Indirect evidence only: the lifecycle test passes, and every frozen arm
+  reproduces the historical damage without compounding (friction 1/20 and 0/40, lock 0/20).
+- A first attempt passed a three-channel `--bias` to a six-channel estimator and crashed every
+  corrected arm after its frozen arm. Not a result; its frozen arms agree with the reruns.
