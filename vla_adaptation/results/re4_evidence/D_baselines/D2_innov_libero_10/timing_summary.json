@@ -1,0 +1,327 @@
+{
+ "schema_version": "re4-v1",
+ "timing_file": "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/re4_evidence/D_baselines/D2_innov_libero_10/timing.jsonl",
+ "steps": 39564,
+ "rate_hz": 20.0,
+ "deadline_ms": 50.0,
+ "note": "wall-clock of a simulated robot: policy_ms and env_ms are this machine's GPU/CPU times, not a real-time controller's",
+ "adaptive": {
+  "policy_ms_replan_steps": {
+   "n": 3758,
+   "median": 893.5681239236146,
+   "p95": 903.9626498473808,
+   "p99": 915.6603239569813,
+   "max": 951.6945842187852
+  },
+  "adapter_ms": {
+   "n": 18781,
+   "median": 0.16468088142573833,
+   "p95": 0.22592395544052124,
+   "p99": 0.2624062821269037,
+   "max": 0.5618501454591751
+  },
+  "env_ms": {
+   "n": 18781,
+   "median": 20.192437106743455,
+   "p95": 35.655274987220764,
+   "p99": 41.11396227963269,
+   "max": 58.40068915858865
+  },
+  "sensor_to_command_ms": {
+   "n": 18781,
+   "median": 2.778208116069436,
+   "p95": 897.9437060188502,
+   "p99": 906.7725664470345,
+   "max": 954.4728831388056
+  },
+  "loop_ms": {
+   "n": 18781,
+   "median": 22.896097972989082,
+   "p95": 933.3559519145638,
+   "p99": 942.3006558790803,
+   "max": 1006.2919070478529
+  },
+  "deadline_misses": {
+   "all": 3758,
+   "replan_steps": 3758,
+   "non_replan_steps": 0,
+   "of_steps": 18781
+  },
+  "recovery": {
+   "threshold": "0.2 x ||f_true|| on channels [3, 4, 5]",
+   "window_steps": 20,
+   "window_s": 1.0,
+   "recovered": 33,
+   "censored": 7,
+   "no_fault_episodes": 0,
+   "control_s": {
+    "n": 33,
+    "median": 2.85,
+    "p95": 12.78,
+    "p99": 16.872,
+    "max": 18.6
+   },
+   "wall_s": {
+    "n": 33,
+    "median": 12.088325023651123,
+    "p95": 52.902458333969115,
+    "p99": 70.53397680282592,
+    "max": 78.13936567306519
+   },
+   "per_episode": [
+    {
+     "episode": 0,
+     "step": 166,
+     "control_s": 8.3,
+     "wall_s": 35.115588665008545
+    },
+    {
+     "episode": 1,
+     "step": 264,
+     "control_s": 13.2,
+     "wall_s": 54.372525453567505
+    },
+    {
+     "episode": 3,
+     "step": 173,
+     "control_s": 8.65,
+     "wall_s": 35.37611651420593
+    },
+    {
+     "episode": 4,
+     "step": 104,
+     "control_s": 5.2,
+     "wall_s": 21.427576780319214
+    },
+    {
+     "episode": 5,
+     "step": 32,
+     "control_s": 1.6,
+     "wall_s": 6.939272165298462
+    },
+    {
+     "episode": 7,
+     "step": 30,
+     "control_s": 1.5,
+     "wall_s": 6.036541938781738
+    },
+    {
+     "episode": 8,
+     "step": 24,
+     "control_s": 1.2,
+     "wall_s": 5.055980205535889
+    },
+    {
+     "episode": 10,
+     "step": 372,
+     "control_s": 18.6,
+     "wall_s": 78.13936567306519
+    },
+    {
+     "episode": 11,
+     "step": 34,
+     "control_s": 1.7,
+     "wall_s": 7.156984090805054
+    },
+    {
+     "episode": 13,
+     "step": 126,
+     "control_s": 6.3,
+     "wall_s": 26.148848056793213
+    },
+    {
+     "episode": 14,
+     "step": 109,
+     "control_s": 5.45,
+     "wall_s": 22.51897668838501
+    },
+    {
+     "episode": 15,
+     "step": 26,
+     "control_s": 1.3,
+     "wall_s": 5.907792329788208
+    },
+    {
+     "episode": 16,
+     "step": 21,
+     "control_s": 1.05,
+     "wall_s": 4.9878950119018555
+    },
+    {
+     "episode": 17,
+     "step": 33,
+     "control_s": 1.65,
+     "wall_s": 7.025486946105957
+    },
+    {
+     "episode": 18,
+     "step": 20,
+     "control_s": 1.0,
+     "wall_s": 4.0665435791015625
+    },
+    {
+     "episode": 19,
+     "step": 57,
+     "control_s": 2.85,
+     "wall_s": 12.088325023651123
+    },
+    {
+     "episode": 20,
+     "step": 250,
+     "control_s": 12.5,
+     "wall_s": 51.92241358757019
+    },
+    {
+     "episode": 23,
+     "step": 126,
+     "control_s": 6.3,
+     "wall_s": 26.36425018310547
+    },
+    {
+     "episode": 24,
+     "step": 100,
+     "control_s": 5.0,
+     "wall_s": 20.458494663238525
+    },
+    {
+     "episode": 25,
+     "step": 94,
+     "control_s": 4.7,
+     "wall_s": 19.22135829925537
+    },
+    {
+     "episode": 26,
+     "step": 113,
+     "control_s": 5.65,
+     "wall_s": 23.199952125549316
+    },
+    {
+     "episode": 27,
+     "step": 29,
+     "control_s": 1.45,
+     "wall_s": 6.016679286956787
+    },
+    {
+     "episode": 28,
+     "step": 18,
+     "control_s": 0.9,
+     "wall_s": 3.994354009628296
+    },
+    {
+     "episode": 29,
+     "step": 54,
+     "control_s": 2.7,
+     "wall_s": 11.08580207824707
+    },
+    {
+     "episode": 30,
+     "step": 31,
+     "control_s": 1.55,
+     "wall_s": 7.0413219928741455
+    },
+    {
+     "episode": 31,
+     "step": 37,
+     "control_s": 1.85,
+     "wall_s": 8.07088851928711
+    },
+    {
+     "episode": 33,
+     "step": 192,
+     "control_s": 9.6,
+     "wall_s": 39.453153133392334
+    },
+    {
+     "episode": 34,
+     "step": 40,
+     "control_s": 2.0,
+     "wall_s": 8.088683366775513
+    },
+    {
+     "episode": 35,
+     "step": 33,
+     "control_s": 1.65,
+     "wall_s": 6.894322633743286
+    },
+    {
+     "episode": 36,
+     "step": 74,
+     "control_s": 3.7,
+     "wall_s": 15.14114785194397
+    },
+    {
+     "episode": 37,
+     "step": 246,
+     "control_s": 12.3,
+     "wall_s": 50.72648048400879
+    },
+    {
+     "episode": 38,
+     "step": 18,
+     "control_s": 0.9,
+     "wall_s": 4.001909017562866
+    },
+    {
+     "episode": 39,
+     "step": 63,
+     "control_s": 3.15,
+     "wall_s": 13.082642555236816
+    }
+   ]
+  }
+ },
+ "frozen_faulted": {
+  "policy_ms_replan_steps": {
+   "n": 4157,
+   "median": 894.0568349789828,
+   "p95": 904.148364579305,
+   "p99": 914.935382110998,
+   "max": 975.8317740634084
+  },
+  "adapter_ms": {
+   "n": 20783,
+   "median": 0.12128590606153011,
+   "p95": 0.1849701628088951,
+   "p99": 0.21058014128357172,
+   "max": 0.487663084641099
+  },
+  "env_ms": {
+   "n": 20783,
+   "median": 19.674754003062844,
+   "p95": 35.044807032681994,
+   "p99": 39.9212525272742,
+   "max": 56.062228977680206
+  },
+  "sensor_to_command_ms": {
+   "n": 20783,
+   "median": 2.7207680977880955,
+   "p95": 898.2946257572621,
+   "p99": 906.8766687670723,
+   "max": 978.3322401344776
+  },
+  "loop_ms": {
+   "n": 20783,
+   "median": 22.289966931566596,
+   "p95": 932.7136322855949,
+   "p99": 941.584311039187,
+   "max": 1004.8716689925641
+  },
+  "deadline_misses": {
+   "all": 4158,
+   "replan_steps": 4157,
+   "non_replan_steps": 1,
+   "of_steps": 20783
+  },
+  "recovery": {
+   "threshold": "0.2 x ||f_true|| on channels [3, 4, 5]",
+   "window_steps": 20,
+   "window_s": 1.0,
+   "recovered": 0,
+   "censored": 40,
+   "no_fault_episodes": 0,
+   "control_s": "no samples",
+   "wall_s": "no samples",
+   "per_episode": []
+  }
+ }
+}

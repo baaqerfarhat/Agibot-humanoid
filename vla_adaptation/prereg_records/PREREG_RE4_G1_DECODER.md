@@ -27,3 +27,25 @@ writing side maps onto its equation.
 
 **Refutation.** Any of 2–5 failing means a native bias edit does not realise the intended final
 action to that precision; the paper's decoder bound then carries the measured ζ and J spread.
+
+---
+
+## Outcome (appended 2026-09-12; nothing above was edited)
+
+30 observations, 1,656 s of server time, every bias edit acknowledged at the requested norm.
+
+1. Validity: repeated queries with the pinned sampler agree to **0.0** (bit-identical). Confirmed.
+2. Diagonal dominance: max off-diagonal/diagonal per arm row **0.04–0.15** ≤ 0.2. Confirmed.
+3. Near-linear: ‖D − J‖_F/‖J‖_F = **0.035** ≤ 0.1; quadratic part at ±0.1 is **2–8 %** ≤ 10 %. Confirmed.
+4. ζ median ≤ 0.1: **refuted.** ζ median **0.43**, p95 1.92, max 4.50.
+5. State dependence CV ≤ 20 %: **refuted.** CV of J's diagonal across observations **0.27–0.41**.
+
+Reading. At a fixed observation the decoder's response to a bias edit is linear and nearly
+diagonal, so an edit computed from that observation's own Jacobian would land. But the Jacobian's
+gain varies 30–40 % from observation to observation (J diag −0.26, −0.22, −0.18, −0.03, −0.05,
+−0.05 on the arm dims, in unnormalised action per normalised bias unit), so a single bias vector
+intended to realise a correction c misses it by a median 43 % and up to 4.5× across the
+observations a rollout visits. A native bias edit is not a reliable way to apply a computed
+correction; the external subtraction the runners use is exact by construction. For re4's decoder
+bound: ζ = 0.43 median, J diag CV 0.27–0.41, quadratic term ≤ 8 % at ±0.1. Chunk-mean response is
+1.0–1.6× the first-action response, so later actions in a chunk respond more than the first.

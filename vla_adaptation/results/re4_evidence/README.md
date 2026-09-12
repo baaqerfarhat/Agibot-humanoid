@@ -8,16 +8,16 @@ GPU scripts: `scripts/re4/`.
 
 | part | folder | status |
 |---|---|---|
-| 0 calibration arrays | `calibration/` | done: `shipped_init45`, `heldout_init25` (FIR taps H_l, bias c, DC gain, M, M⁻¹, SHAs); `third_init5` after Part H |
-| A provenance map (+ G.2 centering) | `A_provenance/` | in progress |
+| 0 calibration arrays | `calibration/` | done: `shipped_init45`, `heldout_init25` (FIR taps H_l, bias c, DC gain, M, M⁻¹, SHAs); `third_init5` |
+| A provenance map (+ G.2 centering) | `A_provenance/` | done (record 42) |
 | B held-out calibration and healthy gate exports | `B_heldout/`, `B_gate/` | done (records 37, 39) |
-| C matched healthy controls, both calibrations | `C_healthy/` | running |
-| D baselines (method rerun, K=0 static observer, innovation law, known-fault oracle) | `D_baselines/` | queued after C |
-| E latency and recovery | every C/D (and ALOHA F) run's `timing_summary.json` | accumulating |
-| F held vs continued from a matched estimate (ALOHA, GR1) | `F_held_vs_continued/` | queued after D, H and G.1 |
-| G.1 decoder-bias realisation | `G_forensics/decoder_bound.json` | queued after the C/D chain |
+| C matched healthy controls, both calibrations | `C_healthy/` | done, both predictions confirmed (record 43) |
+| D baselines (method rerun, K=0 static observer, innovation law, known-fault oracle) | `D_baselines/` | done (record 44) |
+| E latency and recovery | every C/D (and ALOHA F) run's `timing_summary.json` | LIBERO done (17 runs); ALOHA with Part F |
+| F held vs continued from a matched estimate (ALOHA, GR1) | `F_held_vs_continued/` | running |
+| G.1 decoder-bias realisation | `G_forensics/decoder_bound.json` | done, refutation on realisation (record 46) |
 | G.3 predictor diagnostics, G.4 units check | `G_forensics/` | done |
-| H M at a third initial state | `H_third_init/` | queued after the C/D chain |
+| H M at a third initial state | `H_third_init/` | done, refutation (record 45) |
 
 ## Deviations from the plan, stated
 

@@ -1,0 +1,369 @@
+{
+ "schema_version": "re4-v1",
+ "timing_file": "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/re4_evidence/D_baselines/D3a_oracle_rot_libero_10/timing.jsonl",
+ "steps": 36570,
+ "rate_hz": 20.0,
+ "deadline_ms": 50.0,
+ "note": "wall-clock of a simulated robot: policy_ms and env_ms are this machine's GPU/CPU times, not a real-time controller's",
+ "adaptive": {
+  "policy_ms_replan_steps": {
+   "n": 3212,
+   "median": 893.7241896055639,
+   "p95": 904.3097385438159,
+   "p99": 917.7820819732733,
+   "max": 929.8399831168354
+  },
+  "adapter_ms": {
+   "n": 16012,
+   "median": 0.1619984395802021,
+   "p95": 0.22714924998581407,
+   "p99": 0.2635777369141578,
+   "max": 0.514263054355979
+  },
+  "env_ms": {
+   "n": 16012,
+   "median": 19.810001947917044,
+   "p95": 35.40523514384403,
+   "p99": 41.02946600876748,
+   "max": 59.60393417626619
+  },
+  "sensor_to_command_ms": {
+   "n": 16012,
+   "median": 2.7705359971150756,
+   "p95": 898.1441296753474,
+   "p99": 907.137204343453,
+   "max": 932.6344570145011
+  },
+  "loop_ms": {
+   "n": 16012,
+   "median": 22.509670932777226,
+   "p95": 933.3323075785302,
+   "p99": 942.238704864867,
+   "max": 973.5093270428479
+  },
+  "deadline_misses": {
+   "all": 3212,
+   "replan_steps": 3212,
+   "non_replan_steps": 0,
+   "of_steps": 16012
+  },
+  "recovery": {
+   "threshold": "0.2 x ||f_true|| on channels [3, 4, 5]",
+   "window_steps": 20,
+   "window_s": 1.0,
+   "recovered": 40,
+   "censored": 0,
+   "no_fault_episodes": 0,
+   "control_s": {
+    "n": 40,
+    "median": 0.0,
+    "p95": 0.0,
+    "p99": 0.0,
+    "max": 0.0
+   },
+   "wall_s": {
+    "n": 40,
+    "median": 0.0,
+    "p95": 0.0,
+    "p99": 0.0,
+    "max": 0.0
+   },
+   "per_episode": [
+    {
+     "episode": 0,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 1,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 2,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 3,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 4,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 5,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 6,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 7,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 8,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 9,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 10,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 11,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 12,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 13,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 14,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 15,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 16,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 17,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 18,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 19,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 20,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 21,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 22,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 23,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 24,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 25,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 26,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 27,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 28,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 29,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 30,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 31,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 32,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 33,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 34,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 35,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 36,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 37,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 38,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 39,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    }
+   ]
+  }
+ },
+ "frozen_faulted": {
+  "policy_ms_replan_steps": {
+   "n": 4112,
+   "median": 893.7225639820099,
+   "p95": 904.3435048661195,
+   "p99": 915.1596401864663,
+   "max": 972.014636034146
+  },
+  "adapter_ms": {
+   "n": 20558,
+   "median": 0.12165412772446871,
+   "p95": 0.18624804215505716,
+   "p99": 0.21347019355744123,
+   "max": 0.41524600237607956
+  },
+  "env_ms": {
+   "n": 20558,
+   "median": 19.92936246097088,
+   "p95": 35.23025236791,
+   "p99": 40.375497355125844,
+   "max": 57.80851608142257
+  },
+  "sensor_to_command_ms": {
+   "n": 20558,
+   "median": 2.718945499509573,
+   "p95": 897.9748412501067,
+   "p99": 907.0871589309536,
+   "max": 974.6482609771192
+  },
+  "loop_ms": {
+   "n": 20558,
+   "median": 22.530634538270533,
+   "p95": 932.9815498902462,
+   "p99": 942.0803124946542,
+   "max": 1006.8473340943456
+  },
+  "deadline_misses": {
+   "all": 4112,
+   "replan_steps": 4112,
+   "non_replan_steps": 0,
+   "of_steps": 20558
+  },
+  "recovery": {
+   "threshold": "0.2 x ||f_true|| on channels [3, 4, 5]",
+   "window_steps": 20,
+   "window_s": 1.0,
+   "recovered": 0,
+   "censored": 40,
+   "no_fault_episodes": 0,
+   "control_s": "no samples",
+   "wall_s": "no samples",
+   "per_episode": []
+  }
+ }
+}

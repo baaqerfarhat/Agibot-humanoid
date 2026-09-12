@@ -3825,3 +3825,78 @@ the settled attenuated estimate, measured open-loop and applied closed-loop.
 | OFT ran 5 of each 8-step chunk (default), not 8 as the record says | record corrected here |
 | the ablation's "reference" row is the 09-01 headline file, not a run made with the ablation | recorded |
 | the runner's default constants never matched the published ones | recorded; `run_configuration.json` now stores every constant |
+
+## 43. Matched healthy controls on the exact primary scenarios (re4 Part C, 2026-09-11)
+
+Prereg `PREREG_RE4_C_HEALTHY_CONTROLS.md`; runs under `results/re4_evidence/C_healthy/`, every
+one with `--scenario-reset`, the section-0 records and per-step timing. The exact (task, init)
+lists of the four headline cells, no fault, two arms: healthy frozen, and healthy with the law
+running on the rotation channels. Twice, with the shipped and the held-out calibration.
+
+| calibration | spatial | object | goal | libero_10 | pooled (no law → law; fixed / broken) |
+|---|---|---|---|---|---|
+| shipped | 19→20 | 20→20 | 39→40 | 38→37 | 116/120 → 117/120; 4 / 3, p = 1.0 |
+| held-out | 20→20 | 20→20 | 40→39 | 38→39 | 118/120 → 118/120; 2 / 2, p = 1.0 |
+
+Both registered predictions hold under both calibrations: every healthy rate sits above its
+suite's corrected rate, and the law on a healthy robot changes no suite by more than one
+episode net, with at most three broken (the shipped-calibration `libero_10` cell, 37 against
+38, the weakest of the eight and at the registered bound). The headline table's corrected
+rates are therefore 67 % (shipped) and 58 % (held-out) of health measured on the same 120
+scenarios, which is the denominator the paper lacked. Adapter compute per control step over
+the eight runs: 0.17 ms median, 0.46 ms at the 99th percentile, 0.77 ms maximum; the policy
+call is about 900 ms on this GPU and the simulator step 30–40 ms, neither of which is the
+controller's.
+
+## 44. The decisive missing baselines (re4 Part D, 2026-09-12)
+
+Prereg `PREREG_RE4_D_BASELINES.md` (outcome appended there). Headline fault, headline constants,
+`--scenario-reset`, full logs; each arm against its own frozen arm, baselines compared with the
+method by scenario key.
+
+| run | spatial (n=20) | libero_10 (n=40) |
+|---|---|---|
+| D.0 the method, rerun with full logs | 6 → 18 (12/0) | 0 → 15 (15/0) |
+| D.1 static observer, K = 0 | 11 → 18 (7/0) | 0 → 9 (9/0) |
+| D.2 innovation law, same constants | 9 → 18 (9/0) | 1 → 12 (12/1) |
+| D.3a known −f, rotation channels (oracle) | 8 → 19 (12/1) | 1 → 22 (22/1) |
+| D.3b known −f, all six channels | 9 → 20 (11/0) | — |
+
+**What the baselines say.** (i) The headline reproduces under the corrected protocol to the
+episode (18/20, 15/40). (ii) A static gain with no FIR memory does as well on the short suite and
+loses six of forty on the long-horizon suite (D.0-only 7, D.1-only 1, p = 0.07; pooled p = 0.11):
+FIR memory is worth something on long horizons and the registered significance bar was not met.
+(iii) The innovation law is within three of the legacy law on both cohorts, as registered; it
+removes the attenuation bias (0.049 against 0.044 on rx, rz) and does nothing for ry, which is
+under-identified under both. (iv) The known correction through the same channels is the ceiling
+for this interface: the method achieves 1.09 of it on spatial and 0.71 on libero_10, where the
+exact rotation correction reaches 22/40 and the estimated one 15/40; the seven-episode gap is
+the price of identification, mostly ry. (v) With all six channels corrected exactly, spatial is
+20/20 against a healthy 19/20: the fault is fully cancellable through the interface, and the
+rotation-only mask costs at most one episode of ceiling on this suite.
+
+## 45. M at a third initial state (re4 Part H, 2026-09-12): a refutation
+
+Prereg `PREREG_RE4_H_THIRD_INIT.md`. Probed at initial state 5 (states 5–14 for the healthy log):
+diagonal 0.253, 0.259, **0.262**, 0.252, 0.246, 0.243, condition number **1.29**. Against the
+shipped (state 45) matrix: x −15 %, y −5 %, **z +107 %**, rx 0 %, **ry −11 %**, rz 0 %. Two of the
+three registered bands fail (rotation within 10 %; condition number in [2.5, 3.5]). The shipped
+matrix's small z entry (0.126, half the other translation axes) is a property of state 45, not of
+the plant; at state 5 the matrix is nearly isotropic. §39's reading that "the rotation block held"
+was true of one pair of states and is withdrawn as a general statement: which entry of M moves
+depends on the configuration probed. The held-out cells of §39 remain what they are; this adds
+that a calibration should be probed at, or near, the deployment configuration, and that a probe
+at a single state can carry a factor-of-two error in one axis.
+
+## 46. A native decoder-bias edit does not realise an intended correction (re4 G.1, 2026-09-12)
+
+Prereg `PREREG_RE4_G1_DECODER.md`; `openpi/g1_decoder.py`; 30 fixed observations, sampler
+pinned, bias edits at ±0.02, ±0.05, ±0.1 on the seven LIBERO decoder dims. At a fixed observation
+the response is deterministic (repeat error 0.0), linear (‖D−J‖/‖J‖ = 0.035, quadratic part
+≤ 8 % at the largest edit) and diagonal-dominant (off-diagonal ≤ 15 % of the diagonal). Across
+observations the gain varies 27–41 % (coefficient of variation of J's diagonal), so a single bias
+vector computed from the mean Jacobian realises an intended ±0.05 correction with a median error
+of **43 %** (ζ p95 1.9, max 4.5). Predictions 1–3 confirmed, 4 and 5 refuted. The conclusion for
+both papers: applying the correction outside the network, which every published cohort does
+(§42), is exact by construction; editing the decoder bias is not, and the measured ζ is the number
+re4's decoder bound should carry.

@@ -1,0 +1,249 @@
+{
+ "schema_version": "re4-v1",
+ "timing_file": "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/re4_evidence/D_baselines/D3a_oracle_rot_libero_spatial/timing.jsonl",
+ "steps": 5733,
+ "rate_hz": 20.0,
+ "deadline_ms": 50.0,
+ "note": "wall-clock of a simulated robot: policy_ms and env_ms are this machine's GPU/CPU times, not a real-time controller's",
+ "adaptive": {
+  "policy_ms_replan_steps": {
+   "n": 461,
+   "median": 894.9816110543907,
+   "p95": 904.6107497997582,
+   "p99": 908.1617645919323,
+   "max": 919.4883720483631
+  },
+  "adapter_ms": {
+   "n": 2270,
+   "median": 0.17403496894985437,
+   "p95": 0.2269029384478926,
+   "p99": 0.2522768545895815,
+   "max": 0.44402596540749073
+  },
+  "env_ms": {
+   "n": 2270,
+   "median": 28.02078693639487,
+   "p95": 44.985807826742516,
+   "p99": 51.12488196231421,
+   "max": 72.48090300709009
+  },
+  "sensor_to_command_ms": {
+   "n": 2270,
+   "median": 2.8549109119921923,
+   "p95": 899.8279968742281,
+   "p99": 907.4319636309519,
+   "max": 922.3989599850029
+  },
+  "loop_ms": {
+   "n": 2270,
+   "median": 30.780482571572065,
+   "p95": 944.5837151026353,
+   "p99": 953.7626521405764,
+   "max": 973.602072801441
+  },
+  "deadline_misses": {
+   "all": 462,
+   "replan_steps": 461,
+   "non_replan_steps": 1,
+   "of_steps": 2270
+  },
+  "recovery": {
+   "threshold": "0.2 x ||f_true|| on channels [3, 4, 5]",
+   "window_steps": 20,
+   "window_s": 1.0,
+   "recovered": 20,
+   "censored": 0,
+   "no_fault_episodes": 0,
+   "control_s": {
+    "n": 20,
+    "median": 0.0,
+    "p95": 0.0,
+    "p99": 0.0,
+    "max": 0.0
+   },
+   "wall_s": {
+    "n": 20,
+    "median": 0.0,
+    "p95": 0.0,
+    "p99": 0.0,
+    "max": 0.0
+   },
+   "per_episode": [
+    {
+     "episode": 0,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 1,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 2,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 3,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 4,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 5,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 6,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 7,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 8,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 9,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 10,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 11,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 12,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 13,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 14,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 15,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 16,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 17,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 18,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 19,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    }
+   ]
+  }
+ },
+ "frozen_faulted": {
+  "policy_ms_replan_steps": {
+   "n": 696,
+   "median": 894.3914578994736,
+   "p95": 905.6933936662972,
+   "p99": 916.1742997472174,
+   "max": 971.2136529851705
+  },
+  "adapter_ms": {
+   "n": 3463,
+   "median": 0.13253092765808105,
+   "p95": 0.18495207186788315,
+   "p99": 0.20380889065563704,
+   "max": 0.339125981554389
+  },
+  "env_ms": {
+   "n": 3463,
+   "median": 28.582122875377536,
+   "p95": 45.71524302009491,
+   "p99": 52.77918592561037,
+   "max": 77.75637810118496
+  },
+  "sensor_to_command_ms": {
+   "n": 3463,
+   "median": 2.801361959427595,
+   "p95": 899.0972818341106,
+   "p99": 908.5853173816577,
+   "max": 973.7013899721205
+  },
+  "loop_ms": {
+   "n": 3463,
+   "median": 31.314821913838387,
+   "p95": 944.9783113785088,
+   "p99": 954.2802517907694,
+   "max": 1014.4244958646595
+  },
+  "deadline_misses": {
+   "all": 699,
+   "replan_steps": 696,
+   "non_replan_steps": 3,
+   "of_steps": 3463
+  },
+  "recovery": {
+   "threshold": "0.2 x ||f_true|| on channels [3, 4, 5]",
+   "window_steps": 20,
+   "window_s": 1.0,
+   "recovered": 0,
+   "censored": 20,
+   "no_fault_episodes": 0,
+   "control_s": "no samples",
+   "wall_s": "no samples",
+   "per_episode": []
+  }
+ }
+}
