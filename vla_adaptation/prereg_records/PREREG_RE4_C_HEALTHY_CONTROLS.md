@@ -25,3 +25,31 @@ healthy-adapted against healthy-frozen, exact McNemar, per suite and pooled.
 broken > 6, is harm on a healthy robot at the primary scale and is reported as the primary
 result for that suite. A suite whose healthy rate falls below its headline corrected rate means
 the headline arm is at or above health on that sample, and is reported as such.
+
+---
+
+## Outcome (appended 2026-09-11, after all eight runs; nothing above was edited)
+
+| calibration | suite | healthy, no law | healthy, law running | fixed / broken |
+|---|---|---|---|---|
+| shipped | spatial | 19/20 | 20/20 | 1 / 0 |
+| shipped | object | 20/20 | 20/20 | 0 / 0 |
+| shipped | goal | 39/40 | 40/40 | 1 / 0 |
+| shipped | libero_10 | 38/40 | 37/40 | 2 / 3 |
+| shipped | **pooled** | **116/120** | **117/120** | **4 / 3**, p = 1.0 |
+| held-out | spatial | 20/20 | 20/20 | 0 / 0 |
+| held-out | object | 20/20 | 20/20 | 0 / 0 |
+| held-out | goal | 40/40 | 39/40 | 0 / 1 |
+| held-out | libero_10 | 38/40 | 39/40 | 2 / 1 |
+| held-out | **pooled** | **118/120** | **118/120** | **2 / 2**, p = 1.0 |
+
+- **Prediction 1 (healthy ≥ headline corrected on every suite; libero_10 ≥ 25/40): confirmed.**
+  Every suite's healthy rate is above its corrected rate; libero_10 is 38/40 under both calibrations.
+- **Prediction 2 (law-running within ±3 of no-law per suite, ≤ 3 broken per suite, no suite
+  significant, pooled broken ≤ 6): confirmed** under both calibrations. The weakest cell is the
+  shipped-calibration libero_10 (37/40 against 38/40, 3 broken), at the registered bound on
+  broken episodes; reported as the weakest, not folded away.
+- Healthy competence on the exact primary samples is 116–118 of 120, so the headline corrected
+  rate of 78/120 (shipped) or 68/120 (held-out) sits at 67 % and 58 % of health on these samples.
+- Adapter compute over all eight runs: 0.17 ms median per step, 0.46 ms at the 99th percentile,
+  0.77 ms maximum (Part E; `timing_summary.json` in each run folder).
