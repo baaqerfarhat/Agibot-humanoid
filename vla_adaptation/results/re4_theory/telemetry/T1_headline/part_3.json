@@ -1,0 +1,23 @@
+{
+ "run": "results/re4_theory/telemetry/T1_headline",
+ "part": "3",
+ "episodes": 20,
+ "lam": 0.9999103105807592,
+ "L": 0.11090005372575706,
+ "eta": 0.17975525419191413,
+ "coverage": 1.0,
+ "violations": 0,
+ "violation_examples": [],
+ "tightness": {
+  "median_bound_over_X": 222.52739252418723,
+  "p10_bound_over_X": 51.258675222474096,
+  "median_final_bound_over_episode_max_X": 97.91999355219845,
+  "median_episode_max_X": 0.2274689292634206,
+  "bound_per_step_growth_at_zero_error": 0.17975525419191413,
+  "steps_until_bound_exceeds_10x_eta": 100347,
+  "vacuous": true
+ },
+ "prediction_3": {
+  "coverage_ge_0_9": true
+ }
+}

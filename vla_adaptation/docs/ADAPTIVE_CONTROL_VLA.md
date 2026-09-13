@@ -3980,5 +3980,55 @@ unbounded; recovery time cannot be compared against it on this plant. Recovery t
 Part E stand on their own (median 3.4 s to 20 % of the fault on the two spatial episodes that
 reached it; most do not, because r_y never does).
 
-Running on the GPU: the telemetry batch for Parts 3, 4 and 5 (four runs), then the ARX
-intervention (Part 6), then the seed-pinned decision cells (Part 8.2).
+The telemetry batch for Parts 3, 4 and 5 is in §49; the ARX intervention (Part 6) and the
+seed-pinned decision cells (Part 8.2) follow it on the GPU.
+
+## 49. Tube, estimator recursions and small-gain on logged episodes (re4 theory Parts 3–5, 2026-09-13)
+
+Four `libero_spatial` runs on the headline 20 scenarios with per-step telemetry
+(`results/re4_theory/telemetry/T1_headline`, `T2_onset40`, `T3_ramp60`, `T4_innov`; prereg
+`PREREG_RE4T_3_4_5_TELEMETRY.md`, outcomes appended; scorer `openpi/re4_theory/recursions.py`,
+one `part_*.json` per prediction in each run folder). Cells: T1 9/20 → 16/20 (the headline
+reproduced), T2 (onset at step 40) 18/20 → 20/20, T3 (ramp over 60 steps) 18/20 → 19/20, T4
+(innovation law) 9/20 → 19/20. The policy sampler was unpinned, so the frozen arms differ per
+episode between runs; cross-run comparisons here are between-run at n = 20.
+
+**Every estimator-side prediction held.**
+- 4.2, error envelope: the bound propagated from the logged residual, gate and attenuation
+  covers the measured estimate error on 100 % of steps.
+- 4.3, fixed points: the attenuated settle predicted from the logged residual distribution,
+  E[s_k z_k], matches the stored ablation settles within 20 % on all nine (ρ, channel) pairs
+  (e.g. ρ = 0.05: 0.027/0.013/0.028 predicted vs 0.027/0.011/0.027 stored). The innovation law
+  (T4) settles at 95 % / 45 % / 98 % of the +0.05 truth on r_x / r_y / r_z (registered: within
+  10 % on r_x, r_z); the attenuated law on the same scenarios at 87 % / 41 % / 88 %. Removing the
+  attenuation removes the r_x, r_z shortfall and leaves r_y where it was.
+- 4.4, drift floor: under the ramp the estimate's lag (0.016) is inside ν/α̲ = 0.021 (ratio
+  0.76); on r_x, r_z the drift component proper is about a quarter of the bound.
+
+**Every plant-side certificate that needs a contraction rate did not.**
+- 3, tube: coverage 1.00 with no violations to classify, but only because with λ̂ = 1.00 (§48,
+  Part 1) the bound never forgets: it grows by η = 0.18 per step and ends at 98× the episode's
+  largest measured residual (median). Vacuous; the letter passes, the substance is refuted.
+- 5, small-gain: fitted coupling constants are small (ε₀ = 0.0008, k_E = 0.012, k_X = 0.009),
+  but a = 1 − λ̂ = 9×10⁻⁵, so a·c > b·k_X fails (7×10⁻⁶ vs 9.6×10⁻⁴). No certificate for the
+  composed loop can be issued on this plant from these constants.
+- 4.1, onset transient: the registered per-episode RMS statistic fails (0.74 of the step's peak
+  over the first six responses, 1.09 after; registered 0.25 / 0.10) because the plant's step
+  noise is the size of the 0.01 step it is asked to resolve. The episode-mean response (not
+  registered) follows the FIR partial sums on r_x and r_z (plateau ratios 1.01, 0.92; error after
+  six responses 2 %, 9 %) and reaches 3.0× the FIR's plateau on r_y: the FIR's r_y DC gain (0.10)
+  is a third of the probed sensitivity (M's 0.28). The §48 Part 6 model-error diagnosis, seen in
+  the transient.
+
+**Reading.** The adaptive law's own recursions are predictive on this plant: fixed points,
+envelope and drift floor come out where the logged residuals say they should, and the r_y
+deficit is located in the plant model, not in the law. What cannot be certified is the plant:
+the Panda under OSC_POSE has no same-command contraction rate, so the tube and the small-gain
+condition are empty here, and the paper's repair claim stays an empirical one on paired counts.
+The humanoid arm is the plant where those certificates could be issued (its servos are
+first-order, §48 Part 2.1); that composite (Part 7) is the stretch item.
+
+Scorer fixes made while scoring, stated: the telemetry's `correction` carries the gripper
+channel (7 entries), the scorer uses the six task channels; the 4.3 scorer compares the settle
+to the logged truth; the 4.1 scorer reports the episode-mean response per channel as a
+secondary reading; the Part 3 scorer reports the bound-to-measurement ratio.

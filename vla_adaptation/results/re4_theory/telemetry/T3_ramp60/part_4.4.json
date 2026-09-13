@@ -1,0 +1,11 @@
+{
+ "run": "results/re4_theory/telemetry/T3_ramp60",
+ "part": "4.4",
+ "episodes": 20,
+ "measured_lag_median": 0.01579820128121745,
+ "alpha_min_median": 0.040106561911382274,
+ "nu_over_alpha": 0.02077797980227352,
+ "prediction_4_4": {
+  "within_2x": true
+ }
+}

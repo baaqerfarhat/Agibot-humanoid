@@ -60,6 +60,17 @@ def main():
         if rows:
             meas = np.array([r["meas"] for r in rows]); pred = np.array([r["pred"] for r in rows])
             peak = np.abs(pred[:, -1, corr]).mean(); err = np.sqrt(np.mean((meas[:, :, corr] - pred[:, :, corr]) ** 2, axis=(0, 2)))
+            # secondary (not registered): the episode-MEAN response per channel against the FIR partial sums, which
+            # removes the per-step plant noise the registered per-episode RMS is dominated by
+            mm = meas.mean(axis=0); pm = pred.mean(axis=0); per_ch = {}
+            for i in corr:
+                pk = max(abs(pm[-1, i]), 1e-9)
+                per_ch[str(i)] = dict(mean_meas=mm[:, i].tolist(), pred=pm[:, i].tolist(),
+                                      rms_err_first_K_over_peak=float(np.sqrt(np.mean((mm[:K, i] - pm[:K, i]) ** 2)) / pk),
+                                      rms_err_after_K_over_peak=float(np.sqrt(np.mean((mm[K:, i] - pm[K:, i]) ** 2)) / pk),
+                                      plateau_meas_over_pred=float(mm[-3:, i].mean() / pm[-1, i]) if abs(pm[-1, i]) > 1e-9 else None,
+                                      fir_dc_gain=float(W[i].sum()), M_diag=float(M[i, i]))
+            out.update(mean_response_by_channel=per_ch)
             out.update(n_onsets=len(rows), rms_err_over_peak_by_step=(err / max(peak, 1e-9)).tolist(),
                        rms_err_first_K_over_peak=float(err[:K].mean() / max(peak, 1e-9)), rms_err_after_K_over_peak=float(err[K:].mean() / max(peak, 1e-9)),
                        prediction_4_1=dict(within_25pct_first_K=bool(err[:K].mean() / max(peak, 1e-9) <= 0.25), within_10pct_after_K=bool(err[K:].mean() / max(peak, 1e-9) <= 0.10)))
@@ -81,8 +92,13 @@ def main():
             s = 1.0 / (1.0 + np.linalg.norm(R, axis=1) ** 2 / rho ** 2); settle[f"{rho:.2f}"] = (s[:, None] * Z).mean(axis=0)[corr].tolist()
         stored = {"0.05": [0.027, 0.011, 0.027], "0.15": [0.044, 0.020, 0.044], "0.50": [0.048, 0.022, 0.049]}
         meas_settle = np.median(np.array([arr(ep, "f_hat")[-50:].mean(axis=0)[corr] for ep in ad.values() if len(ep) > 50]), axis=0).tolist()
+        truth = np.median(np.concatenate([arr(ep, "f_true") for ep in ad.values()]), axis=0)[corr]
+        ratio = [float(m / t) if abs(t) > 1e-12 else None for m, t in zip(meas_settle, truth)]
         out.update(predicted_settle_from_logged_residuals=settle, stored_ablation_settles=stored, measured_settle_this_run=meas_settle,
-                   within_20pct={r: [bool(abs(p - s0) <= 0.2 * abs(s0)) for p, s0 in zip(settle[r], stored[r])] for r in settle})
+                   within_20pct={r: [bool(abs(p - s0) <= 0.2 * abs(s0)) for p, s0 in zip(settle[r], stored[r])] for r in settle},
+                   truth_on_corrected_channels=truth.tolist(), measured_settle_over_truth=ratio,
+                   # T4 (innovation law): the settle should sit within 10 % of the truth on rx and rz (channels 0 and 2 of corr)
+                   prediction_4_3_innovation=dict(within_10pct_of_truth_rx_rz=bool(all(r is not None and abs(r - 1) <= 0.10 for r in (ratio[0], ratio[2])))))
     elif a.part == "4.4":
         lags, alphas = [], []
         for (arm, e), ep in ad.items():
@@ -101,14 +117,21 @@ def main():
         L = float(np.mean([v["median"] for k, v in con["input_sensitivity_ee_m_per_unit"].items() if int(k) < 3])) / 0.05   # m per unit -> normalised (5 cm per unit)
         P = np.array([p["P"] for p in cert["per_axis"]], float)
         eta = np.percentile(np.linalg.norm(np.concatenate([arr(ep, "r") for ep in tel.values() if True])[:, :3] * np.sqrt(P[:3]), axis=1), 90)
-        covs, viol = [], []
+        covs, viol, ratio_end, ratio_all, Xmax = [], [], [], [], []
         for (arm, e), ep in ad.items():
-            R = arr(ep, "r"); F = arr(ep, "f_true"); C = arr(ep, "correction")
+            R = arr(ep, "r"); F = arr(ep, "f_true"); C = np.array([np.asarray(s["correction"], float)[:6] for s in ep])
             X = np.linalg.norm(R[:, :3] * np.sqrt(P[:3]), axis=1); Rb = np.zeros(len(ep)); Rb[0] = eta
             for k in range(len(ep) - 1):
                 Rb[k + 1] = lam * Rb[k] + L * np.linalg.norm((F + C)[k]) + eta
             ok = X <= Rb; covs.append(ok.mean()); viol += [dict(episode=e, t=int(ep[k]["t"]), X=float(X[k]), R=float(Rb[k])) for k in np.where(~ok)[0]]
+            ratio_end.append(Rb[-1] / max(X.max(), 1e-9)); ratio_all += list(Rb[1:] / np.maximum(X[1:], 1e-9)); Xmax.append(X.max())
+        # tightness: with lam ~ 1 the bound grows without limit (eta per step), so coverage alone says nothing;
+        # report the bound-to-measurement ratio and the bound's growth against the episode's largest X.
         out.update(lam=float(lam), L=float(L), eta=float(eta), coverage=float(np.mean(covs)), violations=len(viol), violation_examples=viol[:10],
+                   tightness=dict(median_bound_over_X=float(np.median(ratio_all)), p10_bound_over_X=float(np.percentile(ratio_all, 10)),
+                                  median_final_bound_over_episode_max_X=float(np.median(ratio_end)), median_episode_max_X=float(np.median(Xmax)),
+                                  bound_per_step_growth_at_zero_error=float(eta), steps_until_bound_exceeds_10x_eta=int(np.ceil(9 / (1 - lam))) if lam < 1 else None,
+                                  vacuous=bool(np.median(ratio_end) > 10)),
                    prediction_3=dict(coverage_ge_0_9=bool(np.mean(covs) >= 0.9)))
     elif a.part == "5":
         con = json.loads(pathlib.Path(a.contraction).read_text())

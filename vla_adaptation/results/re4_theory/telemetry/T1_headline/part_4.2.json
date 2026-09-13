@@ -1,0 +1,10 @@
+{
+ "run": "results/re4_theory/telemetry/T1_headline",
+ "part": "4.2",
+ "episodes": 20,
+ "coverage_all": 1.0,
+ "coverage_after_15": 1.0,
+ "prediction_4_2": {
+  "coverage_after_15_ge_0_9": true
+ }
+}

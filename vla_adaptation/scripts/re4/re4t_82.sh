@@ -1,0 +1,16 @@
+#!/bin/bash
+# re4 theory Part 8.2 (prereg PREREG_RE4T_8_2_DECISION_CELLS.md): seed-pinned decision cells. Waits for Part 6.
+SP=/tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad; OPENPI=/home/mtaheri/ws_AgibotX2/openpi; REPO=/home/mtaheri/ws_AgibotX2/vla-adaptation; R=/home/mtaheri/ws_AgibotX2/vla-adaptation/results/re4_theory/8_statistics
+export MUJOCO_GL=egl MUJOCO_EGL_DEVICE_ID=1 PYTHONPATH=/home/mtaheri/ws_AgibotX2/openpi/third_party/libero:/home/mtaheri/ws_AgibotX2/openpi/examples/libero:/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi
+PY=/home/mtaheri/ws_AgibotX2/openpi/examples/libero/.venv/bin/python
+until grep -q "RE4T RY DONE" /tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad/re4t_ry.log 2>/dev/null; do sleep 60; done; sleep 20
+cd /home/mtaheri/ws_AgibotX2/openpi && CUDA_VISIBLE_DEVICES=1 nohup /home/mtaheri/ws_AgibotX2/openpi/.venv/bin/python /home/mtaheri/ws_AgibotX2/Agibot-humanoid/vla_adaptation/openpi/ace_server.py --port 8000 --control /tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad/ctl.json --ack /tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad/ack.json > /tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad/pi05_server_82.log 2>&1 &
+t=0; until grep -q "listening" /tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad/pi05_server_82.log 2>/dev/null; do sleep 10; t=$((t+10)); if [ $t -gt 1500 ]; then echo "SERVER NOT READY"; exit 1; fi; done
+COMMON="--port 8000 --gamma 0.08 --dead 0.008 --norm-r 0.15 --clip 0.15 --scenario-reset --pin-rng --log /home/mtaheri/ws_AgibotX2/vla-adaptation/results/phase05/error_signal_so3.json --openloop /home/mtaheri/ws_AgibotX2/vla-adaptation/results/phase05/openloop_so3.json --control /tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad/ctl.json --ack /tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad/ack.json"
+go() { local id=$1; shift; local d=$R/$id; mkdir -p $d; echo "#### 82 $id  $(date +%T)"; timeout 21600 $PY -u /home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/adaptive_law.py $COMMON "$@" --telemetry $d/telemetry.jsonl --timing $d/timing.jsonl --out $d/result.json > $d/run.log 2>&1; echo "exit $?  $(grep -E ': [0-9]+/[0-9]+ =' $d/run.log | tr '\n' ' ')"; (cd /home/mtaheri/ws_AgibotX2/vla-adaptation && python3 openpi/re4_record.py record $d/result.json --part 8_statistics --run-id $id --timing $d/timing.jsonl --root /home/mtaheri/ws_AgibotX2/vla-adaptation/results/re4_theory > $d/record.log 2>&1); echo "RUN DONE 82 $id"; }
+go a_method_libero10_n80 --suite libero_10 --episodes 80 --sev 0.05 --corr-dims 3,4,5
+go a_static_libero10_n80 --suite libero_10 --episodes 80 --sev 0.05 --corr-dims 3,4,5 --fir-k 0
+go b_method_spatial_tra015 --suite libero_spatial --episodes 20 --fault-vec 0.15,0.15,0.15,0,0,0 --corr-dims 0,1,2 --clip 0.30
+go b_integral_spatial_tra015 --suite libero_spatial --episodes 20 --fault-vec 0.15,0.15,0.15,0,0,0 --corr-dims 0,1,2 --clip 0.30 --baseline integral --ki 0.005
+P=$(ps -eo pid,args | grep "[a]ce_server.py" | awk '{print $1}'); [ -n "$P" ] && kill $P
+echo "RE4T 82 DONE $(date +%T)"

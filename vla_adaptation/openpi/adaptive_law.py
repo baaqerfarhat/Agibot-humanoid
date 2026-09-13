@@ -1031,6 +1031,9 @@ def main():
     p.add_argument("--joint-fault", default=None,
                    help="kind:joint:magnitude, a fault BELOW the controller in the MuJoCo model "
                         "(torque N.m bias, friction, damping, gain scale, lock +-rad); see joint_fault.py")
+    p.add_argument("--pin-rng", action="store_true",
+                   help="pin the policy server's flow-sampler noise (one key per call) so two runs draw identical "
+                        "actions given identical observations (re4 theory Part 8.2)")
     p.add_argument("--ar", type=int, default=0,
                    help="ARX plant: this many past measured increments of the channel's own motion in the "
                         "regressor (re4 theory Part 6); M is rescaled per channel by (1 - sum of AR coefficients)")
@@ -1206,7 +1209,7 @@ def main():
                 bias=bias, static_correction=static_c, fault_vector=fvec,
                 observation_offset=obs_off, calibration_episodes=calib,
                 max_steps=pp.MAXS, episodes=eps, n_tasks=n_tasks,
-                control_request=dict(site=None, pin_rng=False)),
+                control_request=dict(site=None, pin_rng=bool(a.pin_rng))),
             fields=dict(t="environment step, including the warmup",
                 raw_action="full policy action before correction and action fault",
                 correction="full action vector added by this runner before the action fault",
@@ -1230,7 +1233,7 @@ def main():
         a.timing.parent.mkdir(parents=True, exist_ok=True)
         timing_fh = open(a.timing, "w", buffering=1)
     with telemetry_stream(a.telemetry, header) as telemetry:
-        pr.control(dict(site=None, pin_rng=False))
+        pr.control(dict(site=None, pin_rng=bool(a.pin_rng)))
         for tag, adapt in (("frozen_faulted", False), ("adaptive", True)):
             ok, fh, trajs, per_ep = 0, [], [], []
             for episode, (tid, init) in enumerate(eps):
