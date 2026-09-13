@@ -779,6 +779,7 @@ def run_cli(a, telemetry, W=None, r2=None, M_inv=None, M=None, observer=None, re
     corr = [int(x) for x in a.corr_joints.split(",")] if a.corr_joints else None
     sc = [float(x) for x in a.static_corr.split(",")] if a.static_corr else None
     res = dict(args=json.loads(json.dumps(vars(a), default=json_value)), arms={})
+    timing_fh = open(a.timing, "w", buffering=1) if getattr(a, "timing", None) else None
     f_fixed = np.array([float(x) for x in a.f_init.split(",")]) if a.f_init else None
     assert f_fixed is None or len(f_fixed) == NJ, f"--f-init needs {NJ} values"
     arm_list = (("adaptive", True),) if a.skip_frozen else (("frozen_faulted", False), ("adaptive", True))

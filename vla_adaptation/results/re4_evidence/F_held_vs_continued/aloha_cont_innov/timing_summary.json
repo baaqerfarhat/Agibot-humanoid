@@ -1,0 +1,315 @@
+{
+ "schema_version": "re4-v1",
+ "timing_file": "results/re4_evidence/F_held_vs_continued/aloha_cont_innov/timing.jsonl",
+ "steps": 11581,
+ "rate_hz": 50.0,
+ "deadline_ms": 20.0,
+ "note": "wall-clock of a simulated robot: policy_ms and env_ms are this machine's GPU/CPU times, not a real-time controller's",
+ "adaptive": {
+  "policy_ms_replan_steps": {
+   "n": 1165,
+   "median": 847.75549499318,
+   "p95": 857.2777937632054,
+   "p99": 859.2510775197297,
+   "max": 866.261466871947
+  },
+  "adapter_ms": {
+   "n": 11581,
+   "median": 0.11660321615636349,
+   "p95": 0.24320697411894798,
+   "p99": 0.26603275910019875,
+   "max": 0.3352737985551357
+  },
+  "env_ms": {
+   "n": 11581,
+   "median": 6.796122994273901,
+   "p95": 16.693957149982452,
+   "p99": 18.464851053431637,
+   "max": 23.382751969620585
+  },
+  "sensor_to_command_ms": {
+   "n": 11581,
+   "median": 0.2219919115304947,
+   "p95": 848.0377970263362,
+   "p99": 856.5455629955977,
+   "max": 866.3373889867216
+  },
+  "loop_ms": {
+   "n": 11581,
+   "median": 6.924784975126386,
+   "p95": 865.0521161034703,
+   "p99": 873.3386981766671,
+   "max": 880.3436220623553
+  },
+  "deadline_misses": {
+   "all": 1165,
+   "replan_steps": 1165,
+   "non_replan_steps": 0,
+   "of_steps": 11581
+  },
+  "recovery": {
+   "threshold": "0.2 x ||f_true|| on channels [0, 1, 2, 3, 4, 5]",
+   "window_steps": 20,
+   "window_s": 0.4,
+   "recovered": 40,
+   "censored": 0,
+   "no_fault_episodes": 0,
+   "control_s": {
+    "n": 40,
+    "median": 0.0,
+    "p95": 0.0,
+    "p99": 0.0,
+    "max": 0.0
+   },
+   "wall_s": {
+    "n": 40,
+    "median": 0.0,
+    "p95": 0.0,
+    "p99": 0.0,
+    "max": 0.0
+   },
+   "per_episode": [
+    {
+     "episode": 0,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 1,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 2,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 3,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 4,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 5,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 6,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 7,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 8,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 9,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 10,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 11,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 12,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 13,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 14,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 15,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 16,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 17,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 18,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 19,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 20,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 21,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 22,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 23,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 24,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 25,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 26,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 27,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 28,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 29,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 30,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 31,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 32,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 33,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 34,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 35,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 36,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 37,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 38,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 39,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    }
+   ]
+  }
+ }
+}

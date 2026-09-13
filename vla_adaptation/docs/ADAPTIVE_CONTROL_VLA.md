@@ -3900,3 +3900,37 @@ of **43 %** (ζ p95 1.9, max 4.5). Predictions 1–3 confirmed, 4 and 5 refuted.
 both papers: applying the correction outside the network, which every published cohort does
 (§42), is exact by construction; editing the decoder bias is not, and the measured ζ is the number
 re4's decoder bound should carry.
+
+## 47. Held vs continued from a matched estimate (re4 Part F, 2026-09-12): the hold scheme, re-read
+
+Prereg `PREREG_RE4_F_HELD_VS_CONTINUED.md` (both outcomes appended there); runs under
+`results/re4_evidence/F_held_vs_continued/`. Every arm starts every episode from the stored
+identified estimate; the arms differ only in what happens after step 0.
+
+| robot, fault | held | continued, innovation law | continued, legacy law |
+|---|---|---|---|
+| ALOHA, +0.02 rad on joints 0–5, n = 40 | 15/40 | **14/40** | 0/40 |
+| GR1, +0.10 rad on the right arm, n = 30 | 22/30 | 17/30 | 1/30 |
+
+**What was confounded, and what it separates into.** The paper's ALOHA argument was: the
+updating correction moves 0.43 cm within an episode, the margin is under 0.5 cm, so updating
+must stop. With the initial estimate matched, the innovation law updating throughout repairs
+14/40 against the held 15/40 (p = 1.0) while moving 0.30 cm; the legacy law repairs 0/40 while
+moving 0.40 cm. The difference is bias, not movement: the legacy law's estimate is pulled to
+0.016 by step 20 (its attenuated fixed point, plus deadzone leakage once the fault is cancelled),
+a 0.42 cm residual during the grasp; the innovation law's estimate stays at the fault. On the
+humanoid the same two arms give 17/30 and 1/30 against the held 22/30: there the innovation
+law does lose five episodes to updating (registered margin met, p = 0.23), and the legacy law's
+estimate decays to the deadzone within 200 steps.
+
+**What changes in the paper.** (i) "ALOHA with continuous adaptation: no repair" becomes
+"with the legacy law"; the innovation law repairs ALOHA while updating. (ii) The deployable
+scheme is stated as: use an update whose correct estimate is a fixed point (the innovation
+form); hold the estimate where the task margin is smaller than the update's own movement, which
+on this evidence is the humanoid, not ALOHA. (iii) Proposition 2 stands as a necessary
+condition and its ALOHA example is relabelled. (iv) The GR1 innovation-law bias figure of 50 %
+was the attenuation reading; the measured mechanism under the legacy law is deadzone leakage
+to near zero, which is stronger, and the paper says leakage.
+
+This is the fourth registered refutation of the re4 programme (libero_10 under held-out
+calibration, M at a third state, decoder-bias realisation, and this), each reported as primary.

@@ -1,0 +1,315 @@
+{
+ "schema_version": "re4-v1",
+ "timing_file": "results/re4_evidence/F_held_vs_continued/aloha_cont_legacy/timing.jsonl",
+ "steps": 12000,
+ "rate_hz": 50.0,
+ "deadline_ms": 20.0,
+ "note": "wall-clock of a simulated robot: policy_ms and env_ms are this machine's GPU/CPU times, not a real-time controller's",
+ "adaptive": {
+  "policy_ms_replan_steps": {
+   "n": 1200,
+   "median": 847.6537835085765,
+   "p95": 857.3123838752508,
+   "p99": 858.988940436393,
+   "max": 862.600572174415
+  },
+  "adapter_ms": {
+   "n": 12000,
+   "median": 0.11320505291223526,
+   "p95": 0.2379572484642267,
+   "p99": 0.26346394792199135,
+   "max": 0.3427751362323761
+  },
+  "env_ms": {
+   "n": 12000,
+   "median": 6.767418468371034,
+   "p95": 16.626525565516204,
+   "p99": 18.282264599110935,
+   "max": 20.648831967264414
+  },
+  "sensor_to_command_ms": {
+   "n": 12000,
+   "median": 0.21935557015240192,
+   "p95": 847.8967756149359,
+   "p99": 856.575884076301,
+   "max": 862.8685760777444
+  },
+  "loop_ms": {
+   "n": 12000,
+   "median": 6.89359602984041,
+   "p95": 864.5760554820299,
+   "p99": 872.7373340143822,
+   "max": 880.8780619874597
+  },
+  "deadline_misses": {
+   "all": 1200,
+   "replan_steps": 1200,
+   "non_replan_steps": 0,
+   "of_steps": 12000
+  },
+  "recovery": {
+   "threshold": "0.2 x ||f_true|| on channels [0, 1, 2, 3, 4, 5]",
+   "window_steps": 20,
+   "window_s": 0.4,
+   "recovered": 40,
+   "censored": 0,
+   "no_fault_episodes": 0,
+   "control_s": {
+    "n": 40,
+    "median": 0.76,
+    "p95": 0.8809999999999999,
+    "p99": 0.9488,
+    "max": 0.98
+   },
+   "wall_s": {
+    "n": 40,
+    "median": 3.704975962638855,
+    "p95": 4.62511670589447,
+    "p99": 4.637477412223816,
+    "max": 4.639146089553833
+   },
+   "per_episode": [
+    {
+     "episode": 0,
+     "step": 25,
+     "control_s": 0.5,
+     "wall_s": 2.771091938018799
+    },
+    {
+     "episode": 1,
+     "step": 39,
+     "control_s": 0.78,
+     "wall_s": 3.7042341232299805
+    },
+    {
+     "episode": 2,
+     "step": 35,
+     "control_s": 0.7,
+     "wall_s": 3.6848978996276855
+    },
+    {
+     "episode": 3,
+     "step": 24,
+     "control_s": 0.48,
+     "wall_s": 2.7364909648895264
+    },
+    {
+     "episode": 4,
+     "step": 29,
+     "control_s": 0.58,
+     "wall_s": 2.8045051097869873
+    },
+    {
+     "episode": 5,
+     "step": 29,
+     "control_s": 0.58,
+     "wall_s": 2.8124163150787354
+    },
+    {
+     "episode": 6,
+     "step": 34,
+     "control_s": 0.68,
+     "wall_s": 3.715925931930542
+    },
+    {
+     "episode": 7,
+     "step": 38,
+     "control_s": 0.76,
+     "wall_s": 3.6909165382385254
+    },
+    {
+     "episode": 8,
+     "step": 39,
+     "control_s": 0.78,
+     "wall_s": 3.7993719577789307
+    },
+    {
+     "episode": 9,
+     "step": 32,
+     "control_s": 0.64,
+     "wall_s": 3.6715664863586426
+    },
+    {
+     "episode": 10,
+     "step": 39,
+     "control_s": 0.78,
+     "wall_s": 3.7197041511535645
+    },
+    {
+     "episode": 11,
+     "step": 40,
+     "control_s": 0.8,
+     "wall_s": 3.770555257797241
+    },
+    {
+     "episode": 12,
+     "step": 42,
+     "control_s": 0.84,
+     "wall_s": 4.616188287734985
+    },
+    {
+     "episode": 13,
+     "step": 45,
+     "control_s": 0.9,
+     "wall_s": 4.634867429733276
+    },
+    {
+     "episode": 14,
+     "step": 38,
+     "control_s": 0.76,
+     "wall_s": 3.6935417652130127
+    },
+    {
+     "episode": 15,
+     "step": 32,
+     "control_s": 0.64,
+     "wall_s": 3.6528801918029785
+    },
+    {
+     "episode": 16,
+     "step": 44,
+     "control_s": 0.88,
+     "wall_s": 4.620305776596069
+    },
+    {
+     "episode": 17,
+     "step": 44,
+     "control_s": 0.88,
+     "wall_s": 4.624603509902954
+    },
+    {
+     "episode": 18,
+     "step": 34,
+     "control_s": 0.68,
+     "wall_s": 3.674006700515747
+    },
+    {
+     "episode": 19,
+     "step": 39,
+     "control_s": 0.78,
+     "wall_s": 3.7057178020477295
+    },
+    {
+     "episode": 20,
+     "step": 40,
+     "control_s": 0.8,
+     "wall_s": 3.7116448879241943
+    },
+    {
+     "episode": 21,
+     "step": 35,
+     "control_s": 0.7,
+     "wall_s": 3.693141460418701
+    },
+    {
+     "episode": 22,
+     "step": 44,
+     "control_s": 0.88,
+     "wall_s": 4.59325385093689
+    },
+    {
+     "episode": 23,
+     "step": 34,
+     "control_s": 0.68,
+     "wall_s": 3.7238917350769043
+    },
+    {
+     "episode": 24,
+     "step": 40,
+     "control_s": 0.8,
+     "wall_s": 3.7364871501922607
+    },
+    {
+     "episode": 25,
+     "step": 26,
+     "control_s": 0.52,
+     "wall_s": 2.78406023979187
+    },
+    {
+     "episode": 26,
+     "step": 33,
+     "control_s": 0.66,
+     "wall_s": 3.6756088733673096
+    },
+    {
+     "episode": 27,
+     "step": 38,
+     "control_s": 0.76,
+     "wall_s": 3.7186310291290283
+    },
+    {
+     "episode": 28,
+     "step": 34,
+     "control_s": 0.68,
+     "wall_s": 3.685960292816162
+    },
+    {
+     "episode": 29,
+     "step": 39,
+     "control_s": 0.78,
+     "wall_s": 3.7127044200897217
+    },
+    {
+     "episode": 30,
+     "step": 31,
+     "control_s": 0.62,
+     "wall_s": 3.6487982273101807
+    },
+    {
+     "episode": 31,
+     "step": 39,
+     "control_s": 0.78,
+     "wall_s": 3.7382919788360596
+    },
+    {
+     "episode": 32,
+     "step": 37,
+     "control_s": 0.74,
+     "wall_s": 3.6798601150512695
+    },
+    {
+     "episode": 33,
+     "step": 49,
+     "control_s": 0.98,
+     "wall_s": 4.639146089553833
+    },
+    {
+     "episode": 34,
+     "step": 40,
+     "control_s": 0.8,
+     "wall_s": 3.7238876819610596
+    },
+    {
+     "episode": 35,
+     "step": 30,
+     "control_s": 0.6,
+     "wall_s": 2.797773599624634
+    },
+    {
+     "episode": 36,
+     "step": 40,
+     "control_s": 0.8,
+     "wall_s": 3.7064208984375
+    },
+    {
+     "episode": 37,
+     "step": 25,
+     "control_s": 0.5,
+     "wall_s": 2.737179756164551
+    },
+    {
+     "episode": 38,
+     "step": 39,
+     "control_s": 0.78,
+     "wall_s": 3.7204360961914062
+    },
+    {
+     "episode": 39,
+     "step": 35,
+     "control_s": 0.7,
+     "wall_s": 3.683901309967041
+    }
+   ]
+  }
+ }
+}

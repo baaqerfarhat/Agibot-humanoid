@@ -1,0 +1,369 @@
+{
+ "schema_version": "re4-v1",
+ "timing_file": "results/re4_evidence/F_held_vs_continued/aloha_held/timing.jsonl",
+ "steps": 23428,
+ "rate_hz": 50.0,
+ "deadline_ms": 20.0,
+ "note": "wall-clock of a simulated robot: policy_ms and env_ms are this machine's GPU/CPU times, not a real-time controller's",
+ "adaptive": {
+  "policy_ms_replan_steps": {
+   "n": 1149,
+   "median": 847.7768220473081,
+   "p95": 857.2344313375652,
+   "p99": 859.2042323760688,
+   "max": 876.7715599387884
+  },
+  "adapter_ms": {
+   "n": 11428,
+   "median": 0.06689189467579126,
+   "p95": 0.1478662365116179,
+   "p99": 0.1655461615882813,
+   "max": 0.26028393767774105
+  },
+  "env_ms": {
+   "n": 11428,
+   "median": 6.886804127134383,
+   "p95": 17.02513254713267,
+   "p99": 18.735737227834758,
+   "max": 40.778497932478786
+  },
+  "sensor_to_command_ms": {
+   "n": 11428,
+   "median": 0.17070653848350048,
+   "p95": 847.993452323135,
+   "p99": 856.4388219919056,
+   "max": 876.9893969874829
+  },
+  "loop_ms": {
+   "n": 11428,
+   "median": 6.969029433093965,
+   "p95": 864.9379884125665,
+   "p99": 871.8312213639729,
+   "max": 890.7071389257908
+  },
+  "deadline_misses": {
+   "all": 1150,
+   "replan_steps": 1149,
+   "non_replan_steps": 1,
+   "of_steps": 11428
+  },
+  "recovery": {
+   "threshold": "0.2 x ||f_true|| on channels [0, 1, 2, 3, 4, 5]",
+   "window_steps": 20,
+   "window_s": 0.4,
+   "recovered": 40,
+   "censored": 0,
+   "no_fault_episodes": 0,
+   "control_s": {
+    "n": 40,
+    "median": 0.0,
+    "p95": 0.0,
+    "p99": 0.0,
+    "max": 0.0
+   },
+   "wall_s": {
+    "n": 40,
+    "median": 0.0,
+    "p95": 0.0,
+    "p99": 0.0,
+    "max": 0.0
+   },
+   "per_episode": [
+    {
+     "episode": 0,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 1,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 2,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 3,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 4,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 5,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 6,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 7,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 8,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 9,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 10,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 11,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 12,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 13,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 14,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 15,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 16,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 17,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 18,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 19,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 20,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 21,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 22,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 23,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 24,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 25,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 26,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 27,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 28,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 29,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 30,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 31,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 32,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 33,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 34,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 35,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 36,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 37,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 38,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    },
+    {
+     "episode": 39,
+     "step": 0,
+     "control_s": 0.0,
+     "wall_s": 0.0
+    }
+   ]
+  }
+ },
+ "frozen_faulted": {
+  "policy_ms_replan_steps": {
+   "n": 1200,
+   "median": 847.6648470386863,
+   "p95": 857.1072181803174,
+   "p99": 859.4692419469357,
+   "max": 5470.426036044955
+  },
+  "adapter_ms": {
+   "n": 12000,
+   "median": 0.06523937918245792,
+   "p95": 0.14279055176302788,
+   "p99": 0.168010457418859,
+   "max": 0.3432799130678177
+  },
+  "env_ms": {
+   "n": 12000,
+   "median": 6.700665922835469,
+   "p95": 16.80722783785313,
+   "p99": 18.61109702382237,
+   "max": 21.443116012960672
+  },
+  "sensor_to_command_ms": {
+   "n": 12000,
+   "median": 0.16448006499558687,
+   "p95": 847.868796333205,
+   "p99": 854.8101620352827,
+   "max": 5470.522832125425
+  },
+  "loop_ms": {
+   "n": 12000,
+   "median": 6.781927077099681,
+   "p95": 864.4539490458556,
+   "p99": 870.1902853092179,
+   "max": 5490.499129984528
+  },
+  "deadline_misses": {
+   "all": 1200,
+   "replan_steps": 1200,
+   "non_replan_steps": 0,
+   "of_steps": 12000
+  },
+  "recovery": {
+   "threshold": "0.2 x ||f_true|| on channels [0, 1, 2, 3, 4, 5]",
+   "window_steps": 20,
+   "window_s": 0.4,
+   "recovered": 0,
+   "censored": 40,
+   "no_fault_episodes": 0,
+   "control_s": "no samples",
+   "wall_s": "no samples",
+   "per_episode": []
+  }
+ }
+}
