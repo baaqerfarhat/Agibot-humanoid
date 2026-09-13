@@ -4032,3 +4032,31 @@ Scorer fixes made while scoring, stated: the telemetry's `correction` carries th
 channel (7 entries), the scorer uses the six task channels; the 4.3 scorer compares the settle
 to the logged truth; the 4.1 scorer reports the episode-mean response per channel as a
 secondary reading; the Part 3 scorer reports the bound-to-measurement ratio.
+
+## 50. The r_y channel, third pass: the ARX plant refutes the model-order reading (re4 theory Part 6, 2026-09-13)
+
+`results/re4_theory/6_ry/arx_spatial/` (prereg `PREREG_RE4T_6_RY.md`, outcome appended). The
+registered intervention B — an ARX(1) plant fitted on the same healthy log, sensitivity rescaled
+by 1 − a per channel (`--ar 1`) — was run on the headline spatial cell: 9/20 → **20/20** (the
+no-harm check passes; T1's FIR cell on the same scenarios was 16/20, between-run, n = 20). But
+the r_y estimate settles at **32 %** of the fault, below the FIR's 41 % (T1) and the innovation
+law's 45 % (T4) and below the registered 60 % floor: **prediction 1 is refuted**, and the
+registered branch does not evaluate the libero_10 prediction (the queued n = 40 run, unregistered: frozen 0/40, adaptive **11/40**, 11 fixed, 0 broken, r_y 37 %,
+between the FIR plant's shipped 15/40 and held-out 7/40). r_x and r_z settle at 94 % and 97 % under the ARX (FIR: 87 %,
+88 %; the ARX residual is smaller so the normaliser attenuates less).
+
+**Why.** Every plant fitted to the healthy calibration log identifies the same r_y DC gain:
+FIR K = 6, 0.103; FIR K = 20, 0.118; ARX(1), 0.099. The open-loop probe gives 0.276, and the
+onset transient in T2 (§49) shows the residual plateau at 0.30 per unit of offset, so the probe
+is right for an offset. On every rotation channel the estimate's steady ratio follows
+(fitted DC gain)/(probed M): r_x 0.90 predicted vs 87–95 % measured; r_y 0.36–0.43 vs 32–45 %;
+r_z 1.02 vs 88–98 %. The correction is executed at the probed gain and predicted at the fitted
+one, so on r_y the applied estimate feeds back into the residual with the difference
+(r ≈ M f − (M − G_fit) f̂) and the fixed point sits below the fault. The excitation reading (§48)
+and the AR-structure reading (the amendment) are both refuted. What stands: a 2.7× DC-gain
+mismatch between closed-loop identification and the open-loop probe on the channel with the
+slowest tracking pole (0.93, Part 2.2). The intervention it implies — constrain the plant's DC
+gain to the probed M, or identify from open-loop segments — is not registered and was not run.
+
+Paper: Appendix "What a recovery theorem would need, measured", r_y paragraph.
+

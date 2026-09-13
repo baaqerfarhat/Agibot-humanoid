@@ -14,7 +14,7 @@ section-0 logging contract of the first plan (`openpi/re4_record.py`).
 | 3 tube propagation on real episodes | `telemetry/T1_headline/part_3.json` | done: coverage 1.00 but vacuous (bound 98× the measurement; λ̂ = 1) — record 49 |
 | 4.1–4.4 estimator recursions | `telemetry/T{2,1,1,3}_*/part_4.x.json` | done: 4.2, 4.3, 4.4 confirmed; 4.1's registered statistic fails (noise), episode-mean response right on r_x, r_z and 3× on r_y — record 49 |
 | 5 small-gain constants | `telemetry/T1_headline/part_5.json` | done: fails, a = 1 − λ̂ = 9e-5 (margin −9.5e-4) — record 49 |
-| 6 r_y as a theory test | `6_ry/` | diagnosis done (model error); ARX intervention running |
+| 6 r_y as a theory test | `6_ry/arx_spatial`, `6_ry/arx_libero_10` | ARX run: prediction 1 refuted (r_y 32 %); every fitted plant shares the r_y DC gain 0.10 vs probed 0.28 — record 50; libero_10 (unregistered) 0/40 → 11/40 |
 | 7 composite on GR1 (stretch) | — | not started; the first-order channel it needs is certified (2.1) |
 | 8.1 task-clustered bootstrap | `8_statistics/clustered_bootstrap.json` | done |
 | 8.2 seed-pinned decision cells, paired integral | `8_statistics/` | queued behind Part 6 |
