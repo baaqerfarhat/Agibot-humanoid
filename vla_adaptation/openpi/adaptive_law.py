@@ -317,7 +317,10 @@ def _module_constants(module):
 CALIB_EPISODES = None   # set by fit_plant; consumed by the held-out check in main()
 
 
-def fit_plant(log_path, lam=1e-2, mimo=False, episodes=None):
+AR_ORDER = 0   # set by --ar: number of past measured increments (own channel) in the plant regressor
+
+
+def fit_plant(log_path, lam=1e-2, mimo=False, episodes=None, ar=None):
     """MIMO FIR plant, identified on the NOMINAL episodes only.
 
     Each output dim is regressed on the last K_FIR+1 commands of ALL SIX inputs, not just its
@@ -352,6 +355,7 @@ def fit_plant(log_path, lam=1e-2, mimo=False, episodes=None):
     # episodes: optional subset of healthy-episode indices to fit on (calibration-size
     # ablation: how many healthy rollouts does the plant need?). None = all.
     keep = set(range(len(lens))) if episodes is None else set(episodes)
+    ar = AR_ORDER if ar is None else int(ar)
     W = []
     for i in range(6):
         X, Y, o = [], [], 0
@@ -359,10 +363,13 @@ def fit_plant(log_path, lam=1e-2, mimo=False, episodes=None):
             a, y = A[o:o+L], D[o:o+L, i] / OUT[i]; o += L
             if k not in keep:
                 continue
-            for t in range(K_FIR, L):
+            for t in range(max(K_FIR, ar), L):
                 win = a[t-K_FIR:t+1][::-1]
                 feat = win.reshape(-1) if mimo else win[:, i]
-                X.append(np.concatenate([feat, [1.0]]))
+                # ARX: the channel's own past measured increments follow the command taps
+                # (re4 theory Part 6: the r_y channel's slow pole is not representable by commands alone)
+                arf = y[t-ar:t][::-1] if ar else np.zeros(0)
+                X.append(np.concatenate([feat, arf, [1.0]]))
                 Y.append(y[t])
         X, Y = np.array(X), np.array(Y)
         W.append(np.linalg.solve(X.T @ X + lam * np.eye(X.shape[1]), X.T @ Y))
@@ -422,6 +429,7 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
             jf.apply()
         plan, t = collections.deque(), 0
         hist = collections.deque([np.zeros(6)] * (K_FIR + 1), maxlen=K_FIR + 1)
+        yhist = collections.deque([np.zeros(6)] * max(AR_ORDER, 1), maxlen=max(AR_ORDER, 1))
         f_hat = np.zeros(6)
         estimator_state = None
         mask = correction_mask(corr_dims)
@@ -545,9 +553,14 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
             u = a_corr[:6]                       # what we believe we sent (fault unknown to us)
             hist.appendleft(u)
             H = np.array(hist)                                          # (K+1, 6), newest first
-            feat = H.reshape(-1) if W.shape[1] > K_FIR + 2 else None
-            pred = (W[:, :-1] @ feat + W[:, -1]) if feat is not None else np.array(
-                [W[i, :K_FIR + 1] @ H[:, i] + W[i, -1] for i in range(6)])
+            feat = H.reshape(-1) if W.shape[1] > K_FIR + 2 + AR_ORDER else None
+            if AR_ORDER:
+                YH = np.array(yhist)                                    # (AR, 6), newest first
+                pred = np.array([W[i, :K_FIR + 1] @ H[:, i] + W[i, K_FIR + 1:K_FIR + 1 + AR_ORDER] @ YH[:, i] + W[i, -1] for i in range(6)])
+            else:
+                pred = (W[:, :-1] @ feat + W[:, -1]) if feat is not None else np.array(
+                    [W[i, :K_FIR + 1] @ H[:, i] + W[i, -1] for i in range(6)])
+            yhist.appendleft(y.copy())
             r = y - pred
             f_hat_before = f_hat.copy() if telemetry is not None else None
             diag = dict(nr=None, attenuation=None, deadzone_fired=None,
@@ -1018,6 +1031,9 @@ def main():
     p.add_argument("--joint-fault", default=None,
                    help="kind:joint:magnitude, a fault BELOW the controller in the MuJoCo model "
                         "(torque N.m bias, friction, damping, gain scale, lock +-rad); see joint_fault.py")
+    p.add_argument("--ar", type=int, default=0,
+                   help="ARX plant: this many past measured increments of the channel's own motion in the "
+                        "regressor (re4 theory Part 6); M is rescaled per channel by (1 - sum of AR coefficients)")
     p.add_argument("--fir-k", type=int, default=None,
                    help="FIR order K for the plant (default the module's K_FIR=6); 0 = static observer")
     p.add_argument("--timing", type=pathlib.Path, default=None,
@@ -1084,10 +1100,21 @@ def main():
     if a.fir_k is not None:
         globals()["K_FIR"] = int(a.fir_k)
         print(f"FIR order K = {K_FIR} (--fir-k)")
+    if a.ar:
+        if a.mimo:
+            raise SystemExit("--ar is implemented for the per-axis plant only")
+        globals()["AR_ORDER"] = int(a.ar)
     W = fit_plant(a.log, mimo=a.mimo, episodes=calib)
     if calib is not None:
         print(f"plant fitted on healthy episodes {calib} only")
     M = np.array(json.loads(a.openloop.read_text())["M"])
+    if a.ar:
+        # Under a constant command offset f the measured increment settles at M f, and the ARX
+        # residual r = y - (FIR taps . u + AR . y_prev + c) settles at (1 - sum AR) M f: the past
+        # measured increments absorb the offset's accumulated part. Rescale M consistently.
+        ar_sum = W[:, K_FIR + 1:K_FIR + 1 + AR_ORDER].sum(axis=1)
+        M = np.diag(1.0 - ar_sum) @ M
+        print(f"ARX plant, AR order {AR_ORDER}: AR coefficients {np.round(ar_sum, 3)}; M rescaled by (1 - AR) per channel")
     M_inv = np.linalg.pinv(M)
     print(f"plant identified; cond(M) = {np.linalg.cond(M):.1f}, gamma = {a.gamma}\n")
     kf_q, kf_r, estimator_config = None, None, None

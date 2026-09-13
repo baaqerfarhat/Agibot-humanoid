@@ -3934,3 +3934,51 @@ to near zero, which is stronger, and the paper says leakage.
 
 This is the fourth registered refutation of the re4 programme (libero_10 under held-out
 calibration, M at a third state, decoder-bias realisation, and this), each reported as primary.
+
+## 48. The re4 theory-evidence plan: what the stored data and the simulator alone settled (2026-09-13)
+
+`docs/RE4_THEORY_EVIDENCE_PLAN.md` (VLA_Adaptation branch, 2026-09-13) asks for the constants
+and certificates the re4 paper's theory disclaims. Preregs `PREREG_RE4T_*.md`; outputs
+`results/re4_theory/`; tools `openpi/re4_theory/`. The CPU-only and simulator-only parts:
+
+**2.1 Servo poles from the healthy logs.** GR1's seven right-arm joints are certified as
+first-order servos (poles 0.72–0.77 at 20 Hz, held-out increment R² 0.74–0.95), the waist yaw
+too; the idle left arm and the hands are outside the domain. ALOHA at 50 Hz refutes the
+first-order route on most joints (only 1, 7, 8 and the continuous gripper certify): its 20 ms
+increments are noise-sized against the command–position gap. Certificates in `2_metric/`.
+
+**2.2 Panda tracking poles.** All six end-effector axes certify (λ = 0.71, 0.67, 0.82, 0.83,
+0.93, 0.61; held-out R² 0.84–0.99), stable to ±0.02 across three initial states. The slowest
+channel is ry.
+
+**1 Sampled contraction, same-command replay from perturbed states (T.0 driver).** The
+snapshot must include the solver warm start, the actuator state and the gripper's accumulated
+target; then restored states replay to 1e-14. The per-step gap ratio is **1.00** in every
+registered metric (joint, joint+velocity, end-effector, end-effector in the 2.2 metric), half
+the steps above 1: joint-position perturbations neither decay nor grow, because OSC_POSE sets
+each goal relative to the *current* pose. The Panda under this controller is marginally stable
+in the same-command sense, not contracting; the tube cannot be bounded by a contraction rate
+here. Contact raises joint-space expansion (fraction ≥ 1: 0.54 vs 0.47) and damps end-effector
+gaps (0.32 vs 0.50). Measured input sensitivity 0.5–0.6 cm per unit command on x, y, z, a
+factor 2.3–2.9 below the FIR first tap.
+
+**6 The r_y diagnosis.** Sensitivity and excitation are ruled out (M's r_y column 0.25–0.28 at
+all three states; r_y commanded as much as r_z); the six-tap FIR explains 0.41 of r_y's
+increments against 0.71 and 0.96 on r_x, r_z, longer windows do not help (K = 20: 0.35), and a
+single autoregressive term lifts r_y to 0.95 and r_x to 0.98. Model error, the FIR's absent AR
+structure. The registered intervention was changed before any run to an ARX plant (`--ar 1`,
+sensitivity rescaled by 1 − a per channel); the GPU test (does the r_y estimate reach 70 %, does
+libero_10 move toward the oracle's 22/40) is queued.
+
+**8.1 Task-clustered bootstrap.** Pooled headline effect robust under both calibrations
+(cluster 95 % intervals [+36, +65] and [+20, +49] episodes); per-suite significance at the
+cluster level holds for three suites of four under the shipped calibration (`goal` p = 0.061)
+and one of four under the held-out. The paper now states both levels.
+
+**8.3, settled by 1.** With λ̂ = 1.00 the geometric-decay time implied by the contraction rate is
+unbounded; recovery time cannot be compared against it on this plant. Recovery times from
+Part E stand on their own (median 3.4 s to 20 % of the fault on the two spatial episodes that
+reached it; most do not, because r_y never does).
+
+Running on the GPU: the telemetry batch for Parts 3, 4 and 5 (four runs), then the ARX
+intervention (Part 6), then the seed-pinned decision cells (Part 8.2).

@@ -70,3 +70,42 @@ P = diag(1/(1−λ²)) = diag(2.00, 1.80, 3.02, 3.20, 7.20, 1.59). The slowest c
 (λ = 0.93, a 14-step time constant at 20 Hz), the same channel whose fault estimate lags on
 every backbone: a slow tracking pole is one candidate cause of that lag, testable in Part 6.
 Artifact: `results/re4_theory/2_metric/metric_certificate_panda.json`.
+
+---
+
+## Outcome, Part 1 (appended 2026-09-13, after the replays; nothing above was edited)
+
+Four recorded episodes (tasks 1–4, initial state 25), four save steps each, 31 replays per save
+step (1 determinism check, 18 joint perturbations, 12 command perturbations), H = 15. Restored
+states replay bit-identically (max gap 8.7e-15 over 16 checks) once the snapshot includes the
+solver warm start, actuator state and the gripper's accumulated target; without the gripper
+target, grasp-phase replays diverged by 0.07 rad. `results/re4_theory/1_contraction/`.
+
+| metric | regime | per-step ratio λ̂: median / 90th pct / fraction ≥ 1 (joint perturbations, all magnitudes) |
+|---|---|---|
+| joint positions | free / contact | 0.999 / 1.019 / 0.47 — 1.001 / 1.05 / 0.54 |
+| joint pos + vel | free / contact | 0.999 / 1.019 / 0.47 — 1.001 / 1.05 / 0.53 |
+| end-effector position | free / contact | 1.000 / 1.005 / 0.50 — 0.998 / 1.007 / 0.32 |
+| end-effector, Part 2.2 metric P | free / contact | 1.000 / 1.005 / 0.49 — 0.999 / 1.008 / 0.33 |
+
+- **Prediction 1 (median < 1, 90th pct < 1.05 in free space at all magnitudes): met by the
+  letter in three metrics (0.999 < 1; 1.019 < 1.05) and refuted in substance.** λ̂ is 1.00 to
+  three decimals with half the steps above 1: a joint-position perturbation neither decays nor
+  grows over 15 steps. The mechanism is the controller: OSC_POSE sets each goal as the current
+  end-effector pose plus the commanded delta, so a displaced arm simply executes the same
+  deltas from the displaced pose and the gap persists. This plant is marginally stable in the
+  same-command sense, not contracting; the execution tube cannot be geometrically bounded by a
+  contraction rate here and must be bounded by the input sensitivity and the horizon instead.
+  The paper's servo example stays constructed-only for the Panda, and its limitation sentence
+  stays, with this measured value as the reason.
+- **Prediction 2 (more expansion at contact): confirmed in the joint metrics** (fraction ≥ 1
+  0.54 vs 0.47; 90th percentile 1.05–1.06 vs 1.02) **and refuted in the end-effector metrics**
+  (0.32 vs 0.50): contact with the table or an object constrains the gripper and damps
+  end-effector gaps while joint-space gaps grow. The hybrid caveat is about the joint state.
+- **Prediction 3 (L̂ within 2× of the FIR first-tap gain): refuted.** Measured first-step
+  sensitivity 0.51, 0.55, 0.60 cm per unit command on x, y, z (0.42–1.3 cm per unit on the
+  rotation channels' induced translation) against 1.3–1.5 cm expected from the FIR's first tap
+  at 5 cm per unit: a factor 2.3–2.9 lower. The FIR's first tap is fitted on the policy's own
+  smooth commands; an isolated one-step command perturbation moves the arm less.
+- Command perturbations do not contract either: after the perturbed step the gap ratio's median
+  is 1.03 in joint space (90th pct 1.29), i.e. a one-step command error keeps propagating.
