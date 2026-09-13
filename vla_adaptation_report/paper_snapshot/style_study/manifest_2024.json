@@ -1,0 +1,3474 @@
+[
+  {
+    "year": 2024,
+    "title": "\"What Data Benefits My Classifier?\" Enhancing Model Performance and Interpretability through Influence-Based Data Selection",
+    "authors": [
+      "Anshuman Chhabra",
+      "Peizhao Li",
+      "Prasant Mohapatra",
+      "Hongfu Liu"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19774",
+    "openreview_id": "HE9eUQlAvo",
+    "openreview_forum_url": "https://openreview.net/forum?id=HE9eUQlAvo",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=HE9eUQlAvo",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/04cda3a5ef307978cb5dbef6ab649380-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/04cda3a5ef307978cb5dbef6ab649380-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/HE9eUQlAvo.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/HE9eUQlAvo.txt",
+    "sha256": "5eee06e2e3192b0dfa9b3902f12e25b4115171688a47b3c6fea17306a82ceba7",
+    "bytes": 6164902,
+    "pages": 32,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:45.142424+00:00",
+    "verified_at_utc": "2026-09-08T21:29:47.596876+00:00",
+    "text_sha256": "6d3090f9fe1d431bb26b731c2fe112d92f08ebfd4604560d22524e22d2eb40d1",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/HE9eUQlAvo.metadata.json",
+    "metadata_sha256": "6cba5d39fc185ad7beb33e9a1aa411221f67d532024ab13b0dccc8790e1d505e"
+  },
+  {
+    "year": 2024,
+    "title": "A Real-World WebAgent with Planning, Long Context Understanding, and Program Synthesis",
+    "authors": [
+      "Izzeddin Gur",
+      "Hiroki Furuta",
+      "Austin Huang",
+      "Mustafa Safdari",
+      "Yutaka Matsuo",
+      "Douglas Eck",
+      "Aleksandra Faust"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19785",
+    "openreview_id": "9JQtrumvg8",
+    "openreview_forum_url": "https://openreview.net/forum?id=9JQtrumvg8",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=9JQtrumvg8",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/e91bf7dfba0477554994c6d64833e9d8-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/e91bf7dfba0477554994c6d64833e9d8-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/9JQtrumvg8.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/9JQtrumvg8.txt",
+    "sha256": "c250a6fed9981ba858135cf3e2e5974c3569b5ad92bab8f0cb5c571d0980387d",
+    "bytes": 1816977,
+    "pages": 28,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:59.009347+00:00",
+    "verified_at_utc": "2026-09-08T21:29:59.625702+00:00",
+    "text_sha256": "688e0ceb05fe1a13123f3e1fc5469734f702503696279ac1e05fa1a3bfc8367b",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/9JQtrumvg8.metadata.json",
+    "metadata_sha256": "907dcad3f42ec12485a95ea77440c6575f76ec7cd22578b976dc2fd58ed3c4c3"
+  },
+  {
+    "year": 2024,
+    "title": "Accelerating Distributed Stochastic Optimization via Self-Repellent Random Walks",
+    "authors": [
+      "Jie Hu",
+      "Vishwaraj Doshi",
+      "Do Young Eun"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19780",
+    "openreview_id": "BV1PHbTJzd",
+    "openreview_forum_url": "https://openreview.net/forum?id=BV1PHbTJzd",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=BV1PHbTJzd",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/2910bf341567ce978943e12158476835-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/2910bf341567ce978943e12158476835-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/BV1PHbTJzd.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/BV1PHbTJzd.txt",
+    "sha256": "abdd1b8f73fee7c0abf02b82875e104faf877ba33c7cc296fe19731fa1fd089b",
+    "bytes": 1653315,
+    "pages": 42,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:51.386712+00:00",
+    "verified_at_utc": "2026-09-08T21:29:52.371791+00:00",
+    "text_sha256": "3220c31c36909f12f584d9859b33c30a761c190274ab82ef76b63d4f70ae31f2",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/BV1PHbTJzd.metadata.json",
+    "metadata_sha256": "dbcf26f4fea37bae560866fbd7fa22394e2bff903a8d87c564a4e1edf947d15c"
+  },
+  {
+    "year": 2024,
+    "title": "Amortizing intractable inference in large language models",
+    "authors": [
+      "Edward Hu",
+      "Moksh Jain",
+      "Eric Elmoznino",
+      "Younesse Kaddar",
+      "Guillaume Lajoie",
+      "Yoshua Bengio",
+      "Nikolay Malkin"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19763",
+    "openreview_id": "Ouj6p4ca60",
+    "openreview_forum_url": "https://openreview.net/forum?id=Ouj6p4ca60",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=Ouj6p4ca60",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/bc667ac84ef58f2b5022da97a465cbab-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/bc667ac84ef58f2b5022da97a465cbab-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "honorable_mention"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/Ouj6p4ca60.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/Ouj6p4ca60.txt",
+    "sha256": "1a44f4b86d818aaf77ca86eaa87f3fdb51c69f8b63ff92a20ca758bdf549c749",
+    "bytes": 663314,
+    "pages": 31,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:28.442157+00:00",
+    "verified_at_utc": "2026-09-08T21:29:29.197321+00:00",
+    "text_sha256": "c7f62c8231650acb71a67194da745f00b2c2b494e5ddd02cd1419018192c5c23",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/Ouj6p4ca60.metadata.json",
+    "metadata_sha256": "5175169b809ef424004c86556554b41ac8e5cdae2850354545aad8a2bd4c1b4b"
+  },
+  {
+    "year": 2024,
+    "title": "An Analytical Solution to Gauss-Newton Loss for Direct Image Alignment",
+    "authors": [
+      "Sergei Solonets",
+      "Daniil Sinitsyn",
+      "Lukas Von Stumberg",
+      "Nikita Araslanov",
+      "Daniel Cremers"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19730",
+    "openreview_id": "mE52zURNGc",
+    "openreview_forum_url": "https://openreview.net/forum?id=mE52zURNGc",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=mE52zURNGc",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/f53a37f820d5be5930415d964f4a0187-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/f53a37f820d5be5930415d964f4a0187-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/mE52zURNGc.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/mE52zURNGc.txt",
+    "sha256": "fdf77c7c9a635a418f48b93b0df6c5b2bc5e8db905ef5fb7dc46687a409cae92",
+    "bytes": 28592370,
+    "pages": 17,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:44.389325+00:00",
+    "verified_at_utc": "2026-09-08T21:28:44.765173+00:00",
+    "text_sha256": "a9850e88498d8966faaba3ae93acfb64d9cac41574181d00aa6c110c38db95a6",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/mE52zURNGc.metadata.json",
+    "metadata_sha256": "6c6494e5ab4f2fda9aabdb98bc59ea5a97dede0c7ce5af18ce0e1cab039852b0"
+  },
+  {
+    "year": 2024,
+    "title": "Approximating Nash Equilibria in Normal-Form Games via Stochastic Optimization",
+    "authors": [
+      "Ian Gemp",
+      "Luke Marris",
+      "Georgios Piliouras"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19744",
+    "openreview_id": "cc8h3I3V4E",
+    "openreview_forum_url": "https://openreview.net/forum?id=cc8h3I3V4E",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=cc8h3I3V4E",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/420678bb4c8251ab30e765bc27c3b047-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/420678bb4c8251ab30e765bc27c3b047-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "honorable_mention"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/cc8h3I3V4E.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/cc8h3I3V4E.txt",
+    "sha256": "c748939bb3d939ea88ff2493c77977ba7373486ae24548e62f68e550643f0d7c",
+    "bytes": 11925195,
+    "pages": 48,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:08.866768+00:00",
+    "verified_at_utc": "2026-09-08T21:29:12.975603+00:00",
+    "text_sha256": "bb04971f981da75d24a5f5a32e3d4cadd07c3cc455dddeb10fc1817373194b09",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/cc8h3I3V4E.metadata.json",
+    "metadata_sha256": "cf11c420ba83645620b7e9037e49739796b603e62160fad9d151043f5a5e73a9"
+  },
+  {
+    "year": 2024,
+    "title": "ASID: Active Exploration for System Identification in Robotic Manipulation",
+    "authors": [
+      "Marius Memmel",
+      "Andrew Wagenmaker",
+      "Chuning Zhu",
+      "Dieter Fox",
+      "Abhishek Gupta"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19732",
+    "openreview_id": "jNR6s6OSBT",
+    "openreview_forum_url": "https://openreview.net/forum?id=jNR6s6OSBT",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=jNR6s6OSBT",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/ae8afec5dabb07091d8f85128250f2ff-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/ae8afec5dabb07091d8f85128250f2ff-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/jNR6s6OSBT.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/jNR6s6OSBT.txt",
+    "sha256": "70aea21e181caeeccc355dfb2a0d184fe030ed91a8401ca2551a771e2e9c9cbe",
+    "bytes": 15825293,
+    "pages": 19,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:45.716874+00:00",
+    "verified_at_utc": "2026-09-08T21:28:48.097027+00:00",
+    "text_sha256": "6c7e937aa11b6dab02d1c58f9a1f10e8960a0483bdd477d882538b5af73aba4f",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/jNR6s6OSBT.metadata.json",
+    "metadata_sha256": "ff1bdafb1a604c2863043c553210f52d60af22cba0a43a470cdace59b70643f1"
+  },
+  {
+    "year": 2024,
+    "title": "Batched Low-Rank Adaptation of Foundation Models",
+    "authors": [
+      "Yeming Wen",
+      "Swarat Chaudhuri"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19716",
+    "openreview_id": "w4abltTZ2f",
+    "openreview_forum_url": "https://openreview.net/forum?id=w4abltTZ2f",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=w4abltTZ2f",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/66247b78cb1aa7259dcf856a18c9e294-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/66247b78cb1aa7259dcf856a18c9e294-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/w4abltTZ2f.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/w4abltTZ2f.txt",
+    "sha256": "c60c9078425816ae4aba94336a44329323e5517300b3d49fdf0a39ea4309484b",
+    "bytes": 510881,
+    "pages": 16,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:27.389696+00:00",
+    "verified_at_utc": "2026-09-08T21:28:27.828636+00:00",
+    "text_sha256": "48c6852b3ca7980d8d7a6b5c4cada59e23bcd852d3e4114a69e2e40177ebb3a5",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/w4abltTZ2f.metadata.json",
+    "metadata_sha256": "2c765c00222bc98fbd1ce85ee4e063732080b1e6fe921d974715837df5e33607"
+  },
+  {
+    "year": 2024,
+    "title": "Beyond Weisfeiler-Lehman: A Quantitative Framework for GNN Expressiveness",
+    "authors": [
+      "Bohang Zhang",
+      "Jingchu Gai",
+      "Yiheng Du",
+      "Qiwei Ye",
+      "Di He",
+      "Liwei Wang"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19773",
+    "openreview_id": "HSKaGOi7Ar",
+    "openreview_forum_url": "https://openreview.net/forum?id=HSKaGOi7Ar",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=HSKaGOi7Ar",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/ec702dd6e83b2113a43614685a7e2ac6-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/ec702dd6e83b2113a43614685a7e2ac6-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "honorable_mention"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/HSKaGOi7Ar.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/HSKaGOi7Ar.txt",
+    "sha256": "ed5881f2a9b85fdef712acc578bf7d94a4ef8b9664ce2f2f9080c1829880dff7",
+    "bytes": 2357121,
+    "pages": 73,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:43.103115+00:00",
+    "verified_at_utc": "2026-09-08T21:29:45.049027+00:00",
+    "text_sha256": "142e0e907c49687dc9f453ce120d6ec436cba7eaaf24064dfc9d32f5c62fa405",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/HSKaGOi7Ar.metadata.json",
+    "metadata_sha256": "d2aad06ead0da48a9a09c8f03fb833508dbe35e70cbcedf710b6e7e89e71d726"
+  },
+  {
+    "year": 2024,
+    "title": "BooookScore: A systematic exploration of book-length summarization in the era of LLMs",
+    "authors": [
+      "Yapei Chang",
+      "Kyle Lo",
+      "Tanya Goyal",
+      "Mohit Iyyer"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19789",
+    "openreview_id": "7Ttk3RzDeu",
+    "openreview_forum_url": "https://openreview.net/forum?id=7Ttk3RzDeu",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=7Ttk3RzDeu",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/f7b77476d89d5fb58aeb77691d2f40f5-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/f7b77476d89d5fb58aeb77691d2f40f5-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/7Ttk3RzDeu.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/7Ttk3RzDeu.txt",
+    "sha256": "7cb08c05297b2bd606572708ea2b98aa09f82fc2f0c6016ef870e7301ff765ec",
+    "bytes": 599451,
+    "pages": 35,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:30:02.205703+00:00",
+    "verified_at_utc": "2026-09-08T21:30:03.192889+00:00",
+    "text_sha256": "df0cc4c7f6ad6131cf70a0d952d7866713f28fee4a50fcd42317be2147db0c88",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/7Ttk3RzDeu.metadata.json",
+    "metadata_sha256": "f188a16776eac5062dcdca3cea1cfcf470c825c96d4753fdff032cc9bca5c448"
+  },
+  {
+    "year": 2024,
+    "title": "Cameras as Rays: Pose Estimation via Ray Diffusion",
+    "authors": [
+      "Jason Zhang",
+      "Amy Lin",
+      "Moneish Kumar",
+      "Tzu-Hsuan Yang",
+      "Deva Ramanan",
+      "Shubham Tulsiani"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19778",
+    "openreview_id": "EanCFCwAjM",
+    "openreview_forum_url": "https://openreview.net/forum?id=EanCFCwAjM",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=EanCFCwAjM",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/66175cc3d241c1702521dd836cd08585-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/66175cc3d241c1702521dd836cd08585-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/EanCFCwAjM.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/EanCFCwAjM.txt",
+    "sha256": "c706c2e7fa7b8ec6c2792c8624ddc87ba854987ad85e40794c7c99ba1a3d3f07",
+    "bytes": 9808931,
+    "pages": 22,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:49.757316+00:00",
+    "verified_at_utc": "2026-09-08T21:29:50.769983+00:00",
+    "text_sha256": "24fed0f2f49a60d76dfd67938e2d72fc9999c06638e92cb8200ad2965c478618",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/EanCFCwAjM.metadata.json",
+    "metadata_sha256": "13282c877a954b6f226565ea115d5400a48bd22d30d62c64d6d4b24466823aa5"
+  },
+  {
+    "year": 2024,
+    "title": "Candidate Label Set Pruning: A Data-centric Perspective for Deep Partial-label Learning",
+    "authors": [
+      "Shuo He",
+      "Chaojie Wang",
+      "Guowu Yang",
+      "Lei Feng"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19776",
+    "openreview_id": "Fk5IzauJ7F",
+    "openreview_forum_url": "https://openreview.net/forum?id=Fk5IzauJ7F",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=Fk5IzauJ7F",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/72fb9ab442fc60b7ae5d53bf6b478273-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/72fb9ab442fc60b7ae5d53bf6b478273-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/Fk5IzauJ7F.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/Fk5IzauJ7F.txt",
+    "sha256": "4ff0e98ee96fa028adfd8a628f6184e1b91b726785f339ea682909888e8afc37",
+    "bytes": 2805475,
+    "pages": 18,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:48.248350+00:00",
+    "verified_at_utc": "2026-09-08T21:29:49.075109+00:00",
+    "text_sha256": "d5c274f553407cf07bbc61d67c7b42d29db23ec1688293f4c0223c1453a7c9e9",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/Fk5IzauJ7F.metadata.json",
+    "metadata_sha256": "7603d3770cf87a190c78603455a7338a8b9317be21cce77bb9eaf646118e27f2"
+  },
+  {
+    "year": 2024,
+    "title": "ClimODE: Climate and Weather Forecasting with Physics-informed Neural ODEs",
+    "authors": [
+      "Yogesh Verma",
+      "Markus Heinonen",
+      "Vikas Garg"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19715",
+    "openreview_id": "xuY33XhEGR",
+    "openreview_forum_url": "https://openreview.net/forum?id=xuY33XhEGR",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=xuY33XhEGR",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/21f3c05fc5afcaebd8a71d7e98a1b171-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/21f3c05fc5afcaebd8a71d7e98a1b171-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/xuY33XhEGR.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/xuY33XhEGR.txt",
+    "sha256": "bdcdf4e0f1b61bbfe53982183f0bb0174c040284c3d4d2d3c38b1d3e15ca86f0",
+    "bytes": 6727489,
+    "pages": 23,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:25.263021+00:00",
+    "verified_at_utc": "2026-09-08T21:28:27.354609+00:00",
+    "text_sha256": "c0cfd7e4b5b59f1f05f1a4029fc699af75e943da22bd8e2776b88aa122307305",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/xuY33XhEGR.metadata.json",
+    "metadata_sha256": "377c1a32e41dcf35de21295fd0e5b605f2b316fff9a4d5354b3e60270d5447e8"
+  },
+  {
+    "year": 2024,
+    "title": "Detecting, Explaining, and Mitigating Memorization in Diffusion Models",
+    "authors": [
+      "Yuxin Wen",
+      "Yuchen Liu",
+      "Chen Chen",
+      "Lingjuan Lyu"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19787",
+    "openreview_id": "84n3UwkH7b",
+    "openreview_forum_url": "https://openreview.net/forum?id=84n3UwkH7b",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=84n3UwkH7b",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/993760d9b1d63a385611c7c9ef8f3ecb-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/993760d9b1d63a385611c7c9ef8f3ecb-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/84n3UwkH7b.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/84n3UwkH7b.txt",
+    "sha256": "bc13d773ec6bc151944eff74a954286187c523d5803aa2a04e9edf461d3be418",
+    "bytes": 44556169,
+    "pages": 16,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:30:01.529531+00:00",
+    "verified_at_utc": "2026-09-08T21:30:02.224892+00:00",
+    "text_sha256": "8cb9d821d382d119decd23545c681fb2508abd0f6d88145be6db24d42783cedf",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/84n3UwkH7b.metadata.json",
+    "metadata_sha256": "a3ea09c46ec8b2768e77998dab949fdc9f2e9ad04b022b9b8d3a23ff6b2f0dbe"
+  },
+  {
+    "year": 2024,
+    "title": "Diffusion Model for Dense Matching",
+    "authors": [
+      "Jisu Nam",
+      "Gyuseong Lee",
+      "Seonwoo Kim",
+      "Inès Hyeonsu Kim",
+      "Hyoungwon Cho",
+      "Seyeon Kim",
+      "Seungryong Kim"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19751",
+    "openreview_id": "Zsfiqpft6K",
+    "openreview_forum_url": "https://openreview.net/forum?id=Zsfiqpft6K",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=Zsfiqpft6K",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/32246544c237164c365c0527b677a79a-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/32246544c237164c365c0527b677a79a-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/Zsfiqpft6K.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/Zsfiqpft6K.txt",
+    "sha256": "51cb8029a084ca5dcfbf0f0a6185f2fa7bf97543a0e3755e412a52d2285fb9c5",
+    "bytes": 1063954,
+    "pages": 24,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:17.339498+00:00",
+    "verified_at_utc": "2026-09-08T21:29:17.852679+00:00",
+    "text_sha256": "379f6a4853447b4db7ad9c7571f532fd3e6ab76c6e0ed50eb096375fdd9e410c",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/Zsfiqpft6K.metadata.json",
+    "metadata_sha256": "0af6add5b51a30ed50cc7bef1ab34881c30b9bed9f634c706da545eef6802dd1"
+  },
+  {
+    "year": 2024,
+    "title": "DreamGaussian: Generative Gaussian Splatting for Efficient 3D Content Creation",
+    "authors": [
+      "Jiaxiang Tang",
+      "Jiawei Ren",
+      "Hang Zhou",
+      "Ziwei Liu",
+      "Gang Zeng"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19758",
+    "openreview_id": "UyNXMqnN3c",
+    "openreview_forum_url": "https://openreview.net/forum?id=UyNXMqnN3c",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=UyNXMqnN3c",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/905202e21386913d8eac637c2b50f590-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/905202e21386913d8eac637c2b50f590-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/UyNXMqnN3c.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/UyNXMqnN3c.txt",
+    "sha256": "d766947b579d7fd86077d83bf5ab3a2e266c49c457a9a4708cc95c887fd8d93f",
+    "bytes": 7845027,
+    "pages": 18,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:24.976215+00:00",
+    "verified_at_utc": "2026-09-08T21:29:25.720714+00:00",
+    "text_sha256": "2857b2d21485be54b7444c953721cee333bd5866cccf8e62038379d92a8ed476",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/UyNXMqnN3c.metadata.json",
+    "metadata_sha256": "d98da6c806d0b12a6e8d09880c151b85594eb3bf29285b83d3365c319c3bcbcf"
+  },
+  {
+    "year": 2024,
+    "title": "Efficient Episodic Memory Utilization of Cooperative Multi-Agent Reinforcement Learning",
+    "authors": [
+      "Hyungho Na",
+      "Yunkyeong Seo",
+      "Il-chul Moon"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19766",
+    "openreview_id": "LjivA1SLZ6",
+    "openreview_forum_url": "https://openreview.net/forum?id=LjivA1SLZ6",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=LjivA1SLZ6",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/8567a53e58a9fa4823af356c76ed943c-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/8567a53e58a9fa4823af356c76ed943c-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/LjivA1SLZ6.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/LjivA1SLZ6.txt",
+    "sha256": "6d0aee8ed242bd94b4ef1ae1a2feeda29e474e24150819826b3d2b3b56655f2b",
+    "bytes": 17347735,
+    "pages": 33,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:31.093612+00:00",
+    "verified_at_utc": "2026-09-08T21:29:32.583400+00:00",
+    "text_sha256": "97614f6a7f125161ba4ea9cda623c0b66540641225c46bf3e1a62e6749ca7fbe",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/LjivA1SLZ6.metadata.json",
+    "metadata_sha256": "45464cfad28d6ad851f681c2171c319a4d9c4f2070c570292fe214929adaa4ce"
+  },
+  {
+    "year": 2024,
+    "title": "ExeDec: Execution Decomposition for Compositional Generalization in Neural Program Synthesis",
+    "authors": [
+      "Kensen Shi",
+      "Joey Hong",
+      "Yinlin Deng",
+      "Pengcheng Yin",
+      "Manzil Zaheer",
+      "Charles Sutton"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19726",
+    "openreview_id": "oTRwljRgiv",
+    "openreview_forum_url": "https://openreview.net/forum?id=oTRwljRgiv",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=oTRwljRgiv",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/c43b2989b1ba055aa713a4abbe4a8b05-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/c43b2989b1ba055aa713a4abbe4a8b05-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/oTRwljRgiv.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/oTRwljRgiv.txt",
+    "sha256": "093cb631084aca11c83ed2aea5cdd05068b3be6097e98e28f62e29b28a1e300e",
+    "bytes": 689158,
+    "pages": 30,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:40.814746+00:00",
+    "verified_at_utc": "2026-09-08T21:28:41.514621+00:00",
+    "text_sha256": "8f83b023007e71517589e57ed52c9a5d5001eab11c33720522f089fdbfa7a4b5",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/oTRwljRgiv.metadata.json",
+    "metadata_sha256": "8563a9f335a4ae37a902efaa826ea5a229b55276850979725d9f16a24cbab50b"
+  },
+  {
+    "year": 2024,
+    "title": "Fine-tuning Aligned Language Models Compromises Safety, Even When Users Do Not Intend To!",
+    "authors": [
+      "Xiangyu Qi",
+      "Yi Zeng",
+      "Tinghao Xie",
+      "Pin-Yu Chen",
+      "Ruoxi Jia",
+      "Prateek Mittal",
+      "Peter Henderson"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19735",
+    "openreview_id": "hTEGyKf0dZ",
+    "openreview_forum_url": "https://openreview.net/forum?id=hTEGyKf0dZ",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=hTEGyKf0dZ",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/83b7da3ed13f06c13ce82235c8eedf35-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/83b7da3ed13f06c13ce82235c8eedf35-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/hTEGyKf0dZ.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/hTEGyKf0dZ.txt",
+    "sha256": "ac7305aacd70eb44d64616783b3aad203b73f0c34869cf6f4c893f32d2da599f",
+    "bytes": 4792080,
+    "pages": 56,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:49.177559+00:00",
+    "verified_at_utc": "2026-09-08T21:28:50.487426+00:00",
+    "text_sha256": "a23c30f89aba497cb3e39dd99f597d4f52a26d82c729a4536c3d03bff43b5673",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/hTEGyKf0dZ.metadata.json",
+    "metadata_sha256": "96ac28191603e8710d9f41196c309356fd695818e245e5f3cf9b454150a78c54"
+  },
+  {
+    "year": 2024,
+    "title": "Finetuning Text-to-Image Diffusion Models for Fairness",
+    "authors": [
+      "Xudong Shen",
+      "Chao Du",
+      "Tianyu Pang",
+      "Min Lin",
+      "Yongkang Wong",
+      "Mohan Kankanhalli"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19734",
+    "openreview_id": "hnrB5YHoYu",
+    "openreview_forum_url": "https://openreview.net/forum?id=hnrB5YHoYu",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=hnrB5YHoYu",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/6d0bf1265ea9635fb4f9d56f16d7efb2-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/6d0bf1265ea9635fb4f9d56f16d7efb2-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/hnrB5YHoYu.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/hnrB5YHoYu.txt",
+    "sha256": "57897d5fb27ae97c9dd68af24d30cb040eedebbb2b8dafce2e37e00c27cfc0e4",
+    "bytes": 34710410,
+    "pages": 43,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:50.553737+00:00",
+    "verified_at_utc": "2026-09-08T21:28:51.422241+00:00",
+    "text_sha256": "79b0196376efe41324191cfce2f86bce832f0a026dd2331173e41dfdd94306ae",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/hnrB5YHoYu.metadata.json",
+    "metadata_sha256": "c7d4138e6af8dea0e3178bb627ac3b31c18bf2610b6aee1f50ea50704a4021f6"
+  },
+  {
+    "year": 2024,
+    "title": "Flow Matching on General Geometries",
+    "authors": [
+      "Ricky T. Q. Chen",
+      "Yaron Lipman"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19740",
+    "openreview_id": "g7ohDlTITL",
+    "openreview_forum_url": "https://openreview.net/forum?id=g7ohDlTITL",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=g7ohDlTITL",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/d1f9936d3be6997ffffab692977eebe6-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/d1f9936d3be6997ffffab692977eebe6-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "honorable_mention"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/g7ohDlTITL.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/g7ohDlTITL.txt",
+    "sha256": "21b5c8ae5102524f6bc566ab7ddb17b5ef707607fa386212e7788d6c870d707d",
+    "bytes": 11452570,
+    "pages": 24,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:54.458372+00:00",
+    "verified_at_utc": "2026-09-08T21:29:05.364929+00:00",
+    "text_sha256": "ade65d795617c3545a4b8022d00fcb8c24aa4d02c0a4355353dc22ecfc483bb2",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/g7ohDlTITL.metadata.json",
+    "metadata_sha256": "03f8a254d325e43d37f51eadc4a1d3231561207cde00d8016aba7766b536aa2a"
+  },
+  {
+    "year": 2024,
+    "title": "Gene Regulatory Network Inference in the Presence of Dropouts: a Causal View",
+    "authors": [
+      "HAOYUE DAI",
+      "Ignavier Ng",
+      "Gongxu Luo",
+      "Peter Spirtes",
+      "Petar Stojanov",
+      "Kun Zhang"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19739",
+    "openreview_id": "gFR4QwK53h",
+    "openreview_forum_url": "https://openreview.net/forum?id=gFR4QwK53h",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=gFR4QwK53h",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/0a48036026dc7946ef6033ae14719cc5-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/0a48036026dc7946ef6033ae14719cc5-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/gFR4QwK53h.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/gFR4QwK53h.txt",
+    "sha256": "ddd327ae05466bb10f3077cb4e4ab6bb690c648accfb791a39420ffb09d5feba",
+    "bytes": 1889717,
+    "pages": 28,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:53.400977+00:00",
+    "verified_at_utc": "2026-09-08T21:28:54.341743+00:00",
+    "text_sha256": "1b06232c46e4edfb84d845fb1d29381462afa1141a7270473e32bef75d09c611",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/gFR4QwK53h.metadata.json",
+    "metadata_sha256": "6841cb4c36e8414f51b7b90125e9fde1e64348d8a80e7fdadd3f503187a52b03"
+  },
+  {
+    "year": 2024,
+    "title": "Generalization in diffusion models arises from geometry-adaptive harmonic representations",
+    "authors": [
+      "Zahra Kadkhodaie",
+      "Florentin Guth",
+      "Eero Simoncelli",
+      "Stéphane Mallat"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19783",
+    "openreview_id": "ANvmVS2Yr0",
+    "openreview_forum_url": "https://openreview.net/forum?id=ANvmVS2Yr0",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=ANvmVS2Yr0",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/cbaf319a4712385b5ba8a414808b5713-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/cbaf319a4712385b5ba8a414808b5713-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "outstanding"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/ANvmVS2Yr0.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/ANvmVS2Yr0.txt",
+    "sha256": "9b7c46c74e2010bacf663ba46e9663dc0d6dc445f27e5d4a3197699dc3e09ceb",
+    "bytes": 6910937,
+    "pages": 25,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "substantive_main_text_and_selected_visual_reading",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:56.818946+00:00",
+    "verified_at_utc": "2026-09-08T21:29:58.479762+00:00",
+    "text_sha256": "e95b354d21f829be4fdb61efd41077966d2ee86433237cb2ad6a542f63fdd619",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/ANvmVS2Yr0.metadata.json",
+    "metadata_sha256": "f03f9bbd4561781f298095871204b46fa4bc821f3487cf9762edd017fe2ca992",
+    "reading_record": "paper/style_study/deep_readings_2024.json"
+  },
+  {
+    "year": 2024,
+    "title": "Generative Modeling with Phase Stochastic Bridge",
+    "authors": [
+      "Tianrong Chen",
+      "Jiatao Gu",
+      "Laurent Dinh",
+      "Evangelos Theodorou",
+      "Joshua Susskind",
+      "Shuangfei Zhai"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19720",
+    "openreview_id": "tUtGjQEDd4",
+    "openreview_forum_url": "https://openreview.net/forum?id=tUtGjQEDd4",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=tUtGjQEDd4",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/6e1e1d2e58afe1007da0bb76fac722a0-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/6e1e1d2e58afe1007da0bb76fac722a0-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/tUtGjQEDd4.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/tUtGjQEDd4.txt",
+    "sha256": "f005ddf73ab672512ab6b476a31c156b5fc70e3252d991c7a1cae04ed0c6e83f",
+    "bytes": 29500081,
+    "pages": 37,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:31.677702+00:00",
+    "verified_at_utc": "2026-09-08T21:28:33.032812+00:00",
+    "text_sha256": "6de4394d34fc52d0a868feaa132c657df6e0b2dcc4b7a47e9b7193eec8490653",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/tUtGjQEDd4.metadata.json",
+    "metadata_sha256": "51cd0cbee0b87e5a85c928bf410b55f72e51ae477f0786ea3d67609fb78bfa2e"
+  },
+  {
+    "year": 2024,
+    "title": "Ghost on the Shell: An Expressive Representation of General 3D Shapes",
+    "authors": [
+      "Zhen Liu",
+      "Yao Feng",
+      "Yuliang Xiu",
+      "Weiyang Liu",
+      "Liam Paull",
+      "Michael J Black",
+      "Bernhard Schoelkopf"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19782",
+    "openreview_id": "Ad87VjRqUw",
+    "openreview_forum_url": "https://openreview.net/forum?id=Ad87VjRqUw",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=Ad87VjRqUw",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/e4ebed4a015438aed6ef604b43709112-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/e4ebed4a015438aed6ef604b43709112-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/Ad87VjRqUw.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/Ad87VjRqUw.txt",
+    "sha256": "51c186c23caa29d0ac1edb736c3c4b5ae78cd114946b97efa36dcae00fc7a881",
+    "bytes": 14168139,
+    "pages": 30,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:53.990724+00:00",
+    "verified_at_utc": "2026-09-08T21:29:56.684456+00:00",
+    "text_sha256": "b0fc3680d72404713ad9151de0fc4f16b63222ece68e81a7305922d14bc99144",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/Ad87VjRqUw.metadata.json",
+    "metadata_sha256": "d32b36dda52b386340d1e80a57e77b991e47988ea317107d3e611b2d8aab0a19"
+  },
+  {
+    "year": 2024,
+    "title": "GNNCert: Deterministic Certification of Graph Neural Networks against Adversarial Perturbations",
+    "authors": [
+      "Zaishuo Xia",
+      "Han Yang",
+      "Binghui Wang",
+      "Jinyuan Jia"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19771",
+    "openreview_id": "IGzaH538fz",
+    "openreview_forum_url": "https://openreview.net/forum?id=IGzaH538fz",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=IGzaH538fz",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/d69747e04b73cf719292c22cfcea45ec-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/d69747e04b73cf719292c22cfcea45ec-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/IGzaH538fz.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/IGzaH538fz.txt",
+    "sha256": "c6e875d7de4d5fef3162a51ac17b7f8ad01a505aa249410bad92772a2604b9d4",
+    "bytes": 3805066,
+    "pages": 18,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:41.511650+00:00",
+    "verified_at_utc": "2026-09-08T21:29:42.048872+00:00",
+    "text_sha256": "bdf4f38b86ee5dc2112d12b5484af001c4e95d052e0d25d9ce33c4397734da22",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/IGzaH538fz.metadata.json",
+    "metadata_sha256": "437649663dd960bd390caa816d577188afbb34e1bba4f5294f07751c241edc74"
+  },
+  {
+    "year": 2024,
+    "title": "Graph Neural Networks for Learning Equivariant Representations of Neural Networks",
+    "authors": [
+      "Miltiadis (Miltos) Kofinas",
+      "Boris Knyazev",
+      "Yan Zhang",
+      "Yunlu Chen",
+      "Gertjan J Burghouts",
+      "Efstratios Gavves",
+      "Cees G Snoek",
+      "David Zhang"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19727",
+    "openreview_id": "oO6FsMyDBt",
+    "openreview_forum_url": "https://openreview.net/forum?id=oO6FsMyDBt",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=oO6FsMyDBt",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/c592fc7e6207f82560ed45fece8d6937-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/c592fc7e6207f82560ed45fece8d6937-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/oO6FsMyDBt.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/oO6FsMyDBt.txt",
+    "sha256": "f20a8da370b54df8748985ceb95fda78d61f5373441ba8a752d8f10638a4af29",
+    "bytes": 1200522,
+    "pages": 19,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:41.534394+00:00",
+    "verified_at_utc": "2026-09-08T21:28:42.246555+00:00",
+    "text_sha256": "98f128356d619d2834d51f43345490884892d3adf0e8584b9a8197a0a334937c",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/oO6FsMyDBt.metadata.json",
+    "metadata_sha256": "3d63b5979de084ae0bcc8fc15357b34eae47fea6c564d4771229477aa5299102"
+  },
+  {
+    "year": 2024,
+    "title": "How I Warped Your Noise: a Temporally-Correlated Noise Prior for Diffusion Models",
+    "authors": [
+      "Pascal Chang",
+      "Jingwei Tang",
+      "Markus Gross",
+      "Vinicius Da Costa De Azevedo"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19723",
+    "openreview_id": "pzElnMrgSD",
+    "openreview_forum_url": "https://openreview.net/forum?id=pzElnMrgSD",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=pzElnMrgSD",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/805c06617d2b643278936daadfde4280-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/805c06617d2b643278936daadfde4280-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/pzElnMrgSD.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/pzElnMrgSD.txt",
+    "sha256": "06dc4bf7a93760aa2fd89157c7735817e25e4745bbdcf6050b993f6cde7cb988",
+    "bytes": 46185044,
+    "pages": 32,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:37.271831+00:00",
+    "verified_at_utc": "2026-09-08T21:28:40.068252+00:00",
+    "text_sha256": "14420e9127ef467044f2241893649e6e65b659c11891beaf7b3f552cd89fdb85",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/pzElnMrgSD.metadata.json",
+    "metadata_sha256": "346b8371a0e395aee53ebfa15666b0c5e9b12da5d02edebfcd094ed5b13a27e5"
+  },
+  {
+    "year": 2024,
+    "title": "How Well Do Supervised 3D Models Transfer to Medical Imaging Tasks?",
+    "authors": [
+      "Wenxuan Li",
+      "Alan Yuille",
+      "Zongwei Zhou"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19781",
+    "openreview_id": "AhizIPytk4",
+    "openreview_forum_url": "https://openreview.net/forum?id=AhizIPytk4",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=AhizIPytk4",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/47360925c45a166c96f652589265dee9-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/47360925c45a166c96f652589265dee9-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/AhizIPytk4.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/AhizIPytk4.txt",
+    "sha256": "00a47fb58060f013f499ec2742accefe0ed468d0e5db0795dd9db78c001acc2f",
+    "bytes": 1417390,
+    "pages": 16,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:52.409924+00:00",
+    "verified_at_utc": "2026-09-08T21:29:53.774340+00:00",
+    "text_sha256": "792bcacd6a83b68d3da2ca58e58a6a10da631cacbd77c65b8de309b38f156cf3",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/AhizIPytk4.metadata.json",
+    "metadata_sha256": "08e7eb49e41539ec670a79606ef82100d1a4eddae12a9cee8a8aac02fb0cc7a6"
+  },
+  {
+    "year": 2024,
+    "title": "Improved Active Learning via Dependent Leverage Score Sampling",
+    "authors": [
+      "Atsushi Shimizu",
+      "Xiaoou Cheng",
+      "Christopher Musco",
+      "Jonathan Weare"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19770",
+    "openreview_id": "IYxDy2jDFL",
+    "openreview_forum_url": "https://openreview.net/forum?id=IYxDy2jDFL",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=IYxDy2jDFL",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/7f05193e5487287a890df7fbc3554427-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/7f05193e5487287a890df7fbc3554427-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/IYxDy2jDFL.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/IYxDy2jDFL.txt",
+    "sha256": "8e30b243038e25082d587476e86d488f7c0e0e0f38a58ca0112693c2ac16196e",
+    "bytes": 2411071,
+    "pages": 24,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:40.751146+00:00",
+    "verified_at_utc": "2026-09-08T21:29:41.446628+00:00",
+    "text_sha256": "cadb1b2e937f9a0d722a5fb43ed5e7a6f42547c2c9651b4714d6398356c9a647",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/IYxDy2jDFL.metadata.json",
+    "metadata_sha256": "f2e8a76133576ada7c4359622ebea2ebd6f624dab80fd45c586369f2ff9dd6d8"
+  },
+  {
+    "year": 2024,
+    "title": "Improved Techniques for Training Consistency Models",
+    "authors": [
+      "Yang Song",
+      "Prafulla Dhariwal"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19754",
+    "openreview_id": "WNzy9bRDvG",
+    "openreview_forum_url": "https://openreview.net/forum?id=WNzy9bRDvG",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=WNzy9bRDvG",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/41bd71e7bf7f9fe68f1c936940fd06bd-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/41bd71e7bf7f9fe68f1c936940fd06bd-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/WNzy9bRDvG.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/WNzy9bRDvG.txt",
+    "sha256": "558174203f2db27be9b137c6d1590b5b3267aeffdd6dd385d4a8fb1440180997",
+    "bytes": 19580986,
+    "pages": 20,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:19.909770+00:00",
+    "verified_at_utc": "2026-09-08T21:29:21.137616+00:00",
+    "text_sha256": "cfb576477820a12f670268751997663272ba499e402f76889ef521c62ba489df",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/WNzy9bRDvG.metadata.json",
+    "metadata_sha256": "c640d9ae23cce0468da92c6222555c4aa2b674916e6073c4b40987cebbb6b858"
+  },
+  {
+    "year": 2024,
+    "title": "Improving Convergence and Generalization Using Parameter Symmetries",
+    "authors": [
+      "Bo Zhao",
+      "Robert M. Gower",
+      "Robin Walters",
+      "Rose Yu"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19767",
+    "openreview_id": "L0r0GphlIL",
+    "openreview_forum_url": "https://openreview.net/forum?id=L0r0GphlIL",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=L0r0GphlIL",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/f2184e55a13b73b89f618ad24abb6ca7-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/f2184e55a13b73b89f618ad24abb6ca7-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/L0r0GphlIL.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/L0r0GphlIL.txt",
+    "sha256": "3480ad85c6c8e2c83f86849adeb09b0717b85c47162ff06fc4e3a23564ef3954",
+    "bytes": 1584300,
+    "pages": 28,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:32.573013+00:00",
+    "verified_at_utc": "2026-09-08T21:29:33.217641+00:00",
+    "text_sha256": "a94c24cf7dbd16b4fa03c2cb2af60bd7e3d419290c7668788b114905fca31326",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/L0r0GphlIL.metadata.json",
+    "metadata_sha256": "4f213abc50b2d49bc86a2eb0597206364299f8d1ae77741fdb0fb1422117d4a9"
+  },
+  {
+    "year": 2024,
+    "title": "InfoBatch: Lossless Training Speed Up by Unbiased Dynamic Data Pruning",
+    "authors": [
+      "Ziheng Qin",
+      "Kai Wang",
+      "Zangwei Zheng",
+      "Jianyang Gu",
+      "Xiangyu Peng",
+      "Zhaopan Xu",
+      "Zhou Daquan",
+      "Lei Shang",
+      "Baigui Sun",
+      "Xuansong Xie",
+      "Yang You"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19779",
+    "openreview_id": "C61sk5LsK6",
+    "openreview_forum_url": "https://openreview.net/forum?id=C61sk5LsK6",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=C61sk5LsK6",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/ad1d7a4df30a9c0c46b387815a774a84-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/ad1d7a4df30a9c0c46b387815a774a84-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/C61sk5LsK6.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/C61sk5LsK6.txt",
+    "sha256": "1376fdbe53778e012d03bbad863e3445a67c7ce314e5f1ea3071ff6e527aba69",
+    "bytes": 3211321,
+    "pages": 22,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:50.850215+00:00",
+    "verified_at_utc": "2026-09-08T21:29:51.353060+00:00",
+    "text_sha256": "1f0719ca71876e8b2a628b074a4b48aad6829e6958b7d11274ddaaea23e1dd1a",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/C61sk5LsK6.metadata.json",
+    "metadata_sha256": "33f5468bea387f2d8079a0686a0d2160f5c1c1b701ce87a999416427cd461282"
+  },
+  {
+    "year": 2024,
+    "title": "Interpreting CLIP's Image Representation via Text-Based Decomposition",
+    "authors": [
+      "Yossi Gandelsman",
+      "Alexei Efros",
+      "Jacob Steinhardt"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19791",
+    "openreview_id": "5Ca9sSzuDp",
+    "openreview_forum_url": "https://openreview.net/forum?id=5Ca9sSzuDp",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=5Ca9sSzuDp",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/5085a2b8c298edeadc46b9ffe6df5f64-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/5085a2b8c298edeadc46b9ffe6df5f64-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/5Ca9sSzuDp.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/5Ca9sSzuDp.txt",
+    "sha256": "20396d146a6a52861de488eeb982aa22aee9629c576d4d99f193086ac633e207",
+    "bytes": 24318917,
+    "pages": 22,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:30:04.073664+00:00",
+    "verified_at_utc": "2026-09-08T21:30:04.851452+00:00",
+    "text_sha256": "b88a258f5bcf42041c00a6172a2ca9f9b33c8ae79c1923450ddadf21f989f8e2",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/5Ca9sSzuDp.metadata.json",
+    "metadata_sha256": "890b6f3cf5522494ea9336e744951ea1d54d13e4a0071cff00ccff2e6a7b49ae"
+  },
+  {
+    "year": 2024,
+    "title": "Is ImageNet worth 1 video? Learning strong image encoders from 1 long unlabelled video",
+    "authors": [
+      "Shashank Venkataramanan",
+      "Mamshad Nayeem Rizve",
+      "Joao Carreira",
+      "Yuki Asano",
+      "Yannis Avrithis"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19752",
+    "openreview_id": "Yen1lGns2o",
+    "openreview_forum_url": "https://openreview.net/forum?id=Yen1lGns2o",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=Yen1lGns2o",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/874cfcfdb9decc30f38edee5d0264153-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/874cfcfdb9decc30f38edee5d0264153-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "honorable_mention"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/Yen1lGns2o.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/Yen1lGns2o.txt",
+    "sha256": "67bb17e9ce979eac0a519741122aba0bfdfb8d30df99b189a478a10f078a170b",
+    "bytes": 16055694,
+    "pages": 22,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:18.045530+00:00",
+    "verified_at_utc": "2026-09-08T21:29:18.806051+00:00",
+    "text_sha256": "7e928d9876c7637c3e4f1820d0c4f87874077a834a3ccb2412cca07ca21a2aae",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/Yen1lGns2o.metadata.json",
+    "metadata_sha256": "881fb74320a9c6b0e6f791e9348517505a885c5446b3af9dfae91147c3d1da43"
+  },
+  {
+    "year": 2024,
+    "title": "Knowledge Card: Filling LLMs' Knowledge Gaps with Plug-in Specialized Language Models",
+    "authors": [
+      "Shangbin Feng",
+      "Weijia Shi",
+      "Yuyang Bai",
+      "Vidhisha Balachandran",
+      "Tianxing He",
+      "Yulia Tsvetkov"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19753",
+    "openreview_id": "WbWtOYIzIK",
+    "openreview_forum_url": "https://openreview.net/forum?id=WbWtOYIzIK",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=WbWtOYIzIK",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/46362971bfc3a97e6a271f2eb90fba17-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/46362971bfc3a97e6a271f2eb90fba17-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/WbWtOYIzIK.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/WbWtOYIzIK.txt",
+    "sha256": "4786805bed7ef92953856e8824eeaba6c6e906a94aab6d22a78f1c0d3160caa2",
+    "bytes": 877083,
+    "pages": 25,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:18.795581+00:00",
+    "verified_at_utc": "2026-09-08T21:29:19.712308+00:00",
+    "text_sha256": "746b4a95c82b52eb0d047d81311c9babbcdc3374e6f90eb0a9054e77527c6501",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/WbWtOYIzIK.metadata.json",
+    "metadata_sha256": "889646f8b940692148a80e4cfe64cd27171f68f047c425e350cee867bd9f5399"
+  },
+  {
+    "year": 2024,
+    "title": "Latent Trajectory Learning for Limited Timestamps under Distribution Shift over Time",
+    "authors": [
+      "Qiuhao Zeng",
+      "Changjian Shui",
+      "Long-Kai Huang",
+      "Peng Liu",
+      "Xi Chen",
+      "Charles Ling",
+      "Boyu Wang"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19746",
+    "openreview_id": "bTMMNT7IdW",
+    "openreview_forum_url": "https://openreview.net/forum?id=bTMMNT7IdW",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=bTMMNT7IdW",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/c30d6805267f90b61a30b1e6b71b7b10-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/c30d6805267f90b61a30b1e6b71b7b10-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/bTMMNT7IdW.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/bTMMNT7IdW.txt",
+    "sha256": "22e50d373f3e81b995761a5f9f45eee67d5b8a4e264d85504e0dae020760c871",
+    "bytes": 7503454,
+    "pages": 26,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:14.106612+00:00",
+    "verified_at_utc": "2026-09-08T21:29:14.747012+00:00",
+    "text_sha256": "6de2344f34ddb519176959c0413dca158b9cbf6bffa99271f60ac32e575910c3",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/bTMMNT7IdW.metadata.json",
+    "metadata_sha256": "eaf5ea57939f6092b6109a91bd7888547709f4984901115d6b76ac1b9e643dbb"
+  },
+  {
+    "year": 2024,
+    "title": "Learning Energy Decompositions for Partial Inference in GFlowNets",
+    "authors": [
+      "Hyosoon Jang",
+      "Minsu Kim",
+      "Sungsoo Ahn"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19762",
+    "openreview_id": "P15CHILQlg",
+    "openreview_forum_url": "https://openreview.net/forum?id=P15CHILQlg",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=P15CHILQlg",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/5fdb900df1270227cef3728cf548c784-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/5fdb900df1270227cef3728cf548c784-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/P15CHILQlg.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/P15CHILQlg.txt",
+    "sha256": "d4ba063c035b99acf14fe07359bfdaac4f8e0f10919793a191004e37f196e4e4",
+    "bytes": 2063815,
+    "pages": 15,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:27.689438+00:00",
+    "verified_at_utc": "2026-09-08T21:29:28.422372+00:00",
+    "text_sha256": "0cb27e9042e3c625816d090146cc3bcb9efd2dc0e629220a899d2fa3338e2a38",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/P15CHILQlg.metadata.json",
+    "metadata_sha256": "31585edacb0ea22353c95f83860b2ac533457e278896fdcb417b60dffb53be50"
+  },
+  {
+    "year": 2024,
+    "title": "Learning Interactive Real-World Simulators",
+    "authors": [
+      "Sherry Yang",
+      "Yilun Du",
+      "Seyed Ghasemipour",
+      "Jonathan Tompson",
+      "Leslie Kaelbling",
+      "Dale Schuurmans",
+      "Pieter Abbeel"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19722",
+    "openreview_id": "sFyTZEqmUY",
+    "openreview_forum_url": "https://openreview.net/forum?id=sFyTZEqmUY",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=sFyTZEqmUY",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/c4d66eae503694424123b93ac0fbaf17-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/c4d66eae503694424123b93ac0fbaf17-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "outstanding"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/sFyTZEqmUY.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/sFyTZEqmUY.txt",
+    "sha256": "b4238fc715f53dc3df18c02e989f8ea5ed2ccb33ac973e8bdb3349b8e33421f8",
+    "bytes": 38179478,
+    "pages": 25,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "substantive_main_text_and_selected_visual_reading",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:34.148326+00:00",
+    "verified_at_utc": "2026-09-08T21:28:35.725807+00:00",
+    "text_sha256": "7ebed8006157f830624c60fa7c58032032a92cfb3f11c930b3310891a8cb34b8",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/sFyTZEqmUY.metadata.json",
+    "metadata_sha256": "5b988e8835b9a291a86c12dd6eff35b77c126f0f4482806e74d3bcb260be6db7",
+    "reading_record": "paper/style_study/deep_readings_2024.json"
+  },
+  {
+    "year": 2024,
+    "title": "LEGO-Prover: Neural Theorem Proving with Growing Libraries",
+    "authors": [
+      "Haiming Wang",
+      "Huajian Xin",
+      "Chuanyang Zheng",
+      "Zhengying Liu",
+      "Qingxing Cao",
+      "Yinya Huang",
+      "Jing Xiong",
+      "Han Shi",
+      "Enze Xie",
+      "Jian Yin",
+      "Zhenguo Li",
+      "Xiaodan Liang"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19793",
+    "openreview_id": "3f5PALef5B",
+    "openreview_forum_url": "https://openreview.net/forum?id=3f5PALef5B",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=3f5PALef5B",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/85dca46374dc0f27b4bb5f265b3d17f0-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/85dca46374dc0f27b4bb5f265b3d17f0-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/3f5PALef5B.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/3f5PALef5B.txt",
+    "sha256": "4b7dc55f244989d337fe856efec935ea7765e4543cfca010b189dffecfee7df4",
+    "bytes": 2951810,
+    "pages": 32,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:30:06.413091+00:00",
+    "verified_at_utc": "2026-09-08T21:30:07.219902+00:00",
+    "text_sha256": "d9327860657d6a4180e3622105996a980862068b277cc959563d0485fdaf064c",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/3f5PALef5B.metadata.json",
+    "metadata_sha256": "985b4036a7e2b42cc698a2b08b531ea961ad1f41e93c203c0b040aeb2f815d45"
+  },
+  {
+    "year": 2024,
+    "title": "Less is More: Fewer Interpretable Region via Submodular Subset Selection",
+    "authors": [
+      "Ruoyu Chen",
+      "Hua Zhang",
+      "Siyuan Liang",
+      "Jingzhi Li",
+      "Xiaochun Cao"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19733",
+    "openreview_id": "jKTUlxo5zy",
+    "openreview_forum_url": "https://openreview.net/forum?id=jKTUlxo5zy",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=jKTUlxo5zy",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/4fca3029c9ead4551937ed6987502e5f-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/4fca3029c9ead4551937ed6987502e5f-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/jKTUlxo5zy.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/jKTUlxo5zy.txt",
+    "sha256": "a2a497e7fcef694f702c75f77a69df8e0a7fb83afa86a444e809d946aa9f2a6a",
+    "bytes": 6913494,
+    "pages": 23,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:48.195757+00:00",
+    "verified_at_utc": "2026-09-08T21:28:48.677915+00:00",
+    "text_sha256": "ce6ffe679369d9b2d16bd5c9da6c8380879d2757d13267dcda2a0219655bd752",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/jKTUlxo5zy.metadata.json",
+    "metadata_sha256": "14812129c2ca825284d849f6b80cc4bd7ec0d1baf371634e3003f889795cca0f"
+  },
+  {
+    "year": 2024,
+    "title": "Lipschitz Singularities in Diffusion Models",
+    "authors": [
+      "Zhantao Yang",
+      "Ruili Feng",
+      "Han Zhang",
+      "Yujun Shen",
+      "Kai Zhu",
+      "Lianghua Huang",
+      "Yifei Zhang",
+      "Yu Liu",
+      "Deli Zhao",
+      "Jingren Zhou",
+      "Fan Cheng"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19755",
+    "openreview_id": "WNkW0cOwiz",
+    "openreview_forum_url": "https://openreview.net/forum?id=WNkW0cOwiz",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=WNkW0cOwiz",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/3aff334b139550ffffed3f4e2498d43b-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/3aff334b139550ffffed3f4e2498d43b-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/WNkW0cOwiz.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/WNkW0cOwiz.txt",
+    "sha256": "6fc2e2069e3db7f40823f55ece47044230ebd8880c149cc91adb1f2a9fc264d6",
+    "bytes": 6578125,
+    "pages": 27,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:21.240998+00:00",
+    "verified_at_utc": "2026-09-08T21:29:21.865708+00:00",
+    "text_sha256": "70b3fa50c2610e190c72bef9eb3296f89246ab2641739d0a07beb5a51a05db9f",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/WNkW0cOwiz.metadata.json",
+    "metadata_sha256": "e18ec41c6cd287833a2e6d36c8f27921fdd2058d86d2265a2e687bf2f0fbf6cd"
+  },
+  {
+    "year": 2024,
+    "title": "LLMCarbon: Modeling the End-to-End Carbon Footprint of Large Language Models",
+    "authors": [
+      "Ahmad Faiz",
+      "Sotaro Kaneda",
+      "Ruhan Wang",
+      "Rita Osi",
+      "Prateek Sharma",
+      "Fan Chen",
+      "Lei Jiang"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19750",
+    "openreview_id": "aIok3ZD9to",
+    "openreview_forum_url": "https://openreview.net/forum?id=aIok3ZD9to",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=aIok3ZD9to",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/6b4ac044095525631df38e20919b45d2-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/6b4ac044095525631df38e20919b45d2-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/aIok3ZD9to.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/aIok3ZD9to.txt",
+    "sha256": "da95dfb3194e92de276693d80fd385db9618488facdbe89863b3e597c750896d",
+    "bytes": 1574967,
+    "pages": 15,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:16.848542+00:00",
+    "verified_at_utc": "2026-09-08T21:29:17.300581+00:00",
+    "text_sha256": "47440c9df3fff43fef9b3641fc31407197d931565b18dcdc844a21ade50f11c3",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/aIok3ZD9to.metadata.json",
+    "metadata_sha256": "654928e0fa3b5ae7d0d384800e80f0b94342ee42c9e87aa27706c3e50bd0bec1"
+  },
+  {
+    "year": 2024,
+    "title": "LoftQ: LoRA-Fine-Tuning-aware Quantization for Large Language Models",
+    "authors": [
+      "Yixiao Li",
+      "Yifan Yu",
+      "Chen Liang",
+      "Nikos Karampatziakis",
+      "Pengcheng He",
+      "Weizhu Chen",
+      "Tuo Zhao"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19765",
+    "openreview_id": "LzPWWPAdY4",
+    "openreview_forum_url": "https://openreview.net/forum?id=LzPWWPAdY4",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=LzPWWPAdY4",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/39ec972afab01e0d8ddc6834a9d12ac1-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/39ec972afab01e0d8ddc6834a9d12ac1-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/LzPWWPAdY4.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/LzPWWPAdY4.txt",
+    "sha256": "5f5d2e2f93a00ed92524442f7afeca62fb2d34a109b8df4ece016ad7603a2167",
+    "bytes": 366134,
+    "pages": 16,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:30.420844+00:00",
+    "verified_at_utc": "2026-09-08T21:29:30.776993+00:00",
+    "text_sha256": "1228dcc7ad8bafd221e799f0c16b807d58d4b3aad3e28710b26d82c6d54bcbbd",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/LzPWWPAdY4.metadata.json",
+    "metadata_sha256": "30690305a77e762fe565b08582e0409f7d54b3e43e3bb080952098b46001c366"
+  },
+  {
+    "year": 2024,
+    "title": "LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models",
+    "authors": [
+      "Yukang Chen",
+      "Shengju Qian",
+      "Haotian Tang",
+      "Xin Lai",
+      "Zhijian Liu",
+      "Song Han",
+      "Jiaya Jia"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19790",
+    "openreview_id": "6PmJoRfdaK",
+    "openreview_forum_url": "https://openreview.net/forum?id=6PmJoRfdaK",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=6PmJoRfdaK",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/211ab571cc9f3802afa6ffff52ae3e5b-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/211ab571cc9f3802afa6ffff52ae3e5b-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/6PmJoRfdaK.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/6PmJoRfdaK.txt",
+    "sha256": "e8bcde584c3322ae5bc75dc1406404ba73d324b387d532668f2e114819646d04",
+    "bytes": 1168720,
+    "pages": 19,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:30:03.229871+00:00",
+    "verified_at_utc": "2026-09-08T21:30:03.833907+00:00",
+    "text_sha256": "8a1a88aaa2ccd4022f61f2bc3b4085f746793e0c6aab0b6646062de1f231fb11",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/6PmJoRfdaK.metadata.json",
+    "metadata_sha256": "49fcf115881a62eb391596fee67cc195d586057d597eb292f6dd6ccb73d062e8"
+  },
+  {
+    "year": 2024,
+    "title": "LRM: Large Reconstruction Model for Single Image to 3D",
+    "authors": [
+      "Yicong Hong",
+      "Kai Zhang",
+      "Jiuxiang Gu",
+      "Sai Bi",
+      "Yang Zhou",
+      "Difan Liu",
+      "Feng Liu",
+      "Kalyan Sunkavalli",
+      "Trung Bui",
+      "Hao Tan"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19721",
+    "openreview_id": "sllU8vvsFF",
+    "openreview_forum_url": "https://openreview.net/forum?id=sllU8vvsFF",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=sllU8vvsFF",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/dcad3425f5c8c36b5b3885c091bf1257-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/dcad3425f5c8c36b5b3885c091bf1257-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/sllU8vvsFF.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/sllU8vvsFF.txt",
+    "sha256": "ac2c496aa90c4bbb52bc33392a7d8c706917a3c3a136fb24fad46c49c6b346f1",
+    "bytes": 4318094,
+    "pages": 25,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:33.103080+00:00",
+    "verified_at_utc": "2026-09-08T21:28:33.749371+00:00",
+    "text_sha256": "3586055ab329391b248aef84a8c05d192a88fe850bc0ffb3018ed738ba160234",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/sllU8vvsFF.metadata.json",
+    "metadata_sha256": "4f20f9b3caf5c24546ac77f36c68ce4c04fe4e6db7c800c0875ab7f3aba54b6b"
+  },
+  {
+    "year": 2024,
+    "title": "Mastering Memory Tasks with World Models",
+    "authors": [
+      "Mohammad Reza Samsami",
+      "Artem Zholus",
+      "Janarthanan Rajendran",
+      "Sarath Chandar"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19795",
+    "openreview_id": "1vDArHJ68h",
+    "openreview_forum_url": "https://openreview.net/forum?id=1vDArHJ68h",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=1vDArHJ68h",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/0a0e436e8830f746300f592377730fca-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/0a0e436e8830f746300f592377730fca-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/1vDArHJ68h.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/1vDArHJ68h.txt",
+    "sha256": "164e29913c41647bc93599fe92cdc9cde5fd5e5b9df9dc7a4e203d155dd43958",
+    "bytes": 2564812,
+    "pages": 37,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:30:07.264075+00:00",
+    "verified_at_utc": "2026-09-08T21:30:08.140023+00:00",
+    "text_sha256": "579cebf7ccfb45c9fa57537f9e039b8f572341165e0a2857a147aa58cf569b91",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/1vDArHJ68h.metadata.json",
+    "metadata_sha256": "37235665407b97d987ae1fd53ffd7a160a244b493a8aa7a28a47b00b9ed84b1b"
+  },
+  {
+    "year": 2024,
+    "title": "MathVista: Evaluating Mathematical Reasoning of Foundation Models in Visual Contexts",
+    "authors": [
+      "Pan Lu",
+      "Hritik Bansal",
+      "Tony Xia",
+      "Jiacheng Liu",
+      "Chunyuan Li",
+      "Hannaneh Hajishirzi",
+      "Hao Cheng",
+      "Kai-Wei Chang",
+      "Michel Galley",
+      "Jianfeng Gao"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19768",
+    "openreview_id": "KUNzEQMWU7",
+    "openreview_forum_url": "https://openreview.net/forum?id=KUNzEQMWU7",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=KUNzEQMWU7",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/663bce02a0050c4a11f1eb8a7f1429d3-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/663bce02a0050c4a11f1eb8a7f1429d3-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/KUNzEQMWU7.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/KUNzEQMWU7.txt",
+    "sha256": "95d79baf90ff46923a73fe29f1a33e05115c5e068b2d923906b50d63070628ba",
+    "bytes": 15862101,
+    "pages": 116,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:33.469987+00:00",
+    "verified_at_utc": "2026-09-08T21:29:35.428194+00:00",
+    "text_sha256": "9065cedc6849ebae3d7193abb8d4c6f9ab9ec54425d9897b4dcce8c9265cbe45",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/KUNzEQMWU7.metadata.json",
+    "metadata_sha256": "1ff84a9c3b5b5c06fc1b57029a8235a6f89b66fd4d6b975fb7e3291e829d6614"
+  },
+  {
+    "year": 2024,
+    "title": "Meta Continual Learning Revisited: Implicitly Enhancing Online Hessian Approximation via Variance Reduction",
+    "authors": [
+      "Yichen Wu",
+      "Long-Kai Huang",
+      "Renzhen Wang",
+      "Deyu Meng",
+      "Ying Wei"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19759",
+    "openreview_id": "TpD2aG1h0D",
+    "openreview_forum_url": "https://openreview.net/forum?id=TpD2aG1h0D",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=TpD2aG1h0D",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/0b6df1a973b82b3cf7fadca6c387ae5a-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/0b6df1a973b82b3cf7fadca6c387ae5a-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "honorable_mention"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/TpD2aG1h0D.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/TpD2aG1h0D.txt",
+    "sha256": "8588c93c5c2292596a5aaf3c35d6c63fd70c34866359c4905fe6862e5d3247a9",
+    "bytes": 1973959,
+    "pages": 30,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "substantive_main_text_and_selected_visual_reading",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:25.772349+00:00",
+    "verified_at_utc": "2026-09-08T21:29:26.497264+00:00",
+    "text_sha256": "91af26a2d6db2314ae923b802962f767f2ee18e92ef21b7c7b11cad1961132a7",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/TpD2aG1h0D.metadata.json",
+    "metadata_sha256": "3d29ebad47bcf00ab9c2e9b7ee0dcbd57f4cfc02a63ae1d26392d0fbbc9b42d9",
+    "reading_record": "paper/style_study/deep_readings_2024.json"
+  },
+  {
+    "year": 2024,
+    "title": "MetaGPT: Meta Programming for A Multi-Agent Collaborative Framework",
+    "authors": [
+      "Sirui Hong",
+      "Mingchen Zhuge",
+      "Jonathan Chen",
+      "Xiawu Zheng",
+      "Yuheng Cheng",
+      "Jinlin Wang",
+      "Ceyao Zhang",
+      "zili wang",
+      "Steven Yau",
+      "Zijuan Lin",
+      "Liyang Zhou",
+      "Chenyu Ran",
+      "Lingfeng Xiao",
+      "Chenglin Wu",
+      "Jürgen Schmidhuber"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19756",
+    "openreview_id": "VtmBAGCN7o",
+    "openreview_forum_url": "https://openreview.net/forum?id=VtmBAGCN7o",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=VtmBAGCN7o",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/6507b115562bb0a305f1958ccc87355a-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/6507b115562bb0a305f1958ccc87355a-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/VtmBAGCN7o.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/VtmBAGCN7o.txt",
+    "sha256": "76d733b2c9e04ea0ade6c845c55b52bb784c894358f872e63733aaa65fb69b39",
+    "bytes": 16911937,
+    "pages": 29,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:22.054807+00:00",
+    "verified_at_utc": "2026-09-08T21:29:23.803707+00:00",
+    "text_sha256": "12a2109c7960b43135569890c14cd939376b0e37e79ee5394b385854d550de54",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/VtmBAGCN7o.metadata.json",
+    "metadata_sha256": "2c36fd3f6b40617c80ee7af70fce0342a364b66aae92372b8dfa0e18f7115712"
+  },
+  {
+    "year": 2024,
+    "title": "METRA: Scalable Unsupervised RL with Metric-Aware Abstraction",
+    "authors": [
+      "Seohong Park",
+      "Oleh Rybkin",
+      "Sergey Levine"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19745",
+    "openreview_id": "c5pwL0Soay",
+    "openreview_forum_url": "https://openreview.net/forum?id=c5pwL0Soay",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=c5pwL0Soay",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/516593a423838642a2eb4e9c5b9c7f44-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/516593a423838642a2eb4e9c5b9c7f44-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/c5pwL0Soay.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/c5pwL0Soay.txt",
+    "sha256": "85f583b322d4f272da16fa42579bbd4e7b2c6864cfb7227d459bca75cc1fd301",
+    "bytes": 4775879,
+    "pages": 25,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:13.045739+00:00",
+    "verified_at_utc": "2026-09-08T21:29:13.995572+00:00",
+    "text_sha256": "31cbeba87a32a8d83c850c383919bd85ff7caaf80be17dcd1a7c9d3ed954d93e",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/c5pwL0Soay.metadata.json",
+    "metadata_sha256": "ae21676fc4d4b3981f9ece0f69e310f4a655db9aa7fbe15ff97b4d101cb53b25"
+  },
+  {
+    "year": 2024,
+    "title": "Mixed-Type Tabular Data Synthesis with Score-based Diffusion in Latent Space",
+    "authors": [
+      "Hengrui Zhang",
+      "Jiani Zhang",
+      "Zhengyuan Shen",
+      "Balasubramaniam Srinivasan",
+      "Xiao Qin",
+      "Christos Faloutsos",
+      "Huzefa Rangwala",
+      "George Karypis"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19792",
+    "openreview_id": "4Ay23yeuz0",
+    "openreview_forum_url": "https://openreview.net/forum?id=4Ay23yeuz0",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=4Ay23yeuz0",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/e9750610639c3e7a849cff746bf60dbd-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/e9750610639c3e7a849cff746bf60dbd-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/4Ay23yeuz0.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/4Ay23yeuz0.txt",
+    "sha256": "53bb5b0acc124d5d4c3e46037a2620407e2a723027545307fe6ab1c11eb8cbae",
+    "bytes": 1950574,
+    "pages": 29,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:30:04.872415+00:00",
+    "verified_at_utc": "2026-09-08T21:30:05.814831+00:00",
+    "text_sha256": "562f6d06947e45939433489835c07d945976ffa006c056b61e59877b3dda8ded",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/4Ay23yeuz0.metadata.json",
+    "metadata_sha256": "41e89ee5c4d5eff5947c7d56b86ea646708e7dd1a999cda49b809e388f2dc407"
+  },
+  {
+    "year": 2024,
+    "title": "Model Tells You What to Discard: Adaptive KV Cache Compression for LLMs",
+    "authors": [
+      "Suyu Ge",
+      "Yunan Zhang",
+      "Liyuan Liu",
+      "Minjia Zhang",
+      "Jiawei Han",
+      "Jianfeng Gao"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19718",
+    "openreview_id": "uNrFpDPMyo",
+    "openreview_forum_url": "https://openreview.net/forum?id=uNrFpDPMyo",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=uNrFpDPMyo",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/639a9a172c044fbb64175b5fad42e9a5-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/639a9a172c044fbb64175b5fad42e9a5-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "honorable_mention"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/uNrFpDPMyo.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/uNrFpDPMyo.txt",
+    "sha256": "d922cfcb98cd636361ac28cb47b17552aff8cb63d74190e0b2b9859932972861",
+    "bytes": 437927,
+    "pages": 14,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:28.556968+00:00",
+    "verified_at_utc": "2026-09-08T21:28:29.013781+00:00",
+    "text_sha256": "087ab362cf16a86dc57821df2f1f651764aa4aabd8060cda3b24627157498ac2",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/uNrFpDPMyo.metadata.json",
+    "metadata_sha256": "6aea350a90f890c723d6a2e1e4f82bd451646c527eba89e3e195799e3821aeda"
+  },
+  {
+    "year": 2024,
+    "title": "Monte Carlo guided Denoising Diffusion models for Bayesian linear inverse problems.",
+    "authors": [
+      "Gabriel Cardoso",
+      "Yazid Janati el idrissi",
+      "Sylvain Le Corff",
+      "Eric Moulines"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19729",
+    "openreview_id": "nHESwXvxWK",
+    "openreview_forum_url": "https://openreview.net/forum?id=nHESwXvxWK",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=nHESwXvxWK",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/bfb3c1db0deda449ff4027f77dd48704-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/bfb3c1db0deda449ff4027f77dd48704-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/nHESwXvxWK.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/nHESwXvxWK.txt",
+    "sha256": "e6fece00a454d16250fb7868a1d7a6c16a6e0322b24f1b81ed6938ac36a39a33",
+    "bytes": 24850227,
+    "pages": 37,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:43.111601+00:00",
+    "verified_at_utc": "2026-09-08T21:28:44.090644+00:00",
+    "text_sha256": "c3d67d53cd6e4f2237104d58219193feec21b8f895f0258bda77d678e64ddf0d",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/nHESwXvxWK.metadata.json",
+    "metadata_sha256": "bc0d361d1105b31552800ea6889032147e66a7201f4280852069b35875802bf5"
+  },
+  {
+    "year": 2024,
+    "title": "Multi-granularity Correspondence Learning from Long-term Noisy Videos",
+    "authors": [
+      "Yijie Lin",
+      "Jie Zhang",
+      "Zhenyu Huang",
+      "Jia Liu",
+      "zujie wen",
+      "Xi Peng"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19786",
+    "openreview_id": "9Cu8MRmhq2",
+    "openreview_forum_url": "https://openreview.net/forum?id=9Cu8MRmhq2",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=9Cu8MRmhq2",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/c0f1eed3f3ca4b2e19ab639a8426270b-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/c0f1eed3f3ca4b2e19ab639a8426270b-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/9Cu8MRmhq2.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/9Cu8MRmhq2.txt",
+    "sha256": "315485c85cf978619fe900ef8a35b5db2c08a969eb02736c1bec91a5ede5c8b9",
+    "bytes": 1235445,
+    "pages": 20,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:59.643721+00:00",
+    "verified_at_utc": "2026-09-08T21:30:00.226122+00:00",
+    "text_sha256": "7aac9dcc292590d46af8c4e04372c9405eedba80169fc31075ab012e6952472b",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/9Cu8MRmhq2.metadata.json",
+    "metadata_sha256": "c13def15f22ac7dd3d0ac8357b6f4e5eafd9560de17c74ce804e37289572b670"
+  },
+  {
+    "year": 2024,
+    "title": "Multi-Source Diffusion Models for Simultaneous Music Generation and Separation",
+    "authors": [
+      "Giorgio Mariani",
+      "Irene Tallini",
+      "Emilian Postolache",
+      "Michele Mancusi",
+      "Luca Cosmo",
+      "Emanuele Rodolà"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19737",
+    "openreview_id": "h922Qhkmx1",
+    "openreview_forum_url": "https://openreview.net/forum?id=h922Qhkmx1",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=h922Qhkmx1",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/870c1e0589822bf37590b84984c345c4-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/870c1e0589822bf37590b84984c345c4-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/h922Qhkmx1.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/h922Qhkmx1.txt",
+    "sha256": "9846e3e71d90ca74c4e648440d1a50a4d5580f01ae4d6176db7712d8c3f23af9",
+    "bytes": 857722,
+    "pages": 21,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:52.215283+00:00",
+    "verified_at_utc": "2026-09-08T21:28:52.681298+00:00",
+    "text_sha256": "d0a6d83a0f86ca48bbf976a2d9e01d86c3be8017677b94e4031124d7a698c013",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/h922Qhkmx1.metadata.json",
+    "metadata_sha256": "b49a4e707c7cf14d521b8b20cf1ff49d675f9d24a9b3955f3bc0a91c85c0090e"
+  },
+  {
+    "year": 2024,
+    "title": "Multisize Dataset Condensation",
+    "authors": [
+      "Yang He",
+      "Lingao Xiao",
+      "Joey Tianyi Zhou",
+      "Ivor Tsang"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19777",
+    "openreview_id": "FVhmnvqnsI",
+    "openreview_forum_url": "https://openreview.net/forum?id=FVhmnvqnsI",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=FVhmnvqnsI",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/bd26cc2401aacff3da732eb90630215e-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/bd26cc2401aacff3da732eb90630215e-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/FVhmnvqnsI.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/FVhmnvqnsI.txt",
+    "sha256": "389479e29f74809803dce3a0dcb2cbf22be3ea2f75f69102eebe855a9291e3bf",
+    "bytes": 4790626,
+    "pages": 21,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:49.127477+00:00",
+    "verified_at_utc": "2026-09-08T21:29:49.640464+00:00",
+    "text_sha256": "58b90eb1eede87de5ac4777ea51270d3a8cc94efe50330b39eb4ffe86d0136c0",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/FVhmnvqnsI.metadata.json",
+    "metadata_sha256": "5714d787bf8b7248e9a714bb87d1cb7d76f3e576232303403622df5f0ada080a"
+  },
+  {
+    "year": 2024,
+    "title": "Neural Fine-Tuning Search for Few-Shot Learning",
+    "authors": [
+      "Panagiotis Eustratiadis",
+      "Łukasz Dudziak",
+      "Da Li",
+      "Timothy Hospedales"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19760",
+    "openreview_id": "T7YV5UZKBc",
+    "openreview_forum_url": "https://openreview.net/forum?id=T7YV5UZKBc",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=T7YV5UZKBc",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/0f817dcbad81afb21fb695f1b2e55e44-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/0f817dcbad81afb21fb695f1b2e55e44-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/T7YV5UZKBc.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/T7YV5UZKBc.txt",
+    "sha256": "83e293468667bef2163a39b615f32d697f97c827674000065027be8aa0800f05",
+    "bytes": 3580561,
+    "pages": 17,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:26.553927+00:00",
+    "verified_at_utc": "2026-09-08T21:29:27.146794+00:00",
+    "text_sha256": "62f8ed80870ff643717027814dabe3bfac61b0e58ef4a687b644d68513826118",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/T7YV5UZKBc.metadata.json",
+    "metadata_sha256": "f9009ff5bb1542eccb39d18dc073fe236547a678047ecd93d1f9a29cc918bbee"
+  },
+  {
+    "year": 2024,
+    "title": "Never Train from Scratch: Fair Comparison of Long-Sequence Models Requires Data-Driven Priors",
+    "authors": [
+      "Ido Amos",
+      "Jonathan Berant",
+      "Ankit Gupta"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19761",
+    "openreview_id": "PdaPky8MUn",
+    "openreview_forum_url": "https://openreview.net/forum?id=PdaPky8MUn",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=PdaPky8MUn",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/07cf32cf61224da628157b7ed0ce994a-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/07cf32cf61224da628157b7ed0ce994a-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "outstanding"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/PdaPky8MUn.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/PdaPky8MUn.txt",
+    "sha256": "0557ad0cdf0ec34ced6c92f867882b9ef26cd0a95cf402baa0590c8f1e96a275",
+    "bytes": 490395,
+    "pages": 19,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "substantive_main_text_and_selected_visual_reading",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:27.172816+00:00",
+    "verified_at_utc": "2026-09-08T21:29:27.640213+00:00",
+    "text_sha256": "dc4bdd897c9353f609f93faf57bed2afc75f133c1ea5cd618b346d4468cca6eb",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/PdaPky8MUn.metadata.json",
+    "metadata_sha256": "7769818c9b4b81859ea789c253f3c0ebe73a6d636f75acdd2c4cb98629c655ea",
+    "reading_record": "paper/style_study/deep_readings_2024.json"
+  },
+  {
+    "year": 2024,
+    "title": "On the Humanity of Conversational AI: Evaluating the Psychological Portrayal of LLMs",
+    "authors": [
+      "Jen-tse Huang",
+      "Wenxuan Wang",
+      "Eric John Li",
+      "Man Ho LAM",
+      "Shujie Ren",
+      "Youliang Yuan",
+      "Wenxiang Jiao",
+      "Zhaopeng Tu",
+      "Michael Lyu"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19775",
+    "openreview_id": "H3UayAQWoE",
+    "openreview_forum_url": "https://openreview.net/forum?id=H3UayAQWoE",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=H3UayAQWoE",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/c48dcd605cfb17d5b4f94ce106a915f7-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/c48dcd605cfb17d5b4f94ce106a915f7-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/H3UayAQWoE.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/H3UayAQWoE.txt",
+    "sha256": "b41154cb1027c92971efe0b12fda595e32b92dfc18c8e581ff8bc10540d0bde4",
+    "bytes": 367865,
+    "pages": 24,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:47.615083+00:00",
+    "verified_at_utc": "2026-09-08T21:29:48.191936+00:00",
+    "text_sha256": "ba4f2c4240f4fbc6823c4799d22f419d03efe31597f71c39878d25fd9b22a32e",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/H3UayAQWoE.metadata.json",
+    "metadata_sha256": "150c5957dc0a78640c8396a01ed3e7d9c71f199b756edd2075be0fbedf4b83fd"
+  },
+  {
+    "year": 2024,
+    "title": "On the Joint Interaction of Models, Data, and Features",
+    "authors": [
+      "Yiding Jiang",
+      "Christina Baek",
+      "J Kolter"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19712",
+    "openreview_id": "ze7DOLi394",
+    "openreview_forum_url": "https://openreview.net/forum?id=ze7DOLi394",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=ze7DOLi394",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/c97d5a0a332ac6a8e4836de20462c576-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/c97d5a0a332ac6a8e4836de20462c576-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/ze7DOLi394.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/ze7DOLi394.txt",
+    "sha256": "a55de26b5d4480acff2ffec5b111be7c40948b5f4b0d434b87f38304c2dd4393",
+    "bytes": 12288265,
+    "pages": 37,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:23.113217+00:00",
+    "verified_at_utc": "2026-09-08T21:28:23.963444+00:00",
+    "text_sha256": "0ac936aa309237de0f716bf478234272699f94d440938538c56e1bb91a13168f",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/ze7DOLi394.metadata.json",
+    "metadata_sha256": "06fec55b057bc63b49e28dd65dd37040acf495a51d012cf360c6b9b25def4198"
+  },
+  {
+    "year": 2024,
+    "title": "One-shot Empirical Privacy Estimation for Federated Learning",
+    "authors": [
+      "Galen Andrew",
+      "Peter Kairouz",
+      "Sewoong Oh",
+      "Alina Oprea",
+      "H. Brendan McMahan",
+      "Vinith Suriyakumar"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19797",
+    "openreview_id": "0BqyZSWfzo",
+    "openreview_forum_url": "https://openreview.net/forum?id=0BqyZSWfzo",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=0BqyZSWfzo",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/537d5aa768c2d534016a4d06f87bc8fb-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/537d5aa768c2d534016a4d06f87bc8fb-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/0BqyZSWfzo.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/0BqyZSWfzo.txt",
+    "sha256": "00be245b2740de48c22d47e9946271d6c65a04cea42bb1cd0abb5c190423be7f",
+    "bytes": 599734,
+    "pages": 21,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:30:08.727791+00:00",
+    "verified_at_utc": "2026-09-08T21:30:09.300078+00:00",
+    "text_sha256": "21cbf8d4a9c44b57691cc90f244fbb27c50c3fa942dcfd74c0af81118f142536",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/0BqyZSWfzo.metadata.json",
+    "metadata_sha256": "9adc5e5887dabbef39746dbb1fc358497bfe90667bbd334f9e91c5ca00d5e2c8"
+  },
+  {
+    "year": 2024,
+    "title": "Phenomenal Yet Puzzling: Testing Inductive Reasoning Capabilities of Language Models with Hypothesis Refinement",
+    "authors": [
+      "Linlu Qiu",
+      "Liwei Jiang",
+      "Ximing Lu",
+      "Melanie Sclar",
+      "Valentina Pyatkin",
+      "Chandra Bhagavatula",
+      "Bailin Wang",
+      "Yoon Kim",
+      "Yejin Choi",
+      "Nouha Dziri",
+      "Xiang Ren"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19747",
+    "openreview_id": "bNt7oajl2a",
+    "openreview_forum_url": "https://openreview.net/forum?id=bNt7oajl2a",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=bNt7oajl2a",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/05d2175de7ee637588d1b5ced8b15b32-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/05d2175de7ee637588d1b5ced8b15b32-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/bNt7oajl2a.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/bNt7oajl2a.txt",
+    "sha256": "f55b6d2021e5470e4f43a5509d47987c2b1ce16b19e21bf6b2a9dbc6851a2589",
+    "bytes": 1592196,
+    "pages": 30,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:14.766461+00:00",
+    "verified_at_utc": "2026-09-08T21:29:15.560636+00:00",
+    "text_sha256": "e6c60653060d19f513eb9d08a8c597cfe551cc69679ebaa87281a0601177ff81",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/bNt7oajl2a.metadata.json",
+    "metadata_sha256": "e449c8acd62ce301fb2480135113f057cd8b2f851ba7b3edb9b2133532b1ed6b"
+  },
+  {
+    "year": 2024,
+    "title": "Pre-Training Goal-based Models for Sample-Efficient Reinforcement Learning",
+    "authors": [
+      "Haoqi Yuan",
+      "Zhancun Mu",
+      "Feiyang Xie",
+      "Zongqing Lu"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19728",
+    "openreview_id": "o2IEmeLL9r",
+    "openreview_forum_url": "https://openreview.net/forum?id=o2IEmeLL9r",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=o2IEmeLL9r",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/c1842fcfd74f3c2c2a7693994a4a7c37-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/c1842fcfd74f3c2c2a7693994a4a7c37-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/o2IEmeLL9r.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/o2IEmeLL9r.txt",
+    "sha256": "eb1b48a2e5c30de23e13b252e9fcd94f8de4aead40d8621f0541bd31b20a5b05",
+    "bytes": 1749539,
+    "pages": 22,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:42.319808+00:00",
+    "verified_at_utc": "2026-09-08T21:28:42.853558+00:00",
+    "text_sha256": "83514df144d471c542dabaeaf74e5caf90961227dd41f1a3f98fe21b62e75bb7",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/o2IEmeLL9r.metadata.json",
+    "metadata_sha256": "5620bd2b140daea53fbedb25544929e04a4e180a0e165f61d4ab7ee5fdedafee"
+  },
+  {
+    "year": 2024,
+    "title": "Predictive auxiliary objectives in deep RL mimic learning in the brain",
+    "authors": [
+      "Ching Fang",
+      "Kimberly Stachenfeld"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19748",
+    "openreview_id": "agPpmEgf8C",
+    "openreview_forum_url": "https://openreview.net/forum?id=agPpmEgf8C",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=agPpmEgf8C",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/0b5eb45a22ff33956c043dd271f244ea-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/0b5eb45a22ff33956c043dd271f244ea-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/agPpmEgf8C.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/agPpmEgf8C.txt",
+    "sha256": "aa02c90f06ad6c1a314254217e5ac6244be658d1a0f95574a934681eb7d0bee3",
+    "bytes": 1338964,
+    "pages": 14,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:15.592586+00:00",
+    "verified_at_utc": "2026-09-08T21:29:16.249319+00:00",
+    "text_sha256": "2b0021635b4eacd180b915e5e4a458fe5f203968cb35c4c94cc4fa279b028618",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/agPpmEgf8C.metadata.json",
+    "metadata_sha256": "6ccd2fd161a62310408cc0432e084872ce54dd140d7daf9ef79056002e3d843f"
+  },
+  {
+    "year": 2024,
+    "title": "Protein Discovery with Discrete Walk-Jump Sampling",
+    "authors": [
+      "Nathan Frey",
+      "Dan Berenberg",
+      "Karina Zadorozhny",
+      "Joseph Kleinhenz",
+      "Julien Lafrance-Vanasse",
+      "Isidro Hotzel",
+      "Yan Wu",
+      "Stephen Ra",
+      "Richard Bonneau",
+      "Kyunghyun Cho",
+      "Andreas Loukas",
+      "Vladimir Gligorijevic",
+      "Saeed Saremi"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19713",
+    "openreview_id": "zMPHKOmQNb",
+    "openreview_forum_url": "https://openreview.net/forum?id=zMPHKOmQNb",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=zMPHKOmQNb",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/78b6beab44f92adc74ac1fdb212ac3a0-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/78b6beab44f92adc74ac1fdb212ac3a0-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "outstanding"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/zMPHKOmQNb.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/zMPHKOmQNb.txt",
+    "sha256": "e24557d27e0780cb2100710bd30f571b804891ed217b24e9cf7208294794c1a8",
+    "bytes": 1179871,
+    "pages": 20,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "substantive_main_text_and_selected_visual_reading",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:22.429667+00:00",
+    "verified_at_utc": "2026-09-08T21:28:22.999422+00:00",
+    "text_sha256": "7605b477c1c1f0bb0946c04a945a2d272d236074808131af6b7c27ac61f5efcd",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/zMPHKOmQNb.metadata.json",
+    "metadata_sha256": "1c783e67bf008f3ca4ba9721b1b359035f845a1137e0a428a92db09189eae237",
+    "reading_record": "paper/style_study/deep_readings_2024.json"
+  },
+  {
+    "year": 2024,
+    "title": "Provable Compositional Generalization for Object-Centric Learning",
+    "authors": [
+      "Thaddäus Wiedemer",
+      "Jack Brady",
+      "Alexander Panfilov",
+      "Attila Juhos",
+      "Matthias Bethge",
+      "Wieland Brendel"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19788",
+    "openreview_id": "7VPTUWkiDQ",
+    "openreview_forum_url": "https://openreview.net/forum?id=7VPTUWkiDQ",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=7VPTUWkiDQ",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/57c89126d60c209f48d0e6395c766bb3-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/57c89126d60c209f48d0e6395c766bb3-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/7VPTUWkiDQ.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/7VPTUWkiDQ.txt",
+    "sha256": "59c81b647e75fddd0be4ce4a1e56a955682d8adab2889c42a41c68f7323e6c9a",
+    "bytes": 1564010,
+    "pages": 28,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:30:00.608696+00:00",
+    "verified_at_utc": "2026-09-08T21:30:01.357234+00:00",
+    "text_sha256": "699f53ea207de4069756650ddfa0280c87e7807f17ea023a95d0b8a017dd8cf0",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/7VPTUWkiDQ.metadata.json",
+    "metadata_sha256": "a555d81d7fc20957955adda667b35f0ba9ec0a0aab629f31c970933005e51c82"
+  },
+  {
+    "year": 2024,
+    "title": "Proving Test Set Contamination in Black-Box Language Models",
+    "authors": [
+      "Yonatan Oren",
+      "Nicole Meister",
+      "Niladri Chatterji",
+      "Faisal Ladhak",
+      "Tatsunori Hashimoto"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19769",
+    "openreview_id": "KS8mIvetg2",
+    "openreview_forum_url": "https://openreview.net/forum?id=KS8mIvetg2",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=KS8mIvetg2",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/46e624c244cff669223d488defd4e835-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/46e624c244cff669223d488defd4e835-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "honorable_mention"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/KS8mIvetg2.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/KS8mIvetg2.txt",
+    "sha256": "6e9fe1d9529a7f12c984f805cc7df6fc3ce98f76c43583d8732263c74ee6869c",
+    "bytes": 6611500,
+    "pages": 19,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "substantive_main_text_and_selected_visual_reading",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:35.499093+00:00",
+    "verified_at_utc": "2026-09-08T21:29:40.690356+00:00",
+    "text_sha256": "8e030d976a15c8646035a4d29208eb72ee9253eeddffd6ad4b40401619e6e566",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/KS8mIvetg2.metadata.json",
+    "metadata_sha256": "1aea22d45f39cefc6f000d5d7d9073a2d786d6bdf0fb4c4d919bb27642439a2c",
+    "reading_record": "paper/style_study/deep_readings_2024.json"
+  },
+  {
+    "year": 2024,
+    "title": "Quick-Tune: Quickly Learning Which Pretrained Model to Finetune and How",
+    "authors": [
+      "Sebastian Pineda Arango",
+      "Fabio Ferreira",
+      "Arlind Kadra",
+      "Frank Hutter",
+      "Josif Grabocka"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19719",
+    "openreview_id": "tqh1zdXIra",
+    "openreview_forum_url": "https://openreview.net/forum?id=tqh1zdXIra",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=tqh1zdXIra",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/3812c3c803e986eca64000fe92467991-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/3812c3c803e986eca64000fe92467991-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/tqh1zdXIra.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/tqh1zdXIra.txt",
+    "sha256": "e396ce1be1b5bc74651a11e531d584c496a9579dcd5ad6e940fbdb2ee5052d0b",
+    "bytes": 18720763,
+    "pages": 20,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:29.597416+00:00",
+    "verified_at_utc": "2026-09-08T21:28:31.505271+00:00",
+    "text_sha256": "8768c8771d26feea36ba2b09318f8c6e812e1b4995bee7bc88bf6fa1eecec879",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/tqh1zdXIra.metadata.json",
+    "metadata_sha256": "ccfd380287d7246fabc2f18ca6ed3acc2c47246c5f2e5aeec6ee35cc87b24f71"
+  },
+  {
+    "year": 2024,
+    "title": "ReLU Strikes Back: Exploiting Activation Sparsity in Large Language Models",
+    "authors": [
+      "Iman Mirzadeh",
+      "Keivan Alizadeh-Vahid",
+      "Sachin Mehta",
+      "Carlo C del Mundo",
+      "Oncel Tuzel",
+      "Golnoosh Samei",
+      "Mohammad Rastegari",
+      "Mehrdad Farajtabar"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19725",
+    "openreview_id": "osoWxY8q2E",
+    "openreview_forum_url": "https://openreview.net/forum?id=osoWxY8q2E",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=osoWxY8q2E",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/6cf669c222ad13f60d503736fb2bd15b-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/6cf669c222ad13f60d503736fb2bd15b-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/osoWxY8q2E.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/osoWxY8q2E.txt",
+    "sha256": "6da1a8b42cdd44e564d2bb3a14f76ddc8936685df82831adec552b2d3104b1e4",
+    "bytes": 1304589,
+    "pages": 23,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:40.085172+00:00",
+    "verified_at_utc": "2026-09-08T21:28:40.801017+00:00",
+    "text_sha256": "bcf5d228adcbc92cee7c324814f15f28d3055fc6091facaa62bce4f96d8921a8",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/osoWxY8q2E.metadata.json",
+    "metadata_sha256": "a809e0527d12b06f3922f8bf7bb466d3009996753254c6ac5924d8066cc8e703"
+  },
+  {
+    "year": 2024,
+    "title": "Robust agents learn causal world models",
+    "authors": [
+      "Jonathan Richens",
+      "Tom Everitt"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19724",
+    "openreview_id": "pOoKI3ouv1",
+    "openreview_forum_url": "https://openreview.net/forum?id=pOoKI3ouv1",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=pOoKI3ouv1",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/44a2b9f7bf9aec3f1fa333ad875b0ee0-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/44a2b9f7bf9aec3f1fa333ad875b0ee0-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "honorable_mention"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/pOoKI3ouv1.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/pOoKI3ouv1.txt",
+    "sha256": "143d458cbee2f4f5d04d7380f6741e8105965d1ee94834e1ddb3bd231722a0e7",
+    "bytes": 1144088,
+    "pages": 32,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "substantive_main_text_and_selected_visual_reading",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:36.084203+00:00",
+    "verified_at_utc": "2026-09-08T21:28:37.152447+00:00",
+    "text_sha256": "911aacd479fd4e1625c1f1f33e408425aceaa78ebb37e095f68f6ec48aeb5410",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/pOoKI3ouv1.metadata.json",
+    "metadata_sha256": "0cb187dec5cb44edca3c53dabca1531bcf895f1a45c1b62e7e228f33578f276a",
+    "reading_record": "paper/style_study/deep_readings_2024.json"
+  },
+  {
+    "year": 2024,
+    "title": "Self-Alignment with Instruction Backtranslation",
+    "authors": [
+      "Xian Li",
+      "Ping Yu",
+      "Chunting Zhou",
+      "Timo Schick",
+      "Omer Levy",
+      "Luke Zettlemoyer",
+      "Jason E Weston",
+      "Mike Lewis"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19796",
+    "openreview_id": "1oijHJBRsT",
+    "openreview_forum_url": "https://openreview.net/forum?id=1oijHJBRsT",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=1oijHJBRsT",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/0f8e3534eb8dee7478d4dc0e9d9a0b1a-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/0f8e3534eb8dee7478d4dc0e9d9a0b1a-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/1oijHJBRsT.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/1oijHJBRsT.txt",
+    "sha256": "eff30c03a9579c2e0ad5e08f2b5602b65671ddaeec8645870d8605c569f288d2",
+    "bytes": 1785904,
+    "pages": 26,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:30:08.184366+00:00",
+    "verified_at_utc": "2026-09-08T21:30:08.713386+00:00",
+    "text_sha256": "9d57de8f51b79632c3c6023f761d6ee6d58f1e7393c8577507295f8c9bccd67b",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/1oijHJBRsT.metadata.json",
+    "metadata_sha256": "ae77d9eca581a96f18f9efa92e69a4d60c6e1c90695b63415d9599538d4f6432"
+  },
+  {
+    "year": 2024,
+    "title": "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection",
+    "authors": [
+      "Akari Asai",
+      "Zeqiu Wu",
+      "Yizhong Wang",
+      "Avi Sil",
+      "Hannaneh Hajishirzi"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19736",
+    "openreview_id": "hSyW5go0v8",
+    "openreview_forum_url": "https://openreview.net/forum?id=hSyW5go0v8",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=hSyW5go0v8",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/25f7be9694d7b32d5cc670927b8091e1-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/25f7be9694d7b32d5cc670927b8091e1-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/hSyW5go0v8.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/hSyW5go0v8.txt",
+    "sha256": "b1b57b5d9c1e71ebbebc2a18b625889c467e3f6bced88d049b6ee29067666e7e",
+    "bytes": 1244749,
+    "pages": 30,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:51.434688+00:00",
+    "verified_at_utc": "2026-09-08T21:28:52.186334+00:00",
+    "text_sha256": "ea894eaa6133088ee069c9caee927d85c50ef88e77dbc6e8090f889c0ec4f465",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/hSyW5go0v8.metadata.json",
+    "metadata_sha256": "35af60ace501873aafd955188c94765846ad5cda91462d42d356c656e77bcaa6"
+  },
+  {
+    "year": 2024,
+    "title": "Small-scale proxies for large-scale Transformer training instabilities",
+    "authors": [
+      "Mitchell Wortsman",
+      "Peter Liu",
+      "Lechao Xiao",
+      "Katie Everett",
+      "Alexander Alemi",
+      "Ben Adlam",
+      "John Co-Reyes",
+      "Izzeddin Gur",
+      "Abhishek Kumar",
+      "Roman Novak",
+      "Jeffrey Pennington",
+      "Jascha Sohl-Dickstein",
+      "Kelvin Xu",
+      "Jaehoon Lee",
+      "Justin Gilmer",
+      "Simon Kornblith"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19743",
+    "openreview_id": "d8w0pmvXbZ",
+    "openreview_forum_url": "https://openreview.net/forum?id=d8w0pmvXbZ",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=d8w0pmvXbZ",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/d848cb2c84f0bba7f1f73cf232734c40-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/d848cb2c84f0bba7f1f73cf232734c40-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/d8w0pmvXbZ.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/d8w0pmvXbZ.txt",
+    "sha256": "e1877d659f537367432494a9c7fd2d0a8cbbe3d74544727b876d01ce8320ae3e",
+    "bytes": 17784089,
+    "pages": 26,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:07.622224+00:00",
+    "verified_at_utc": "2026-09-08T21:29:08.731270+00:00",
+    "text_sha256": "cf3bf1fe816546cd7120627da373af8da056b5c32b2f2ee0227d4fc698415582",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/d8w0pmvXbZ.metadata.json",
+    "metadata_sha256": "4fdd5b41624d34392b504d6bd672a62a8f7c89e4aba1256b04af70d5e22f1776"
+  },
+  {
+    "year": 2024,
+    "title": "Statistically Optimal $K$-means Clustering via Nonnegative Low-rank Semidefinite Programming",
+    "authors": [
+      "Yubo Zhuang",
+      "Xiaohui Chen",
+      "Yun Yang",
+      "Richard Zhang"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19717",
+    "openreview_id": "v7ZPwoHU1j",
+    "openreview_forum_url": "https://openreview.net/forum?id=v7ZPwoHU1j",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=v7ZPwoHU1j",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/5212d235f5d07a25170d4807d4d2d824-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/5212d235f5d07a25170d4807d4d2d824-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/v7ZPwoHU1j.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/v7ZPwoHU1j.txt",
+    "sha256": "9c455784fd025501da9d28565b4bd18b5f33971ec3d529927d27a761a9ffe8df",
+    "bytes": 1010618,
+    "pages": 33,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:27.873119+00:00",
+    "verified_at_utc": "2026-09-08T21:28:28.702104+00:00",
+    "text_sha256": "745ef38b214aed151a8892011199124ec157446a1ca8b8e43a4d6ed4ccdf3db7",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/v7ZPwoHU1j.metadata.json",
+    "metadata_sha256": "bb3d40b617986cc51eb349f3c77119cf22c80c0bd7d238b13bcc36f6f006d13b"
+  },
+  {
+    "year": 2024,
+    "title": "SWE-bench: Can Language Models Resolve Real-world Github Issues?",
+    "authors": [
+      "Carlos E Jimenez",
+      "John Yang",
+      "Alexander Wettig",
+      "Shunyu Yao",
+      "Kexin Pei",
+      "Ofir Press",
+      "Karthik Narasimhan"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19757",
+    "openreview_id": "VTF8yNQM66",
+    "openreview_forum_url": "https://openreview.net/forum?id=VTF8yNQM66",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=VTF8yNQM66",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/edac78c3e300629acfe6cbe9ca88fb84-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/edac78c3e300629acfe6cbe9ca88fb84-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/VTF8yNQM66.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/VTF8yNQM66.txt",
+    "sha256": "9ba69855bdfb8896129c697a66c18564bd996885eb19d155083ab8e387733953",
+    "bytes": 2680380,
+    "pages": 51,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:23.883241+00:00",
+    "verified_at_utc": "2026-09-08T21:29:24.874091+00:00",
+    "text_sha256": "099fd8a6bfc6b95df3c9b4766f3860b2b3a47fab6f784798c326df43e60413e1",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/VTF8yNQM66.metadata.json",
+    "metadata_sha256": "09fd3525c1f0e6ce7103ea3f824caf216ecee21e78a83b061bc9aa1d4745eb5d"
+  },
+  {
+    "year": 2024,
+    "title": "The mechanistic basis of data dependence and abrupt learning in an in-context classification task",
+    "authors": [
+      "Gautam Reddy Nallamala"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19749",
+    "openreview_id": "aN4Jf6Cx69",
+    "openreview_forum_url": "https://openreview.net/forum?id=aN4Jf6Cx69",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=aN4Jf6Cx69",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/540a3bf4863672cdaebfed69fa2ce335-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/540a3bf4863672cdaebfed69fa2ce335-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "honorable_mention"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/aN4Jf6Cx69.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/aN4Jf6Cx69.txt",
+    "sha256": "07507bf352741cd852140de624be626714e2eae09cf4b288d24d2df1f4917eac",
+    "bytes": 5523952,
+    "pages": 14,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:16.337342+00:00",
+    "verified_at_utc": "2026-09-08T21:29:16.799207+00:00",
+    "text_sha256": "57656e4064c4e2d84eddeafefecd90d68a509e1a56d479305f3ecfe1123c8349",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/aN4Jf6Cx69.metadata.json",
+    "metadata_sha256": "8ac35c4489a0dbec47c7d4892328c4b782d917e3ff4113c8f90f236e85886714"
+  },
+  {
+    "year": 2024,
+    "title": "Topological data analysis on noisy quantum computers",
+    "authors": [
+      "Ismail Akhalwaya",
+      "Shashanka Ubaru",
+      "Kenneth Clarkson",
+      "Mark Squillante",
+      "Vishnu Jejjala",
+      "Yang-Hui He",
+      "Kugendran Naidoo",
+      "Vasileios Kalantzis",
+      "Lior Horesh"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19742",
+    "openreview_id": "dLrhRIMVmB",
+    "openreview_forum_url": "https://openreview.net/forum?id=dLrhRIMVmB",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=dLrhRIMVmB",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/9675b27ed6d2d8c929548106b2053e49-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/9675b27ed6d2d8c929548106b2053e49-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/dLrhRIMVmB.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/dLrhRIMVmB.txt",
+    "sha256": "c9e7f2f21cff4ad97ec1c9d4fb6337808e50ce308cca46f6032dfab7ad7d42a1",
+    "bytes": 3601853,
+    "pages": 34,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:06.541130+00:00",
+    "verified_at_utc": "2026-09-08T21:29:07.448630+00:00",
+    "text_sha256": "e6175c93e8597fed9b87543bd9b47b5f2fd047d64334b086d7e49b5ff2c9f1d0",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/dLrhRIMVmB.metadata.json",
+    "metadata_sha256": "18f01e819b0a0a33a8af534c7ec1a425d6b06f71d7ca64d7a392d62c0c264511"
+  },
+  {
+    "year": 2024,
+    "title": "Towards a statistical theory of data selection under weak supervision",
+    "authors": [
+      "Germain Kolossov",
+      "Andrea Montanari",
+      "Pulkit Tandon"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19772",
+    "openreview_id": "HhfcNgQn6p",
+    "openreview_forum_url": "https://openreview.net/forum?id=HhfcNgQn6p",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=HhfcNgQn6p",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/b7870bd43b2d133a1ed95582ae5d82a4-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/b7870bd43b2d133a1ed95582ae5d82a4-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "honorable_mention"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/HhfcNgQn6p.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/HhfcNgQn6p.txt",
+    "sha256": "8d5e2f2542e113c16b8aa170b462ab93b88d9c3091794183eb761a12d25f0078",
+    "bytes": 1154223,
+    "pages": 39,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:42.087982+00:00",
+    "verified_at_utc": "2026-09-08T21:29:43.050708+00:00",
+    "text_sha256": "c400e125981a4d3d255f15c03c38caa076e5338991f20194a4d52f81e0217f9a",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/HhfcNgQn6p.metadata.json",
+    "metadata_sha256": "0c9557ce32d6c0ddfeb744c0e423e93e96a8dc59ea6030a5f07894558ce7ba59"
+  },
+  {
+    "year": 2024,
+    "title": "Understanding In-Context Learning in Transformers and LLMs by Learning to Learn Discrete Functions",
+    "authors": [
+      "Satwik Bhattamishra",
+      "Arkil Patel",
+      "Phil Blunsom",
+      "Varun Kanade"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19741",
+    "openreview_id": "ekeyCgeRfC",
+    "openreview_forum_url": "https://openreview.net/forum?id=ekeyCgeRfC",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=ekeyCgeRfC",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/f7e7fabd73b3df96c54a320862afcb78-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/f7e7fabd73b3df96c54a320862afcb78-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/ekeyCgeRfC.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/ekeyCgeRfC.txt",
+    "sha256": "5af0615bf431cc637d93dae8f1f60337dbfd44b4b610a8c2832a18716c9b617f",
+    "bytes": 2263038,
+    "pages": 33,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:05.435233+00:00",
+    "verified_at_utc": "2026-09-08T21:29:06.494162+00:00",
+    "text_sha256": "76f80f4780df4ce3af6e644e88626e65d612b9e956689573d84e0a390d4ef1e6",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/ekeyCgeRfC.metadata.json",
+    "metadata_sha256": "7b40736990228857e573423ebb96faf7f7eb1bb55173c2f4f6cb55476371ab91"
+  },
+  {
+    "year": 2024,
+    "title": "Unified Generative Modeling of 3D Molecules with Bayesian Flow Networks",
+    "authors": [
+      "Yuxuan Song",
+      "Jingjing Gong",
+      "Hao Zhou",
+      "Mingyue Zheng",
+      "Jingjing Liu",
+      "Wei-Ying Ma"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19764",
+    "openreview_id": "NSVtmmzeRB",
+    "openreview_forum_url": "https://openreview.net/forum?id=NSVtmmzeRB",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=NSVtmmzeRB",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/d1b1a091088904cbc7f7faa2b45c8f36-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/d1b1a091088904cbc7f7faa2b45c8f36-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/NSVtmmzeRB.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/NSVtmmzeRB.txt",
+    "sha256": "a04e16ffef0d02e545a55a2d94be5552e75cacabe8bcf1132105c14da715df4f",
+    "bytes": 4850168,
+    "pages": 19,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:29.251205+00:00",
+    "verified_at_utc": "2026-09-08T21:29:30.401349+00:00",
+    "text_sha256": "9d973c50d4364a9f6d801ba55e3e11d0bf7ea272faae4935aa56d63a6edc8059",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/NSVtmmzeRB.metadata.json",
+    "metadata_sha256": "c562f44bbd61e1d3be245f23e1cc7f7d3ea3f22a0cfb43e272c8217a758e5273"
+  },
+  {
+    "year": 2024,
+    "title": "Unprocessing Seven Years of Algorithmic Fairness",
+    "authors": [
+      "André F. Cruz",
+      "Moritz Hardt"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19731",
+    "openreview_id": "jr03SfWsBS",
+    "openreview_forum_url": "https://openreview.net/forum?id=jr03SfWsBS",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=jr03SfWsBS",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/93b4d708976a1d9b1250c400e7fda811-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/93b4d708976a1d9b1250c400e7fda811-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/jr03SfWsBS.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/jr03SfWsBS.txt",
+    "sha256": "5117497253bb27b011b67108e30846d4a759d945f3997e872ff8ee2554c49e5c",
+    "bytes": 1952638,
+    "pages": 26,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:44.797238+00:00",
+    "verified_at_utc": "2026-09-08T21:28:45.412037+00:00",
+    "text_sha256": "834472de919b927a1844b9ef09b9b053d45c34687f94625c825c24cc6566689d",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/jr03SfWsBS.metadata.json",
+    "metadata_sha256": "1d118d6ffd22a92425312e6c7b3d9466016db44f32ae6f9ced782090c0c48fa0"
+  },
+  {
+    "year": 2024,
+    "title": "ValUES: A Framework for Systematic Validation of Uncertainty Estimation in Semantic Segmentation",
+    "authors": [
+      "Kim-Celine Kahl",
+      "Carsten Lüth",
+      "Maximilian Zenk",
+      "Klaus Maier-Hein",
+      "Paul F. Jaeger"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19714",
+    "openreview_id": "yV6fD7LYkF",
+    "openreview_forum_url": "https://openreview.net/forum?id=yV6fD7LYkF",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=yV6fD7LYkF",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/1548d98b62d3a4382a31ba77d89186cd-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/1548d98b62d3a4382a31ba77d89186cd-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/yV6fD7LYkF.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/yV6fD7LYkF.txt",
+    "sha256": "5427753122b8fbbf33ee61c0c6ee5f518b2bd7c226f708772ef3de6f19f567fc",
+    "bytes": 4171982,
+    "pages": 35,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:24.063708+00:00",
+    "verified_at_utc": "2026-09-08T21:28:25.164684+00:00",
+    "text_sha256": "891f410dc292110187bc5757f9ac01fe07390beb1199397f04b7a55094103079",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/yV6fD7LYkF.metadata.json",
+    "metadata_sha256": "c0bf4a95b5ba91add5872c437d0cd0ffd224a120ed085547af9e3ec544058a07"
+  },
+  {
+    "year": 2024,
+    "title": "Vision Transformers Need Registers",
+    "authors": [
+      "Timothée Darcet",
+      "Maxime Oquab",
+      "Julien Mairal",
+      "Piotr Bojanowski"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19794",
+    "openreview_id": "2dnO3LLiJ1",
+    "openreview_forum_url": "https://openreview.net/forum?id=2dnO3LLiJ1",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=2dnO3LLiJ1",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/0b408293619f725fd30162af057e531a-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/0b408293619f725fd30162af057e531a-Paper-Conference.pdf",
+    "designations": [
+      "oral",
+      "outstanding"
+    ],
+    "award_source_urls": [
+      "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/"
+    ],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/2dnO3LLiJ1.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/2dnO3LLiJ1.txt",
+    "sha256": "c213bb4d22de53b9e093ab1e12880b49c5ac82b1261b29386bad727dad35c91e",
+    "bytes": 5953026,
+    "pages": 21,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "substantive_main_text_and_selected_visual_reading",
+    "download_source_status": "cached",
+    "retrieved_at_utc": "2026-09-08T21:30:06.407448+00:00",
+    "verified_at_utc": "2026-09-08T21:30:06.407458+00:00",
+    "text_sha256": "a458e10d5a87954ad20e3f2de81a23092e98e651f398dd462a2bab6ab4e52097",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/2dnO3LLiJ1.metadata.json",
+    "metadata_sha256": "a03d37a1ac6025cf5d2e0bba3fde00fef4f2111273f0d8eab82de643b3c7c85e",
+    "reading_record": "paper/style_study/deep_readings_2024.json"
+  },
+  {
+    "year": 2024,
+    "title": "Würstchen: An Efficient Architecture for Large-Scale Text-to-Image Diffusion Models",
+    "authors": [
+      "Pablo Pernías",
+      "Dominic Rampas",
+      "Mats L. Richter",
+      "Christopher Pal",
+      "Marc Aubreville"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19738",
+    "openreview_id": "gU58d5QeGv",
+    "openreview_forum_url": "https://openreview.net/forum?id=gU58d5QeGv",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=gU58d5QeGv",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/6c7297baffe5c85ea1d9e1ccb1222ab8-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/6c7297baffe5c85ea1d9e1ccb1222ab8-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/gU58d5QeGv.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/gU58d5QeGv.txt",
+    "sha256": "c037fa772452c58e39d944bed4fb13abb5f3589a5d0623d897f3a79ef48f734f",
+    "bytes": 6638233,
+    "pages": 13,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:28:52.774063+00:00",
+    "verified_at_utc": "2026-09-08T21:28:53.348156+00:00",
+    "text_sha256": "d53fac0b467cdf59130e8e576168c588dbdaf9f882efc63a76d363bd6677f0a3",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/gU58d5QeGv.metadata.json",
+    "metadata_sha256": "0f66b2e8d9955ed3ad467df2577901eb55e9608635df8f5c2a08c008862d62ad"
+  },
+  {
+    "year": 2024,
+    "title": "Zipformer: A faster and better encoder for automatic speech recognition",
+    "authors": [
+      "Zengwei Yao",
+      "Liyong Guo",
+      "Xiaoyu Yang",
+      "Wei Kang",
+      "Fangjun Kuang",
+      "Yifan Yang",
+      "Zengrui Jin",
+      "Long Lin",
+      "Daniel Povey"
+    ],
+    "event_url": "https://iclr.cc/virtual/2024/oral/19784",
+    "openreview_id": "9WD9KwssyT",
+    "openreview_forum_url": "https://openreview.net/forum?id=9WD9KwssyT",
+    "openreview_pdf_url": "https://openreview.net/pdf?id=9WD9KwssyT",
+    "proceedings_abstract_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/c1bb0e3b062f0a443f2cc8a4ec4bb30d-Abstract-Conference.html",
+    "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/c1bb0e3b062f0a443f2cc8a4ec4bb30d-Paper-Conference.pdf",
+    "designations": [
+      "oral"
+    ],
+    "award_source_urls": [],
+    "designation_source_urls": [
+      "https://iclr.cc/virtual/2024/events/oral",
+      "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json"
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/9WD9KwssyT.pdf",
+    "text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/9WD9KwssyT.txt",
+    "sha256": "b700112d0aed5d5a3467bc4dcd775d475c7f2f238a3cda87d4b0f07cc850c7f8",
+    "bytes": 511626,
+    "pages": 16,
+    "download_status": "complete",
+    "version_label": "Public official ICLR 2024 proceedings PDF retrieved at collection time; not assumed identical to original submission or latest OpenReview revision.",
+    "reading_status": "automated_metadata_and_text_only",
+    "download_source_status": "downloaded",
+    "retrieved_at_utc": "2026-09-08T21:29:58.494239+00:00",
+    "verified_at_utc": "2026-09-08T21:29:58.917394+00:00",
+    "text_sha256": "303140ec241c6e49ed357ed7aad7987d58d17fd7f309517bdbde6d40b16a0723",
+    "metadata_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/text/9WD9KwssyT.metadata.json",
+    "metadata_sha256": "33c53659771162b4f56295cda71360b5f8a8a702f75a34834c8496dc96b5c025"
+  }
+]

@@ -1,0 +1,3 @@
+# Raw citation exports and source pages retain the publisher's whitespace.
+*.bib -whitespace
+*.html -whitespace

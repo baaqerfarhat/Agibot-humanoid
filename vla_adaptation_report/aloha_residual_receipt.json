@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "analysis": "Historical ALOHA healthy FIR in-sample residual decomposition",
+  "sources_sha256": {
+    "/home/fengze/vla-adaptation/paper/verify_aloha_residual.py": "65adcf28a597ccc89a1a01c7c4db838ef5d06db5dca37672007b5bd55df003e5",
+    "/home/fengze/vla-adaptation/openpi/aloha_adapt.py": "f2b64c6c8d4066e609dc475311066ca5c46fea31ec582498dcbf497b6c927a81",
+    "/home/fengze/vla-adaptation/results/aloha/healthy_log.json": "d4dd02228bdef5412ea8abcdd2370fedc5a52d266d703d9e010b31368a5e5e4f"
+  },
+  "fit_function": {
+    "module": "openpi/aloha_adapt.py",
+    "name": "fit_plant",
+    "first_line": 171,
+    "target": "measured post-command position q[t], not displacement"
+  },
+  "runtime": {
+    "python": "3.10.12",
+    "numpy": "1.21.5"
+  },
+  "reproduce": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python paper/verify_aloha_residual.py",
+  "window": {
+    "episodes": 8,
+    "fir_lags": 6,
+    "fir_taps": 7,
+    "included_indices": "t=6,...,len(episode)-1 in every episode",
+    "samples_per_episode": [
+      294,
+      219,
+      273,
+      294,
+      294,
+      268,
+      269,
+      294
+    ],
+    "total_samples": 2205,
+    "aggregation": "sum squared raw residuals across all included samples, then divide by total across 14 channels",
+    "fit_and_evaluation_data": "same healthy episodes and same included samples (in-sample)"
+  },
+  "r2_per_channel": [
+    0.995881795803929,
+    0.9996962125990702,
+    0.9999988045346854,
+    0.9986780648190497,
+    0.9999844611646301,
+    0.9999932579352926,
+    0.9914870879056705,
+    0.997262809611958,
+    0.9993431544329471,
+    0.9995064646683883,
+    0.9956148435158945,
+    0.989059354642156,
+    0.9995857420118474,
+    0.7680157753931832
+  ],
+  "residual_squared_energy_per_channel": [
+    0.00013809468436524875,
+    0.03518431498026104,
+    4.3527877619343916e-05,
+    0.0039019109923685933,
+    0.0005206997898851371,
+    9.273434239139254e-05,
+    0.9629463577085765,
+    0.07310026476020241,
+    0.13223602900195003,
+    0.02086903591632127,
+    0.186234234103368,
+    1.1313916675755318,
+    0.24231789437529613,
+    40.964828264190174
+  ],
+  "residual_squared_energy_fraction_per_channel": [
+    3.1561754290768992e-06,
+    0.0008041429758142604,
+    9.948363939822389e-07,
+    8.917878090069257e-05,
+    1.1900674456188823e-05,
+    2.119457778064709e-06,
+    0.022008288354390265,
+    0.0016707178886403704,
+    0.003022274952095714,
+    0.00047696505256788606,
+    0.0042564123045848445,
+    0.025858132036564,
+    0.005538213058441378,
+    0.9362575034519434
+  ],
+  "claims": {
+    "right_gripper_channel": 13,
+    "right_gripper_r2": 0.7680157753931832,
+    "arm_only_min_r2": 0.989059354642156,
+    "arm_only_max_r2": 0.9999988045346854,
+    "right_gripper_squared_residual_percent": 93.62575034519433,
+    "left_six_squared_residual_percent": 0.09114929007722657
+  },
+  "right_gripper_signals": {
+    "window": "all logged steps, including initial six steps",
+    "command": {
+      "minimum": 0.10634582759336073,
+      "maximum": 1.1752063404045434,
+      "distinct_after_rounding_to_0.01": 104
+    },
+    "measured_position": {
+      "minimum": 0.11447908979612027,
+      "maximum": 0.9750325648970876,
+      "distinct_after_rounding_to_0.01": 85
+    }
+  },
+  "interpretation": [
+    "The squared-energy percentage is a share of sum_t ||r_t||^2, not a percentage of ||r_t||.",
+    "Raw coordinates combine arm radians and environment gripper coordinates; these shares describe the implemented unweighted norm, not unit-invariant importance.",
+    "Neither held-out prediction accuracy nor causal suppression of fault repair follows from this healthy-data decomposition."
+  ]
+}

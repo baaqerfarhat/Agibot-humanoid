@@ -1,0 +1,477 @@
+{
+  "year": 2024,
+  "recorded_at_utc": "2026-09-08T21:42:27.085158+00:00",
+  "automated_corpus_papers": 86,
+  "substantive_readings": 8,
+  "visual_pages_inspected": 18,
+  "scope": "Selection is purposive: all five outstanding winners plus three honorable mentions relevant to mechanism, adaptation, and evaluation integrity. Not a random sample and not all 86 deeply read.",
+  "papers": [
+    {
+      "year": 2024,
+      "openreview_id": "ANvmVS2Yr0",
+      "title": "Generalization in diffusion models arises from geometry-adaptive harmonic representations",
+      "authors": [
+        "Zahra Kadkhodaie",
+        "Florentin Guth",
+        "Eero Simoncelli",
+        "Stéphane Mallat"
+      ],
+      "designations": [
+        "oral",
+        "outstanding"
+      ],
+      "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/cbaf319a4712385b5ba8a414808b5713-Paper-Conference.pdf",
+      "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/ANvmVS2Yr0.pdf",
+      "pdf_sha256": "9b7c46c74e2010bacf663ba46e9663dc0d6dc445f27e5d4a3197699dc3e09ceb",
+      "total_pdf_pages": 25,
+      "reading_scope": "Substantive main-argument text reading; selected page-layout/figure inspection; appendix structure scan, not a full appendix proof audit.",
+      "main_argument_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "additional_pages_read": [],
+      "references_start_pdf_page": 10,
+      "appendix_start_pdf_page": 12,
+      "visual_inspections": [
+        {
+          "page": 5,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/ANvmVS2Yr0_page05.png",
+          "sha256": "8a7e1269bc2bd76846363f25e38c56dbf15c8257a19f0810534e2adec96c12b3"
+        },
+        {
+          "page": 9,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/ANvmVS2Yr0_page09.png",
+          "sha256": "c415ab6e018aa0dcd97ea05c2d95e84bcf4350be6a90bf0c990ce201bd504136"
+        }
+      ],
+      "evidence_examples": [
+        "Figure 2 (p. 5): matched noise, disjoint training sets, nearest training images, and similarity histograms",
+        "Figure 5 (p. 9): a low-dimensional manifold counterexample beside quantitative error and basis diagnostics"
+      ],
+      "structure": "Introduction → denoising/generalization definitions → inductive-bias analysis → discussion; related work is integrated, mathematical derivations start in Appendix D on p. 21.",
+      "citation_practice": "Citations distinguish inherited empirical-Bayes/score identities and harmonic approximation theory from the proposed empirical interpretation. Main hypotheses are explicitly weaker than a complete mathematical characterization.",
+      "analytical_profile": "The narrative begins with a definition that separates variance-based generalization from accurate modeling. Figure 2 (p. 5) then places generated examples, their nearest training neighbors, and similarity histograms in one controlled comparison: the training sets are disjoint and sampling starts from the same noise. This makes the visual claim testable rather than decorative. The mechanism is developed through Jacobian bases and error scaling, with longer derivations moved to Appendix D (p. 21 onward). Crucially, Figure 5 (p. 9) tests a low-dimensional manifold on which the proposed inductive bias is suboptimal; the failure supports the scope of the interpretation. Discussion acknowledges the missing formal characterization. For our paper, the useful pattern is a definition–diagnostic–prediction–counterexample sequence: separating residual fit from physical repair should organize the narrative, and an explanatory failure belongs beside the positive result in the main text.",
+      "bibliography_entry_count_manual": {
+        "count": 37,
+        "page_counts": {
+          "10": 18,
+          "11": 19
+        },
+        "method": "Manual review of PDF text lines and hanging-indent entry starts, excluding headers and acknowledgements; entries, not in-text citation occurrences."
+      }
+    },
+    {
+      "year": 2024,
+      "openreview_id": "sFyTZEqmUY",
+      "title": "Learning Interactive Real-World Simulators",
+      "authors": [
+        "Sherry Yang",
+        "Yilun Du",
+        "Seyed Ghasemipour",
+        "Jonathan Tompson",
+        "Leslie Kaelbling",
+        "Dale Schuurmans",
+        "Pieter Abbeel"
+      ],
+      "designations": [
+        "oral",
+        "outstanding"
+      ],
+      "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/c4d66eae503694424123b93ac0fbaf17-Paper-Conference.pdf",
+      "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/sFyTZEqmUY.pdf",
+      "pdf_sha256": "b4238fc715f53dc3df18c02e989f8ea5ed2ccb33ac973e8bdb3349b8e33421f8",
+      "total_pdf_pages": 25,
+      "reading_scope": "Substantive main-argument text reading; selected page-layout/figure inspection; appendix structure scan, not a full appendix proof audit.",
+      "main_argument_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "additional_pages_read": [],
+      "references_start_pdf_page": 9,
+      "appendix_start_pdf_page": 15,
+      "visual_inspections": [
+        {
+          "page": 2,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/sFyTZEqmUY_page02.png",
+          "sha256": "ad139a73a5924a98725e715736394dd33d8cf76e93d3536fec356e7dfb4f3683"
+        },
+        {
+          "page": 7,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/sFyTZEqmUY_page07.png",
+          "sha256": "31c1586ebcdb9249c4a169ba59f7b64faa4f0036ff25193187fa35cc9e864451"
+        }
+      ],
+      "evidence_examples": [
+        "Figure 1 (p. 2): data-source montage and unified model overview",
+        "Figure 7 (p. 7): language plans, simulated video plans, and real-robot execution in separate rows"
+      ],
+      "structure": "Introduction → simulator/data/model → capabilities and ablations → downstream applications → related work → limitations/conclusion. Appendix starts p. 15; dataset mixtures p. 19, architecture p. 20, experiment details p. 21.",
+      "citation_practice": "Citations accompany source datasets, model components, and evaluation protocols at their first use. Related work on pp. 8–9 connects the contribution to system identification, control, and world models.",
+      "analytical_profile": "UniSim separates a broad system overview from claim-specific demonstrations. Figure 1 (p. 2) communicates the heterogeneous training sources, while Figure 7 (p. 7) labels language plans, simulated video, and real-robot execution in distinct rows. Nearby Tables 2–3 specify that their quantitative evaluations concern simulation; the surrounding prose separately discusses real-robot examples. This distinction is especially useful for a robotics manuscript with multiple evidence sources. The model section exposes scale and compute in the main text, then delegates dataset mixture weights and implementation details to the appendix. Related work appears late, after applications. The final page gives concrete failure modes, including unseen embodiments and visually unchanged force interactions. We should borrow the evidence labeling and concrete limitations, while avoiding the inference that a photo montage establishes a multi-robot success rate or that a model diagram alone demonstrates the repair mechanism."
+    },
+    {
+      "year": 2024,
+      "openreview_id": "PdaPky8MUn",
+      "title": "Never Train from Scratch: Fair Comparison of Long-Sequence Models Requires Data-Driven Priors",
+      "authors": [
+        "Ido Amos",
+        "Jonathan Berant",
+        "Ankit Gupta"
+      ],
+      "designations": [
+        "oral",
+        "outstanding"
+      ],
+      "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/07cf32cf61224da628157b7ed0ce994a-Paper-Conference.pdf",
+      "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/PdaPky8MUn.pdf",
+      "pdf_sha256": "0557ad0cdf0ec34ced6c92f867882b9ef26cd0a95cf402baa0590c8f1e96a275",
+      "total_pdf_pages": 19,
+      "reading_scope": "Substantive main-argument text reading; selected page-layout/figure inspection; appendix structure scan, not a full appendix proof audit.",
+      "main_argument_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "additional_pages_read": [
+        14
+      ],
+      "references_start_pdf_page": 10,
+      "appendix_start_pdf_page": 14,
+      "visual_inspections": [
+        {
+          "page": 2,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/PdaPky8MUn_page02.png",
+          "sha256": "7c3db4219c457bcdcb1ee5a309862a9e2d3b3ca2b167273dbeb6b2d08e78f3df"
+        },
+        {
+          "page": 8,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/PdaPky8MUn_page08.png",
+          "sha256": "f8883d0dd8c5f2453a390c9ece50b3a86e621b462aced55c0e6c79d642ca4aac"
+        }
+      ],
+      "evidence_examples": [
+        "Figure 1 (p. 2): baseline versus self-pretraining comparison",
+        "Figure 4 (p. 8): learned and hand-designed kernel structure across four tasks"
+      ],
+      "structure": "Introduction → experimental setup → seven result subsections. After references, Appendix A related work and B conclusions share p. 14 with Appendix C experimental details; compute-matched controls appear in Appendix D, pp. 17–18.",
+      "citation_practice": "The introduction credits downstream-data pretraining precedents; result sections identify which baseline results are historical versus reproduced. Long-range-model related work is consolidated after references rather than omitted.",
+      "analytical_profile": "This paper frames its contribution as correcting a comparison protocol. Figure 1 (p. 2) shows the resulting change in the apparent architecture gap before any long method exposition. Section 3 proceeds from reproducing the historical setting to changing initialization, comparing simpler models, varying data scale, and inspecting learned kernels. Tables distinguish previously reported results, reproduced entries, unavailable results, and computationally infeasible experiments. Figure 4 (p. 8) supplies a mechanism-oriented diagnostic after the performance comparison; compute-matched controls are discussed in the main text and developed in Appendix D. Notably, the dedicated related-work section and conclusion are placed after references on p. 14. The lesson for our observer study is to make calibrated, tuned baselines part of the contribution: a carefully established narrowing of the method gap can be scientifically valuable without manufacturing a new estimator's superiority."
+    },
+    {
+      "year": 2024,
+      "openreview_id": "zMPHKOmQNb",
+      "title": "Protein Discovery with Discrete Walk-Jump Sampling",
+      "authors": [
+        "Nathan Frey",
+        "Dan Berenberg",
+        "Karina Zadorozhny",
+        "Joseph Kleinhenz",
+        "Julien Lafrance-Vanasse",
+        "Isidro Hotzel",
+        "Yan Wu",
+        "Stephen Ra",
+        "Richard Bonneau",
+        "Kyunghyun Cho",
+        "Andreas Loukas",
+        "Vladimir Gligorijevic",
+        "Saeed Saremi"
+      ],
+      "designations": [
+        "oral",
+        "outstanding"
+      ],
+      "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/78b6beab44f92adc74ac1fdb212ac3a0-Paper-Conference.pdf",
+      "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/zMPHKOmQNb.pdf",
+      "pdf_sha256": "e24557d27e0780cb2100710bd30f571b804891ed217b24e9cf7208294794c1a8",
+      "total_pdf_pages": 20,
+      "reading_scope": "Substantive main-argument text reading; selected page-layout/figure inspection; appendix structure scan, not a full appendix proof audit.",
+      "main_argument_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "additional_pages_read": [],
+      "references_start_pdf_page": 10,
+      "appendix_start_pdf_page": 13,
+      "visual_inspections": [
+        {
+          "page": 4,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/zMPHKOmQNb_page04.png",
+          "sha256": "e10f6d0aed83c73e503128f548c47b2a30d31b22e9892a150bb32d81aa12e4bf"
+        },
+        {
+          "page": 8,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/zMPHKOmQNb_page08.png",
+          "sha256": "c6ed4b72128f5677df2be7846d7a1450b9c323c9836effba0721481191f5f75d"
+        }
+      ],
+      "evidence_examples": [
+        "Figure 2 and Algorithm 1 (p. 4): mechanism, architecture, and short executable update sequence",
+        "Table 4 (p. 8): separate predicted and experimentally measured binding columns"
+      ],
+      "structure": "Introduction → background → antibody discovery/design method → experiments → related work → conclusion. Appendix starts p. 13 with a contents list; profiling p. 17 and laboratory methods pp. 18–19.",
+      "citation_practice": "The background attributes the energy-model and empirical-Bayes ingredients before the new combination. Dataset, baseline, folding-visualization, and laboratory-method citations appear where those ingredients enter the evidence.",
+      "analytical_profile": "The paper stages its evidence from computable sequence metrics to laboratory expression and functional binding. That ordering is more instructive for our problem than the domain-specific architecture. In Figure 2 and Algorithm 1 (p. 4), a compact visual explanation is paired with a short procedure, so intuition and implementation remain adjacent. In Table 4 (p. 8), predicted binding and measured binding occupy separate columns, and unavailable measurements remain explicit. The introductory molecular renderings are identified as folded visualizations rather than laboratory observations. These choices prevent one evidence level from silently substituting for another. The appendix supplies training, profiling, prompting, and experimental protocols, with a contents list on p. 13. For our manuscript, residual suppression, modeled correction authority, and observed robot task success should be presented as similarly distinct quantities, with exact links between the claims and their corresponding measurements."
+    },
+    {
+      "year": 2024,
+      "openreview_id": "2dnO3LLiJ1",
+      "title": "Vision Transformers Need Registers",
+      "authors": [
+        "Timothée Darcet",
+        "Maxime Oquab",
+        "Julien Mairal",
+        "Piotr Bojanowski"
+      ],
+      "designations": [
+        "oral",
+        "outstanding"
+      ],
+      "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/0b408293619f725fd30162af057e531a-Paper-Conference.pdf",
+      "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/2dnO3LLiJ1.pdf",
+      "pdf_sha256": "c213bb4d22de53b9e093ab1e12880b49c5ac82b1261b29386bad727dad35c91e",
+      "total_pdf_pages": 21,
+      "reading_scope": "Substantive main-argument text reading; selected page-layout/figure inspection; appendix structure scan, not a full appendix proof audit.",
+      "main_argument_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "additional_pages_read": [],
+      "references_start_pdf_page": 10,
+      "appendix_start_pdf_page": 12,
+      "visual_inspections": [
+        {
+          "page": 1,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/2dnO3LLiJ1_page01.png",
+          "sha256": "c15eba6747f9c84baaf528a0be0d0dac1329d4d50630e8fcfddffe239f5c9357"
+        },
+        {
+          "page": 8,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/2dnO3LLiJ1_page08.png",
+          "sha256": "aa380206286e193dc1125f3de238a2b1676fc6181f580fa2bfba4cb8c003c685"
+        }
+      ],
+      "evidence_examples": [
+        "Figure 1 (p. 1): side-by-side attention maps across three model families",
+        "Table 3 and Figure 9 (p. 8): task outcome comparison and qualitative register attention"
+      ],
+      "structure": "Introduction → problem formulation/diagnostics/hypothesis → experimental validation → related work → conclusion. Appendix starts p. 12; OpenCLIP object-discovery analysis appears in Appendix C, pp. 13–14.",
+      "citation_practice": "The hypothesis/remediation section credits prior memory-token architectures; the claimed contribution is the diagnosis and role of added registers, not invention of auxiliary tokens. Related work occupies pp. 8–9.",
+      "analytical_profile": "A visual anomaly becomes the organizing question. Figure 1 (p. 1) shows attention maps before and after adding registers across several model families. The paper then measures token norms, probes the information in outlier tokens, states a hypothesis, introduces a small intervention, and checks downstream performance and register-count ablations. This sequence gives the simple modification an explanatory basis. The detailed OpenCLIP exception is instructive: Table 3 (p. 8) reports worse object-discovery scores with registers, and the body acknowledges the loss, although the caption's broad improvement wording is stronger than those rows support. We should learn from both aspects—retain cross-model failures, and make captions as qualified as the surrounding discussion. Longer diagnostics go to the appendix, while the central anomaly, intervention, and consequence remain visible within the nine-page main argument.",
+      "bibliography_entry_count_manual": {
+        "count": 34,
+        "page_counts": {
+          "10": 17,
+          "11": 17
+        },
+        "method": "Manual review of PDF text lines and hanging-indent entry starts, excluding headers and acknowledgements; entries, not in-text citation occurrences."
+      }
+    },
+    {
+      "year": 2024,
+      "openreview_id": "pOoKI3ouv1",
+      "title": "Robust agents learn causal world models",
+      "authors": [
+        "Jonathan Richens",
+        "Tom Everitt"
+      ],
+      "designations": [
+        "oral",
+        "honorable_mention"
+      ],
+      "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/44a2b9f7bf9aec3f1fa333ad875b0ee0-Paper-Conference.pdf",
+      "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/pOoKI3ouv1.pdf",
+      "pdf_sha256": "143d458cbee2f4f5d04d7380f6741e8105965d1ee94834e1ddb3bd231722a0e7",
+      "total_pdf_pages": 32,
+      "reading_scope": "Substantive main-argument text reading; selected page-layout/figure inspection; appendix structure scan, not a full appendix proof audit.",
+      "main_argument_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "additional_pages_read": [],
+      "references_start_pdf_page": 10,
+      "appendix_start_pdf_page": 14,
+      "visual_inspections": [
+        {
+          "page": 4,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/pOoKI3ouv1_page04.png",
+          "sha256": "40d48f2a1e0e2f2d693852b82c8ea0f64402c0128ad6f6ebc0166c6de6dbe608"
+        },
+        {
+          "page": 5,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/pOoKI3ouv1_page05.png",
+          "sha256": "5668f8686a2608a20d66ecd8d6d246534b22ca21dfc2e5f0e75a046ea2540f8d"
+        },
+        {
+          "page": 6,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/pOoKI3ouv1_page06.png",
+          "sha256": "28f15560aa6f6b88e9b89036f21fad6735f309755d538fbcb6dd45b15c0c4bda"
+        }
+      ],
+      "evidence_examples": [
+        "Figure 1 (p. 4): causal diagrams distinguish training, shifted testing, and known shifts",
+        "Theorems 1–3 (p. 5): compact statements followed by interpretation",
+        "Figure 3 (p. 6): synthetic model-recovery errors versus regret"
+      ],
+      "structure": "Introduction → explicit preliminaries and assumptions → necessity/approximation/sufficiency theorems → interpretation → discussion/limitations → related work → conclusion. Appendix starts p. 14; proofs C–E begin pp. 19, 23, and 28.",
+      "citation_practice": "The manuscript places causal-transportability and hierarchy results beside the precise distinction from its necessity result. Its discussion separates formal consequences from speculation about emergent capabilities.",
+      "analytical_profile": "The paper earns a broad conceptual claim by first defining its narrow mathematical setting. Figure 1 (p. 4) uses three related causal diagrams to expose what changes between training and testing, with node and edge meanings in the caption. Page 5 concentrates the theorem statements, but includes qualifications and an explanation of the measure-zero exclusion rather than displaying bare results. Later prose interprets necessity, sufficiency, and approximation separately; proofs are deferred to Appendices C–E. The main limitations explicitly restrict the results to unmediated decision tasks and a large intervention family. Thus this is a useful writing model, not a theorem that automatically transfers to robot control. Our authority and composite-stability results likewise need their interface assumptions beside the statement, a concrete interpretation, and a clear boundary between a proved finite-dimensional result and an unverified robot-wide guarantee."
+    },
+    {
+      "year": 2024,
+      "openreview_id": "KS8mIvetg2",
+      "title": "Proving Test Set Contamination in Black-Box Language Models",
+      "authors": [
+        "Yonatan Oren",
+        "Nicole Meister",
+        "Niladri Chatterji",
+        "Faisal Ladhak",
+        "Tatsunori Hashimoto"
+      ],
+      "designations": [
+        "oral",
+        "honorable_mention"
+      ],
+      "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/46e624c244cff669223d488defd4e835-Paper-Conference.pdf",
+      "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/KS8mIvetg2.pdf",
+      "pdf_sha256": "6e9fe1d9529a7f12c984f805cc7df6fc3ce98f76c43583d8732263c74ee6869c",
+      "total_pdf_pages": 19,
+      "reading_scope": "Substantive main-argument text reading; selected page-layout/figure inspection; appendix structure scan, not a full appendix proof audit.",
+      "main_argument_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "additional_pages_read": [],
+      "references_start_pdf_page": 11,
+      "appendix_start_pdf_page": 16,
+      "visual_inspections": [
+        {
+          "page": 2,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/KS8mIvetg2_page02.png",
+          "sha256": "0197ee69f2a77541fa5fb5d31a8b766dc6cf4562a22104764f20f481abd12ee0"
+        },
+        {
+          "page": 9,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/KS8mIvetg2_page09.png",
+          "sha256": "935f08e74bff2e0391fd8bba05ac143967f4710a2b4603a2865c84d4221b6d05"
+        }
+      ],
+      "evidence_examples": [
+        "Figure 1 (p. 2): canonical-versus-shuffled order illustrates the test mechanism",
+        "Table 2 (p. 9): real-model audit and negative control, with qualified significance interpretation"
+      ],
+      "structure": "Introduction → problem setting → permutation/sharded tests → controlled and public-model experiments → related work → limitations → conclusion. Retrieved proceedings version has substantive text through p. 11; appendices start p. 16.",
+      "citation_practice": "Classical permutation-testing results are cited at the guarantee and implementation correction, rather than presented as novel. Related work distinguishes heuristic membership tests from the specific exchangeability argument.",
+      "analytical_profile": "The strongest structural choice is the separation of a statistical guarantee from the assumptions needed when applying it. The method begins with a simple permutation argument, then introduces a more practical sharded test and distinguishes finite-sample from asymptotic validity. Experiments first use intentional contamination as a positive control, then evaluate public models with a negative control. Around Table 2 (p. 9), the text explicitly discusses non-rejection, multiplicity, and heuristic filtering; p. 10 explains why the filtered MMLU aggregate no longer provides the same proof. This is directly relevant to our calibration and paired-outcome audit: distinguish proven test properties from the provenance of an actual run. The public proceedings PDF has substantive discussion through p. 11 and appendices from p. 16, so its current layout should not be read as evidence for an original nine-page submission format."
+    },
+    {
+      "year": 2024,
+      "openreview_id": "TpD2aG1h0D",
+      "title": "Meta Continual Learning Revisited: Implicitly Enhancing Online Hessian Approximation via Variance Reduction",
+      "authors": [
+        "Yichen Wu",
+        "Long-Kai Huang",
+        "Renzhen Wang",
+        "Deyu Meng",
+        "Ying Wei"
+      ],
+      "designations": [
+        "oral",
+        "honorable_mention"
+      ],
+      "pdf_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/0b6df1a973b82b3cf7fadca6c387ae5a-Paper-Conference.pdf",
+      "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/pdfs/TpD2aG1h0D.pdf",
+      "pdf_sha256": "8588c93c5c2292596a5aaf3c35d6c63fd70c34866359c4905fe6862e5d3247a9",
+      "total_pdf_pages": 30,
+      "reading_scope": "Substantive main-argument text reading; selected page-layout/figure inspection; appendix structure scan, not a full appendix proof audit.",
+      "main_argument_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "additional_pages_read": [],
+      "references_start_pdf_page": 10,
+      "appendix_start_pdf_page": 14,
+      "visual_inspections": [
+        {
+          "page": 3,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/TpD2aG1h0D_page03.png",
+          "sha256": "8d264b22f4942c5096f71c90b36d4be826f26d5f76ccaf757baa1c18e62d97fb"
+        },
+        {
+          "page": 5,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/TpD2aG1h0D_page05.png",
+          "sha256": "5db159dfcb0a2f48731c750ff3d435393ce520119fb5d8563b0254c660ceb7f8"
+        },
+        {
+          "page": 9,
+          "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/inspection/TpD2aG1h0D_page09.png",
+          "sha256": "10875a7efed6b8e3c3f011d7efc07915cf571271825a5d8f8d2f78cd73c99f29"
+        }
+      ],
+      "evidence_examples": [
+        "Table 1 (p. 3): common update representation with explicit differences among methods",
+        "Figure 2 (p. 5): proposed update compared with the preceding baseline diagram",
+        "Table 6 and Figure 3 (p. 9): alternative variance-reduction baselines and a mechanism diagnostic"
+      ],
+      "structure": "Introduction → unified regularization view → Meta-CL reinterpretation → proposed variance reduction/theory → six experimental questions → conclusion. Detailed proofs start p. 14; related work is Appendix B, training details Appendix C, extra experiments Appendix D, pseudocode Appendix E (p. 30).",
+      "citation_practice": "The common-view derivation credits prior analysis, and variance reduction is situated among existing techniques before explaining the online-data constraint. Approximation assumptions remain explicit in main propositions.",
+      "analytical_profile": "A common mathematical representation makes the comparison legible before the new algorithm appears. Table 1 (p. 3) aligns existing approaches by Hessian approximation and update structure; Figures 1–2 then reuse visual grammar to expose the change. The experiment section is organized around six specific questions, including buffer size, imbalance, backbone choice, alternative variance-reduction methods, and the proposed mechanism itself. Figure 3 (p. 9) measures relative gradient variance instead of relying solely on accuracy tables. The detailed proofs and extensive settings move to the appendix, but the approximate nature of the main propositions is visible. For our observer comparison, a similarly explicit table can show shared calibration, covariance choices, projection, and the tracking term. However, the analogy does not establish composite adaptation as best; that ranking must remain an empirical result with uncertainty, independent of the attractive common formulation."
+    }
+  ]
+}

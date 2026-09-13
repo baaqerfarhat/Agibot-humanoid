@@ -1,0 +1,49 @@
+{
+  "generated_at_utc": "2026-09-08T21:56:46.456392+00:00",
+  "scope": "First 22 entries of source_candidates_2023.json; manifest_2023.json remains root-owned and was not edited.",
+  "records": 22,
+  "downloaded_primary_identity_verified": 6,
+  "unresolved_primary_sources": 16,
+  "downloaded_bytes": 13887581,
+  "downloaded_pages": 160,
+  "manifest_path": "paper/style_study/manual_sources_2023_a.json",
+  "manifest_sha256": "cc2da9ef09dfd46cdeaf07f2fa2c6e00f92545a711a3a46c93fffb3645b9f01b",
+  "pdf_checks": [
+    {
+      "openreview_id": "GcM7qfl5zY",
+      "sha256": "b5382d4204a8dc53a71b3603c2660b7762bf4553a87fed0fab1316f7fd0e127d",
+      "bytes": 1064746,
+      "pages": 14
+    },
+    {
+      "openreview_id": "iIfDQVyuFD",
+      "sha256": "32eb2a612eea030b482f8f75d272f2cdb974fba22d7a2aa1bf76ef6b8d47d0cf",
+      "bytes": 3814281,
+      "pages": 23
+    },
+    {
+      "openreview_id": "VA1YpcNr7ul",
+      "sha256": "da716fb6f16869a0ed7d35faf8658643e30f44cf8b1edaa9b55e6bbd5192e4b2",
+      "bytes": 1669538,
+      "pages": 57
+    },
+    {
+      "openreview_id": "Wc5bmZZU9cy",
+      "sha256": "8137b7c46eb9876916078377bac8f4044ee11047625b292e85811bae340bcdd2",
+      "bytes": 1065153,
+      "pages": 26
+    },
+    {
+      "openreview_id": "7YfHla7IxBJ",
+      "sha256": "a9c773d4cba5d517440254bebbc9b3a292eb3f801240695460176bf4eb66be10",
+      "bytes": 4199911,
+      "pages": 23
+    },
+    {
+      "openreview_id": "zKvm1ETDOq",
+      "sha256": "21a1fdeae49ed05197833c43e90bc8c46b343cda2626d92bf186582b54a9e9cd",
+      "bytes": 2073952,
+      "pages": 17
+    }
+  ]
+}

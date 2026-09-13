@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "key": "magicvfm",
+      "role": "user_supplied_pdf",
+      "path": "/home/fengze/online_adaptation_research/references/MAGIC-VFM: Meta-learning Adaptation for Ground Interaction Control with Visual Foundation Models/2407.12304v2.pdf",
+      "sha256": "64d7b65c6c7e753dffe07b13ffb82939f5866ad3de0f439d200096f324eb9aa2",
+      "bytes": 19579902
+    },
+    {
+      "key": "magicvfm",
+      "role": "user_supplied_tex_source",
+      "path": "/home/fengze/online_adaptation_research/references/MAGIC-VFM: Meta-learning Adaptation for Ground Interaction Control with Visual Foundation Models/tex_source/root.tex",
+      "sha256": "5029f9ecb692a3ad411e4beaa9e28b4f41335240a1a8d3f1ef98c0245c591990",
+      "bytes": 108290
+    },
+    {
+      "key": "hmac2024",
+      "role": "user_supplied_pdf",
+      "path": "/home/fengze/online_adaptation_research/references/Hierarchical meta-learning-based adaptive controller/2311.12367v2.pdf",
+      "sha256": "9f2a2a29f90455cce0cc8898ec696fc3877495a9b22f633dfe41df8e5760ec35",
+      "bytes": 1376245
+    },
+    {
+      "key": "hmac2024",
+      "role": "user_supplied_tex_source",
+      "path": "/home/fengze/online_adaptation_research/references/Hierarchical meta-learning-based adaptive controller/tex_source/paper_draft_icra.tex",
+      "sha256": "3902ad96c56182e442c2577e3267df222fcaa272e48c0c6ac3debe42328d8331",
+      "bytes": 35689
+    },
+    {
+      "key": "tang2025mirror",
+      "role": "user_supplied_pdf",
+      "path": "/home/fengze/online_adaptation_research/references/Meta-Learning for Adaptive Control with Automated Mirror Descent/2407.20165v5.pdf",
+      "sha256": "79ba2835fca318c9346e6adbab6b7b107aaf528157e110c54c7472294aa3ca39",
+      "bytes": 2149511
+    },
+    {
+      "key": "tang2025mirror",
+      "role": "user_supplied_tex_source",
+      "path": "/home/fengze/online_adaptation_research/references/Meta-Learning for Adaptive Control with Automated Mirror Descent/arXiv-2407.20165v5/main.tex",
+      "sha256": "c35d591352c133264b72eff1f6d009aa15b4d4bab5ef7b79b619b93990efba59",
+      "bytes": 68211
+    }
+  ]
+}

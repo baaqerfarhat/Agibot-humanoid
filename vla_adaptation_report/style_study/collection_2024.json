@@ -1,0 +1,53 @@
+{
+  "year": 2024,
+  "collection_started_at_utc": "2026-09-08T21:28:21.471640+00:00",
+  "updated_at_utc": "2026-09-08T21:30:09.309902+00:00",
+  "collection_finished": true,
+  "catalogs": {
+    "oral_catalog.html": {
+      "url": "https://iclr.cc/virtual/2024/events/oral",
+      "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/raw/oral_catalog.html",
+      "sha256": "bfd8101c873c15a9135be57ece145a57de8945f849aca620c95edc582b23d83c",
+      "bytes": 447706,
+      "status": "cached",
+      "retrieved_at_utc": null
+    },
+    "awards.html": {
+      "url": "https://blog.iclr.cc/2024/05/06/iclr-2024-outstanding-paper-awards/",
+      "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/raw/awards.html",
+      "sha256": "92b6541df284e9f82a6836eb1bcf0be568f1687a04677f44fc21922dda093255",
+      "bytes": 67410,
+      "status": "cached",
+      "retrieved_at_utc": null
+    },
+    "paper_catalog.json": {
+      "url": "https://iclr.cc/static/virtual/data/iclr-2024-orals-posters.json",
+      "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/raw/paper_catalog.json",
+      "sha256": "23f4d0512a8d9d65b3b4e4908201416f0e343b188f85d33f3cf6a8d1b22f969a",
+      "bytes": 10587487,
+      "status": "cached",
+      "retrieved_at_utc": null
+    },
+    "proceedings_index.html": {
+      "url": "https://proceedings.iclr.cc/paper_files/paper/2024",
+      "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2024/raw/proceedings_index.html",
+      "sha256": "0cb1ee4ef12806b66dcd741c61f4a99ffeda1636ed937601603cb12ed42a8099",
+      "bytes": 1534224,
+      "status": "cached",
+      "retrieved_at_utc": null
+    }
+  },
+  "counts": {
+    "unique_papers": 86,
+    "oral_event_cards": 86,
+    "outstanding": 5,
+    "honorable_mention": 11,
+    "complete": 86,
+    "errors": 0
+  },
+  "max_concurrent_requests": 2,
+  "openreview_access": "Direct PDF/API and browser-tool probes returned browser-verification403; public official proceedings used instead, without challenge bypass.",
+  "count_resolution": "86 DOM event-card Oral elements and86 unique oral event URLs; title/detail links occur twice. Broad URL regex can include the unrelated navigation/login poster URL.",
+  "candidate_shortlist_scope": "Awards announcement reports initial44 candidates and roughly20 shortlisted, but names only5 winners and11 honorable mentions. No complete public44/20 name list is supplied; no extra candidate/finalist designations inferred.",
+  "script_sha256": "6381f8443a4b3b034c336ec31a4b8233d96f823fb4db7f57231d887e4a6e3343"
+}

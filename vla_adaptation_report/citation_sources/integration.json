@@ -1,0 +1,624 @@
+{
+  "schema_version": 1,
+  "common_normalizations": [
+    "Stable local citation keys replace export keys.",
+    "Whitespace collapsed; curly apostrophes become ASCII; Unicode page dashes become BibTeX double hyphens.",
+    "Nonessential export fields such as abstracts, keywords, copyright, ISSNs, months and addresses omitted.",
+    "TeX braces protect acronyms/math against bibliography downcasing."
+  ],
+  "records": [
+    {
+      "key": "magicvfm",
+      "raw_export": "magicvfm.crossref.bib",
+      "raw_export_key": "Lupu_2025",
+      "raw_sha256": "3186638a77b4717af999710fb0414e2253cd8cf6e54cb2483ecf2ca948edeb1a",
+      "integrated_entry_sha256": "49fcbd20669f85c4456da35b6df1aebe5c2c5076ee952c712797a83bf80b17f5",
+      "omitted_optional_fields": [
+        "issn"
+      ],
+      "normalizations": [
+        "Convert publisher HTML superscript to TeX, collapse layout whitespace; final journal year2025 supersedes early-access2024."
+      ],
+      "integrated_fields": {
+        "title": "{MAGIC$^{\\mathrm{VFM}}$}-Meta-Learning Adaptation for Ground Interaction Control With Visual Foundation Models",
+        "volume": "41",
+        "url": "http://dx.doi.org/10.1109/TRO.2024.3475212",
+        "doi": "10.1109/tro.2024.3475212",
+        "journal": "IEEE Transactions on Robotics",
+        "publisher": "Institute of Electrical and Electronics Engineers (IEEE)",
+        "author": "Lupu, Elena Sorina and Xie, Fengze and Preiss, James Alan and Alindogan, Jedidiah and Anderson, Matthew and Chung, Soon-Jo",
+        "year": "2025",
+        "pages": "180--199"
+      }
+    },
+    {
+      "key": "hmac2024",
+      "raw_export": "hmac2024.crossref.bib",
+      "raw_export_key": "Xie_2024",
+      "raw_sha256": "0874562c1762b65e95e0ba0d2a1d5e4059c9a6235bbe5a571d4e6b5702a53565",
+      "integrated_entry_sha256": "5c9bd3575794cda2b92df15a45ea85d3b98dec0dbe5cc2f2c09dde6bc4744ee7",
+      "omitted_optional_fields": [
+        "month"
+      ],
+      "normalizations": [],
+      "integrated_fields": {
+        "title": "Hierarchical Meta-learning-based Adaptive Controller",
+        "url": "http://dx.doi.org/10.1109/ICRA57147.2024.10611562",
+        "doi": "10.1109/icra57147.2024.10611562",
+        "booktitle": "2024 IEEE International Conference on Robotics and Automation (ICRA)",
+        "publisher": "IEEE",
+        "author": "Xie, Fengze and Shi, Guanya and O'Connell, Michael and Yue, Yisong and Chung, Soon-Jo",
+        "year": "2024",
+        "pages": "18309--18315"
+      }
+    },
+    {
+      "key": "huang2023datt",
+      "raw_export": "huang2023datt.pmlr.bib",
+      "raw_export_key": "pmlr-v229-huang23a",
+      "raw_sha256": "9973572364a6e158e8ca027c23faf3d7cbc5daf61dae5b62c40598fe52996de1",
+      "integrated_entry_sha256": "a9b928cfbcdd4f4f9dac5824b26e3e87dd8102a240290441c9f9c7da02cdab72",
+      "omitted_optional_fields": [
+        "abstract",
+        "month",
+        "pdf"
+      ],
+      "normalizations": [],
+      "integrated_fields": {
+        "title": "{DATT}: Deep Adaptive Trajectory Tracking for Quadrotor Control",
+        "author": "Huang, Kevin and Rana, Rwik and Spitzer, Alexander and Shi, Guanya and Boots, Byron",
+        "booktitle": "Proceedings of The 7th Conference on Robot Learning",
+        "pages": "326--340",
+        "year": "2023",
+        "editor": "Tan, Jie and Toussaint, Marc and Darvish, Kourosh",
+        "volume": "229",
+        "series": "Proceedings of Machine Learning Research",
+        "publisher": "PMLR",
+        "url": "https://proceedings.mlr.press/v229/huang23a.html"
+      }
+    },
+    {
+      "key": "tang2025mirror",
+      "raw_export": "tang2025mirror.pmlr.bib",
+      "raw_export_key": "pmlr-v283-tang25b",
+      "raw_sha256": "63d05ee0f84283dd73f22608ee1a520d08cf665518d9c32942aa6ed7106b29bb",
+      "integrated_entry_sha256": "aab7423c21dd0615504bc21deab9b859f16b843f31bea8603b29000fb1006793",
+      "omitted_optional_fields": [
+        "abstract",
+        "month",
+        "pdf"
+      ],
+      "normalizations": [],
+      "integrated_fields": {
+        "title": "Meta-Learning for Adaptive Control with Automated Mirror Descent",
+        "author": "Tang, Sunbochen and Sun, Haoyuan and Azizan, Navid",
+        "booktitle": "Proceedings of the 7th Annual Learning for Dynamics \\& Control Conference",
+        "pages": "1025--1037",
+        "year": "2025",
+        "editor": "Ozay, Necmiye and Balzano, Laura and Panagou, Dimitra and Abate, Alessandro",
+        "volume": "283",
+        "series": "Proceedings of Machine Learning Research",
+        "publisher": "PMLR",
+        "url": "https://proceedings.mlr.press/v283/tang25b.html"
+      }
+    },
+    {
+      "key": "shi2021meta",
+      "raw_export": "shi2021meta.neurips.bib",
+      "raw_export_key": "NEURIPS2021_52fc2aee",
+      "raw_sha256": "01458522eb50ddb97a118a628e024efd5c62e4d7cf218488a41a144e5bdd5ca4",
+      "integrated_entry_sha256": "abd4ed94568623d03f2355d96375ceb6b1035ed185114bcacd0712ea0276a0c9",
+      "omitted_optional_fields": [],
+      "normalizations": [],
+      "integrated_fields": {
+        "author": "Shi, Guanya and Azizzadenesheli, Kamyar and O'Connell, Michael and Chung, Soon-Jo and Yue, Yisong",
+        "booktitle": "Advances in Neural Information Processing Systems",
+        "editor": "M. Ranzato and A. Beygelzimer and Y. Dauphin and P.S. Liang and J. Wortman Vaughan",
+        "pages": "10013--10025",
+        "publisher": "Curran Associates, Inc.",
+        "title": "Meta-Adaptive Nonlinear Control: Theory and Algorithms",
+        "url": "https://proceedings.neurips.cc/paper_files/paper/2021/file/52fc2aee802efbad698503d28ebd3a1f-Paper.pdf",
+        "volume": "34",
+        "year": "2021"
+      }
+    },
+    {
+      "key": "controlmeta2023",
+      "raw_export": "controlmeta2023.crossref.bib",
+      "raw_export_key": "Richards_2023",
+      "raw_sha256": "1c7119cddc2aebfb66fc39241acc1ed02fbb1b97e8f17b8dc3c860e3887f736c",
+      "integrated_entry_sha256": "88ea5e5e80f2799c36ee4a87b4175ac87c7662dbc36b9b2632334f0bc8740bac",
+      "omitted_optional_fields": [
+        "issn",
+        "month"
+      ],
+      "normalizations": [],
+      "integrated_fields": {
+        "title": "Control-oriented meta-learning",
+        "volume": "42",
+        "url": "http://dx.doi.org/10.1177/02783649231165085",
+        "doi": "10.1177/02783649231165085",
+        "number": "10",
+        "journal": "The International Journal of Robotics Research",
+        "publisher": "SAGE Publications",
+        "author": "Richards, Spencer M. and Azizan, Navid and Slotine, Jean-Jacques and Pavone, Marco",
+        "year": "2023",
+        "pages": "777--797"
+      }
+    },
+    {
+      "key": "lohmiller1998contraction",
+      "raw_export": "lohmiller1998contraction.crossref.bib",
+      "raw_export_key": "LOHMILLER_1998",
+      "raw_sha256": "37d75daddbc5e77aacabbdcd026cec438cfdf638d03a2675418ca7d55e9fab0f",
+      "integrated_entry_sha256": "4efa90ebf97b840cf380b88f5b4e1dbca4333f71621611043d22660e73edac3e",
+      "omitted_optional_fields": [
+        "issn",
+        "month"
+      ],
+      "normalizations": [
+        "Normalize all-uppercase author names to title case."
+      ],
+      "integrated_fields": {
+        "title": "On Contraction Analysis for Non-linear Systems",
+        "volume": "34",
+        "url": "http://dx.doi.org/10.1016/S0005-1098(98)00019-3",
+        "doi": "10.1016/s0005-1098(98)00019-3",
+        "number": "6",
+        "journal": "Automatica",
+        "publisher": "Elsevier BV",
+        "author": "Lohmiller, Winfried and Slotine, Jean-Jacques E.",
+        "year": "1998",
+        "pages": "683--696"
+      }
+    },
+    {
+      "key": "neuralfly",
+      "raw_export": "neuralfly.crossref.bib",
+      "raw_export_key": "O_Connell_2022",
+      "raw_sha256": "1c6152c9c289cb033b449dd5f00cee5429a4145ce37b98b71a57569f1bbe2461",
+      "integrated_entry_sha256": "156bcc530034a2be57a65f6057eb07780b29e6c5a3d1c7c0e9007077826451a2",
+      "omitted_optional_fields": [
+        "issn",
+        "month"
+      ],
+      "normalizations": [
+        "Retain article identifier eabm6597 verified from Science Robotics primary article; Crossref export omits this field.",
+        "Protect the proper name Neural-Fly against style downcasing."
+      ],
+      "integrated_fields": {
+        "title": "{Neural-Fly} enables rapid learning for agile flight in strong winds",
+        "volume": "7",
+        "url": "http://dx.doi.org/10.1126/scirobotics.abm6597",
+        "doi": "10.1126/scirobotics.abm6597",
+        "number": "66",
+        "journal": "Science Robotics",
+        "publisher": "American Association for the Advancement of Science (AAAS)",
+        "author": "O'Connell, Michael and Shi, Guanya and Shi, Xichen and Azizzadenesheli, Kamyar and Anandkumar, Anima and Yue, Yisong and Chung, Soon-Jo",
+        "year": "2022",
+        "pages": "eabm6597"
+      }
+    },
+    {
+      "key": "slotine1989composite",
+      "raw_export": "slotine1989composite.crossref.bib",
+      "raw_export_key": "Slotine_1989",
+      "raw_sha256": "f1dc921627fccb1d985de0aa33be8e67ecc7dfb6651b521595b31b1ad0c37750",
+      "integrated_entry_sha256": "e4a8aba59a20417a13609204c42e323cf4727bcbf8c15a38985c2897bf55d75d",
+      "omitted_optional_fields": [
+        "issn",
+        "month"
+      ],
+      "normalizations": [],
+      "integrated_fields": {
+        "title": "Composite adaptive control of robot manipulators",
+        "volume": "25",
+        "url": "http://dx.doi.org/10.1016/0005-1098(89)90094-0",
+        "doi": "10.1016/0005-1098(89)90094-0",
+        "number": "4",
+        "journal": "Automatica",
+        "publisher": "Elsevier BV",
+        "author": "Slotine, Jean-Jacques E. and Li, Weiping",
+        "year": "1989",
+        "pages": "509--519"
+      }
+    },
+    {
+      "key": "cheng2022l1rl",
+      "raw_export": "cheng2022l1rl.crossref.bib",
+      "raw_export_key": "Cheng_2022",
+      "raw_sha256": "f2a43143fe20c692923ec8c0e7fd7dfeec047b2f2aa86ab266527f1761e8f0a1",
+      "integrated_entry_sha256": "8c5e9fd213f3e8e9430d2e42438fda91729f65d5bca5c795a078a7bfffb39a45",
+      "omitted_optional_fields": [
+        "issn",
+        "month"
+      ],
+      "normalizations": [],
+      "integrated_fields": {
+        "title": "Improving the Robustness of Reinforcement Learning Policies With ${\\mathcal {L}_{1}}$ Adaptive Control",
+        "volume": "7",
+        "url": "http://dx.doi.org/10.1109/LRA.2022.3169309",
+        "doi": "10.1109/lra.2022.3169309",
+        "number": "3",
+        "journal": "IEEE Robotics and Automation Letters",
+        "publisher": "Institute of Electrical and Electronics Engineers (IEEE)",
+        "author": "Cheng, Yikun and Zhao, Pan and Wang, Fanxin and Block, Daniel J. and Hovakimyan, Naira",
+        "year": "2022",
+        "pages": "6574--6581"
+      }
+    },
+    {
+      "key": "kalman1960",
+      "raw_export": "kalman1960.crossref.bib",
+      "raw_export_key": "Kalman_1960",
+      "raw_sha256": "d2573525c8efe4ef7f4f0f9b843415183ad0f0bcdc5247237d9a3603914fa474",
+      "integrated_entry_sha256": "2d883094f51f6bc337d412c19d5966d0d09d8e4501b24628d8afd712bafc12d5",
+      "omitted_optional_fields": [
+        "issn",
+        "month"
+      ],
+      "normalizations": [],
+      "integrated_fields": {
+        "title": "A New Approach to Linear Filtering and Prediction Problems",
+        "volume": "82",
+        "url": "http://dx.doi.org/10.1115/1.3662552",
+        "doi": "10.1115/1.3662552",
+        "number": "1",
+        "journal": "Journal of Basic Engineering",
+        "publisher": "ASME International",
+        "author": "Kalman, R. E.",
+        "year": "1960",
+        "pages": "35--45"
+      }
+    },
+    {
+      "key": "isermann2005",
+      "raw_export": "isermann2005.crossref.bib",
+      "raw_export_key": "Isermann_2005",
+      "raw_sha256": "678afd8fddb68d599b1776c8708d020cca0b17ac7c6b2e95305c5de524271cc0",
+      "integrated_entry_sha256": "c6e3ca3ad405723f3fd41c0e32f88710280d1fab8602f1d558f288f04b8d2571",
+      "omitted_optional_fields": [
+        "issn",
+        "month"
+      ],
+      "normalizations": [],
+      "integrated_fields": {
+        "title": "Model-based fault-detection and diagnosis -- status and applications",
+        "volume": "29",
+        "url": "http://dx.doi.org/10.1016/j.arcontrol.2004.12.002",
+        "doi": "10.1016/j.arcontrol.2004.12.002",
+        "number": "1",
+        "journal": "Annual Reviews in Control",
+        "publisher": "Elsevier BV",
+        "author": "Isermann, Rolf",
+        "year": "2005",
+        "pages": "71--85"
+      }
+    },
+    {
+      "key": "johannink2019residual",
+      "raw_export": "johannink2019residual.crossref.bib",
+      "raw_export_key": "Johannink_2019",
+      "raw_sha256": "659f594829909df7e20fde0a48e809f60003531255ef886de4a2818ff4c35bfb",
+      "integrated_entry_sha256": "c55a86df06876eb1f2c89e7d697e0f148a5d619b9b3a45af2c9941a3e4e078de",
+      "omitted_optional_fields": [
+        "month"
+      ],
+      "normalizations": [],
+      "integrated_fields": {
+        "title": "Residual Reinforcement Learning for Robot Control",
+        "url": "http://dx.doi.org/10.1109/ICRA.2019.8794127",
+        "doi": "10.1109/icra.2019.8794127",
+        "booktitle": "2019 International Conference on Robotics and Automation (ICRA)",
+        "publisher": "IEEE",
+        "author": "Johannink, Tobias and Bahl, Shikhar and Nair, Ashvin and Luo, Jianlan and Kumar, Avinash and Loskyll, Matthias and Ojea, Juan Aparicio and Solowjow, Eugen and Levine, Sergey",
+        "year": "2019",
+        "pages": "6023--6029"
+      }
+    },
+    {
+      "key": "kumar2021rma",
+      "raw_export": "kumar2021rma.rss.bib",
+      "raw_export_key": "KumarA-RSS-21",
+      "raw_sha256": "9ebc6b0a3b9275095d1ac62f8c52fb1f0a853f010eaab8c7cb1c400d226ba717",
+      "integrated_entry_sha256": "2ce5a15be5b763d7a4995348ac6714d282a4edb7dc2381a38e7e5fccf35559f7",
+      "omitted_optional_fields": [
+        "address",
+        "month"
+      ],
+      "normalizations": [],
+      "integrated_fields": {
+        "author": "Ashish Kumar AND Zipeng Fu AND Deepak Pathak AND Jitendra Malik",
+        "title": "{RMA: Rapid Motor Adaptation for Legged Robots}",
+        "booktitle": "Proceedings of Robotics: Science and Systems",
+        "year": "2021",
+        "doi": "10.15607/RSS.2021.XVII.011",
+        "url": "https://www.roboticsproceedings.org/rss17/p011.html"
+      }
+    },
+    {
+      "key": "shim2021dob",
+      "raw_export": "shim2021dob.crossref.bib",
+      "raw_export_key": "Shim_2020",
+      "raw_sha256": "ea644aa4ef582ccf950781407fe18c79c4dad4fd99b993b1cf5c655620385c1a",
+      "integrated_entry_sha256": "913b6f258d8ac52bec2190aa219232f48d547dac433729841c0c553942e313e3",
+      "omitted_optional_fields": [],
+      "normalizations": [
+        "Use BibTeX incollection for separately authored encyclopedia contribution with booktitle (publisher export says inbook); retain stable key although published year2020."
+      ],
+      "integrated_fields": {
+        "title": "Disturbance Observers",
+        "isbn": "9781447151029",
+        "url": "http://dx.doi.org/10.1007/978-1-4471-5102-9_100068-1",
+        "doi": "10.1007/978-1-4471-5102-9_100068-1",
+        "booktitle": "Encyclopedia of Systems and Control",
+        "publisher": "Springer London",
+        "author": "Shim, Hyungbo",
+        "year": "2020",
+        "pages": "1--8"
+      }
+    },
+    {
+      "key": "silver2018residual",
+      "raw_export": "silver2018residual.datacite.bib",
+      "raw_export_key": "https://doi.org/10.48550/arxiv.1812.06298",
+      "raw_sha256": "eed318cdf1f56c0ef61f9cd24bd02811ee5d6561324b59318cfc0fd4c4c8e457",
+      "integrated_entry_sha256": "61e38c8ab7fab19b75d84d3f4fc2935e7a79336bfb24c98d926bc72fa13c72f3",
+      "omitted_optional_fields": [
+        "copyright",
+        "keywords"
+      ],
+      "normalizations": [
+        "Format DataCite misc arXiv record consistently as article/preprint; no peer-reviewed publication asserted."
+      ],
+      "integrated_fields": {
+        "doi": "10.48550/ARXIV.1812.06298",
+        "url": "https://arxiv.org/abs/1812.06298",
+        "author": "Silver, Tom and Allen, Kelsey and Tenenbaum, Josh and Kaelbling, Leslie",
+        "title": "Residual Policy Learning",
+        "year": "2018",
+        "journal": "arXiv preprint arXiv:1812.06298"
+      }
+    },
+    {
+      "key": "openvla",
+      "raw_export": "openvla.proceedings.bib",
+      "raw_export_key": "pmlr-v270-kim25c",
+      "raw_sha256": "f13a2f2103a2bb4388f72a9206a931b4a0bf1181def46f273a5c505196b3e1dc",
+      "integrated_entry_sha256": "2d0a96639cf931c7cf21b1f13f2a52ddbf1db05312cbe44b045e17c02c86e184",
+      "omitted_optional_fields": [
+        "abstract",
+        "month",
+        "pdf"
+      ],
+      "normalizations": [
+        "Use official proceedings version even when year/authors differ from preprint; add same official record URL if absent from export."
+      ],
+      "integrated_fields": {
+        "title": "{OpenVLA}: An Open-Source Vision-Language-Action Model",
+        "author": "Kim, Moo Jin and Pertsch, Karl and Karamcheti, Siddharth and Xiao, Ted and Balakrishna, Ashwin and Nair, Suraj and Rafailov, Rafael and Foster, Ethan P and Sanketi, Pannag R and Vuong, Quan and Kollar, Thomas and Burchfiel, Benjamin and Tedrake, Russ and Sadigh, Dorsa and Levine, Sergey and Liang, Percy and Finn, Chelsea",
+        "booktitle": "Proceedings of The 8th Conference on Robot Learning",
+        "pages": "2679--2713",
+        "year": "2025",
+        "editor": "Agrawal, Pulkit and Kroemer, Oliver and Burgard, Wolfram",
+        "volume": "270",
+        "series": "Proceedings of Machine Learning Research",
+        "publisher": "PMLR",
+        "url": "https://proceedings.mlr.press/v270/kim25c.html"
+      }
+    },
+    {
+      "key": "rt2",
+      "raw_export": "rt2.proceedings.bib",
+      "raw_export_key": "pmlr-v229-zitkovich23a",
+      "raw_sha256": "69e351cc16ca9133005fe61428059c42cf91d18c2943138b8985782e053c799c",
+      "integrated_entry_sha256": "51ed3be8bba3257035aa1dc9b4e02676c72583b82593f5e19729dc0827afa50e",
+      "omitted_optional_fields": [
+        "abstract",
+        "month",
+        "pdf"
+      ],
+      "normalizations": [
+        "Use official proceedings version even when year/authors differ from preprint; add same official record URL if absent from export."
+      ],
+      "integrated_fields": {
+        "title": "{RT-2}: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control",
+        "author": "Zitkovich, Brianna and Yu, Tianhe and Xu, Sichun and Xu, Peng and Xiao, Ted and Xia, Fei and Wu, Jialin and Wohlhart, Paul and Welker, Stefan and Wahid, Ayzaan and Vuong, Quan and Vanhoucke, Vincent and Tran, Huong and Soricut, Radu and Singh, Anikait and Singh, Jaspiar and Sermanet, Pierre and Sanketi, Pannag R. and Salazar, Grecia and Ryoo, Michael S. and Reymann, Krista and Rao, Kanishka and Pertsch, Karl and Mordatch, Igor and Michalewski, Henryk and Lu, Yao and Levine, Sergey and Lee, Lisa and Lee, Tsang-Wei Edward and Leal, Isabel and Kuang, Yuheng and Kalashnikov, Dmitry and Julian, Ryan and Joshi, Nikhil J. and Irpan, Alex and Ichter, Brian and Hsu, Jasmine and Herzog, Alexander and Hausman, Karol and Gopalakrishnan, Keerthana and Fu, Chuyuan and Florence, Pete and Finn, Chelsea and Dubey, Kumar Avinava and Driess, Danny and Ding, Tianli and Choromanski, Krzysztof Marcin and Chen, Xi and Chebotar, Yevgen and Carbajal, Justice and Brown, Noah and Brohan, Anthony and Arenas, Montserrat Gonzalez and Han, Kehang",
+        "booktitle": "Proceedings of The 7th Conference on Robot Learning",
+        "pages": "2165--2183",
+        "year": "2023",
+        "editor": "Tan, Jie and Toussaint, Marc and Darvish, Kourosh",
+        "volume": "229",
+        "series": "Proceedings of Machine Learning Research",
+        "publisher": "PMLR",
+        "url": "https://proceedings.mlr.press/v229/zitkovich23a.html"
+      }
+    },
+    {
+      "key": "octo",
+      "raw_export": "octo.proceedings.bib",
+      "raw_export_key": "Ghosh-RSS-24",
+      "raw_sha256": "e2da4d8233a77dee5046afef7de14f3ba4a97b07283ca596265b7eccab36ad39",
+      "integrated_entry_sha256": "d3fb6bdabe4fee995d48dab03e2a5010065a8fb3acff8b5d36bba5281f1b8a88",
+      "omitted_optional_fields": [
+        "address",
+        "month"
+      ],
+      "normalizations": [
+        "Use official proceedings version even when year/authors differ from preprint; add same official record URL if absent from export."
+      ],
+      "integrated_fields": {
+        "author": "Dibya Ghosh AND Homer Rich Walke AND Karl Pertsch AND Kevin Black AND Oier Mees AND Sudeep Dasari AND Joey Hejna AND Tobias Kreiman AND Charles Xu AND Jianlan Luo AND You Liang Tan AND Lawrence Yunliang Chen AND Quan Vuong AND Ted Xiao AND Pannag R Sanketi AND Dorsa Sadigh AND Chelsea Finn AND Sergey Levine",
+        "title": "{Octo: An Open-Source Generalist Robot Policy}",
+        "booktitle": "Proceedings of Robotics: Science and Systems",
+        "year": "2024",
+        "doi": "10.15607/RSS.2024.XX.090",
+        "url": "https://www.roboticsproceedings.org/rss20/p090.html"
+      }
+    },
+    {
+      "key": "aloha_act",
+      "raw_export": "aloha_act.proceedings.bib",
+      "raw_export_key": "Zhao-RSS-23",
+      "raw_sha256": "bb078f14309af372615587da73ba5dfb3a8d36ef097e9bb661174fe13370c4f3",
+      "integrated_entry_sha256": "4754f7c1bae398635e902b9b1680e54aef72cd46750d7a4ec0a1b079af43a48c",
+      "omitted_optional_fields": [
+        "address",
+        "month"
+      ],
+      "normalizations": [
+        "Use official proceedings version even when year/authors differ from preprint; add same official record URL if absent from export."
+      ],
+      "integrated_fields": {
+        "author": "Tony Z. Zhao AND Vikash Kumar AND Sergey Levine AND Chelsea Finn",
+        "title": "{Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware}",
+        "booktitle": "Proceedings of Robotics: Science and Systems",
+        "year": "2023",
+        "doi": "10.15607/RSS.2023.XIX.016",
+        "url": "https://www.roboticsproceedings.org/rss19/p016.html"
+      }
+    },
+    {
+      "key": "diffusionpolicy",
+      "raw_export": "diffusionpolicy.proceedings.bib",
+      "raw_export_key": "Chi-RSS-23",
+      "raw_sha256": "9d0c3fac30762380b7d2dc1d17cdf4e7e80aecb4777e759add267f934663249a",
+      "integrated_entry_sha256": "fb7879cd6c51af13a6a3746c369d7411628ec7af89872f66852450a8ef58e3ec",
+      "omitted_optional_fields": [
+        "address",
+        "month"
+      ],
+      "normalizations": [
+        "Use official proceedings version even when year/authors differ from preprint; add same official record URL if absent from export."
+      ],
+      "integrated_fields": {
+        "author": "Cheng Chi AND Siyuan Feng AND Yilun Du AND Zhenjia Xu AND Eric Cousineau AND Benjamin CM Burchfiel AND Shuran Song",
+        "title": "{Diffusion Policy: Visuomotor Policy Learning via Action Diffusion}",
+        "booktitle": "Proceedings of Robotics: Science and Systems",
+        "year": "2023",
+        "doi": "10.15607/RSS.2023.XIX.026",
+        "url": "https://www.roboticsproceedings.org/rss19/p026.html"
+      }
+    },
+    {
+      "key": "pi0",
+      "raw_export": "pi0.proceedings.bib",
+      "raw_export_key": "BlackK-RSS-25",
+      "raw_sha256": "0e648539e901332b685a8b8a516efa273b702030f5b2b928469ca98be6a45f81",
+      "integrated_entry_sha256": "357fab2e5eb1a7a7d7cb5f136c8792bfb991f8bdf169bd15b82bebb0c53ea3c2",
+      "omitted_optional_fields": [
+        "address",
+        "month"
+      ],
+      "normalizations": [
+        "Use official proceedings version even when year/authors differ from preprint; add same official record URL if absent from export."
+      ],
+      "integrated_fields": {
+        "author": "Kevin Black AND Noah Brown AND Danny Driess AND Adnan Esmail AND Michael Robert Equi AND Chelsea Finn AND Niccolo Fusai AND Lachy Groom AND Karol Hausman AND Brian Ichter AND Szymon Jakubczak AND Tim Jones AND Liyiming Ke AND Sergey Levine AND Adrian Li-Bell AND Mohith Mothukuri AND Suraj Nair AND Karl Pertsch AND Lucy Xiaoyang Shi AND Laura Smith AND James Tanner AND Quan Vuong AND Anna Walling AND Haohuan Wang AND Ury Zhilinsky",
+        "title": "{$\\pi_0$: A Vision-Language-Action Flow Model for General Robot Control}",
+        "booktitle": "Proceedings of Robotics: Science and Systems",
+        "year": "2025",
+        "doi": "10.15607/RSS.2025.XXI.010",
+        "url": "https://www.roboticsproceedings.org/rss21/p010.html"
+      }
+    },
+    {
+      "key": "pi05",
+      "raw_export": "pi05.proceedings.bib",
+      "raw_export_key": "pmlr-v305-black25a",
+      "raw_sha256": "66cfb0df8ab6242846586f9dad01c15f7c3ea7838000b9516bc079ce2b77deaa",
+      "integrated_entry_sha256": "135c735a7f6e6db678991d6beec01a77a3d8c7d1022554cc7c829911661e9971",
+      "omitted_optional_fields": [
+        "abstract",
+        "month",
+        "pdf"
+      ],
+      "normalizations": [
+        "Normalize Brian Ichter capitalization only; preserve official author list/order.",
+        "Use official proceedings version even when year/authors differ from preprint; add same official record URL if absent from export."
+      ],
+      "integrated_fields": {
+        "title": "{$\\pi_{0.5}$}: a Vision-Language-Action Model with Open-World Generalization",
+        "author": "Black, Kevin and Brown, Noah and Darpinian, James and Dhabalia, Karan and Driess, Danny and Esmail, Adnan and Equi, Michael Robert and Finn, Chelsea and Fusai, Niccolo and Galliker, Manuel Y. and Ghosh, Dibya and Groom, Lachy and Hausman, Karol and Ichter, Brian and Jakubczak, Szymon and Jones, Tim and Ke, Liyiming and LeBlanc, Devin and Levine, Sergey and Li-Bell, Adrian and Mothukuri, Mohith and Nair, Suraj and Pertsch, Karl and Ren, Allen Z. and Shi, Lucy Xiaoyang and Smith, Laura and Springenberg, Jost Tobias and Stachowicz, Kyle and Tanner, James and Vuong, Quan and Walke, Homer and Walling, Anna and Wang, Haohuan and Yu, Lili and Zhilinsky, Ury",
+        "booktitle": "Proceedings of The 9th Conference on Robot Learning",
+        "pages": "17--40",
+        "year": "2025",
+        "editor": "Lim, Joseph and Song, Shuran and Park, Hae-Won",
+        "volume": "305",
+        "series": "Proceedings of Machine Learning Research",
+        "publisher": "PMLR",
+        "url": "https://proceedings.mlr.press/v305/black25a.html"
+      }
+    },
+    {
+      "key": "openvlaoft",
+      "raw_export": "openvlaoft.proceedings.bib",
+      "raw_export_key": "KimM1-RSS-25",
+      "raw_sha256": "eb746d4ae49babd13f7414f25d9b8bf07f3a46084cb092713534adefe27f99b3",
+      "integrated_entry_sha256": "4ab41c43223161b9ebc5111fb2462b39e74692b31cb49d3bb577b7cae2666228",
+      "omitted_optional_fields": [
+        "address",
+        "month"
+      ],
+      "normalizations": [
+        "Use official proceedings version even when year/authors differ from preprint; add same official record URL if absent from export."
+      ],
+      "integrated_fields": {
+        "author": "Moo Jin Kim AND Chelsea Finn AND Percy Liang",
+        "title": "{Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success}",
+        "booktitle": "Proceedings of Robotics: Science and Systems",
+        "year": "2025",
+        "doi": "10.15607/RSS.2025.XXI.017",
+        "url": "https://www.roboticsproceedings.org/rss21/p017.html"
+      }
+    }
+  ],
+  "retained_entry_crosschecks": [
+    {
+      "key": "jparc2026",
+      "raw_export": "jparc2026.datacite.bib",
+      "raw_sha256": "3452ee3b1ba1542fc77695cf8ffe42006c5fc36b682caa7291df99496ec3e833",
+      "entry_sha256": "648071cffcaa122b73d928ebd92c8bff8f089efbe2ec284c8f1e9a430b5ea235",
+      "notes": [
+        "Existing five-author title/year/preprint entry matches arXiv-issued DataCite export; no journal/conference venue inferred."
+      ]
+    },
+    {
+      "key": "groot",
+      "raw_export": "groot.datacite.bib",
+      "raw_sha256": "a8c80fc24f5ef344c4beb8ae3841a49291d8cf56ee2cfd8c445eba1990b43bc4",
+      "entry_sha256": "4df503e4a1ce3e12bc4f0ebc8a436b73c726bce629bb4c380e8c43b93ec54a81",
+      "notes": [
+        "Remove standalone colon token from author list; protect NVIDIA corporate author; convert Casta\u00f1eda accent to TeX; retain all individuals in original order.",
+        "Existing title/year/preprint entry matches arXiv record; no N1.7 assertion."
+      ]
+    },
+    {
+      "key": "libero",
+      "raw_export": "libero.neurips.bib",
+      "raw_sha256": "4a93e051aecaf41f432c13f7271afebbcb24f7752d148629bb10e237dd8d7f94",
+      "entry_sha256": "d6071850cb956c972ae57dbe9f1a39d0ea4eaa78661990d6b10f7ae50b559fd2",
+      "notes": [
+        "Existing title, seven authors, year, volume, pages, DOI match official proceedings export; existing URL identifies same paper abstract page."
+      ]
+    },
+    {
+      "key": "chen1999fdi",
+      "raw_export": "chen1999fdi.crossref.bib",
+      "raw_sha256": "c4644c4bad3624f9387a2f5dcd7bb5e23a3cf7c41237aa936db4a3e6fc755551",
+      "entry_sha256": "f9932115b5c458354ff1b4031678b579afea8d714f0c065b703f31d6287bc819",
+      "notes": [
+        "Existing title, authors, year, DOI match publisher deposit; retain verified original Kluwer imprint rather than current Springer distributor; do not import erroneous journal/series field."
+      ]
+    },
+    {
+      "key": "hovakimyan2010",
+      "raw_export": "hovakimyan2010.crossref.bib",
+      "raw_sha256": "92e0c313885d2b290f69af3dce72ad130ddba3cd51c2383df88480c8d4b9a14a",
+      "entry_sha256": "604da4a0066cf277e45ac30919616315487cb47962052086fb6b5fda3727660a",
+      "notes": [
+        "Existing title, authors, year, DOI match SIAM deposit; HTML math converted to TeX; existing SIAM abbreviated publisher name retained."
+      ]
+    }
+  ]
+}

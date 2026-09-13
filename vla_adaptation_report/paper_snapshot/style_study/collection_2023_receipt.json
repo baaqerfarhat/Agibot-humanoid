@@ -1,0 +1,232 @@
+{
+  "unique_papers": 270,
+  "downloaded": 270,
+  "recovered_papers": 43,
+  "missing": 0,
+  "source_counts": {
+    "arxiv_author_preprint": 227,
+    "public_third_party_pdf_archive": 35,
+    "author_or_institution_conference_copy": 8
+  },
+  "all_pdf_bytes": 1632543023,
+  "all_pdf_pages": 7239,
+  "recovered_records": [
+    {
+      "openreview_id": "uLE3WF3-H_5",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "e231b93d186d4018236d10a0d4a330a81ddf08b05bf6de186765e9cfb0b75f11"
+    },
+    {
+      "openreview_id": "SMYdcXjJh1q",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "6b15606b4a206c3f1972a9f4528be16784f94e78eee461c23f94a8a9de5ce242"
+    },
+    {
+      "openreview_id": "ZCStthyW-TD",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "64ce99ca912ad2cbcafd508fb675ebb4ca245414cc90bb6063ae3984a7a92d11"
+    },
+    {
+      "openreview_id": "GcM7qfl5zY",
+      "source_kind": "author_or_institution_conference_copy",
+      "sha256": "b5382d4204a8dc53a71b3603c2660b7762bf4553a87fed0fab1316f7fd0e127d"
+    },
+    {
+      "openreview_id": "rFQfjDC9Mt",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "fd3c4f29907911965610a01f7761c77ab7961a21ee614cf47b9cfb80f5566343"
+    },
+    {
+      "openreview_id": "iIfDQVyuFD",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "c77e7ea629d9d949e81453470060e1edf9e34f690653cf85285a8cdf172d30ba"
+    },
+    {
+      "openreview_id": "ih0uFRFhaZZ",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "d9c2487ed92c4e2d6a4af9f6cd371bf3212a0abe5a65a1ed634e5362f790a081"
+    },
+    {
+      "openreview_id": "vSVLM2j9eie",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "7d5b91880023950b5dcd4dbc5f905641e6be6fd36e9e8aca288c2ce724f1454e"
+    },
+    {
+      "openreview_id": "VA1YpcNr7ul",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "bf2458be1c6340ea3454d766b5f087c3bfba64b3b2166487aa004693ba4d0c8e"
+    },
+    {
+      "openreview_id": "27uBgHuoSQ",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "3a11818f3083b7cf4d4f4ded0dbadbc3486d6d0421c4c7b7ff70ea96afcb4394"
+    },
+    {
+      "openreview_id": "fk7RbGibe1",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "0fe7c042f35971da83d8c960956e8ccb19c3973ade1a4d631ba69508012cae63"
+    },
+    {
+      "openreview_id": "Wc5bmZZU9cy",
+      "source_kind": "author_or_institution_conference_copy",
+      "sha256": "8137b7c46eb9876916078377bac8f4044ee11047625b292e85811bae340bcdd2"
+    },
+    {
+      "openreview_id": "R98ZfMt-jE",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "8466e6340663e9fd17d7e40a9078a2c0b1aedba59006e1ff65773f17fb9e515a"
+    },
+    {
+      "openreview_id": "7YfHla7IxBJ",
+      "source_kind": "author_or_institution_conference_copy",
+      "sha256": "a9c773d4cba5d517440254bebbc9b3a292eb3f801240695460176bf4eb66be10"
+    },
+    {
+      "openreview_id": "c9lAOPvQHS",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "0ea0c577eca4915d7079a808a3278d45ab822223a7339145722ca5cefda72891"
+    },
+    {
+      "openreview_id": "UkU05GOH7_6",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "132b8d3f77905a522f60b7828b4cb5b69fdc2d9870500c9d10db7a5ebe78a8dc"
+    },
+    {
+      "openreview_id": "4t9q35BxGr",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "257666916f58457bf15f9cbe9eff78181d09df9dfb639219114eb10fc9509363"
+    },
+    {
+      "openreview_id": "zKvm1ETDOq",
+      "source_kind": "author_or_institution_conference_copy",
+      "sha256": "21a1fdeae49ed05197833c43e90bc8c46b343cda2626d92bf186582b54a9e9cd"
+    },
+    {
+      "openreview_id": "688hNNMigVX",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "aa88ca8e88a80a63528bbe7c27b8b7483459c4e31d059470bd60404633f3818d"
+    },
+    {
+      "openreview_id": "sKc6fgce1zs",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "bc889d3683353f99621d9b0f49afd9e267b50c1de566a67a5d60a39f9a496e61"
+    },
+    {
+      "openreview_id": "WH1yCa0TbB",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "e3a88a58e4daae9ce29cfeb6c8282bdc3fbcb6c376cc1fe568558811b0ed2d07"
+    },
+    {
+      "openreview_id": "en9V5F8PR-",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "87c3d5611209787adffcb9fe685a156c55cfbf5602c6f661a43351caa0eeca4f"
+    },
+    {
+      "openreview_id": "QC10RmRbZy9",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "498d654114d1faad83f3c89d9abc0e4a4bc22de1517aba9216b5521cb1a32e2c"
+    },
+    {
+      "openreview_id": "zt53IDUR1U",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "55e89341b2daccad24f1cb69409e379e24f50d71bb6b49c5f4649b044d09aac1"
+    },
+    {
+      "openreview_id": "nN_nBVKAhhD",
+      "source_kind": "author_or_institution_conference_copy",
+      "sha256": "95e9d81e5b527c97bb89267e86733ef60ddf4ad2a4ed761657c8925a6a06d9db"
+    },
+    {
+      "openreview_id": "dLAYGdKTi2",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "6fc0f2335346ea7c832f11aab559d33cadf96e8b595aca866559a88fa6ab3042"
+    },
+    {
+      "openreview_id": "2QGJXyMNoPz",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "35f98ec43347d6df69f5bbcc714895878002ab050504dea05e29e8dc84991b66"
+    },
+    {
+      "openreview_id": "dKkMnCWfVmm",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "ec13db9c7e4bb95b7f53656c4838041c5bb4ff3f97575e67f9bece94d18705dc"
+    },
+    {
+      "openreview_id": "d3QNWD_pcFv",
+      "source_kind": "author_or_institution_conference_copy",
+      "sha256": "5fcee7117b4057959a87fdd3cd827732136f225dac6e402aade8050e45855a67"
+    },
+    {
+      "openreview_id": "bvpkw7UIRdU",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "080d7d57e7d42fbbb92bd15e76891bc260c3e01a34ac984ef3991b81af77e899"
+    },
+    {
+      "openreview_id": "hQ9V5QN27eS",
+      "source_kind": "author_or_institution_conference_copy",
+      "sha256": "083ce843ab88a0275943d6c92c97270fbcf78540ff98f9764cc8edb5dc4965fb"
+    },
+    {
+      "openreview_id": "uVcDssQff_",
+      "source_kind": "author_or_institution_conference_copy",
+      "sha256": "ba39d993962d7f41ab85e3cedcfba539352e2b09c38cb3525a2b7af4bbf02b84"
+    },
+    {
+      "openreview_id": "OpC-9aBBVJe",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "14f4f5ae825d903056a6308bf8e125e90b3e1abc00072b0c22fb82a1c363718c"
+    },
+    {
+      "openreview_id": "7C9aRX2nBf2",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "740a40085c82f60b0e134efd79b4a1b3e6c6ddf339273485259655a7b873e550"
+    },
+    {
+      "openreview_id": "3RhuF8foyPW",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "ab0d6a3ee9a33b71ca36897a0c97c8614190f90c98a4466cbcde3826e56b09a6"
+    },
+    {
+      "openreview_id": "74A-FDAyiL",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "36018697c2e706c28fe833d9f4924fbfcc62fdd7df1f4a486ad2db74948b84ba"
+    },
+    {
+      "openreview_id": "0Ij9_q567Ma",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "181a8057775478b59e9f4c779a11307d51fe34bdec855ef497ae90b4f82501a5"
+    },
+    {
+      "openreview_id": "hWwY_Jq0xsN",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "8877a0346341a20188efc146939aae13ca53ed58027b7a117a88d4da35b200e6"
+    },
+    {
+      "openreview_id": "paGvsrl4Ntr",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "44428853f3f26960f9271fe6ad74b59aa318a4e76029cd24e5b2c3ecadf767cf"
+    },
+    {
+      "openreview_id": "WzGdBqcBicl",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "9cc636056c8bdd5426cd3174b2f2cc24e59bc3920d4d5c2e250509a3400a68c0"
+    },
+    {
+      "openreview_id": "xSsW2Am-ukZ",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "22c0b8dac683ee8fdf614bba991cb9b831d0014553f5a0afbabd1741a553d28f"
+    },
+    {
+      "openreview_id": "kPLzOfPfA2l",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "da5e2824cab51d0641fd1ab0d35bf015c950ca237bd991fa7368066d3306e056"
+    },
+    {
+      "openreview_id": "CPdc77SQfQ5",
+      "source_kind": "public_third_party_pdf_archive",
+      "sha256": "6fd666e7f21ea92241097cf0b1ade808cdb076728f115739dd172184cc5704fb"
+    }
+  ],
+  "manifest_sha256": "3344d40a20a1837c278853befac24d1123a0cfcfda5fbb99940e7ef6e54e106d",
+  "limitations": "2023 public alternatives are not asserted byte-identical to the accepted OpenReview revisions; see each record."
+}

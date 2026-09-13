@@ -1,0 +1,25 @@
+{
+  "year": 2024,
+  "verified_at_utc": "2026-09-08T21:42:54.993636+00:00",
+  "papers": 86,
+  "designations": {
+    "oral": 86,
+    "honorable_mention": 11,
+    "outstanding": 5
+  },
+  "pdf_total_bytes": 646512204,
+  "pdf_total_pages": 2360,
+  "complete": 86,
+  "errors": [],
+  "reading_status_counts": {
+    "automated_metadata_and_text_only": 78,
+    "substantive_main_text_and_selected_visual_reading": 8
+  },
+  "artifact_hashes": {
+    "collect_2024.py": "6381f8443a4b3b034c336ec31a4b8233d96f823fb4db7f57231d887e4a6e3343",
+    "manifest_2024.json": "50297f12b3ffee32174f7bb43a0e66532e102dd6a12f0d86a10f0e461d7958bf",
+    "collection_2024.json": "a017f81295bc84860b69623f285a0cbcaa3aa0d249274c75bf5066c0a498687f",
+    "deep_readings_2024.json": "07016ac87efbb9f8bee1214cc825cf94f3ac1cb0b9d12cc586c6e6272bc1777d",
+    "YEAR_2024.md": "280392c2a2365a625e6d4c38ed1c5596e9e979aab0b21838b6bb3a018f6f5a2a"
+  }
+}

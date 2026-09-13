@@ -1,0 +1,261 @@
+\section{Conditional theory for interface repair}
+\label{app:composite-theory}
+
+This appendix separates algebraic identifiability, the authority of the chosen
+action interface, and stability of the implemented observer. Its dynamical
+results concern an explicitly assumed local model. They do not turn the fitted
+healthy reference or the reported per-step eigenvalue screens into a certificate
+for the physical VLA--robot loop.
+
+\subsection{Identifying a disturbance is different from cancelling its effect}
+
+Let a constant parameter $f\in\mathbb R^p$ produce a bias-corrected observation
+$z=Hf$ and an unwanted physical response $Gf\in\mathbb R^n$. A correction
+$c\in\mathbb R^k$ removes the response $Dc$, where $D\in\mathbb R^{n\times k}$
+describes the available action interface. Thus $H$ describes observation and $D$
+describes correction authority; neither is assumed equal to $G$.
+
+\begin{proposition}[Identifiability and exact linear cancellation]
+\label{prop:authority}
+The parameter $f$ is uniquely identifiable from $z$ if and only if
+$\ker H=\{0\}$. There exists a linear rule $c=Fz$ cancelling every parameter,
+$DFH=G$, if and only if
+\begin{equation}\label{eq:authority-factorization}
+\ker H\subseteq\ker G,\qquad
+\operatorname{range}G\subseteq\operatorname{range}D.
+\end{equation}
+With corrections restricted to a set $\mathcal U$, exact cancellation for a
+particular known $f$ is feasible if and only if $Gf\in D\mathcal U$.
+\end{proposition}
+\begin{proof}
+Two parameters yield the same observation exactly when their difference lies
+in $\ker H$, proving the first assertion. If $DFH=G$, then $Hv=0$ implies
+$Gv=0$, and every column of $G$ lies in the range of $D$, proving necessity.
+Conversely, let $H^\dagger,D^\dagger$ denote Moore--Penrose inverses. The two
+conditions give $GH^\dagger H=G$ and $DD^\dagger G=G$, respectively. Therefore
+$F=D^\dagger GH^\dagger$ satisfies $DFH=G$. The bounded assertion is precisely
+the existence of $c\in\mathcal U$ with $Dc=Gf$.
+\end{proof}
+
+Full parameter identifiability is consequently neither sufficient nor necessary
+for cancellation of the physical effect. For example, $H=I_2$, $G=I_2$ and
+$D=(1,0)^\top$ make both fault coordinates observable while leaving the second
+uncorrectable. Conversely, $H=(1,0)$, $G=(1,0)$ and $D=1$ permit exact cancellation
+although the irrelevant second fault coordinate is unidentifiable. These are
+local interface statements: configuration dependence alone establishes neither
+of the range conditions. Unknown output bias further limits identifiability as
+in Proposition~\ref{prop:sep}.
+
+\subsection{The recursion implemented by the composite observer}
+
+For the following result the estimate and fault have the same $p$ coordinates.
+Suppose that, over a stated operating region, actual-minus-reference position
+error obeys
+\begin{equation}\label{eq:local-position-error}
+e_{t+1}=Ae_t+Gf_t-D\hat\theta_t+w_{t+1},\qquad
+z_{t+1}=Hf_t+v_{t+1}.
+\end{equation}
+Here $w$ includes model error and $v$ includes observation error, remaining bias,
+and any discrepancy in the calibrated residual relation. Cancellation by the
+estimate $\hat\theta=f$ requires $(G-D)f=0$, for example when $G=D$ or the
+admissible faults occupy only coordinates where the two maps agree. The more
+general authority condition in Proposition~\ref{prop:authority} can instead
+require a different allocation of the identified parameter. For ALOHA,
+$H=M$ is the full residual sensitivity,
+$D=B\operatorname{diag}(m)$ includes the correction mask, and the fitted reference
+is driven by the live \emph{raw} action. Subtracting this reference cancels the
+common raw input in the assumed linear model; it does not construct the healthy
+counterfactual trajectory of the nonlinear policy.
+Using the fitted $D$ in the physical recursion is an assumption: if the actual
+map is $D_{\rm phys}$, the remainder must include
+$-(D_{\rm phys}-D)\hat\theta_t$. Applying the bounds below then requires a
+bound on this remainder over the operating region; fitting $D$ does not supply
+that bound automatically.
+
+Write $a=\exp(-\lambda\Delta t)$ and
+$h=\Delta t$ when $\lambda=0$, otherwise $h=(1-a^2)/(2\lambda)$.
+The implementation uses
+\begin{align}
+P_t^-&=a^2P_t+hQ_c,
+&K_t&=P_t^-H^\top(HP_t^-H^\top+R)^{-1},\\
+P_t^+&=(I-K_tH)P_t^-(I-K_tH)^\top+K_tRK_t^\top,
+&P_{t+1}&=P_t^+,\\
+T_t&=\Delta t\,\eta P_t^+D^\top L,
+&\bar\theta_{t+1}&=a\hat\theta_t+K_t(z_{t+1}-Ha\hat\theta_t)+T_te_{t+1},\\
+\hat\theta_{t+1}&=\Pi_{\mathcal U}(\bar\theta_{t+1}).&&
+\label{eq:appendix-composite-recursion}
+\end{align}
+Here $Q_c$ is process covariance per unit time, $R\succ0$ is covariance per
+observation, and $L\succ0$ is the chosen position metric. The action has already
+used $\hat\theta_t$ before $e_{t+1}$ and $z_{t+1}$ are measured. $P_t^+$ is the
+posterior covariance of the specified prediction-only statistical model; after
+adding tracking feedback it is a design preconditioner, not automatically the
+true covariance of the composite estimation error.
+
+Let $\delta_t=\hat\theta_t-f_t$, $C_t=I-K_tH$, and
+$\xi_t=(e_t^\top,\delta_t^\top)^\top$. Define
+\begin{align}
+b_{t+1}&=(G-D)f_t+w_{t+1},
+&\Delta f_t&=f_{t+1}-f_t,\\
+p_{t+1}&=\Pi_{\mathcal U}(\bar\theta_{t+1})-\bar\theta_{t+1}.
+\end{align}
+Direct substitution yields the exact error recursion under
+\eqref{eq:local-position-error}:
+\begin{equation}\label{eq:composite-augmented}
+\begin{aligned}
+\xi_{t+1}&=\mathcal A_t\xi_t+d_{t+1},\\
+\mathcal A_t&=
+\begin{bmatrix}
+A&-D\\
+T_tA&aC_t-T_tD
+\end{bmatrix},\\
+d_{t+1}&=
+\begin{bmatrix}
+b_{t+1}\\
+T_tb_{t+1}+(a-1)C_tf_t-\Delta f_t+K_tv_{t+1}+p_{t+1}
+\end{bmatrix}.
+\end{aligned}
+\end{equation}
+In particular, the lower-left block is $T_tA$, not $T_t$: tracking uses the
+\emph{new} position error. The positive tracking sign is also deliberate. For
+fixed $e_t,f_t$, the gradient of
+$\frac12\|Ae_t+Gf_t-D\theta\|_L^2$ at $\theta=\hat\theta_t$, in the noiseless
+model, is $-D^\top Le_{t+1}$. Hence tracking alone is a preconditioned negative
+gradient step. This direction does not establish stability of the full finite-step
+observer--controller recursion.
+
+\begin{proposition}[Conditional contraction and disturbance bound]
+\label{prop:composite-iss}
+Assume \eqref{eq:local-position-error} holds along the trajectory. Suppose a
+\emph{single} matrix $V\succ0$ and $0<\rho<1$ satisfy
+\begin{equation}\label{eq:common-composite-metric}
+\mathcal A_t^\top V\mathcal A_t\preceq\rho^2 V
+\quad\text{for every gain encountered.}
+\end{equation}
+Then, with $\|x\|_V=(x^\top Vx)^{1/2}$,
+\begin{equation}\label{eq:composite-iss-bound}
+\|\xi_t\|_V
+\le \rho^t\|\xi_0\|_V+
+\sum_{s=0}^{t-1}\rho^{t-1-s}\|d_{s+1}\|_V.
+\end{equation}
+If $\|d_{t+1}\|_V\le\bar d$, the second term is at most
+$\bar d(1-\rho^t)/(1-\rho)$. For a constant fault with $(G-D)f=0$,
+zero damping, no model or observation error, and inactive projection, the
+origin converges exponentially.
+\end{proposition}
+\begin{proof}
+To obtain \eqref{eq:composite-augmented}, first substitute
+$\hat\theta_t=\delta_t+f_t$ into the position equation. For the parameter equation,
+subtract $f_{t+1}$ from the update. The coefficient of $f_t$ is
+$aC_t+K_tH-I=(a-1)C_t$, and substituting the new position equation supplies
+$T_tA$, $-T_tD$ and $T_tb_{t+1}$. Projection adds exactly $p_{t+1}$.
+Under \eqref{eq:common-composite-metric},
+$\|\mathcal A_t x\|_V\le\rho\|x\|_V$. The triangle inequality followed by
+induction proves \eqref{eq:composite-iss-bound}; summing the geometric series
+proves the uniform-input bound. In the last stated case every forcing term is
+zero.
+\end{proof}
+
+Projection cannot simply be dropped from this argument: Euclidean box projection
+need not be nonexpansive in a metric with position--parameter cross terms.
+One sufficient extension is $V=\operatorname{diag}(V_e,cI_p)$ with $c>0$ and
+$f_{t+1}\in\mathcal U$, where $\mathcal U$ is the implemented closed convex box.
+Then
+$\|\Pi_{\mathcal U}(\bar\theta)-f_{t+1}\|_2
+\le\|\bar\theta-f_{t+1}\|_2$, so the same bound holds with the projection term
+omitted from $d$, provided the common-metric inequality holds for this block
+metric. For a general $V$, a separate bound on $p$ is needed.
+
+For fixed gains, a Schur $\mathcal A$ admits a quadratic contraction metric.
+For changing gains, checking each matrix separately is insufficient. For example,
+$\left[\begin{smallmatrix}.5&2\\0&.5\end{smallmatrix}\right]$ and
+$\left[\begin{smallmatrix}.5&0\\2&.5\end{smallmatrix}\right]$ each have spectral
+radius $.5$, but their two-step product has spectral radius $2.25+\sqrt5>1$.
+This example is a general switching counterexample, not an assertion that these
+two matrices occur in our experiments. The existing candidate screen checks
+frozen augmented matrices over the covariance transient and at its limit; it
+does not verify \eqref{eq:common-composite-metric}, even for that finite horizon.
+Likewise, a fitted $A$ satisfying $A^\top LA\prec L$ need not make the augmented
+system contractive. The proposition is conditional on additional, computable
+matrix inequalities and valid model/error bounds.
+
+\paragraph{Damping introduces forcing.}
+For a constant fault with $(G-D)f=0$, $w=v=p=0$ and fixed gains, positive damping
+leaves $d=(0,((a-1)Cf)^\top)^\top$. If $\mathcal A$ is Schur, then
+\begin{equation}\label{eq:damped-equilibrium}
+\xi_*=(I-\mathcal A)^{-1}
+\begin{bmatrix}0\\(a-1)Cf\end{bmatrix}.
+\end{equation}
+Thus stability generally gives a biased equilibrium rather than exact fault
+cancellation. For the scalar prediction-only case $H=1$, $K=k$, $T=0$,
+\begin{equation}
+\hat\theta_* = \frac{k}{1-a(1-k)}f.
+\end{equation}
+For $0<k<1$ and $0<a<1$ this attenuates a nonzero fault. With zero damping,
+fixed-gain Kalman is the $T=0$ special case; equality of algorithms requires
+matching $Q_c,R,P_0$ and projection as well.
+
+\begin{proposition}[Positive tracking gain can destabilize a stable observer]
+\label{prop:tracking-limit}
+There are an exactly matched scalar plant with contractive healthy dynamics and
+valid steady Kalman covariances for which increasing positive tracking gain
+destabilizes the implemented local composite recursion.
+\end{proposition}
+\begin{proof}
+Take $A=.8$, $G=D=H=L=1$, $\lambda=0$, $\Delta t=1$, $R=1$, $Q_c=.05$ and
+$P_t=P_t^+=.2$. Then $P_t^-=.25$, $K_t=.2$, and $T_t=.2\eta$, all exactly
+consistent with the covariance recursion. For inactive projection,
+\begin{equation}
+\mathcal A(\eta)=
+\begin{bmatrix}.8&-1\\.16\eta&.8-.2\eta\end{bmatrix},\qquad
+\operatorname{tr}\mathcal A=1.6-.2\eta,\quad
+\det\mathcal A=.64.
+\end{equation}
+The second-order Schur conditions
+$1-\det\mathcal A>0$, $1-\operatorname{tr}\mathcal A+\det\mathcal A>0$ and
+$1+\operatorname{tr}\mathcal A+\det\mathcal A>0$ hold, for $\eta\ge0$, precisely
+when $\eta<16.2$. Kalman alone ($\eta=0$) is stable, whereas $\eta=20$ gives
+eigenvalues $-1.2\pm\sqrt{.8}$, one of magnitude greater than one. The same
+local instability holds around the zero-fault equilibrium with any positive
+box bound, since projection is inactive in a neighborhood of that equilibrium.
+\end{proof}
+
+The threshold is for this scalar example's rate $\eta$ and unit time step; it
+is not a threshold for the ALOHA rate or its dimensionless active-strength setting.
+This counterexample concerns the algorithm class; it is not a diagnosis of the
+screened experimental configurations. Even within a stable range, the extra
+term can introduce sensitivity to reference-model error or redistribute gains
+across coordinates. Neither a positive gradient direction nor an empirical
+contraction check implies a universal advantage over Kalman or the other
+estimators.
+
+\subsection{What would permit a task-success conclusion?}
+
+\begin{proposition}[Transfer through an assumed robust trajectory tube]
+\label{prop:task-tube}
+Fix a successful nominal complete execution $x^0_{0:N}$. Suppose every execution
+with $\max_{t\le N}\|x_t-x_t^0\|\le\epsilon_{\rm task}$ also succeeds.
+Suppose, independently, the full-execution discrepancy satisfies
+$\|x_t-x_t^0\|\le c\|\xi_t\|_V+\epsilon_{\rm lift}$ for all $t\le N$, and
+the assumptions of Proposition~\ref{prop:composite-iss} hold with
+$\|d_t\|_V\le\bar d$. Then the corrected execution succeeds whenever
+\begin{equation}
+c\max\!\left\{\|\xi_0\|_V,\frac{\bar d}{1-\rho}\right\}
++\epsilon_{\rm lift}\le\epsilon_{\rm task}.
+\end{equation}
+\end{proposition}
+\begin{proof}
+The bound in \eqref{eq:composite-iss-bound} is at most a convex combination of
+$\|\xi_0\|_V$ and $\bar d/(1-\rho)$, hence no larger than their maximum.
+The assumed lifting inequality places the complete execution in the successful
+tube.
+\end{proof}
+
+Both additional assumptions are substantive. The complete execution must include
+the variables needed to determine success; a six-position error does not bound
+unobserved velocities, contact states, other joints, or changes in the policy's
+observations. The fitted reference driven by each rollout's own raw actions is
+also not the common successful nominal execution assumed here. Neither the
+robust tube nor the lifting bound was established by our experiments. This
+conditional result therefore states what is missing for task-level transfer,
+not a success guarantee or a claim that any estimator must rank first.

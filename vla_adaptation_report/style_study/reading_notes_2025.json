@@ -1,0 +1,358 @@
+{
+  "year": 2025,
+  "scope": "All 213 PDFs downloaded and text-extracted; eight selected main texts closely read. Not a scientific validity audit or a claim of close reading all 213.",
+  "manifest_sha256": "4088f9598ae963cadda81714072899d2045d8b9c5f70ba8b6ca40f037563966c",
+  "papers": [
+    {
+      "openreview_id": "6Mxhg9PtDE",
+      "title": "Safety Alignment Should be Made More Than Just a Few Tokens Deep",
+      "designations": [
+        "oral",
+        "outstanding"
+      ],
+      "main_text_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "references_first_page": 11,
+      "appendix_first_page": 17,
+      "total_pdf_pages": 31,
+      "appendix_scope": "Section headings and cited locations checked; appendix proofs not independently verified.",
+      "related_work_location": "Main p10; extended Appendix A p17",
+      "preview_page": 4,
+      "preview_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2025/reading_previews/6Mxhg9PtDE_page4.png",
+      "preview_sha256": "57543013a56a6dff7474cdf4b72bd331db130e311adb3358ae3c9d8736eabebf",
+      "pdf_sha256": "aa33eef3883547e13d7cf0b3fea52704212162a7b417c78cb18cffd85f5e58b3",
+      "text_sha256": "b2bd3204bf5ff532146d66e55db8b009567edc23f78167715f12c21f7e2bebdc",
+      "proceedings_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/88be023075a5a3ff3dc3b5d26623fa22-Abstract-Conference.html",
+      "writing_analysis": "The introduction establishes a shared failure mechanism before proposing two repairs; p2 explicitly credits earlier attacks and limits novelty to the unifying account. Table 1 (p3) introduces a controlled intervention before Figures 1–2 (p4) visualize the diagnosis. Those small plots sit beside the paragraphs interpreting them, avoiding a detached results gallery. The particularly useful writing move is on p7: a distributional diagnostic is explicitly distinguished from the safety outcome, which is then evaluated separately. Sections 3–4 connect each intervention to the earlier diagnosis, while Tables 2–4 retain utility alongside attack outcomes. Related work is compact on p10 and expanded on p17; derivations occupy Appendix F (pp24–29). The transferable lesson is to connect mechanism, intervention, and task outcome without treating an improved intermediate signal as sufficient evidence. The first main figure arrives on p4, so an award paper need not begin with a graphical teaser.",
+      "analysis_word_count": 144
+    },
+    {
+      "openreview_id": "tPNHOoZFl9",
+      "title": "Learning Dynamics of LLM Finetuning",
+      "designations": [
+        "oral",
+        "outstanding"
+      ],
+      "main_text_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "references_first_page": 11,
+      "appendix_first_page": 15,
+      "total_pdf_pages": 41,
+      "appendix_scope": "Section headings and cited locations checked; appendix proofs not independently verified.",
+      "related_work_location": "Integrated main text; Appendix A p15",
+      "preview_page": 3,
+      "preview_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2025/reading_previews/tPNHOoZFl9_page3.png",
+      "preview_sha256": "14d4a19894415389a0dcc26af1f8b62f4a4420b9c1d0b1e1b790ebe6f1c06e7d",
+      "pdf_sha256": "c511947cb4657de7cdc89e3802bc476ab68e7e0536b3243829954b7fccd0f1e2",
+      "text_sha256": "1a931e2bc4fe85b2ddf0e642b5062292e0251c12db9228eaae6286b7e3c76082",
+      "proceedings_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/afe1aa79e5eea7955f553c61a307273e-Abstract-Conference.html",
+      "writing_analysis": "The opening narrows an expansive topic to a precise question: how one update changes other predictions. Proposition 1 on p2 is immediately followed by an MNIST example and Figure 1 on p3, giving the symbols operational meaning before extending them to language models. A prominent assumption below that figure constrains the interpretation. Figure 2 (p6) compares several algorithms through the same visual vocabulary, making a common framework visible rather than asserting it. The text distinguishes guaranteed statements from qualitative trends on p6 and acknowledges complications in the full setting. Figures 3–4 test the explanation; Figure 5 and Table 1 on p10 separate mechanistic changes from practical evaluation. Extended related work starts on p15, followed by derivations and additional settings. This structure suits a diagnostic contribution: start with a tractable example, preserve the assumption boundary, then test consequences before introducing a modest method change.",
+      "analysis_word_count": 143
+    },
+    {
+      "openreview_id": "HvSytvg3Jh",
+      "title": "AlphaEdit: Null-Space Constrained Knowledge Editing for Language Models",
+      "designations": [
+        "oral",
+        "outstanding"
+      ],
+      "main_text_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "references_first_page": 11,
+      "appendix_first_page": 15,
+      "total_pdf_pages": 31,
+      "appendix_scope": "Section headings and cited locations checked; appendix proofs not independently verified.",
+      "related_work_location": "Main p10",
+      "preview_page": 2,
+      "preview_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2025/reading_previews/HvSytvg3Jh_page2.png",
+      "preview_sha256": "c2e1bf977ee722a0e21d0deba686f437fc8a43ecc61a6e69b30192f603a0aefb",
+      "pdf_sha256": "20a32617138b497c7814c3a6a5bc76906e134e6377a5f65b8a778cd8283b0e25",
+      "text_sha256": "e6cb78f2287d462f59b6a2411a16910882c0cc5b9615de242892848b7ea0b6c5",
+      "proceedings_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/29c8c615b3187ee995029284702d3f43-Abstract-Conference.html",
+      "writing_analysis": "The introduction names two competing objectives rather than describing prior work only by method names. Figure 1 on p2 contrasts the objectives, representation changes, and behavior; the adjacent radial summary offers headline evidence, although its density is less suitable for precise cross-method comparisons than Table 1 on p6. The method moves from a short invariance identity on p4 to implementation details and adjacent old/new update formulas on p5. That adjacency makes the claimed modification inspectable. The practical eigenvalue threshold appears in a p4 footnote, an example of an approximation that should remain close to an exact statement. Experiments begin with four research questions on p6 and later sections answer them in order. Related work, limitations, and conclusion all fit on p10; Appendix B (pp17–19) carries proofs. Useful practice: make the minimal algebraic change explicit and give each central claim a corresponding experiment.",
+      "analysis_word_count": 142
+    },
+    {
+      "openreview_id": "HD6bWcj87Y",
+      "title": "Data Shapley in One Training Run",
+      "designations": [
+        "oral",
+        "honorable_mention"
+      ],
+      "main_text_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "references_first_page": 11,
+      "appendix_first_page": 15,
+      "total_pdf_pages": 38,
+      "appendix_scope": "Section headings and cited locations checked; appendix proofs not independently verified.",
+      "related_work_location": "Integrated main text; Appendix A p15",
+      "preview_page": 8,
+      "preview_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2025/reading_previews/HD6bWcj87Y_page8.png",
+      "preview_sha256": "f436890f4d59d0f436b081f400e906dacaac5f0770362c319ce83c7919c56464",
+      "pdf_sha256": "096f4a18f6858f805d6c5c6da4843656d17ce7953bd3a4536e0a7605ab674100",
+      "text_sha256": "9bacd137f62285fdce55262b598e9805f50dfb6f7103614b7eec5ec893ba810b",
+      "proceedings_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/20fdaf67581e6d7157376d1ed584040a-Abstract-Conference.html",
+      "writing_analysis": "The opening distinguishes a computational obstacle from a change in the attribution quantity being defined. This prevents efficiency from obscuring a conceptual difference. Definitions and the linearity property precede the new local/global construction on pp3–4. Theorems on pp5–6 separate first- and second-order approximations, and the text explicitly identifies the first-order connection to TracIN-Ideal. Section 4.2 then explains why a direct implementation is expensive and what computation can be reused. Empirical evaluation is organized into efficiency, fidelity, and applications: Table 1 appears on p7, while the first figures arrive only on p8. The final page gives concrete limitations involving validation availability, optimizer support, and memory. Appendix A expands related work; further derivations and implementation occupy pp21–27. This is a useful counterexample to a mandatory early-figure rule: the main contribution is made clear through definitions and a short derivation chain before quantitative plots are introduced.",
+      "analysis_word_count": 143
+    },
+    {
+      "openreview_id": "Ha6RTeWMd0",
+      "title": "SAM 2: Segment Anything in Images and Videos",
+      "designations": [
+        "oral",
+        "honorable_mention"
+      ],
+      "main_text_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "references_first_page": 11,
+      "appendix_first_page": 18,
+      "total_pdf_pages": 44,
+      "appendix_scope": "Section headings and cited locations checked; appendix proofs not independently verified.",
+      "related_work_location": "Main pp2–3; additional Appendix I p38",
+      "preview_page": 1,
+      "preview_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2025/reading_previews/Ha6RTeWMd0_page1.png",
+      "preview_sha256": "e3f7aedd6024affce36f25b2b4e4f9a20904ee0eb034af61b63650dcce6bfb40",
+      "pdf_sha256": "6c07c6ecf2f592e3f7f9833409b8ec63232e2193b4ab4edb7db575805f27c028",
+      "text_sha256": "cf96a2ca88ab1747fa22a97c25effd8ceafe7b12cb6684b99d12cdb8159fb479",
+      "proceedings_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/45c1f6a8cbf2da59ebf2c802b4f742cd-Abstract-Conference.html",
+      "writing_analysis": "Figure 1 on p1 maps three named contributions—task, model, and data—to the paper’s later sections. The introduction then describes these in that order. Dense related work on pp2–3 is grouped by problem and establishes concrete limitations before the task definition. Figure 2 (p4) shows an interaction that the system must support; Figure 3 (p5) explains the architecture implementing it. Thus examples and diagrams answer different reader questions. The data section preserves provenance: annotation phases, a quality check, the validation/test annotation process, and split construction are stated in the main text. Tables 1–2 (p7) distinguish collection efficiency from the effect of additional data, and later tables separate evaluation protocols. Appendix A provides ablations, while limitations appear in Appendix C on p22. The useful pattern is to allocate one clear explanatory role to each figure and give data provenance space alongside model details.",
+      "analysis_word_count": 141
+    },
+    {
+      "openreview_id": "vo9t20wsmd",
+      "title": "Faster Cascades via Speculative Decoding",
+      "designations": [
+        "oral",
+        "honorable_mention"
+      ],
+      "main_text_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "references_first_page": 11,
+      "appendix_first_page": 16,
+      "total_pdf_pages": 39,
+      "appendix_scope": "Section headings and cited locations checked; appendix proofs not independently verified.",
+      "related_work_location": "Integrated main text; Appendix B p21",
+      "preview_page": 7,
+      "preview_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2025/reading_previews/vo9t20wsmd_page7.png",
+      "preview_sha256": "3a49e9c606f2c530917036e98d2d36e53ef31fe3ccd4f16b2d1f063639232e6c",
+      "pdf_sha256": "306aa026fb02978795688a0e50a03ee599201b0249ce914db75499ec67139307",
+      "text_sha256": "33ff25a8161f9cf0f363df243db3f9a32425806a8d423619862f6b6188841746",
+      "proceedings_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/6f43166f50f26e8d8f3edc5545b0749f-Abstract-Conference.html",
+      "writing_analysis": "The introduction compares two existing mechanisms and explains why their strengths are complementary. Table 1 on p3 is unusually instructive: it separates target distribution, deferral decision, and execution mode across methods. This prevents a shared implementation component from being mistaken for a novel decision rule. The method distinguishes an ideal rule, its implementable approximation, and a bound on that approximation. Five short algorithms on p7 share notation and reveal their common subroutine. Table 2 (p9) labels old versus new deferral rules and states two different comparison targets rather than collapsing cost and quality. The adjacent protocol paragraph explicitly limits the claim; p10 acknowledges that the theoretically motivated rule is weaker in another setting and that lower latency can require more computation. Further related work begins on p21. Transferable practice: compare variants along independently named axes and explain where a theoretical prescription loses its empirical advantage.",
+      "analysis_word_count": 145,
+      "appendix_note": "Appendix table of contents on p16; first proof section on p17."
+    },
+    {
+      "openreview_id": "4OaO3GjP7k",
+      "title": "Flat Reward in Policy Parameter Space Implies Robust Reinforcement Learning",
+      "designations": [
+        "oral"
+      ],
+      "main_text_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "references_first_page": 11,
+      "appendix_first_page": 14,
+      "total_pdf_pages": 23,
+      "appendix_scope": "Section headings and cited locations checked; appendix proofs not independently verified.",
+      "related_work_location": "Main pp2–4",
+      "preview_page": 9,
+      "preview_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2025/reading_previews/4OaO3GjP7k_page9.png",
+      "preview_sha256": "e66312b630fc934653ad644ac1e63ec9c5e0ad028e149347a7688b772dd552db",
+      "pdf_sha256": "1cd8950b4c6c35cee595948987d7cc2e6950dcd1d097ab89b2beb0f0a173f1be",
+      "text_sha256": "f4dbd0b721fbac57689addc381f2d9ae7bc85011db71ab965792a2acff7016c7",
+      "proceedings_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/3448058d44f133839042295f79a9a958-Abstract-Conference.html",
+      "writing_analysis": "A small navigation example on p2 makes the robustness motivation tangible before the formal definitions. The related-work discussion spans parts of pp2–4 and explicitly says that the contribution concerns understanding rather than a new optimization algorithm. Figure 2 (p6) sits next to the definitions and proposition; the same page separately labels the extension to other disturbances as informal. Results progress from one-factor perturbations in Figures 3–5 to combined mass/friction heatmaps in Figure 6 (p9). Table 1 reports nominal and perturbed values with changes, preserving the reference condition. Section 5.4 explains why reward noise requires a different protocol. These are useful presentation choices for heterogeneous robot faults. They are not a substitute for statistical checking: the p7 statement about repeated seeds does not itself establish significance, and this style study has not independently validated the theorem or empirical claims. Additional settings and proofs begin on pp14–16.",
+      "analysis_word_count": 145
+    },
+    {
+      "openreview_id": "AP0ndQloqR",
+      "title": "Geometry of Neural Reinforcement Learning in Continuous State and Action Spaces",
+      "designations": [
+        "oral"
+      ],
+      "main_text_pages_read": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "references_first_page": 11,
+      "appendix_first_page": 19,
+      "total_pdf_pages": 39,
+      "appendix_scope": "Section headings and cited locations checked; appendix proofs not independently verified.",
+      "related_work_location": "Integrated main text; Appendix O p38",
+      "preview_page": 7,
+      "preview_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2025/reading_previews/AP0ndQloqR_page7.png",
+      "preview_sha256": "2ad5e4347a558e288279d2382af459f0f957cae0cdae1f606741b526c54afc1a",
+      "pdf_sha256": "168a59aec1297ee16cdb3e946e051de87d2f5a4c3ace6a5b963316662e7d63c7",
+      "text_sha256": "69776ab0604ddfd26a2e6008fa830192b58b80846a794ffbf16898deb9eaab36",
+      "proceedings_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/c3010e98dc44b6f76df7cf82b5e12c77-Abstract-Conference.html",
+      "writing_analysis": "The introduction separates classical reachability from states attained by a restricted policy family and training process. It also discloses the tractable neural-network model before presenting the result. The background uses a concrete manifold example in Figure 1 (p4), while the method carefully distinguishes physical time from optimization time on p7. Assumptions, a boxed theorem, its interpretation, and a short proof outline appear together, leaving the full proof to Appendix G (p31). Empirical sections follow distinct questions: approximation quality, estimated dimension, a toy construction, and a practical architecture change. Figure 3 (p9) places the theoretical bound and nominal dimension directly on the same axes as estimates. Figure 5 (p10) then evaluates the application separately. The discussion names oracle-value and deterministic-dynamics limitations. The transferable practice is to keep the restricted theoretical object visible when moving to practical evidence, without presenting a theory-inspired implementation as automatically covered by the theorem.",
+      "analysis_word_count": 147
+    }
+  ],
+  "manual_citation_counts": [
+    {
+      "openreview_id": "HvSytvg3Jh",
+      "page": 1,
+      "window": "First prose paragraph of Introduction, ending with original parameters",
+      "unique_cited_works": [
+        "Brown 2020",
+        "Petroni 2019",
+        "Roberts 2020",
+        "Liu 2024a",
+        "Cao 2021",
+        "Mitchell 2022a",
+        "Meng 2022",
+        "Yao 2023",
+        "Meng 2023",
+        "Jiang 2025",
+        "Li 2024b",
+        "Huang 2023",
+        "Yu 2024",
+        "Hartvigsen 2023",
+        "Zheng 2023"
+      ],
+      "parenthetical_groups": 5,
+      "unique_work_count": 15
+    },
+    {
+      "openreview_id": "tPNHOoZFl9",
+      "page": 1,
+      "window": "First prose paragraph of Introduction, ending with Xia et al. 2024",
+      "unique_cited_works": [
+        "Ren 2022",
+        "Park 2024",
+        "Pruthi 2020",
+        "Ren, S. Guo, et al. 2023",
+        "Xia 2024"
+      ],
+      "parenthetical_groups": 3,
+      "unique_work_count": 5
+    },
+    {
+      "openreview_id": "HD6bWcj87Y",
+      "page": 1,
+      "window": "First prose paragraph of Introduction, ending with quality of model training",
+      "unique_cited_works": [
+        "Heikkila 2023",
+        "Henderson 2023",
+        "Grynbaum and Mac 2023",
+        "Gao 2020",
+        "Raffel 2020",
+        "Touvron 2023"
+      ],
+      "parenthetical_groups": 4,
+      "unique_work_count": 6
+    },
+    {
+      "openreview_id": "Ha6RTeWMd0",
+      "page": 1,
+      "window": "First prose paragraph of Introduction after Figure 1, ending with both images and videos",
+      "unique_cited_works": [
+        "Kirillov 2023"
+      ],
+      "parenthetical_groups": 1,
+      "unique_work_count": 1
+    },
+    {
+      "openreview_id": "Ha6RTeWMd0",
+      "page": 2,
+      "window": "Image segmentation paragraph in Related Work, ending with camouflaged object detection",
+      "unique_cited_works": [
+        "Kirillov 2023",
+        "Ke 2024",
+        "Xiong 2023",
+        "Zhang 2023a",
+        "Zhao 2023",
+        "Ma 2024",
+        "Deng 2023",
+        "Mazurowski 2023",
+        "Wu 2023a",
+        "Chen 2024",
+        "Ren 2024",
+        "Xie 2024",
+        "Tang 2023"
+      ],
+      "parenthetical_groups": 7,
+      "unique_work_count": 13
+    }
+  ],
+  "citation_count_rule": "Unique visibly named cited works in each specified paragraph; repeated appearances counted once within that window; author-year suffix distinguishes works. These are examples, not corpus means or a recommended citation quota."
+}

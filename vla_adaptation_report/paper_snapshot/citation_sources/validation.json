@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "refs_sha256": "854699a30c04d493648d5d4926540bb41a965a707a33d2f7eee38a16591f277f",
+  "entry_count": 50,
+  "unique_keys": true,
+  "bibtex_exit": 0,
+  "bibtex_stdout": "This is BibTeX, Version 0.99e (TeX Live 2026)\nThe top-level auxiliary file: audit.aux\nThe style file: iclr2027_conference.bst\nDatabase file #1: refs.bib\n",
+  "bbl_sha256": "c078fbbdcf62ac4cb3a5c050f7cf4cb00f853c74dc8a4af9946ed20eb4ca54d7",
+  "style_sha256": "2d67552db7ed38ccfccb5957b52f95656e25c249724761d3cf5f7922ad1844c5"
+}

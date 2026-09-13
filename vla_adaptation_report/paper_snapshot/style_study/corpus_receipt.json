@@ -1,0 +1,177 @@
+{
+  "manifest_count": 793,
+  "verified_pdf_count": 793,
+  "errors": [],
+  "duplicate_year_ids": 0,
+  "summaries": {
+    "2023": {
+      "pdf_count": 270,
+      "public_designations": {
+        "notable_top_5_percent": 91,
+        "oral": 248,
+        "notable_top_25_percent": 179,
+        "honorable_mention": 5,
+        "outstanding": 4
+      },
+      "pdf_pages": {
+        "n": 270,
+        "median": 24.0,
+        "q25": 20.0,
+        "q75": 31.0,
+        "min": 12,
+        "max": 84
+      },
+      "reference_start_pdf_page": {
+        "n": 270,
+        "median": 10.0,
+        "q25": 10.0,
+        "q75": 10.0,
+        "min": 9,
+        "max": 68
+      },
+      "detected_main_figures": {
+        "n": 270,
+        "median": 4.0,
+        "q25": 3.0,
+        "q75": 6.0,
+        "min": 0,
+        "max": 15
+      },
+      "detected_main_tables": {
+        "n": 270,
+        "median": 2.0,
+        "q25": 1.0,
+        "q75": 4.0,
+        "min": 0,
+        "max": 10
+      }
+    },
+    "2024": {
+      "pdf_count": 86,
+      "public_designations": {
+        "oral": 86,
+        "honorable_mention": 11,
+        "outstanding": 5
+      },
+      "pdf_pages": {
+        "n": 86,
+        "median": 25.0,
+        "q25": 19.25,
+        "q75": 31.75,
+        "min": 13,
+        "max": 116
+      },
+      "reference_start_pdf_page": {
+        "n": 86,
+        "median": 10.0,
+        "q25": 10.0,
+        "q75": 10.0,
+        "min": 9,
+        "max": 11
+      },
+      "detected_main_figures": {
+        "n": 86,
+        "median": 5.0,
+        "q25": 3.0,
+        "q75": 6.0,
+        "min": 2,
+        "max": 11
+      },
+      "detected_main_tables": {
+        "n": 86,
+        "median": 2.0,
+        "q25": 1.0,
+        "q75": 4.0,
+        "min": 0,
+        "max": 9
+      }
+    },
+    "2025": {
+      "pdf_count": 213,
+      "public_designations": {
+        "oral": 213,
+        "outstanding": 3,
+        "honorable_mention": 3
+      },
+      "pdf_pages": {
+        "n": 213,
+        "median": 28.0,
+        "q25": 23.0,
+        "q75": 36.0,
+        "min": 14,
+        "max": 150
+      },
+      "reference_start_pdf_page": {
+        "n": 213,
+        "median": 11.0,
+        "q25": 11.0,
+        "q75": 11.0,
+        "min": 8,
+        "max": 13
+      },
+      "detected_main_figures": {
+        "n": 213,
+        "median": 5.0,
+        "q25": 4.0,
+        "q75": 7.0,
+        "min": 0,
+        "max": 13
+      },
+      "detected_main_tables": {
+        "n": 213,
+        "median": 3.0,
+        "q25": 1.0,
+        "q75": 4.0,
+        "min": 0,
+        "max": 12
+      }
+    },
+    "2026": {
+      "pdf_count": 224,
+      "public_designations": {
+        "oral": 224,
+        "outstanding": 2,
+        "honorable_mention": 1
+      },
+      "pdf_pages": {
+        "n": 224,
+        "median": 30.0,
+        "q25": 23.0,
+        "q75": 38.0,
+        "min": 11,
+        "max": 88
+      },
+      "reference_start_pdf_page": {
+        "n": 224,
+        "median": 11.0,
+        "q25": 10.0,
+        "q75": 11.0,
+        "min": 9,
+        "max": 12
+      },
+      "detected_main_figures": {
+        "n": 224,
+        "median": 5.0,
+        "q25": 3.0,
+        "q75": 6.0,
+        "min": 0,
+        "max": 14
+      },
+      "detected_main_tables": {
+        "n": 224,
+        "median": 3.0,
+        "q25": 1.0,
+        "q75": 4.0,
+        "min": 0,
+        "max": 9
+      }
+    }
+  },
+  "metric_limitations": "PDF layouts differ. Captions are conservative regex detections; reference start is not main-page count. No inferred bibliography counts or acceptance causality.",
+  "source_sha256": {
+    "manifest_2024.json": "50297f12b3ffee32174f7bb43a0e66532e102dd6a12f0d86a10f0e461d7958bf",
+    "manifest_2026.json": "3152326abfd30f3b25075265bc4c434c7cabbef49e0be384195547a1161de02a",
+    "manifest_2023.json": "3344d40a20a1837c278853befac24d1123a0cfcfda5fbb99940e7ef6e54e106d",
+    "manifest_2025.json": "4088f9598ae963cadda81714072899d2045d8b9c5f70ba8b6ca40f037563966c"
+  }
+}

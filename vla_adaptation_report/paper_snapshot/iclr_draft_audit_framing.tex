@@ -1,0 +1,1429 @@
+\documentclass{article}
+\usepackage{iclr2027_conference,times}
+\input{math_commands.tex}
+\usepackage{amsmath,amssymb,amsthm,booktabs,graphicx,enumitem,xcolor}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{microtype}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+\newcommand{\fhat}{\hat{f}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+
+\title{From Residual Identification to Task Repair in Frozen Vision--Language--Action Policies}
+\author{Anonymous authors}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A robot can identify a disturbance accurately and still fail to compensate for it.
+We study this gap at the action interface of frozen vision--language--action policies,
+where a healthy motion model and calibrated residuals drive bounded online corrections.
+We analyze residual information, correction authority and closed-loop stability as separate
+links between disturbance estimation and task repair.
+This decomposition yields exact local cancellation conditions, a physical-error bound under
+calibration mismatch, and a conditional stability analysis for composite position feedback.
+Constructed examples show why accurate inversion, a smaller fitted objective, or stable
+healthy dynamics can each be insufficient.
+Experiments include historical command-offset results on four LIBERO suites, 2,220 new
+all-joint physical-fault confirmation rollouts on Panda and ALOHA, and a separate 5,424-rollout
+estimator tuning study. Weighted allocation improves the prespecified Panda joint-5 comparison
+from 15/60 to 41/60, but harms another condition. Composite adaptation does not establish an
+advantage over Kalman on independent ALOHA confirmation. The resulting framework connects
+observer design to correction authority and task evidence, while exposing the remaining
+gap between better tracking and reliable manipulation.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:introduction}
+Vision--language--action (VLA) policies convert visual and language observations into robot
+commands \citep{pi0,pi05,openvla,groot}. Their deployment depends on a second map: how those
+commands produce physical motion. An actuator change can alter this map while the policy
+and task remain fixed. Comparing measured motion with a healthy prediction offers a direct
+way to adapt without retraining the VLA. The central question is whether the discrepancy
+identified through this comparison can be turned into a useful correction.
+
+The answer depends on more than observer accuracy. In our historical experiments, a
+calibrated adapter substantially repairs command offsets, yet the same architecture reduces
+success under a Panda joint-5 torque fault from $12/20$ to $3/20$ with continuous,
+translation-only correction (Figure~\ref{fig:interface}). These are different fault protocols,
+not conflicting estimates of one treatment effect. They expose the question studied here:
+\emph{when does identifying a disturbance actually repair a task?}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_interface.pdf}
+\caption{\textbf{Calibrated interface adaptation and contrasting outcomes.}
+The frozen policy emits $a_t$; the adapter sends $u_t=a_t-c_t$. The healthy FIR $\mathcal P_h$
+uses known pre-fault commands; estimator $\mathcal E_M$ and bounded rule
+$\mathcal A_{\mathcal U}$ update the next correction. Matching purple $\oplus$ ports add
+position feedback from reference $\mathcal R_{A,B}$ before projection. Command and torque
+faults enter at different levels. Bottom: selected Panda off/online frames, an ALOHA
+held-correction success, and measured historical Panda joint-5 success rates with continuous
+translation-only correction. Videos illustrate behavior; the chart reports stored outcomes
+under a different protocol. Frame provenance and protocols are in Appendix~\ref{app:videos}.}
+\label{fig:interface}
+\end{figure}
+
+We distinguish \emph{residual information}, \emph{correction authority} and
+\emph{closed-loop stability}. The first determines which disturbance effects can be inferred;
+the second determines which can be canceled through the permitted inputs; the third concerns
+the feedback created by applying an evolving estimate. These requirements can fail
+independently. A translation interface may lack a needed motion direction, a fitted inverse
+may amplify calibration error, and tracking feedback may destabilize an otherwise stable
+observer. Successful contact-rich manipulation requires an additional connection from
+controlled state error to the complete task trajectory.
+
+This decomposition organizes both a calibrated adapter and its evaluation. A healthy
+finite-impulse-response (FIR) model produces residuals, an observer estimates the disturbance,
+and a bounded allocator selects a feasible correction. A composite variant additionally
+tracks a healthy position reference driven by raw policy commands. Classical observers and
+composite adaptation supply these components; our contribution is to connect their use at
+a frozen VLA interface to explicit cancellation conditions and controlled task evidence.
+
+Our contributions are:
+\begin{enumerate}[leftmargin=1.5em,itemsep=1pt]
+\item \textbf{Cancellation conditions:} exact local criteria and a bound
+  relating nominal allocation to physical improvement (Section~\ref{sec:analysis}).
+\item \textbf{Feedback analysis:} a common adapter formulation, conditional composite
+  stability bounds and exact failure examples (Sections~\ref{sec:framework}--\ref{sec:analysis}).
+\item \textbf{Tests across joints and tasks:} independent confirmations on every Panda and ALOHA arm
+  joint, three LIBERO suites and six tuned observer families (Section~\ref{sec:evaluation}).
+\end{enumerate}
+
+\section{Related work}
+\label{sec:related}
+\textbf{Where adaptation enters the robot stack.} Generalist policies learn the mapping
+from observations to actions through token prediction \citep{rt2,openvla}, diffusion
+\citep{diffusionpolicy,octo}, or flow-based action generation \citep{pi0,pi05}.
+OFT studies efficient VLA fine-tuning and action representations \citep{openvlaoft}.
+These approaches improve the policy; the present problem is a deployment change in the
+map from its actions to motion. Keeping that distinction explicit separates action-interface
+adaptation from representation transfer, policy fine-tuning and task learning.
+
+\textbf{What is learned and what is corrected.} Adaptive augmentation of a pretrained policy
+is established: \citet{cheng2022l1rl} combine reinforcement learning with $\mathcal L_1$
+adaptive control, and DATT combines a learned trajectory controller with an $\mathcal L_1$
+disturbance estimator \citep{huang2023datt}. Residual policy learning trains an additive action
+\citep{silver2018residual,johannink2019residual}; RMA trains a policy to consume an adapted
+context \citep{kumar2021rma}. Our adapter instead estimates a disturbance from calibrated
+proprioceptive residuals. This choice leaves the VLA frozen but requires checking that its
+available correction coordinates can influence the affected motion. The surrounding
+architecture alone transfers neither a disturbance model nor a stability guarantee.
+
+\textbf{The closest physical-fault comparison.} J-PARC \citep{jparc2026} evaluates joint-level physical
+faults and trains a residual calibrator from faulted rollouts with reference information.
+It also shows that oracle fault identification followed by local kinematic correction need
+not improve task success. We build on that empirical distinction with explicit cancellation
+and mismatch conditions and new controlled comparisons. Our plant identification uses healthy data and the disturbance estimate is updated online.
+The original channel mask came from a faulted separation test; a gate on the healthy phantom
+alone reproduces it and the headline (Appendix~\ref{sec:channels}). Hyperparameters remain
+development-tuned, and the composite variant uses a model-generated reference. Command-interface offsets and below-controller torque faults
+also require separate evaluation.
+
+\textbf{From prediction objectives to control objectives.} Disturbance observers
+\citep{shim2021dob}, analytical redundancy \citep{isermann2005,chen1999fdi}, and robust
+adaptive control \citep{ioannou1996} supply the estimation and feedback tools.
+Composite adaptation combines prediction and tracking errors \citep{slotine1989composite}.
+Neural-Fly meta-learns a shared disturbance
+representation and adapts its coefficients online \citep{neuralfly}. HMAC learns separate
+representations for disturbances that can be monitored or controlled during training
+and for latent disturbances \citep{hmac2024}. MAGIC-VFM conditions an adaptive actuation model on visual terrain
+features and robot state, with online composite adaptation of its final layer
+\citep{magicvfm}. Control-oriented meta-learning optimizes features for closed-loop
+tracking \citep{controlmeta2023}; automated mirror descent additionally learns
+the adaptation geometry \citep{tang2025mirror}. These control-based training objectives
+motivate evaluating the consequences of an estimate, not just its prediction error.
+Here a healthy fitted motion model and fixed correction coordinates replace the learned
+disturbance basis. The observer comparison holds that calibrated interface fixed; it does
+not compare learned MAGIC-VFM or HMAC representations. Our analysis therefore concerns
+the actual discrete update, input restrictions and additional conditions needed to connect
+this adapter to task repair.
+
+\section{Calibrated adaptation at the action interface}
+\label{sec:framework}\label{sec:setting}
+The adapter separates three operations: predict healthy motion, estimate a disturbance,
+and choose an admissible correction. Healthy data identify the FIR, sensitivity and noise
+statistics; composite feedback additionally fits a position reference and contraction metric.
+These models and the VLA are fixed during deployment. Observer states, covariances and
+applied corrections evolve online. Masks and hyperparameters may use faulted development
+data; Section~\ref{sec:evaluation} specifies the held-out confirmation protocols.
+
+\subsection{Residual, estimate and applied correction}
+Figure~\ref{fig:interface} shows the command and residual paths. At step $t$, the frozen policy supplies $a_t$ and the adapter sends $u_t=a_t-c_t$.
+A command fault changes this to $u_t+f_t$ before the low-level controller; a joint torque
+fault instead enters the physical dynamics below that controller. LIBERO \citep{libero}
+uses six Cartesian increments plus a gripper command at 20\,Hz; the ALOHA environment
+\citep{aloha_act} uses fourteen absolute joint targets at
+50\,Hz. Grippers are excluded from the applied corrections in the reported studies.
+
+The healthy predictor uses the command the adapter knows it sent:
+\begin{equation}\label{eq:main-residual}
+ \hat y_{t+1}=\sum_{\ell=0}^{6}h_\ell u_{t-\ell}+b_0,
+ \qquad r_{t+1}=y_{t+1}-\hat y_{t+1}.
+\end{equation}
+It predicts Cartesian increments on LIBERO and positions on ALOHA. Under a local additive
+command model, $r_{t+1}\simeq Mf_t+b_y+\nu_t$, where $M$ is measured by healthy command replay
+with per-axis probes. Including $c_t$ in the FIR input makes the ideal residual report the
+\emph{total} fault rather than only the remaining error after correction. This is an
+approximation; contacts and controller-dependent model error can invalidate it.
+
+The original observer applies $c_t=S\hat\theta_t$, with diagonal mask $S$, and updates
+\begin{equation}\label{eq:main-legacy}
+\begin{aligned}
+ \hat\theta_{t+1}=\Pi_\kappa\!\left[(1-\gamma)\hat\theta_t+
+ \gamma\alpha_t g_t(M^{-1}r_{t+1}-b_f)\right],\\
+ \alpha_t=\frac{1}{1+\|r_{t+1}\|_{\mathcal N}^2/\rho^2},\quad
+ g_t=\mathbf1[\|r_{t+1}\|_{\mathcal N}\ge\delta].
+\end{aligned}
+\end{equation}
+Here $\Pi_\kappa$ is coordinatewise clipping and $\mathcal N$ selects norm channels.
+The legacy closed gate zeros the target, causing estimate decay. Normalization changes the
+constant-measurement fixed point to $\alpha(M^{-1}r-b_f)$ with an open gate and inactive
+clipping; it does not merely slow adaptation.
+The norm may use all or only corrected channels, while $M^{-1}r$ still uses the full residual.
+Healthy bias calibration, FIR windowing and multiplicative-fault regression are detailed in
+Appendix~\ref{app:implementation}.
+
+\subsection{Observer and allocator variants}
+\textbf{Matched estimators.} The compared families share the calibrated residual and
+projection. DOB is exponential averaging of $M^{-1}r-b_f$; RLS recursively fits a constant
+parameter with forgetting; Kalman additionally uses a healthy measurement covariance and
+process model \citep{kalman1960}. The calibrated integral literally integrates that transformed residual, so
+it can drift to the bound under a constant nonzero target. The raw-error integral uses a
+different residual and is therefore not an isolated update-law comparison. An oracle uses
+known command offsets or nominal torque/$k_p$ compensation, as specified per experiment.
+
+\textbf{Bounded allocation.} Filtering the calibrated residual into $v_t$, a weighted
+variant solves
+\begin{equation}\label{eq:main-allocation}
+ c_t\in\arg\min_{c\in\mathcal U}
+       \|v_t-\widehat D c\|_W^2+\lambda_a\|c\|_2^2,
+ \qquad \mathcal U=\{c:\ |c_i|\le\kappa_i,\ c_i=0\text{ if excluded}\}.
+\end{equation}
+The healthy covariance supplies $W\succ0$, an isotropic prior gives $\lambda_a=\sigma^{-2}$,
+and the measured sensitivity supplies
+$\widehat D$. Bounds enter the solve. Crucially, $\widehat D$ is a nominal map, not a measured
+guarantee about the physical response $D_t$ at every task state. This distinction is the
+subject of the next section, not an additional response model fitted in these experiments.
+
+\subsection{Composite position feedback}
+Let a fitted healthy model generate $q^r_{t+1}=Aq^r_t+Ba_t+b_q$, initialized from the measured
+position, and define $e_{t+1}=q_{t+1}[J]-q^r_{t+1}$ on tracked joints $J$. The reference sees
+raw policy commands; the FIR sees corrected commands. With $D=BS$ and damped prior
+$\hat\theta_t^-=d_\lambda\hat\theta_t$, the implemented variant is
+\begin{equation}\label{eq:main-composite}
+\begin{aligned}
+ \hat\theta_{t+1}=\Pi_\kappa\!\left[
+ \underbrace{\hat\theta_t^-+K_t(z_{t+1}-M\hat\theta_t^-)}_{\text{prediction correction}}
+ +\underbrace{T_t e_{t+1}}_{\text{tracking correction}}\right],\\
+ T_t=\Delta t\,\eta P_t^+D^\top L,
+ \qquad d_\lambda=e^{-\lambda\Delta t}.
+\end{aligned}
+\end{equation}
+$K_t$ and $P_t^+$ are the Kalman gain and Joseph posterior covariance, $L\succ0$ is a fitted
+contraction metric, and $z=r-Mb_f$ (the tuned ALOHA implementation uses $b_f=0$).
+The old estimate produces the action; the resulting observation updates the next estimate.
+Zero tracking and damping reproduce Kalman with identical noise, initialization and clipping.
+Contraction concerns convergence between trajectories \citep{lohmiller1998contraction}.
+A contracting \emph{fitted} position model is a qualification diagnostic, not proof of
+contraction of the full robot/VLA loop. Appendix~\ref{sec:composite} gives the exact covariance
+recursion and Appendix~\ref{app:tuning} the selected parameters.
+
+\section{From identification to repair: conditional analysis}
+\label{sec:analysis}
+The results concern local models with explicit assumptions. They do not assert that contact
+trajectories, changing policy commands or the measured calibration satisfy these assumptions
+globally. Proofs and counterexamples are in Appendices~\ref{app:composite-theory} and~\ref{app:authority}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_theory_analysis.pdf}
+\caption{\textbf{Two distinct barriers to repair in exact constructed models.}
+(A) Restricting a full inverse to one input creates a large error: the permitted response
+$Dc$ lies on the horizontal line, while $d$ has an unavailable component. The red arrow is
+the remaining error; a constrained solve instead selects $c=0$.
+(B) For the scalar model in Section~\ref{sec:analysis}, increasing composite tracking gain
+eventually makes the augmented dynamics unstable although the healthy model and Kalman
+observer are stable. The $16.2$ boundary belongs to this constant-gain, unclipped example;
+it is not a robot tuning threshold.}
+\label{fig:theory-analysis}
+\end{figure}
+
+\paragraph{Residual information and correction authority.}
+Consider a noiseless residual $z=Hf$ and a physical discrepancy $Gf-Dc$, where $f$ is the
+unknown disturbance and $c$ the permitted correction. Exact linear cancellation $c=Fz$
+for every $f$ is possible precisely when
+\begin{equation}\label{eq:main-factorization}
+ \ker H\subseteq\ker G,\qquad \operatorname{range}(G)\subseteq\operatorname{range}(D).
+\end{equation}
+The first condition requires observing the disturbance components that matter physically;
+the second requires sufficient input directions. Identifying all of $f$ is stronger than
+the first condition and does not imply the second. With a bounded interface, the particular
+response must also belong to $D\mathcal U$. Torque is matched relative to torque inputs;
+configuration dependence alone does not imply unmatched uncertainty at another interface.
+This characterization is Proposition~\ref{prop:authority}. A constant residual bias is likewise indistinguishable from a constant input fault without
+outside information (Proposition~\ref{prop:sep}).
+
+\paragraph{Inversion and input restriction need not commute.}
+An exact full inverse can itself be harmful when followed by a mask
+(Figure~\ref{fig:theory-analysis}A). For example, let
+\[
+ M=\begin{pmatrix}1&1\\0&.1\end{pmatrix},\qquad
+ d=\begin{pmatrix}0\\.02\end{pmatrix},\qquad
+ M^{-1}d=\begin{pmatrix}-.2\\.2\end{pmatrix}.
+\]
+If only the first input is available, applying $c=-.2$ gives physical error
+$(.2,.02)^\top$, increasing its norm by $\sqrt{101}$. Allocation over that permitted column
+instead chooses zero: the second direction is unavailable. This exact-model counterexample
+motivates solving over permitted inputs rather than treating mask selection as an innocuous
+final step. It explains a possible failure of the architecture, not the cause of a particular
+Panda episode. Appendix~\ref{app:authority} also constructs full-authority harm from a small
+map perturbation despite a $98\%$ reduction in the nominal objective.
+
+\paragraph{A fitted objective is not a physical guarantee.}
+Let $d$ be the physical disturbance response and suppose
+$\|d-v\|_W\le\epsilon$ and $\|W^{1/2}(D-\widehat D)\|_2\le\zeta$. Then every candidate $c$
+satisfies
+\begin{equation}\label{eq:main-bound}
+ \|d-Dc\|_W\le\|v-\widehat D c\|_W+\epsilon+\zeta\|c\|_2.
+\end{equation}
+Since $\|d\|_W\ge\|v\|_W-\epsilon$, a sufficient condition for improvement over zero
+correction is a nominal residual reduction exceeding $2\epsilon+\zeta\|c\|_2$.
+Proposition~\ref{prop:authority-certificate} also gives a bound on squared-error improvement
+using the same physical baseline. The ridge solution improves its nominal objective because zero is feasible, but this alone
+does not satisfy the physical condition. Calibration error and large inverse gains consume
+the available improvement. Our experiments do not establish uniform bounds on $\epsilon$
+and $\zeta$; the inequality is a conditional diagnostic, not an implemented safety gate.
+
+\paragraph{Stable healthy dynamics do not make every composite gain stable.}
+For the ideal matched position dynamics, with inactive clipping and constant fault, write
+$\tilde\theta_t=\hat\theta_t-f$ and $\xi_t=(e_t,\tilde\theta_t)$. The actual update timing gives
+\begin{equation}\label{eq:main-augmented}
+ \xi_{t+1}=\mathcal A_t\xi_t+w_t,\qquad
+ \mathcal A_t=\begin{bmatrix}A&-D\\T_tA&F_t-T_tD\end{bmatrix},
+ \qquad F_t=d_\lambda(I-K_tM).
+\end{equation}
+$w_t$ collects model and measurement errors and, for nonzero damping, a constant-fault bias
+term. If a \emph{single} $V\succ0$ satisfies
+$\mathcal A_t^\top V\mathcal A_t\preceq\beta^2V$ for every realized gain, with $\beta<1$, then
+\begin{equation}\label{eq:main-iss}
+ \|\xi_t\|_V\le\beta^t\|\xi_0\|_V+
+ \sum_{j=0}^{t-1}\beta^{t-1-j}\|w_j\|_V.
+\end{equation}
+Proposition~\ref{prop:composite-iss} proves this bound, including explicit forcing terms
+for damping and model error. Tracking also multiplies model error by $T_t$, so increasing
+feedback changes robustness as well as tracking. Individual frozen-gain
+Schur tests do not establish a common metric or stability of arbitrary gain products.
+Even in one dimension, $A=.8$, $D=M=L=1$, $K=P^+=.2$, $\Delta t=1$ and zero damping yield
+a stable augmented matrix only for $0\le\eta<16.2$ (Figure~\ref{fig:theory-analysis}B);
+$\eta=20$ destabilizes a stable healthy
+model and Kalman observer. Extra tracking feedback therefore has no unconditional
+superiority guarantee. Finally, converting a state-error bound into task success requires
+a separate robustness assumption on a complete task trajectory; position RMS alone supplies
+no such assumption.
+
+\section{Experiments}
+\label{sec:evaluation}
+The experiments test the three links in the argument: does a calibrated residual support
+repair at the command interface; does that repair extend when disturbances enter below the
+controller; and does adding position feedback improve task success after observer tuning?
+Historical evidence motivates the hypotheses, independent confirmations test their scope,
+and physical/telemetry probes examine why aggregate scores can be misleading.
+Detailed cells and diagnostics are in Appendix~\ref{sec:exp}.
+
+\subsection{Evaluation design and scope}
+New confirmations freeze configurations before evaluating untouched scenarios, restore
+faults on every exit, verify complete physical initial states and source hashes, and
+interleave arms with shared controls. Policy sampling remains independent: rescues and
+regressions are observed paired differences, not deterministic counterfactuals. Historical
+logs do not retrospectively certify these full-state checks. Newer GR1/WidowX cells (Appendix~\ref{sec:gr1}) are paired; older GR1 cohorts are not.
+Per-cell paired tests use exact McNemar; repeated scenarios across fault conditions are
+clustered for the estimator study's primary comparison. All declared comparison families
+are retained, including harmful cells.
+
+\textbf{Calibration separation.} The original LIBERO calibration protocol overlaps evaluated
+task/initial-state combinations; its exact FIR scenario provenance is incomplete. We retain
+those results as historical evidence, not fully held-out confirmation. The new Panda study
+fits separate healthy calibrations per suite at initial states 25/26 and confirms at 35/36;
+it does not test unchanged-calibration suite transfer. The ALOHA all-joint allocator reuses
+historical sensitivity. The separate estimator study uses fresh healthy fit/qualification
+seeds 3100--3129, search 3200--3203, validation 3300--3307 and confirmation 3400--3429.
+
+\subsection{Calibrated residuals support command-interface repair}
+The original $\pi_{0.5}$ experiment injects $+0.05$ on all six LIBERO action dimensions and
+corrects rotation only, selected by faulted separation tests. Across Spatial/Goal/Object/10,
+success is $28/120\to78/120$ (51 rescues, 1 regression, exact $p=2.35\times10^{-14}$);
+all four suite tests survive Bonferroni-4; with the mask replaced by a healthy-data gate the
+Spatial cell repeats at $9/20\to19/20$ (10 fixed, 0 broken, $p=0.002$; healthy control
+$20/20\to19/20$). This motivates calibrated interface adaptation, subject to the caveat above. Original backbone-transfer and identify-then-hold
+results remain in the appendix with their distinct protocols.
+
+The selected Panda frames in Figure~\ref{fig:interface} illustrate this repair regime.
+Their separate video protocol and outcome selection are documented in Appendix~\ref{app:videos}.
+
+
+A matched-residual pilot yields 19, 17, 17, 18, 15 and 20 successes out of 20 for
+the original observer, DOB, RLS, Kalman, calibrated integral and oracle, respectively.
+Several estimators exploit the calibrated signal; the sample
+does not establish equivalence or a unique benefit of the original update. By contrast, the
+raw-error integral's $7/20$ versus calibrated $19/20$ changes the residual construction as
+well as the update, so it cannot isolate either $M$ or the adaptive law.
+
+\subsection{Physical-fault repair depends on the joint and task}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_results_analysis.pdf}
+\caption{\textbf{Complete confirmation outcomes expose the scope of repair.}
+(A) Paired success changes relative to shared correction-off controls for every Panda
+suite and joint; $n=20$ per arm/cell and H denotes healthy. Colors show percentage-point
+changes, not per-cell significance. (B) ALOHA balanced scores after frozen estimator
+selection on 30 new seeds: half healthy success plus half the mean of seven fault rates.
+The interval is the primary paired whole-seed bootstrap 95\% interval for composite minus
+Kalman, with an exact sign-flip $p$-value. Scores do not establish a total ranking; oracle
+is an unranked diagnostic.}
+\label{fig:results-analysis}
+\end{figure}
+
+The historical seven-joint Panda map has equal overall totals, $103/140$ off and corrected,
+but joint 5 falls $12/20\to3/20$ (Bonferroni-7 $p=.02734$). These are continuously updated,
+translation-only corrections. We therefore tested correction support and regularization,
+then froze a weighted-full candidate for independent confirmation.
+
+The Panda confirmation uses frozen $\pi_{0.5}$ and comprises 1,440 rollouts: seven $+5$\,N\,m joint faults plus healthy,
+three LIBERO suites, 20 scenarios per cell, and off/legacy translation/weighted full arms.
+The $+5$\,N\,m injection is equal in torque, not in fractional actuator severity across joints.
+The registered joint-5 primary improves legacy $15/60$ to weighted $41/60$ (29 rescues,
+3 regressions, $p=2.556\times10^{-6}$). Off scores $36/60$, a descriptive secondary
+comparison (Table~\ref{tab:main-physical}). Weighted full changes both correction support and regularization; it does not
+isolate their individual effects.
+\begin{table}[t]
+\centering\small
+\caption{Representative independent physical-fault results. Counts are successes; the last
+column tests weighted against legacy, except the healthy Goal row, which tests off against
+legacy. Adjustments use the stated family. Full allocations are in
+Appendix~\ref{app:joint}. A significant improvement over a harmful comparator is not a
+uniform-repair result.}
+\label{tab:main-physical}
+\begin{tabular}{lrrrl}
+\toprule
+condition & off & legacy & weighted & comparison \\
+\midrule
+Panda joint 5, three suites & 36/60 & 15/60 & 41/60 & primary $p=2.56\!\times\!10^{-6}$ \\
+Panda Object, joint 3 & 8/20 & 16/20 & 2/20 & Bonf.-24 $p=.01245$ \\
+Panda Goal, healthy & 19/20 & 3/20 & 19/20 & Bonf.-24 $p=.00073$ \\
+ALOHA, all faulted cells & 60/240 & 70/240 & 66/240 & descriptive total \\
+ALOHA, healthy & 11/20 & 8/20 & 6/20 & unresolved after Bonf.-13 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The counterexample is Object joint 3: weighted drops legacy $16/20$ to $2/20$
+(Bonferroni-24 $p=.01245$). Legacy also harms healthy Goal ($19/20$ off versus $3/20$
+legacy). A separate 780-rollout ALOHA test covers all twelve arm joints plus healthy,
+20 seeds and three arms under frozen $\pi_0$. No per-cell contrast resolves after Bonferroni-13; this establishes
+neither transfer benefit nor equivalence. Healthy weighted falls from $11/20$ off to $6/20$.
+The weighted variant remains experimental.
+
+\textbf{What the complete joint map adds.} Figure~\ref{fig:results-analysis}A shows
+numerical gains over off in 14 of 24 weighted-full cells and losses in four, compared with
+seven gains and sixteen losses for legacy translation. These are descriptive cell counts,
+including healthy conditions. The remaining weighted losses all occur on Object, while
+Goal changes from uniformly negative legacy differences to nonnegative weighted differences.
+Thus changing the permitted correction and its allocation can substantially broaden the
+repair regime, but its effectiveness still depends on the task as well as the joint.
+A net change of zero can contain both rescued and broken episodes. The shared off baseline
+exposes this pattern; the prespecified primary statistical comparison remains weighted
+versus legacy on joint 5, rather than a significance claim for every colored cell.
+
+\textbf{Physical probes.} After observer initialization, legacy translation worsens local
+scaled physical error in 150/168 Panda interventions and weighted full in 92/168, despite
+all weighted solves satisfying their nominal objective checks. One candidate reduces its
+model objective to 10.5\% of zero correction while increasing physical error in the same
+covariance metric 2.69-fold. Conversely, privileged $-\tau/k_p$ shifts cancel all 144 tested
+local ALOHA torque responses to numerical precision. These probes establish that local
+authority can exist while the deployed estimate/allocation remains ineffective; they do not
+identify every task failure's cause.
+
+\subsection{Better composite tracking does not establish better task success}
+We evaluate frozen $\pi_0$ (\code{pi0\_aloha\_sim}) on ALOHA Transfer Cube with left-six
+correction at 50\,Hz, 300-step episodes and
+ten-action chunks. Conditions are healthy, a $+0.02$\,rad offset on the six commands, and
+torques $[16,32,16,.2,1,.4]$\,N\,m on individual left joints. The fitted six-position model
+passes the declared $.005$-rad per-coordinate prediction gates (maximum rollout RMSE
+$.00332$; fitted contraction factor $.895$). The twelve-joint reference fails qualification,
+so the all-joint allocator experiment above is not a composite experiment.
+
+The candidate bank contains 168 estimated recipes across six families, plus off and oracle;
+seven composite candidates fail the fixed local screen. All 163 eligible arms enter search:
+2,608 rollouts select two candidates per family, 896 validation rollouts select one, and
+1,920 confirmation rollouts evaluate those six plus two controls on 30 untouched seeds.
+The 5,424 total includes development, not 5,424 independent confirmation episodes.
+Composite has a larger search pool; no settings are selected from confirmation outcomes.
+
+\begin{table}[t]
+\centering\small
+\caption{Independent ALOHA estimator confirmation. The fixed score is half healthy success
+plus half the mean of seven fault success rates. The ordering is numerical, not an
+established ranking. All selected settings and individual cells are in Appendix~\ref{app:tuning}.}
+\label{tab:main-estimators}
+\begin{tabular}{lrrr}
+\toprule
+method/control & healthy & faulted & balanced score \\
+\midrule
+Original & 16/30 & 98/210 & 50.00\% \\
+RLS & 17/30 & 63/210 & 43.33\% \\
+DOB & 14/30 & 79/210 & 42.14\% \\
+Kalman & 12/30 & 71/210 & 36.90\% \\
+Composite & 12/30 & 67/210 & 35.95\% \\
+Calibrated integral & 11/30 & 57/210 & 31.90\% \\
+\midrule
+Off & 15/30 & 48/210 & 36.43\% \\
+Oracle (unranked) & 13/30 & 103/210 & 46.19\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+Table~\ref{tab:main-estimators} and Figure~\ref{fig:results-analysis}B report the selected
+configurations. The primary composite-minus-Kalman difference is $-0.95$ percentage points, with a
+whole-seed bootstrap 95\% interval $[-9.52,7.62]$ and exact sign-flip $p=.86261$ under
+whole-seed exchangeability/sign symmetry. None of four secondary overall Kalman contrasts
+survives Holm correction. DOB beats Kalman on the offset cell ($9/30$ versus $0/30$,
+Bonferroni-8 $p=.03125$ within that contrast's family). The oracle exactly cancels command
+offsets but uses only nominal torque/$k_p$ compensation; independent policy sampling also
+prevents interpreting its observed task score as an upper bound.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_tracking_analysis.pdf}
+\caption{\textbf{Reference tracking and disturbance identification differ.}
+(A) Pooled RMS norms over six joint positions in each rollout's final 100 steps,
+30 episodes per arm/condition. Each reference follows that rollout's raw commands.
+(B) On the known command offset, composite lowers reference error but raises parameter
+error relative to Kalman. These selected controllers differ in bandwidth, damping and
+clipping as well as tracking. The plot is descriptive and does not isolate tracking feedback.}
+\label{fig:tracking-analysis}
+\end{figure}
+
+\textbf{Tracking is an incomplete success proxy.} Figure~\ref{fig:tracking-analysis}
+separates reference tracking from known-offset identification. Over the last 100 steps, composite lowers
+reference RMS in every confirmation condition, but over 99.39\% of its tracking-increment
+energy on corrected coordinates lies on joint 1. On the exact-offset cell, reference RMS improves
+from Kalman's $.00950$ to $.00747$\,rad while parameter RMS worsens from $.00511$ to
+$.00576$\,rad, a 21.4\% decrease and 12.7\% increase. These are pooled six-coordinate vector
+norms, not per-coordinate prediction RMSE; each controller follows its own raw-command
+reference. Selected controllers also differ in bandwidth, damping and clipping, so these
+diagnostics do not isolate the effect of tracking feedback (Appendix~\ref{app:tuning}).
+
+\section{Limitations and implications}
+\label{sec:limits}
+The analysis is conditional on local maps, bounded mismatch and a common stability metric;
+the current qualification checks do not certify the full nonlinear VLA--robot loop. The
+physical-fault confirmations cover two robots, three LIBERO suites and one ALOHA task, while
+the composite study covers only the left-six ALOHA interface. The finite tuning bank is not
+a global optimum and omits a calibrated zero-process-noise static Kalman variant. Historical
+calibration overlap limits the original transfer evidence, and old friction/lock efficacy
+requires reruns with corrected fault cleanup. Hardware repair is pending; an unmodellable plant
+(SimplerEnv's Google robot under base OpenVLA, $R^2=0.57$) is outside the method. Next:
+state-dependent correction responses, calibration uncertainty, tracking isolated with identical
+observer parameters.
+
+\section{Conclusion}
+Calibrated residuals enable frozen-policy repair in some command-interface settings; extending
+that requires separating what can be inferred, what the inputs can change, and whether the
+feedback is stable. Our conditions and confirmations make this testable: weighted allocation
+repairs one joint while harming another, and composite tracking's advantage over Kalman is unresolved.
+\label{main:lastpage}
+
+\clearpage
+\phantomsection\label{backmatter:firstpage}
+\subsection*{AI use statement}
+Generative AI (Claude, Anthropic; Codex, OpenAI) assisted with method and experiment design,
+implementation, data analysis and interpretation, theoretical derivations and manuscript drafting. The authors are responsible for verifying
+the final arguments, experimental claims and artifacts. Stored outcomes and reproducible
+analysis, rather than generated explanations, support empirical claims.
+
+\subsection*{Reproducibility statement}
+The appendix provides full assumptions and proofs, implementation timing, calibrations,
+selected parameters and per-condition counts. Supplementary artifacts include frozen
+protocols, source/input hashes, complete allocated outcomes, independent statistical
+cross-checks and telemetry diagnostics. Historical results with incomplete provenance are
+explicitly separated from new confirmations. No physical-fault or estimator confirmation
+outcomes were used to revise their frozen candidates.
+
+\bibliography{refs}
+\bibliographystyle{iclr2027_conference}
+\clearpage
+\appendix
+\input{theory_appendix.tex}
+\input{authority_appendix.tex}
+\section{Video illustrations and provenance}\label{app:videos}
+Figure~\ref{fig:video-evidence} retains the complete paired Panda illustration.
+Its source video is the documented camera-corrected re-render: recording and policy views
+are separated and the residual uses SO(3) increments. Both panels display step 162, before
+that step's environment transition; the success annotation describes its result. The
+uncorrected rollout later times out at step 229. The clip was selected by observed outcome;
+policy randomness was not pinned and full-state/initial-state identifiers were not archived.
+It therefore supplies a visual example rather than an additional benchmark sample.
+
+The ALOHA image in Figure~\ref{fig:interface} comes from a different video protocol:
+a $+0.02$\,rad offset on left-arm commands 0--5, with a correction identified in one episode
+and then held. It is a selected success from that held-correction experiment. The original
+video's generic ``online'' banner does not describe this mode; the manuscript labels it
+as held correction. The joint-5 failure panel instead reads the stored 20-episode torque
+cell directly. Its $+5$\,N\,m torque and continuous translation-only correction differ from
+both video conditions. Source frames, exact crops and SHA-256 hashes accompany the figure
+reproduction scripts. Scenes are exact crops of recorded frames.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=.88\linewidth]{fig_video_evidence.pdf}
+\caption{Selected video demonstration: frozen $\pi_{0.5}$ on LIBERO-Spatial, with
+$+0.05$ offsets on all six motion-action channels and online rotation-only correction.
+Both images are from displayed step 162. The corrected run reports success on the
+transition following this rendered frame; the uncorrected run later times out at step 229.
+The task is to place the black bowl next to the ramekin onto the plate. This historical
+illustration is separate from the confirmation counts and the composite--Kalman comparison.}
+\label{fig:video-evidence}
+\end{figure}
+
+\section{Implementation details}\label{app:implementation}
+\paragraph{Recorded adapter behavior.}\label{app:adapterstate}
+In the tested original $\pi_{0.5}$ LIBERO adapter, zeroing the state input produced no
+recorded action change (reported difference $0.00000$). This concerns that input path;
+it does not exclude visual feedback or compensation by the policy.
+
+\label{sec:method}
+
+\subsection{Plant, residual, and sensitivity}
+
+On healthy rollouts we identify a per-channel FIR plant
+\begin{equation}
+\hat y_t = \sum_{\ell=0}^{K} h_\ell\, u_{t-\ell} + c, \qquad K = 6,
+\end{equation}
+where $u_t$ is the command we \emph{believe} we sent (the policy's action plus any
+correction we applied). For LIBERO the plant predicts the increment; for ALOHA it predicts
+the position, because there the command is an absolute target that a servo tracks and a
+target offset lives in the steady-state position error, not in the increment
+(\S\ref{sec:aloha}). The residual
+\begin{equation}
+r_t = y_t - \hat y_t
+\end{equation}
+is what the healthy plant cannot explain. Because $u_t$ includes the correction and the
+world executes $u_t + f$, a local linear approximation gives $r_t \approx M f$ and hence
+an estimate of the \emph{total} fault. Correction-dependent model error, contacts and torque
+faults can violate this approximation. $M = \partial(\text{motion})/\partial(\text{fault})$ is a
+$d\times d$ sensitivity matrix measured once by open-loop replay: a recorded healthy command
+sequence is replayed with and without a per-axis probe, and the mean motion difference per
+unit probe gives each column. On the LIBERO plant $M$ is diagonal-dominant with
+$\mathrm{cond}(M)=3.0$ and is magnitude independent to within $14\%$ between probes of
+$0.02$ and $0.05$; on historical ALOHA data $M\approx I$ with $\mathrm{cond}(M)=7.3$.
+These are the original calibrations; the later studies use the inputs described in
+\S\ref{sec:joint} and \S\ref{sec:composite}.
+
+\subsection{The adaptive law}
+\label{sec:law}
+
+Per control step,
+\begin{equation}
+\label{eq:law}
+e_t = M^{-1} r_t - b_f,\qquad
+\tilde e_t = \frac{e_t\,\mathbb{1}[\|r_t\|\ge\delta]}{1+\|r_t\|^2/\rho^2},\qquad
+\fhat_{t+1} = \Pi_{[-\kappa,\kappa]}\!\big(\fhat_t + \gamma(\tilde e_t - \fhat_t)\big),
+\end{equation}
+with action $a_t-\fhat_t\odot m$ applied before this update; $m$ selects correction channels.
+In this legacy law, a closed deadzone sets the target to zero and the estimate decays by
+$1-\gamma$; it does not freeze. Normalisation scales the estimation target, and projection
+keeps the estimate in a bounded box. The supplied $b_f$ is an empirical healthy offset in
+fault-parameter units. A healthy steady estimate is itself affected by normalisation, so
+subtracting it is not automatically an unbiased residual calibration.
+
+\begin{remark}[Constants are ratios of measured scales]
+\label{rem:scale}
+Every threshold in \eqref{eq:law} is compared against a quantity with a scale: $\delta$
+against the residual norm of the healthy plant, $\rho$ against the residual norm under the
+fault, $\kappa$ against the expected fault, the excitation gate of \S\ref{sec:gain} against
+the regressor's magnitude. Five silent failures in this work came from carrying a constant
+tuned on one plant to another---a deadzone larger than the residual it gated, a normaliser
+dominated by an uncorrected ALOHA gripper channel, a projection bound that coincided with the true
+fault and was read as a measurement. The rule that follows is mechanical: print the scale,
+then set the constant as a multiple of it, on every new plant.
+\end{remark}
+
+For a constant ideal measurement, an open gate and inactive clipping, the fixed point is
+$\alpha(M^{-1}r-b_f)$, where $\alpha=(1+\|r\|^2/\rho^2)^{-1}$. Normalisation therefore changes
+steady estimation bias as well as transient behaviour. In an in-sample refit of the eight
+historical healthy ALOHA logs, after excluding the first six steps of each episode, the right gripper contributes
+$93.63\%$ of squared residual while the six corrected joints contribute $0.091\%$. Both recorded gripper commands and positions are continuous-valued;
+neither binary switching nor inability of an FIR to represent a step explains this result.
+These are raw-coordinate norm shares, combining arm radians and environment gripper
+coordinates, not unit-invariant measures of physical importance.
+The runner now offers a corrected-channel norm and alternative observers; its default
+remains the all-channel norm. Restricting that norm does not restrict the inverse: on ALOHA,
+$M^{-1}r$ still uses all fourteen residual coordinates. Existing all-channel results retain their original settings; a code option does not revise them.
+
+\subsection{Which channels to correct}
+\label{sec:channels}
+
+The separation test---the estimate under a fault minus the estimate on matched healthy
+episodes---is the only evidence of identification we accept; a raw $\fhat$ carries the plant
+phantom and cannot distinguish identification from bias. For the uniform six-axis fault
+used across the LIBERO suites, rotation identifies ($+0.049$ against a true $0.050$) and
+translation does not (sign-wrong), so the headline correction is restricted to rotation.
+That restriction is a property of \emph{that fault}, not of the channel: on a translation-only
+fault the same law identifies translation at $79\%$--$106\%$ and repairs it
+(\S\ref{sec:severity}). The uniform fault differs because single-axis responses stop superposing at
+$\pm0.05$, the signature of a contact or joint limit reached only when all six axes move.
+
+\paragraph{A gate from healthy data alone.} The separation test above needs a faulted rollout.
+A preregistered alternative uses none: twenty healthy estimate-only episodes give, per channel,
+the mean $b_i$ and across-episode standard deviation $\mathrm{sd}_i$ of the estimate averaged
+over the last 50 steps; channel $i$ is corrected at a step iff $|\hat f_i-b_i|>3\,\mathrm{sd}_i$,
+re-evaluated every step. The translation phantom is wide ($3\,\mathrm{sd}$ of $0.12$ on $x$ and
+$z$, above the $0.05$ fault), which is the healthy-data reason translation is untrustworthy on
+this plant. On the headline scenarios: frozen $9/20$, gated $19/20$, 10 fixed, 0 broken,
+$p=0.002$ (rotation-only mask: $8/20\to18/20$). Occupancy after step 20: $r_x$, $r_z$ open on
+every step, $r_y$ on $28\%$ (its estimate settles at $0.021$ against a threshold of $0.038$),
+$x$ $17\%$, $y$ $36\%$, $z$ $20\%$; the registered prediction had translation under $20\%$,
+which $y$ refutes without cost. Healthy control with the gate: $20/20\to19/20$ (0 fixed, 1
+broken, $p=1$); the gate opens on $30\%$ of healthy steps because a threshold calibrated on a
+50-step mean is read on the instantaneous estimate, the registered $<5\%$ was wrong, and one
+healthy episode timed out. Record \S37, \code{prereg\_records/PREREG\_HEALTHY\_GATE.md}.
+
+\subsection{Multiplicative faults}
+\label{sec:gain}
+
+For a gain fault the regressor follows from the plant rather than being assumed. The world
+executes $g\,u$ and the FIR responds to what it is given, so per channel
+\begin{equation}
+y_i - \hat y_i = \beta_i\,\phi_i,\qquad \phi_i = \hat y_i - c_i,\qquad \beta_i = g_i - 1,
+\end{equation}
+the regressor being the FIR-weighted command history, and the regression lives in motion
+units with no $M^{-1}$. Estimating $\beta_i$ by recursive least squares on channels whose
+$|\phi_i|$ clears an excitation gate, the correction is the exact certainty-equivalent
+inverse $a_i/(1+\hat\beta_i)$ with $\hat g_i$ projected away from zero. Two facts matter
+here. The compensator \emph{inverts} the estimate, so estimation error is amplified by
+$1/\hat g^2$---fourfold at $g=0.5$---and accuracy sufficient for an additive fault is not
+sufficient for a multiplicative one. And a wrong regressor is not repaired by adding
+parameters: regressing on the instantaneous command instead of $\phi_i$ produced a $33\%$
+phantom loss of effectiveness on a \emph{healthy} robot, an intercept made it worse, and the
+derived regressor shrank the phantom ninefold and took the $x$-channel separation from
+$1.4\sigma$ to $18\sigma$.
+
+\section{Bias ambiguity and historical repair hypothesis}
+\label{sec:theory}
+
+\begin{proposition}[A constant input fault and a constant output bias are not separable]
+\label{prop:sep}
+Let $y_t = M(a_t + f) + b_y + \nu_t$ with $M$ square and full rank, and $f,b_y$ constant over
+the episode. For any $b_y'$, the fault $f' = f + M^{-1}(b_y - b_y')$ reproduces every observation
+exactly. Only $Mf + b_y$ is identified; $b_y$ here is in output units.
+\end{proposition}
+\begin{proof}
+$M(a_t+f') + b_y' = M a_t + Mf + (b_y - b_y') + b_y' = M(a_t + f) + b_y$.
+\end{proof}
+\noindent Consequently separating a constant fault requires outside information about the
+healthy bias. A known healthy prefix can supply such information for a later fault onset,
+subject to sufficient data and model accuracy; in ideal units $b_f=M^{-1}b_y$.
+
+\paragraph{Repairability hypothesis.}\label{hyp:repair}
+The historical ALOHA and GR1 scheme comparisons motivate examining correction transients
+relative to task tolerance. They do not establish that correction variation below a scalar
+spatial margin is necessary or sufficient for recovery. A constant correction can have
+zero variation and large bias; time-varying corrections can accurately cancel a varying
+fault. Direction, timing, contact and the policy response also matter. Static-correction
+sweeps cannot certify dynamic robustness, and telemetry collected during repair is not a
+predeployment guarantee. We retain this relationship as a diagnostic hypothesis, without
+a task-recovery theorem.
+
+\section{Extended experiments and historical evidence}
+\label{sec:exp}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_convergence.pdf}
+\caption{\textbf{Historical fault-estimate traces on three robots.}
+Left: LIBERO spatial, $\pi_{0.5}$, uniform $+0.05$ command offset and rotation-only
+correction; rotation-channel medians and interquartile ranges over 20 episodes for the
+first 60 updates. Two medians exceed $0.04$ by the last plotted update; the third is
+$0.024$. Middle: ALOHA transfer-cube, $\pi_0$, $+0.02$\,rad on six left-arm joints;
+the identification episode ends at $0.0183$--$0.0191$\,rad, then held
+(\S\ref{sec:aloha}). Right: GR1, GR00T N1.5, $+0.10$\,rad on seven right-arm joints;
+one 164-step identification episode. Its final-50-step average, used for held correction,
+is $0.090$--$0.112$\,rad across joints (\S\ref{sec:gr1}). This average does not imply
+sustained convergence by step 100. Dashed lines denote the injected offsets.
+The panels describe estimation under different protocols, not comparative task success.}
+\label{fig:convergence}
+\end{figure}
+
+\subsection{Protocol}
+
+\textbf{Paired design.} Except for the unpaired GR1 study (\S\ref{sec:gr1}), compared arms target the same (task, initial state)
+episodes and differ only in whether the correction is applied; the policy's own sampling
+noise is not pinned across arms, so pairing is on the episode, not on the realised action
+sequence. Figure~\ref{fig:convergence}
+shows what the corrected arm does inside one episode. We report exact McNemar tests
+on the discordant pairs. ``Fixed'' and ``broken'' denote observed outcome differences,
+which include policy sampling variability. Historical logs do not certify full physical
+state pairing retrospectively; new confirmations verify physical-state and model fingerprints.
+\textbf{Controls and uncertainty.} Healthy controls distinguish repair from baseline
+competence, but a nonsignificant difference does not establish equivalence or absence of
+harm. Three repeated historical cells scored $13/20$, $13/20$, $15/20$; this illustrates
+sampling variation, not a general $\pm10$-point error bound. Unless otherwise stated,
+historical per-cell $p$-values are unadjusted; the four-suite headline also survives
+Bonferroni correction across its four suites. New studies state their comparison families.
+\textbf{Calibration.} The original plant and $M$ were identified on
+\code{libero\_spatial} healthy rollouts with $\pi_{0.5}$ driving and are used unchanged for
+the original LIBERO suites and backbone-transfer experiments; historical ALOHA and GR1
+use separate calibrations from eight and six healthy rollouts, respectively.
+Original LIBERO calibration overlaps evaluated task/initial
+state combinations, so those tables do not establish fully held-out calibration. New
+Panda confirmations use disjoint, suite-specific calibration; the latest ALOHA estimator
+study uses separately recorded calibration, tuning and confirmation cohorts. These new
+protocols do not retroactively repair old provenance.
+
+\subsection{Four suites}
+\label{sec:headline}
+
+Uniform $+0.05$ offset on all six action dimensions, rotation-only correction
+(\S\ref{sec:channels}), $\pi_{0.5}$-LIBERO.
+
+\begin{center}\small
+\begin{tabular}{lrrrrrc}
+\toprule
+suite & $n$ & frozen & corrected & fixed & broken & exact McNemar \\
+\midrule
+\code{libero\_spatial} & 20 & 8/20 (40\%) & 18/20 (90\%) & 10 & 0 & $0.0020$ \\
+\code{libero\_goal}    & 40 & 15/40 (38\%) & 29/40 (72\%) & 15 & 1 & $0.00052$ \\
+\code{libero\_object}  & 20 & 5/20 (25\%) & 16/20 (80\%) & 11 & 0 & $0.00098$ \\
+\code{libero\_10}      & 40 & 0/40 (0\%) & 15/40 (38\%) & 15 & 0 & $6.1\times10^{-5}$ \\
+\midrule
+\textbf{pooled} & 120 & \textbf{28/120 (23\%)} & \textbf{78/120 (65\%)} & \textbf{51} & \textbf{1} & $\mathbf{2.4\times10^{-14}}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Every suite is individually significant. The long-horizon suite goes from a frozen policy
+that never succeeds in forty episodes to fifteen recoveries. The single regression is a
+\code{goal} episode the frozen policy itself solves three times in four, with an
+ordinary-sized correction. \code{libero\_90}, on which the checkpoint was never fine-tuned,
+scores $6/20$ unfaulted and is reported as a competence floor of the policy, not a repair
+result.
+
+\subsection{Fault families and severity}
+\label{sec:severity}
+Figure~\ref{fig:map} and the table give the fault-family by magnitude map
+(two cells at $n=40$ in Appendix~\ref{app:map40}; constants ablation in Appendix~\ref{app:abl}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\linewidth]{fig_map.pdf}
+\caption{The recoverability map: frozen versus corrected success on LIBERO spatial, $n=20$
+paired episodes per cell, correction on the channels each family's separation test
+supports (rotation for the rotation and uniform families, translation for translation).
+Every regression in the map occurs in a ceiling cell where the frozen policy already
+scores 18--19 of 20 (translation $0.05$: one fixed, one broken). Single-family faults
+degrade gracefully with magnitude; the
+uniform fault collapses at $0.15$ because its uncorrected translation component drives the
+arm into contacts and limits (\S\ref{sec:fail}). Exact McNemar $p$-values are in the table
+below.}
+\label{fig:map}
+\end{figure}
+
+\begin{center}\small
+\begin{tabular}{lccc}
+\toprule
+fault (\code{libero\_spatial}, $n=20$) & $0.05$ & $0.10$ & $0.15$ \\
+\midrule
+translation & 18/20 $\to$ 18/20 (ceiling) & 13/20 $\to$ \textbf{19/20} & 4/20 $\to$ \textbf{19/20} \\
+rotation    & 13/20 $\to$ 18/20 & 0/20 $\to$ \textbf{17/20} & 0/20 $\to$ \textbf{9/20} \\
+uniform 6-axis & 8/20 $\to$ 18/20 & 2/20 $\to$ 11/20 & 0/20 $\to$ 2/20 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+No cell outside the ceiling row shows a regression; the translation $0.05$ cell, whose
+totals are equal at $18/20$, contains one fixed and one broken episode. Rotation is where
+this policy breaks---a rotation fault at
+$0.10$ takes it to exactly zero where translation leaves $13/20$---and the correction
+recovers $17/20$ from that floor. Single-family faults degrade gracefully with severity; the
+uniform fault collapses, and the comparison of the last column isolates why: the rotation
+fault and the uniform fault are corrected identically, and adding an \emph{uncorrected}
+translation component drops recovery from $45\%$ to $10\%$. This is consistent with a loss
+of useful residual information outside the calibrated regime, but does not isolate plant,
+estimator and controller contributions. A structured
+mixed-sign fault $[0,0,0,+.06,-.06,+.03]$ the law was never tuned on goes $2/12\to10/12$ with
+separation matching truth on every axis.
+
+\textbf{Time-varying faults} (amplitude $0.10$): a ramp to full over 60 steps goes
+$12/20\to18/20$ ($p=0.031$); a non-zero-mean oscillation on rotation $13/20\to20/20$
+($p=0.016$); an intermittent fault $12/20\to19/20$ ($p=0.039$). The estimator tracks the
+waveform poorly---$45$--$79\%$ RMS error, not attributable to lag---and it does not matter:
+the correction must be roughly right in direction and scale, not a good tracker, which is
+why six numbers updated on CPU suffice. (A zero-mean oscillation averages away and does no
+damage; that cell proved nothing and is not counted.)
+
+\textbf{Loss of effectiveness} (\S\ref{sec:gain}): at $g=0.30$, $1/20\to17/20$
+($p=3.1\times10^{-5}$) with $\hat\beta = (-0.723,-0.699,-0.717)$ against $-0.700$; at
+$g=0.20$, $0/20\to17/20$ ($p=1.5\times10^{-5}$). At $g=0.5$ the frozen policy still scores
+$15/20$ and the cell is a ceiling. Rotation gain faults are unidentifiable for this policy:
+no recorded step clears the excitation gate on $r_x$ or $r_z$ at any threshold, because the
+policy does not rotate the wrist. That is a property of the policy's behaviour, not of the
+estimator.
+
+\subsection{Baselines}
+\label{sec:baselines}
+
+\textbf{Frozen} and a \textbf{static oracle} provide controls. An oracle cancels a known
+additive command offset, but is not an empirical upper bound on stochastic task success.
+The historical \textbf{raw-error integral} baseline,
+$\fhat\leftarrow\fhat+k_i(y_t-a_t)$, was swept over five gains. On the $0.15$ translation
+cell its best setting reaches $7/20$ against $19/20$ for calibrated adaptation. This
+comparison changes the residual model as well as the update, so it cannot isolate the
+adaptive law's contribution or attribute all benefit to $M$ alone.
+
+A later matched-residual pilot keeps the calibrated FIR and sensitivity shared:
+original proposed $19/20$, disturbance observer (DOB) $17/20$, recursive least squares
+(RLS) $17/20$, Kalman $18/20$, calibrated integral $15/20$, and oracle $20/20$.
+All estimated arms retain projection; the DOB removes the legacy deadzone and
+normalisation. These small samples support repair through several estimators, but establish
+neither equivalence nor a special advantage of the proposed update. The larger, separately
+calibrated ALOHA comparison below addresses tuning on its own benchmark.
+
+\subsection{Faults below the controller}
+\label{sec:joint}
+
+Command-interface offsets and physical joint faults enter at different levels. An additive
+torque is matched relative to joint-torque inputs; whether it can be compensated through
+a restricted Cartesian command interface requires a separate response analysis.
+Configuration dependence alone does not establish unmatched uncertainty.
+
+The historical Panda study concentrated on elbow joint 3, with continuously updated,
+translation-only correction. Its stored outcomes are retained here for provenance:
+\begin{center}\small
+\begin{tabular}{lrrrrrc}
+\toprule
+historical elbow fault & $n$ & off & corrected & fixed & broken & McNemar \\
+\midrule
+torque bias 5\,N\,m & 40 & 20/40 & 32/40 & 15 & 3 & $0.0075$ \\
+friction $+10$ & 20 & 11/20 & 14/20 & 6 & 3 & $0.51$ \\
+friction $+20$ & 20 & 0/20 & 8/20 & 8 & 0 & $0.0078$ \\
+lock $\pm0.05$\,rad & 20 & 0/20 & 0/20 & 0 & 0 & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+The old runner did not restore model faults on every episode exit, so friction and joint
+limits could persist across cached resets; those logs lack the model-state snapshots
+needed to certify fault severity. Their efficacy claims require reruns under the repaired
+lifecycle. A failure with this lock intervention does not prove that task recovery through
+other joints is impossible.
+
+The historical seven-joint torque map totals $103/140$ with correction off and on, with
+20 observed rescues and 20 regressions. Joint 5 falls from $12/20$ to $3/20$
+(Bonferroni-7 $p=0.02734$); joint 6 improves numerically from $7/20$ to $11/20$.
+The correction was continuously updated, so a constant-correction explanation is incorrect.
+These historical outcomes motivated new full-state-verified experiments.
+
+\textbf{Independent all-joint confirmations.} We completed 1,440 Panda rollouts on
+LIBERO Spatial, Object and Goal: seven $+5$\,N\,m joint faults plus healthy, 20 scenarios
+per cell, and off/legacy translation/weighted full correction. Fresh calibration is
+\emph{suite-specific}: FIR uses all ten tasks at initial state 26; sensitivity probes use
+task 0 at initial state 25; confirmation uses all ten tasks at states 35/36. The weighted
+allocator solves a bounded, covariance-weighted ridge problem over permitted inputs.
+It changes both support and regularisation, so this comparison does not isolate either.
+The registered joint-5 comparison improves from legacy $15/60$ to weighted $41/60$
+(29 rescues, 3 regressions, $p=2.556\times10^{-6}$). Against off, $36/60$ versus $41/60$
+is descriptive. Weighted correction harms Object joint 3 relative to legacy
+($16/20\to2/20$, Bonferroni-24 $p=0.01245$; off $8/20$). Legacy itself harms healthy
+Goal ($19/20\to3/20$, adjusted $p=0.00073$). Thus neither implementation supports
+uniform repair or a no-harm claim.
+
+A separate 780-rollout ALOHA transfer test covers all twelve arm joints plus healthy,
+20 seeds per cell and three arms. The weighted allocator uses the historical ALOHA
+sensitivity; complete original calibration-seed provenance is unavailable. Faulted totals
+are off $60/240$, legacy $70/240$, weighted $66/240$; healthy is $11/20$, $8/20$, $6/20$.
+No cell resolves after its declared Bonferroni-13 correction, which establishes neither
+transfer benefit nor equivalence. This is weighted allocation, not the composite observer:
+the twelve-joint position reference failed qualification. Full settings and counts are in
+Appendix~\ref{app:joint}.
+
+\textbf{Mechanism remains partial.} Repeated local physical probes distinguish model fit
+from actual compensation. After observer initialisation, legacy translation worsens the
+scaled local physical error in 150/168 probes; weighted full does so in 92/168, despite
+passing every fitted-objective check. One weighted solution reduces the model objective
+to $10.5\%$ of zero correction while increasing physical error in the same covariance
+metric $2.69$-fold. On ALOHA, privileged command shifts of $-\tau/k_p$ cancel all 144 tested
+local torque responses to numerical precision. These interventions establish local command
+authority and model-response mismatch; they do not identify the cause of each task failure
+or guarantee task recovery. The weighted variant remains experimental.
+
+\subsection{Two further backbones, unchanged calibration}
+\label{sec:oft}
+
+OpenVLA-OFT (7B, autoregressive backbone with an L1 action head) and NVIDIA GR00T N1.7
+(3B, Cosmos VLM with a flow-matching DiT head, the official LIBERO finetune) are each
+served behind the same interface; every script, the plant and $M$ are the $\pi_{0.5}$ ones.
+
+\begin{center}\small
+\begin{tabular}{lrrrrc}
+\toprule
+cell (\code{libero\_spatial}) & frozen & corrected & fixed & broken & McNemar \\
+\midrule
+healthy control & 20/20 & 19/20 & 0 & 1 & 1.0 \\
+rotation $0.10$ & 0/20 & \textbf{11/20} & 11 & 0 & $9.8\times10^{-4}$ \\
+translation $0.15$ & 0/20 & \textbf{14/20} & 14 & 0 & $1.2\times10^{-4}$ \\
+gain $0.20$ & 0/20 & \textbf{17/20} & 17 & 0 & $1.5\times10^{-5}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Nothing in the method was $\pi_{0.5}$-specific. OFT is more fragile (frozen $0/20$ on all
+three faults), recovers less on rotation ($55\%$ vs $85\%$; its $r_y$ fault is only $23\%$
+identified where $\pi_{0.5}$ reached $87$--$100\%$), and the healthy control lost one episode
+to the law itself: a sustained phantom at four to ten times the usual size, which a
+confidence gate evaluated offline does not remove without delaying genuine repair by one to
+two seconds (\S\ref{sec:fail}). The three headline cells also replicate on
+\code{libero\_object} with the same calibration ($0/20\to10/20$, $0/20\to15/20$,
+$0/20\to19/20$).
+
+GR00T N1.7 is a third developer and a third architecture. Its healthy control is a null on
+totals ($18/20$ both arms, one fixed and one broken, rotation phantom below $0.005$). With no retuning: rotation $0.10$,
+$0/20\to\mathbf{14/20}$ (14 fixed, 0 broken, $p=1.2\times10^{-4}$); translation $0.15$,
+$2/20\to\mathbf{15/20}$ (13/0, $p=2.4\times10^{-4}$); gain $0.20$ under the multiplicative
+law, $0/20\to\mathbf{19/20}$ (19/0, $p=3.8\times10^{-6}$, $\hat\beta$ within $2\%$ of the
+true $-0.80$). Three families, 46 repaired, none broken. The under-identified $r_y$ is the same channel that lags on the other two
+backbones: it is a property of the plant and $M$, not of the policy. Across the three
+backbones on this cell, 42 of 60 paired episodes are repaired and none is broken.
+
+That last figure needs its denominator stated, and so does every regression count in this
+paper. A regression can only occur in an episode the frozen policy was already winning.
+Across the full $3\times3$ transfer table, seven of the nine cells have a frozen policy at
+exactly $0/20$: of $180$ paired episodes, only $\mathbf{6}$ were successes that the
+correction could have broken. \emph{None broken in $180$ episodes} is therefore none broken
+in six opportunities, an exact $95\%$ upper bound of $39.3\%$ on the regression rate, not
+the $1.7\%$ that a denominator of $180$ would suggest. The stronger reading is not available
+from these cells. We report both denominators throughout; the second is the one that answers
+\emph{if I switch this on, how often does it break something that was working}.
+
+\subsection{A second manipulator, in joint space}
+\label{sec:aloha}
+
+Bimanual ALOHA in \code{gym\_aloha} driven by $\pi_0$: fourteen absolute joint targets at
+50\,Hz, transfer-cube, 300-step episodes, healthy success $25\%$. The plant is identified on
+\emph{position} from eight healthy rollouts (in-sample $R^2 = 0.989$--$1.000$ on the arm joints; right gripper $0.768$),
+$M\approx I$. A $+0.05$\,rad offset on the six left-arm joints displaces the gripper by
+$5.3$\,cm; the frozen policy scores $0/20$ at every severity tested.
+
+\textbf{Identification transfers.} Separation against the healthy control: $85$--$91\%$ of
+the fault at $0.05$\,rad, $94$--$106\%$ at $0.02$\,rad, leakage $\le0.007$\,rad onto
+uncorrected joints. \textbf{Repair does not, at first.} With continuous adaptation the task
+returns $0/20$ at every severity, warm-started or cold, with or without an early-history
+defect we found and fixed. The historical comparison is:
+
+\begin{center}\small
+\begin{tabular}{lccc}
+\toprule
+correction & variation & mean residual & success \\
+\midrule
+none (frozen) & --- & 2.12\,cm & 0/20 \\
+adaptive, updating throughout & 0.43\,cm & 0.17\,cm & 0/20 \\
+$0.019$\,rad ($95\%$) applied frozen & 0 & 0.11\,cm & \textbf{5/20} \\
+Identify, then hold ($n=40$) & 0 after episode 0 & 0.12\,cm & \textbf{15/40} \\
+Healthy, law off ($n=40$) & --- & --- & 17/40 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The fault is $+0.02$\,rad and $n=20$ unless otherwise stated. Identify-then-hold versus
+frozen has $p=6.1\times10^{-5}$ with no observed regressions. In the historical static sweep, a $90\%$ correction restores no successes while a $100\%$
+correction reaches the observed healthy rate. These data suggest sensitivity to correction
+accuracy and timing, but do not isolate variation as the cause of continuous adaptation's
+failure. The identify-then-hold total $15/40$ includes one failed identification episode
+and 39 episodes using its held estimate ($0.019$--$0.020$\,rad); only those latter episodes
+have zero within-episode correction variation. Its difference from healthy $17/40$ remains
+unresolved ($p=0.75$), without establishing equivalence. The historical healthy comparison
+$14/40$ versus $17/40$ has five rescues and eight regressions ($p=0.58$).
+
+These results use the original all-channel normaliser and calibration. They are not
+results for the corrected-channel setting or the fresh calibration used in
+\S\ref{sec:composite}. The later tuned continuous observer succeeds in some offset episodes,
+so the historical zero-success result is not a general boundary of continuous adaptation.
+
+\subsection{A humanoid}
+\label{sec:gr1}
+Fourier GR1 upper body (two 7-joint arms, two 6-joint hands, a waist; 29 absolute joint
+targets at 20\,Hz) in RoboCasa, driven zero-shot by GR00T N1.5, for which GR1 is a
+pretrained embodiment. Plant from six healthy
+episodes ($R^2\ge0.998$ on the arm), $M$ by direct step response ($0.99\,I$ on the arm
+block; the replay probe of \S\ref{sec:aloha} is contaminated on an arm in contact),
+constants from the measured residual. A $+0.10$\,rad offset on the working arm zeros the
+policy on both tasks. The simulator's scene generator is reseeded per episode so both arms
+see identical scenes. The estimate is the median over three episodes of the reach-window
+(steps 50--200) estimate: an episode's end reads a contact standoff, $0.2$\,rad wrong on a
+wrist on two of three draws.
+
+\begin{center}\small
+\begin{tabular}{lrrrrrcc}
+\toprule
+task, $n=30$ paired & healthy & frozen & corrected & fixed & broken & McNemar & vs healthy \\
+\midrule
+plate-to-plate & 22/30 & 1/30 & \textbf{19/30} & 18 & 0 & $7.6\times10^{-6}$ & $p=0.55$ \\
+tray-to-plate & 17/30 & 1/30 & \textbf{13/30} & 12 & 0 & $4.9\times10^{-4}$ & $p=0.45$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Held vectors are $93$--$104\%$ and $73$--$126\%$ of the fault per joint; on a healthy arm
+the law changes nothing ($19/30$ vs $18/30$; $16/30$ vs $15/30$); continuous adaptation
+reaches $8/30$, a third of the ceiling. Appendix~\ref{app:gr1map} maps three magnitudes.
+
+\subsection{A second simulator: WidowX in SimplerEnv}
+
+The earlier GR1 cohorts (runs before the scene generator was reseeded, unpaired, Fisher
+tests: held $21/30$ against pooled frozen $4/90$ and healthy $64/90$) are kept in the record
+and in the audit's merge notes; the paired cells above supersede them as the GR1 evidence.
+
+\subsection{A second simulator: WidowX in SimplerEnv}
+\label{sec:widowx}
+SimplerEnv \citep{li2024simpler} runs in SAPIEN; GR00T N1.7's Bridge finetune drives a
+WidowX on \emph{put the spoon on the towel} with Cartesian pose increments on an
+accumulating target. Plant from ten healthy episodes, $M$ the plant's DC gain (the held-pose
+probe is wrong on $z$ here), constants from the residual. A $+0.005$ offset on $x,y,z$,
+$2.5\times$ the residual, zeros the policy. The estimate lands on the fault (median $0.0050$,
+$0.0051$, $0.0049$), but the drift during its 27-step transient stays in the target:
+online adaptation reaches $6/20$ against a healthy $13/20$ ($6$ fixed, $0$ broken), and
+$12/20$ ($12$ fixed, $0$ broken) with the gain raised to halve the transient. Identify over
+three episodes and hold: on the next $20$ paired episodes healthy $14/20$, frozen $0/20$,
+corrected $\mathbf{14/20}$ ($14$ fixed, $0$ broken, $p=1.2\times10^{-4}$; vs healthy
+unresolved, $p=1.0$), the ALOHA and GR1 scheme, same reason.
+
+\subsection{Composite adaptation and independent estimator tuning}
+\label{sec:composite}
+
+\textbf{Variant.} A fitted healthy position model gives
+$q^{\rm ref}_{t+1}=Aq^{\rm ref}_t+B a_t+c$ from the raw policy command, with no velocity
+tracking term. The FIR residual instead uses the corrected, pre-fault command. Let
+$e^q_{t+1}=q_{t+1}[J]-q^{\rm ref}_{t+1}$, let $D=B\operatorname{diag}(m)$ include the correction
+mask. Here $J=\{0,\ldots,5\}$, $q^{\rm ref}_0=q_0[J]$, and $L\succ0$ is the fitted
+model's contraction metric. The implemented discrete
+composite update is
+\begin{equation}\label{eq:composite}
+\hat\theta_{t+1}=\Pi_{[-\kappa,\kappa]}\!\left[
+ a_\lambda\hat\theta_t+K_t(z_{t+1}-M a_\lambda\hat\theta_t)
+ +\Delta t\,\eta P^+_t D^\top L e^q_{t+1}\right],
+\end{equation}
+where $a_\lambda=\exp(-\lambda\Delta t)$, $z=r-Mb_f$, $K_t$ is the Kalman gain and
+$P^+_t$ its Joseph-form posterior covariance, carried forward as $P_{t+1}=P^+_t$. Specifically,
+$K_t=P^-_tM^\top(MP^-_tM^\top+R)^{-1}$. The tuned ALOHA implementation uses
+$b_f=0$ (the FIR intercept remains). The prior is
+$P^-_t=a_\lambda^2P_t+Q_c(1-a_\lambda^2)/(2\lambda)$, with the continuous limit
+$P_t+\Delta t Q_c$ at $\lambda=0$. Setting $\eta=0$ gives the same damped Kalman recursion;
+setting both $\eta$ and $\lambda$ to zero gives an undamped Kalman filter with identical
+$Q_c,R,P_0$ and clipping, not the differently tuned selected Kalman configuration. The action uses the
+old estimate, then the new position updates the estimate for the next action. No injected
+fault value enters the estimated arms. This is an action-interface variant inspired by
+composite adaptation, not a reproduction of Neural-Fly's force controller or its guarantee.
+
+\textbf{Qualification and split.} Fresh ALOHA data use 20 healthy fitting episodes
+(seeds 3100--3119) and ten qualification episodes (3120--3129). Sensitivity probes reuse
+three fitting donors with exact physical-state resets. The left-six position model passes
+the declared $0.005$-rad maximum per-coordinate one-step and rollout-RMSE gates
+(maximum rollout RMSE $0.00332$); its fitted-metric
+contraction factor is $0.895$. The full twelve-arm-joint model fails prediction qualification.
+Neither a contracting fitted model nor the local augmented-system checks prove contraction
+of the complete healthy VLA--robot loop.
+
+The bank contains 24 original-law, 12 DOB, 24 RLS, 24 Kalman, 72 composite and 12 calibrated
+integral recipes, plus off and oracle. Seven composite recipes fail the fixed local
+stability screen. All 163 eligible arms enter a 2,608-rollout search; a separate
+896-rollout validation selects one candidate per estimated family; 1,920 confirmation
+rollouts evaluate those six and two controls on 30 untouched seeds. In total, 5,424
+evaluation rollouts were completed. The larger composite search pool and the finite bank
+are disclosed; no parameter is selected from confirmation outcomes.
+
+\textbf{Confirmation.} All runs use ALOHA Transfer Cube, left-six correction, 50\,Hz,
+300-step episodes and ten-action chunks. Conditions are healthy, $+0.02$\,rad command
+offset on those six joints, and individual left-joint torque faults
+$[16,32,16,0.2,1,0.4]$\,N\,m. With seven fault rates $p_j$ and healthy rate $p_h$, the
+predeclared score is $S=\tfrac12p_h+\tfrac1{14}\sum_{j=1}^7p_j$, not the unweighted
+success fraction over 240 episodes.
+\begin{center}\small
+\begin{tabular}{lrrr}
+\toprule
+selected method/control & healthy & faulted & balanced score \\
+\midrule
+Original proposed & 16/30 & 98/210 & 50.00\% \\
+RLS & 17/30 & 63/210 & 43.33\% \\
+DOB & 14/30 & 79/210 & 42.14\% \\
+Kalman & 12/30 & 71/210 & 36.90\% \\
+Composite & 12/30 & 67/210 & 35.95\% \\
+Calibrated integral & 11/30 & 57/210 & 31.90\% \\
+\midrule
+Off & 15/30 & 48/210 & 36.43\% \\
+Oracle (unranked) & 13/30 & 103/210 & 46.19\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+Composite minus Kalman is $-0.95$ percentage points (whole-seed bootstrap $95\%$ interval
+$[-9.52,7.62]$; exact whole-seed sign-flip $p=0.86261$). Seed clustering preserves repeated
+scenarios across conditions. The four secondary overall Kalman comparisons do not survive
+Holm correction; this table is a numerical ordering, not an established ranking.
+In the offset cell, DOB scores $9/30$ versus Kalman $0/30$ (Bonferroni-8 $p=0.03125$
+within that contrast's eight-condition family). No composite--Kalman cell survives its
+Bonferroni-8 correction. The oracle is exact for offsets and nominal $\tau/k_p$ for torque,
+with independent policy sampling; it is not a task-success upper bound.
+
+\textbf{Diagnosis.} Across all confirmation conditions, composite lowers late-window
+position-reference RMS error, yet more than $99.39\%$ of the squared tracking increment
+on corrected coordinates lies on joint 1. In the exact-offset cell, late parameter RMS error increases from Kalman's
+$0.00511$ to composite's $0.00576$\,rad while reference RMS falls from $0.00950$ to
+$0.00747$\,rad. No sign, timing or covariance-recursion defect was identified; better
+reference tracking does not guarantee better task success. Only one composite episode
+has active-coordinate clipping (12 late updates), so broad clipping does not explain the
+ranking. The selected configurations differ in bandwidth, damping and clipping; isolating
+the extra tracking term requires a matched-parameter ablation on fresh scenarios.
+Full selected settings are in Appendix~\ref{app:tuning}.
+
+\subsection{Hardware}
+\label{sec:hardware}
+The X2 humanoid protocol (a real actuator-authority fault in 134 logged rollouts, invisible in position, recoverable in effort) is in Appendix~\ref{app:hw}; paired repair on the robot remains pending.
+
+\section{Additional empirical diagnostics}
+\label{sec:fail}
+
+\textbf{Invisible faults.} Neither a proprioceptive bias nor a wrist-camera misalignment
+reaches the residual (separation $0.004$ against $0.049$ for an action fault): the method
+sees the action interface and nothing upstream of it. The proprioceptive bias does not
+damage the policy either --- it scores $15/15$ and $12/12$ frozen --- which follows from
+Appendix~\ref{app:adapterstate}: the tested checkpoint ignores that state input, so the method's blind
+spot and the policy's coincide. The camera perturbation is an image shift (\code{np.roll}),
+not a physical extrinsic change, and damages the policy ($6/12$) without being observable.
+
+\textbf{A policy that cannot do the task.} \code{libero\_90} fails 14 of 20 sampled tasks
+unfaulted. Correcting the fault restores nothing because nothing was lost to it.
+
+\textbf{Harm on healthy and faulted robots.} The historical OFT regression coincides with a
+sustained phantom estimate. The new studies add much larger counterexamples: legacy
+translation harms healthy LIBERO Goal, weighted full harms Object joint 3 versus legacy,
+and the ALOHA healthy weighted success count decreases (\S\ref{sec:joint}). A gate evaluated
+offline or a nonsignificant test cannot establish that deployment is harmless.
+
+\textbf{Mechanistic claims revised.} Healthy action statistics alone did not predict every
+identifiable channel: translation identifies a single-family fault at $79\%$--$106\%$.
+Measured single-axis sensitivity changes by at most $14\%$ across the tested probes, while
+multi-axis superposition fails; this does not prove global linearity or identify a specific
+contact mechanism. Translation correction can help under its own fault family. Conversely,
+configuration dependence does not explain the joint-5 harm by itself, and continuous
+corrections cannot be described as a constant estimate becoming stale. These observations
+motivate controlled interventions rather than a closed causal explanation.
+
+
+\section{Ablation of the law's constants and the calibration size}
+\label{app:abl}
+Headline cell ($\pi_{0.5}$, \code{libero\_spatial}, uniform $+0.05$, rotation-only
+correction), $n=20$ paired per row, one constant changed per row from the reference
+($\gamma=0.08$, $\rho=0.15$, deadzone $0.008$, plant fitted on three healthy episodes,
+285 steps). Last column: rotation estimate at episode end (last-50-step mean) against a
+true $0.05$ on each axis.
+
+\begin{center}\small
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lrrrrcl}
+\toprule
+setting & frozen & corrected & fixed & broken & McNemar & $\hat f_{rx},\hat f_{ry},\hat f_{rz}$ \\
+\midrule
+reference & 8/20 & \textbf{18/20} & 10 & 0 & $0.0020$ & 0.044, 0.020, 0.044 \\
+$\gamma=0.02$ ($\tfrac14\times$) & 8/20 & 17/20 & 9 & 0 & $0.0039$ & 0.036, 0.016, 0.036 \\
+$\gamma=0.32$ ($4\times$) & 7/20 & 18/20 & 11 & 0 & $0.00098$ & 0.044, 0.019, 0.044 \\
+$\rho=0.05$ ($\tfrac13\times$) & 11/20 & 14/20 & 5 & \textbf{2} & $0.45$ & 0.027, 0.011, 0.027 \\
+$\rho=0.50$ ($3\tfrac13\times$) & 8/20 & \textbf{20/20} & 12 & 0 & $0.00049$ & 0.048, 0.022, 0.049 \\
+deadzone $0$ & 8/20 & 19/20 & 11 & 0 & $0.00098$ & 0.044, 0.018, 0.044 \\
+deadzone $0.03$ ($\approx$ residual scale) & 8/20 & 17/20 & 9 & 0 & $0.0039$ & 0.031, 0.016, 0.032 \\
+plant from 1 healthy episode (75 steps) & 10/20 & 17/20 & 8 & 1 & $0.039$ & 0.027, 0.008, 0.044 \\
+plant from 2 healthy episodes & 8/20 & 17/20 & 10 & 1 & $0.012$ & 0.045, 0.021, 0.043 \\
+\bottomrule
+\end{tabular}}
+
+\end{center}
+
+Within this historical cell, the three tested gains give similar success counts; the
+experiment does not establish parameter insensitivity across faults or robots. The smaller
+normalisation radius has two regressions and a weaker observed benefit, consistent with
+its attenuated target. One healthy episode yields $17/20$ despite under-identification on
+one rotation axis. These are cell-specific ablations with unadjusted tests, not evidence
+that this calibration size or parameter range is sufficient in general.
+
+\section{Hardware protocol on the X2 humanoid}
+\label{app:hw}
+On logs from an X2 humanoid running a learned box-pickup policy, a real actuator-authority
+fault (stiffness, damping and feedforward scaled together, $0.1$--$1.3$ across 134
+rollouts) is invisible in joint position and recoverable in effort ($r=+0.84$); the plant
+is run-varying on load-bearing joints, so calibration must be within-run and in motion; the
+detectability floor is $0.5$--$1.3^\circ$ of joint offset. Paired repair on
+the robot remains pending.
+
+\section{Humanoid recoverability map}
+\label{app:gr1map}
+Plate-to-plate, right-arm offset at three magnitudes, paired on identical scenes, identify
+over three episodes then hold (\S\ref{sec:gr1}), $n=30$ per arm:
+
+\begin{center}\small
+\begin{tabular}{lrrrrrcl}
+\toprule
+offset & healthy & frozen & corrected & fixed & broken & McNemar & held estimate \\
+\midrule
+$0.05$\,rad & 19/30 & 7/30 & \textbf{24/30} & 17 & 0 & $1.5\times10^{-5}$ & $90$--$108\%$ \\
+$0.10$\,rad & 22/30 & 1/30 & \textbf{19/30} & 18 & 0 & $7.6\times10^{-6}$ & $93$--$104\%$ \\
+$0.20$\,rad & 25/30 & 0/30 & \textbf{21/30} & 21 & 0 & $9.5\times10^{-7}$ & $94$--$99\%$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Every cell is at its healthy rate ($p=0.18$, $0.55$, $0.29$ against the healthy arm) with no
+regression in 90 paired episodes; at $0.20$\,rad ($11.5^\circ$ on every joint of the working
+arm) the frozen policy never succeeds. The identification stays within $10\%$ across a
+fourfold range of magnitude, with no sign of the superposition boundary the Panda shows at
+its largest uniform fault (\S\ref{sec:severity}).
+
+\paragraph{Time-varying faults on the humanoid.} Same cell, $n=20$ paired, amplitude
+$0.10$\,rad. A ramp to full over 60 steps is constant thereafter, and the held estimate
+serves it: $1/20\to11/20$ (10 fixed, 0 broken, $p=0.002$; healthy $13/20$, $p=0.73$).
+Continuous adaptation repairs the ramp significantly but below healthy ($9/20$, $p=0.021$
+against frozen, $p=0.039$ against healthy $16/20$), lagging the rise by about 30 steps and
+then continuing to move. The two profiles that never settle are the boundary: a slow
+non-zero-mean oscillation reaches $6/20$ and an intermittent fault $4/20$, neither
+significant against frozen at $n=20$. On the Panda the same profiles were repaired
+(\S\ref{sec:severity}) because a Cartesian reach tolerates a correction that is briefly
+wrong; a dexterous-hand grasp does not, which is the hypothesis in \S\ref{hyp:repair} on the
+axis it names: a fault that keeps moving cannot be given a stationary correction.
+
+\section{Recoverability-map cells at \texorpdfstring{$n=40$}{n=40}}
+\label{app:map40}
+Two borderline historical cells of \S\ref{sec:severity} were selectively expanded to
+$n=40$ (same configuration, initial states 45--48). Rotation $0.05$ originally scored
+$13/20\to18/20$, five rescues and no regressions ($p=0.0625$). At $n=40$, rotation
+$0.05$: $27/40\to39/40$, 12 fixed, 0 broken, $p=4.9\times10^{-4}$. Translation $0.10$:
+$30/40\to38/40$, 9 fixed, 1 broken, $p=0.021$. These unadjusted historical follow-ups
+were not a preregistered confirmation family; uniform $0.15$ remains unresolved.
+
+\section{All-joint physical-fault confirmation details}
+\label{app:joint}
+Panda entries are off / legacy translation / weighted full successes out of 20.
+Each fault is $+5$\,N\,m; healthy is zero. Both estimated arms use $\gamma=0.08$ and
+clipping $0.30$; weighted allocation uses prior standard deviation $0.1$ in command units.
+Spatial/Object/Goal use 220/280/300-step limits and five-action chunks.
+\begin{center}\small
+\begin{tabular}{lccc}
+\toprule
+condition & Spatial & Object & Goal \\
+\midrule
+Healthy & 20/19/20 & 20/18/20 & 19/3/19 \\
+Joint 0 & 19/20/20 & 20/5/19 & 20/3/20 \\
+Joint 1 & 19/19/19 & 19/17/16 & 16/5/17 \\
+Joint 2 & 18/19/19 & 15/1/19 & 16/5/16 \\
+Joint 3 & 13/15/19 & 8/16/2 & 7/4/11 \\
+Joint 4 & 15/16/20 & 12/13/16 & 10/5/19 \\
+Joint 5 & 14/6/17 & 11/5/9 & 11/4/15 \\
+Joint 6 & 8/11/20 & 6/0/15 & 8/2/10 \\
+\bottomrule
+\end{tabular}
+\end{center}
+The primary pools only the 60 distinct joint-5 scenarios. Per-cell tests retain three
+separate 24-comparison families (one per method contrast). Repeated scenarios across
+fault cells are not pooled as independent observations in a significance test.
+
+ALOHA entries use 20 seeds (3000--3019), 300-step limits, $\gamma=0.08$, clipping $0.08$
+and weighted prior standard deviation $0.1$ in ALOHA command units. Each arm uses torques
+$[16,32,16,0.2,1,0.4]$\,N\,m, equal to nominal $k_p\times0.02$\,rad.
+Physical joints 0--11 map to command coordinates 0--5 and 7--12, excluding grippers.
+\begin{center}\small
+\begin{tabular}{lrrr}
+\toprule
+condition & off & legacy all-channel norm & weighted \\
+\midrule
+Healthy & 11 & 8 & 6 \\
+Left 0 & 0 & 0 & 0 \\
+Left 1 & 8 & 7 & 6 \\
+Left 2 & 11 & 7 & 8 \\
+Left 3 & 1 & 6 & 6 \\
+Left 4 & 4 & 7 & 7 \\
+Left 5 & 7 & 6 & 6 \\
+Right 0 & 0 & 4 & 5 \\
+Right 1 & 6 & 6 & 6 \\
+Right 2 & 3 & 9 & 7 \\
+Right 3 & 8 & 8 & 4 \\
+Right 4 & 7 & 5 & 5 \\
+Right 5 & 5 & 5 & 6 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Three method contrasts each retain 13 comparisons. These settings and historical
+calibration differ from the fresh left-six estimator tuning study below.
+
+\section{Selected estimator settings and confirmation cells}
+\label{app:tuning}
+The six selected recipes are frozen before confirmation. With healthy residual covariance
+$R$, define $C=M^{-1}RM^{-\top}$. The matched recipe is
+$Q_{\rm step}=\gamma^2C/(1-\gamma)$ and $Q_c=Q_{\rm step}/\Delta t$; damped propagation
+uses the interval in \eqref{eq:composite}. Covariance scale multipliers are one.
+\begin{center}\small
+\begin{tabular}{lp{0.70\linewidth}}
+\toprule
+family & selected settings \\
+\midrule
+Original & $\gamma=.5$, clip $.04$, deadzone $.002$, norm radius $.4$, corrected-channel norm \\
+DOB & $\gamma=.5$, clip $.08$ \\
+RLS & forgetting $1$, initial covariance $.1I$, clip $.08$ \\
+Integral & gain $.005$ per update, clip $.08$ \\
+Kalman & matched $Q$, $\gamma=.08$, $P_0=C$, damping $0$, clip $.16$ \\
+Composite & matched $Q$, $\gamma=.2$, $P_0=C$, damping $.5$/s, clip $.08$, active tracking strength $.02$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+The active strength sets
+$\eta=.02/\|[\Delta t P_\infty D^\top L D]_{J,J}\|_2$, where $P_\infty$ is the posterior
+steady covariance under the candidate's damping and noise. Thus $.02$ is not the
+per-second coefficient $\eta$ itself.
+The selected full-precision recipe has $\eta=3017861.266508692$ in the stated coordinates.
+The reference is driven by all fourteen raw commands while tracking the six left joints.
+Calibrated sensitivity has full rank 14 and condition number $7.0813$.
+
+Search uses seeds 3200--3203 and healthy/offset/joints 1 and 3. Validation uses 3300--3307
+on all eight conditions; confirmation uses 3400--3429. Search selects two candidates per
+family, validation selects one, and confirmation never changes parameters. The bank includes
+24 Kalman and 72 nonzero-tracking composite recipes, with zero-tracking Kalman recipes reused
+as controls. It explores bandwidth, covariance initialization and noise form, damping and
+clipping; other families also vary their relevant gains, priors, forgetting and norm settings.
+A calibrated $Q=0$ static filter needs a different information-growth qualification and is
+outside this bank. Parameters are selected within this finite search, not globally optimal.
+
+\begin{center}\small
+\begin{tabular}{lrrrrrrrr}
+\toprule
+method & healthy & offset & J0 & J1 & J2 & J3 & J4 & J5 \\
+\midrule
+Original & 16 & 7 & 11 & 16 & 15 & 16 & 14 & 19 \\
+RLS & 17 & 0 & 0 & 15 & 11 & 10 & 15 & 12 \\
+DOB & 14 & 9 & 11 & 14 & 12 & 10 & 12 & 11 \\
+Kalman & 12 & 0 & 2 & 17 & 13 & 12 & 16 & 11 \\
+Composite & 12 & 2 & 2 & 10 & 12 & 12 & 16 & 13 \\
+Integral & 11 & 0 & 0 & 13 & 15 & 7 & 13 & 9 \\
+Off & 15 & 0 & 0 & 16 & 10 & 2 & 12 & 8 \\
+Oracle & 13 & 13 & 13 & 16 & 14 & 17 & 14 & 16 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Each entry is success out of 30. Analysis keeps all eight conditions clustered by seed.
+The primary test is exact under whole-seed exchangeability/sign symmetry, not an arbitrary
+zero-mean null. It evaluates all $2^{30}$ sign assignments by dynamic programming;
+bootstrap intervals use 50,000 whole-seed resamples with analysis seed 20260908 and are
+approximate, unadjusted intervals. Four secondary overall contrasts use Holm correction;
+per-cell comparisons use five distinct eight-condition families, not one global family
+of forty. An independent extraction reproduces all 1,920 outcomes, tests and intervals
+from 48 source-verified confirmation archives.
+
+
+
+\end{document}

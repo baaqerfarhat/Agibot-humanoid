@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "selected_existing_video_illustration_not_benchmark",
+  "source_files": {
+    "results/phase05/adaptive_vs_frozen.mp4": "86b7533a406302ee98d64412990fffdbeedaf334755317eb91651acd20c6bdf9",
+    "openpi/compare_video.py": "5e2747c8ee671ba2ea446dda9ef715189e20e0eaf252c72a828659c79508d545",
+    "openpi/gate_faults.py": "3129cf38cc45f54f39455e4ebd24c80f0a81fec683367e30bab7fe6b0639110b",
+    "docs/ADAPTIVE_CONTROL_VLA.md": "d21378aaf783f46f9f8b0a27bd005134e2c6b01ca918abf0b968d9f475024156",
+    "paper/make_video_figure.py": "00781bf11ca3f57deec0cd2129d5c6f576c9e4adce2e7a7acbd5ec9185256dd8"
+  },
+  "video_origin_commit": "a04c285fcf8a8a878890ad21bb698586f0089698",
+  "video_origin_verified_byte_identical": true,
+  "video_stream": {
+    "width": 768,
+    "height": 464,
+    "r_frame_rate": "20/1",
+    "duration": "48.000000",
+    "nb_frames": "960",
+    "disposition": {
+      "default": 1,
+      "dub": 0,
+      "original": 0,
+      "comment": 0,
+      "lyrics": 0,
+      "karaoke": 0,
+      "forced": 0,
+      "hearing_impaired": 0,
+      "visual_impaired": 0,
+      "clean_effects": 0,
+      "attached_pic": 0,
+      "timed_thumbnails": 0
+    },
+    "tags": {
+      "language": "und",
+      "handler_name": "VideoHandler",
+      "vendor_id": "[0][0][0][0]"
+    }
+  },
+  "episode": {
+    "clip_index_zero_based": 0,
+    "clip_start_frame": 0,
+    "task_text": "pick up the black bowl next to the ramekin and place it on the plate",
+    "suite": "libero_spatial",
+    "policy": "pi0.5",
+    "robot": "Panda",
+    "fault": {
+      "kind": "command_offset",
+      "value": 0.05,
+      "channels": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "units": "environment action coordinates"
+    },
+    "correction": {
+      "family": "original_online_calibrated_adaptation",
+      "channels": [
+        3,
+        4,
+        5
+      ],
+      "continuous_updates": true
+    },
+    "task_id": null,
+    "initial_state_id": null,
+    "full_render_cli": null,
+    "per_video_episode_json_available": false,
+    "reported_outcomes": {
+      "off": {
+        "success": false,
+        "displayed_last_step": 229
+      },
+      "on": {
+        "success": true,
+        "displayed_last_step": 162
+      }
+    },
+    "outcome_evidence": "Burned-in original annotations at frames 152 and 219; renderer attaches env.step done to raw pre-transition frame."
+  },
+  "figure_frame": {
+    "zero_based_index": 152,
+    "presentation_time_seconds": 7.6,
+    "displayed_step_off": 162,
+    "displayed_step_on": 162,
+    "either_panel_held_at_selected_frame": false,
+    "on_first_success_annotation": true,
+    "image_timing": "Both raw scene images precede the env.step transition numbered 162; success is reported from that following transition."
+  },
+  "evidence_frames": [
+    {
+      "index_zero_based": 0,
+      "presentation_time_seconds": 0.0,
+      "path": "paper/video_assets/spatial_clip1_frame_0000_annotated.png"
+    },
+    {
+      "index_zero_based": 151,
+      "presentation_time_seconds": 7.55,
+      "path": "paper/video_assets/spatial_clip1_frame_0151_annotated.png"
+    },
+    {
+      "index_zero_based": 152,
+      "presentation_time_seconds": 7.6,
+      "path": "paper/video_assets/spatial_clip1_frame_0152_annotated.png"
+    },
+    {
+      "index_zero_based": 219,
+      "presentation_time_seconds": 10.95,
+      "path": "paper/video_assets/spatial_clip1_frame_0219_annotated.png"
+    }
+  ],
+  "image_operations": {
+    "decode": "ffmpeg exact zero-based frame select, RGB24, lossless PNG",
+    "crop_xywh": {
+      "off": [
+        0,
+        75,
+        384,
+        389
+      ],
+      "on": [
+        384,
+        75,
+        384,
+        389
+      ]
+    },
+    "crop_reason": "Separate original 384-pixel panels and remove only encoded 75-pixel annotation bar; retain full 389-pixel-high scene.",
+    "encoded_geometry_note": "compare_video creates 768x458 with a 74-pixel bar; original imageio encoding resized height to 464. Header boundary is at approximately 74*464/458=74.969 pixels.",
+    "scene_pixel_identity_checked": true,
+    "retouching_or_generated_scene_content": false,
+    "figure_annotations": "New text outside scene; no arrows, object relocation, selective scene cropping or recoloring."
+  },
+  "selection_and_interpretation": {
+    "original_selection": "docs/ADAPTIVE_CONTROL_VLA.md section 28.3: 4 selected repaired clips from 6 spatial candidates; 2 off-success skips; 0 corrected-failure skips.",
+    "figure_selection": "First spatial clip selected for recognizable bowl-to-plate goal; frame 152 is first corrected-success annotation and last matched live step.",
+    "pairing": "Renderer reuses task and stored initial state; no archived full-state hash or task/init sidecar is available for this video.",
+    "policy_randomness": "Renderer explicitly requests pin_rng=False; two outcomes are not a deterministic counterfactual with identical policy samples.",
+    "statistics": "No success rate or estimator ranking may be inferred from selected clips. Stored benchmark outcome JSON is not treated as the outcome record for this re-render.",
+    "not_shown": [
+      "composite adaptation",
+      "weighted allocator",
+      "physical torque fault"
+    ],
+    "camera": "Current video byte-matches corrected re-render; documented native policy camera and separately widened recording image.",
+    "historical_limits": "Exact render CLI, selected initial-state ID, and per-rollout source/full-state receipts were not saved; no modern provenance guarantee is inferred."
+  },
+  "commands": [
+    [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-i",
+      "/home/fengze/vla-adaptation/results/phase05/adaptive_vs_frozen.mp4",
+      "-vf",
+      "select=eq(n\\,0),format=rgb24",
+      "-frames:v",
+      "1",
+      "-y",
+      "/home/fengze/vla-adaptation/paper/video_assets/spatial_clip1_frame_0000_annotated.png"
+    ],
+    [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-i",
+      "/home/fengze/vla-adaptation/results/phase05/adaptive_vs_frozen.mp4",
+      "-vf",
+      "select=eq(n\\,151),format=rgb24",
+      "-frames:v",
+      "1",
+      "-y",
+      "/home/fengze/vla-adaptation/paper/video_assets/spatial_clip1_frame_0151_annotated.png"
+    ],
+    [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-i",
+      "/home/fengze/vla-adaptation/results/phase05/adaptive_vs_frozen.mp4",
+      "-vf",
+      "select=eq(n\\,152),format=rgb24",
+      "-frames:v",
+      "1",
+      "-y",
+      "/home/fengze/vla-adaptation/paper/video_assets/spatial_clip1_frame_0152_annotated.png"
+    ],
+    [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-i",
+      "/home/fengze/vla-adaptation/results/phase05/adaptive_vs_frozen.mp4",
+      "-vf",
+      "select=eq(n\\,219),format=rgb24",
+      "-frames:v",
+      "1",
+      "-y",
+      "/home/fengze/vla-adaptation/paper/video_assets/spatial_clip1_frame_0219_annotated.png"
+    ],
+    [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-i",
+      "/home/fengze/vla-adaptation/results/phase05/adaptive_vs_frozen.mp4",
+      "-vf",
+      "select=eq(n\\,152),format=rgb24,crop=384:389:0:75:exact=1",
+      "-frames:v",
+      "1",
+      "-y",
+      "/home/fengze/vla-adaptation/paper/video_assets/spatial_clip1_frame_0152_off.png"
+    ],
+    [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-i",
+      "/home/fengze/vla-adaptation/results/phase05/adaptive_vs_frozen.mp4",
+      "-vf",
+      "select=eq(n\\,152),format=rgb24,crop=384:389:384:75:exact=1",
+      "-frames:v",
+      "1",
+      "-y",
+      "/home/fengze/vla-adaptation/paper/video_assets/spatial_clip1_frame_0152_on.png"
+    ]
+  ],
+  "ffmpeg_version": "ffmpeg version 4.4.2-0ubuntu0.22.04.1 Copyright (c) 2000-2021 the FFmpeg developers",
+  "output_files": {
+    "paper/video_assets/spatial_clip1_frame_0000_annotated.png": "8c3642132c983e4b541c9e257caf206a783d9e538c9e6f03126a17c5be6db726",
+    "paper/video_assets/spatial_clip1_frame_0151_annotated.png": "f6d0a945783f7b727df703562c100285bc191fe51ab5461856a12cc184d5ab99",
+    "paper/video_assets/spatial_clip1_frame_0152_annotated.png": "ef318457a0643bfaa530b52222f350732727e12e67d36eb465d5fe8c95ae3353",
+    "paper/video_assets/spatial_clip1_frame_0219_annotated.png": "4bd336f0cf68bded93a10f7a3cc40172201f1dfe6f19f69e58d5f1ea5c5bc1d1",
+    "paper/video_assets/spatial_clip1_frame_0152_off.png": "c550937ae97367fee8df1eb0ce203204a4ecc07d7f33666ab0948489c9f7c02a",
+    "paper/video_assets/spatial_clip1_frame_0152_on.png": "5f1a3309be2f395020f3c9431622e29d5dbd00c556c6670773fd1db257016515",
+    "paper/fig_video_evidence.pdf": "0eeb82ef8c76db32086cb4dbcb3743fe708744516d8b8ab3f7682fb3048c94c8",
+    "paper/video_assets/fig_video_evidence.png": "c8c1b696d07b59eb5fe931c40142a70eed6b7a303a55e03d0088cf01bbffcc79"
+  }
+}

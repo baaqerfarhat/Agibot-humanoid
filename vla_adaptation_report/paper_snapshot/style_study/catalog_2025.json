@@ -1,0 +1,43 @@
+{
+  "year": 2025,
+  "retrieved_utc": "2026-09-08T21:29:57.413700+00:00",
+  "sources": {
+    "oral.html": {
+      "url": "https://iclr.cc/virtual/2025/events/oral",
+      "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2025/catalogs/oral.html",
+      "sha256": "e07377be09b1321f97a30a2e535464ce765c06acf4345adef2f903f681c15c62",
+      "bytes": 1035026
+    },
+    "awards.html": {
+      "url": "https://blog.iclr.cc/2025/04/22/announcing-the-outstanding-paper-awards-at-iclr-2025/",
+      "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2025/catalogs/awards.html",
+      "sha256": "af5b6218bdbaded56d290a30a0e60f67da69a2ab8a579fd818b761283cfcd8d9",
+      "bytes": 57213
+    },
+    "iclr-2025-orals-posters.json": {
+      "url": "https://iclr.cc/static/virtual/data/iclr-2025-orals-posters.json",
+      "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2025/catalogs/iclr-2025-orals-posters.json",
+      "sha256": "ebd6fa23d9ca54628eb715885756bf7e5addf72db134648dc683251678f86a70",
+      "bytes": 16535673
+    },
+    "proceedings.html": {
+      "url": "https://proceedings.iclr.cc/paper_files/paper/2025",
+      "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2025/catalogs/proceedings.html",
+      "sha256": "5bbd1d59f6ab87b53fcdd42060a5631f625b38d6fc68c4581aea1e4ad50173c6",
+      "bytes": 2536904
+    }
+  },
+  "oral_events": 213,
+  "unique_openreview_ids": 213,
+  "named_outstanding": 3,
+  "named_honorable_mentions": 3,
+  "unnamed_initial_award_pool": 36,
+  "award_scope": "The official announcement names only 3 winners and 3 honorable mentions; no additional candidates or finalists inferred.",
+  "openreview_pdf_access": "One direct test returned HTTP 403 challenge; no repeated 403 requests. Official proceedings used instead.",
+  "title_aliases": {
+    "AlphaEdit: Null-Space Constrained Model Editing for Language Models": "AlphaEdit: Null-Space Constrained Knowledge Editing for Language Models",
+    "SymmetricDiffusers: Learning Discrete Diffusion Models over Finite Symmetric Groups": "SymmetricDiffusers: Learning Discrete Diffusion on Finite Symmetric Groups",
+    "Classic but Everlasting: Traditional Gradient-Based Algorithms Converges Fast Even in Time-Varying Multi-Player Games": "Classic but Everlasting: Traditional Gradient-Based Algorithms Converge Fast Even in Time-Varying Multi-Player Games"
+  },
+  "script_sha256": "1a571ae00001fc11d40f3718b2d2b7707bb707db749f70a3209878eba570d8e9"
+}

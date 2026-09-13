@@ -1,0 +1,2178 @@
+[
+  {
+    "openreview_id": "uLE3WF3-H_5",
+    "title": "Adversarial Diversity in Hanabi",
+    "authors": [
+      "Brandon Cui",
+      "Andrei Lupu",
+      "Samuel Sokota",
+      "Hengyuan Hu",
+      "David Wu",
+      "Jakob Foerster"
+    ],
+    "candidates": [
+      {
+        "title": "Improved Radar Localization on Lidar Maps Using Shared Embedding",
+        "arxiv_id": "2106.10000v1",
+        "authors": [
+          "Huan Yin",
+          "Yue Wang",
+          "Rong Xiong"
+        ],
+        "updated": "2021-06-18T08:40:04Z",
+        "published": "2021-06-18T08:40:04Z",
+        "title_similarity": 0.381
+      },
+      {
+        "title": "Nationality Classification Using Name Embeddings",
+        "arxiv_id": "1708.07903v1",
+        "authors": [
+          "Junting Ye",
+          "Shuchu Han",
+          "Yifan Hu",
+          "Baris Coskun",
+          "Meizhu Liu",
+          "Hong Qin",
+          "Steven Skiena"
+        ],
+        "updated": "2017-08-25T22:03:09Z",
+        "published": "2017-08-25T22:03:09Z",
+        "title_similarity": 0.3611
+      },
+      {
+        "title": "Content-Based Personalized Recommender System Using Entity Embeddings",
+        "arxiv_id": "2010.12798v1",
+        "authors": [
+          "Xavier Thomas"
+        ],
+        "updated": "2020-10-24T06:25:13Z",
+        "published": "2020-10-24T06:25:13Z",
+        "title_similarity": 0.3556
+      }
+    ]
+  },
+  {
+    "openreview_id": "SMYdcXjJh1q",
+    "title": "Aligning Model and Macaque Inferior Temporal Cortex Representations Improves Model-to-Human Behavioral Alignment and Adversarial Robustness",
+    "authors": [
+      "Joel Dapello",
+      "Kohitij Kar",
+      "Martin Schrimpf",
+      "Robert Geary",
+      "Michael Ferguson",
+      "David Cox",
+      "James DiCarlo"
+    ],
+    "candidates": [
+      {
+        "title": "Learning Where and When: Patch-Based Spatiotemporal Localization in Weakly Supervised Video Anomaly Detection",
+        "arxiv_id": "2606.29498v1",
+        "authors": [
+          "Hamza Karim",
+          "Nghia Nguyen",
+          "Lokman Bekit",
+          "Yasin Yilmaz"
+        ],
+        "updated": "2026-06-28T16:52:29Z",
+        "published": "2026-06-28T16:52:29Z",
+        "title_similarity": 0.3578
+      },
+      {
+        "title": "Using Word Embeddings for Visual Data Exploration with Ontodia and Wikidata",
+        "arxiv_id": "1903.01275v1",
+        "authors": [
+          "Gerhard Wohlgenannt",
+          "Nikolay Klimov",
+          "Dmitry Mouromtsev",
+          "Daniil Razdyakonov",
+          "Dmitry Pavlov",
+          "Yury Emelyanov"
+        ],
+        "updated": "2019-03-04T14:36:21Z",
+        "published": "2019-03-04T14:36:21Z",
+        "title_similarity": 0.3511
+      },
+      {
+        "title": "Actionable and Political Text Classification using Word Embeddings and LSTM",
+        "arxiv_id": "1607.02501v2",
+        "authors": [
+          "Adithya Rao",
+          "Nemanja Spasojevic"
+        ],
+        "updated": "2016-07-13T20:53:32Z",
+        "published": "2016-07-08T19:53:56Z",
+        "title_similarity": 0.3492
+      }
+    ]
+  },
+  {
+    "openreview_id": "ZCStthyW-TD",
+    "title": "Associative Memory Augmented Asynchronous Spatiotemporal Representation Learning for Event-based Perception",
+    "authors": [
+      "Uday Kamal",
+      "Saurabh Dash",
+      "Saibal Mukhopadhyay"
+    ],
+    "candidates": [
+      {
+        "title": "Learning Where and When: Patch-Based Spatiotemporal Localization in Weakly Supervised Video Anomaly Detection",
+        "arxiv_id": "2606.29498v1",
+        "authors": [
+          "Hamza Karim",
+          "Nghia Nguyen",
+          "Lokman Bekit",
+          "Yasin Yilmaz"
+        ],
+        "updated": "2026-06-28T16:52:29Z",
+        "published": "2026-06-28T16:52:29Z",
+        "title_similarity": 0.4271
+      },
+      {
+        "title": "Metaphor Interpretation Using Word Embeddings",
+        "arxiv_id": "2010.02665v2",
+        "authors": [
+          "Kfir Bar",
+          "Nachum Dershowitz",
+          "Lena Dankin"
+        ],
+        "updated": "2021-12-06T06:52:11Z",
+        "published": "2020-10-06T12:35:13Z",
+        "title_similarity": 0.4058
+      },
+      {
+        "title": "Towards Interpretable Deep Reinforcement Learning Models via Inverse Reinforcement Learning",
+        "arxiv_id": "2203.16464v3",
+        "authors": [
+          "Sean Xie",
+          "Soroush Vosoughi",
+          "Saeed Hassanpour"
+        ],
+        "updated": "2024-03-01T18:40:56Z",
+        "published": "2022-03-30T17:01:59Z",
+        "title_similarity": 0.4022
+      }
+    ]
+  },
+  {
+    "openreview_id": "GcM7qfl5zY",
+    "title": "AutoGT: Automated Graph Transformer Architecture Search",
+    "authors": [
+      "Zizhao Zhang",
+      "Xin Wang",
+      "Chaoyu Guan",
+      "Ziwei Zhang",
+      "Haoyang Li",
+      "Wenwu Zhu"
+    ],
+    "candidates": [
+      {
+        "title": "TabTransformer: Tabular Data Modeling Using Contextual Embeddings",
+        "arxiv_id": "2012.06678v1",
+        "authors": [
+          "Xin Huang",
+          "Ashish Khetan",
+          "Milan Cvitkovic",
+          "Zohar Karnin"
+        ],
+        "updated": "2020-12-11T23:31:23Z",
+        "published": "2020-12-11T23:31:23Z",
+        "title_similarity": 0.3925
+      },
+      {
+        "title": "Augmenting semantic lexicons using word embeddings and transfer learning",
+        "arxiv_id": "2109.09010v2",
+        "authors": [
+          "Thayer Alshaabi",
+          "Colin M. Van Oort",
+          "Mikaela Irene Fudolig",
+          "Michael V. Arnold",
+          "Christopher M. Danforth",
+          "Peter Sheridan Dodds"
+        ],
+        "updated": "2021-11-02T04:27:55Z",
+        "published": "2021-09-18T20:59:52Z",
+        "title_similarity": 0.3894
+      },
+      {
+        "title": "On the Usefulness of Embeddings, Clusters and Strings for Text Generator Evaluation",
+        "arxiv_id": "2205.16001v4",
+        "authors": [
+          "Tiago Pimentel",
+          "Clara Meister",
+          "Ryan Cotterell"
+        ],
+        "updated": "2023-06-29T15:08:38Z",
+        "published": "2022-05-31T17:58:49Z",
+        "title_similarity": 0.3833
+      }
+    ]
+  },
+  {
+    "openreview_id": "rFQfjDC9Mt",
+    "title": "Clean-image Backdoor: Attacking Multi-label Models with Poisoned Labels Only",
+    "authors": [
+      "Kangjie Chen",
+      "Xiaoxuan Lou",
+      "Guowen Xu",
+      "Jiwei Li",
+      "Tianwei Zhang"
+    ],
+    "candidates": [
+      {
+        "title": "TripletTrack: 3D Object Tracking using Triplet Embeddings and LSTM",
+        "arxiv_id": "2210.16204v1",
+        "authors": [
+          "Nicola Marinello",
+          "Marc Proesmans",
+          "Luc Van Gool"
+        ],
+        "updated": "2022-10-28T15:23:50Z",
+        "published": "2022-10-28T15:23:50Z",
+        "title_similarity": 0.4262
+      },
+      {
+        "title": "Improving Sequential Latent Variable Models with Autoregressive Flows",
+        "arxiv_id": "2010.03172v2",
+        "authors": [
+          "Joseph Marino",
+          "Lei Chen",
+          "Jiawei He",
+          "Stephan Mandt"
+        ],
+        "updated": "2022-03-08T05:32:41Z",
+        "published": "2020-10-07T05:14:37Z",
+        "title_similarity": 0.4094
+      },
+      {
+        "title": "Regularized Sequential Latent Variable Models with Adversarial Neural Networks",
+        "arxiv_id": "2108.04496v1",
+        "authors": [
+          "Jin Huang",
+          "Ming Xiao"
+        ],
+        "updated": "2021-08-10T08:05:14Z",
+        "published": "2021-08-10T08:05:14Z",
+        "title_similarity": 0.3852
+      }
+    ]
+  },
+  {
+    "openreview_id": "iIfDQVyuFD",
+    "title": "Confidential-PROFITT: Confidential PROof of FaIr Training of Trees",
+    "authors": [
+      "Ali Shahin Shamsabadi",
+      "Sierra Wyllie",
+      "Nicholas Franzese",
+      "Natalie Dullerud",
+      "Sébastien Gambs",
+      "Nicolas Papernot",
+      "Xiao Wang",
+      "Adrian Weller"
+    ],
+    "candidates": [
+      {
+        "title": "Vehicle Re-Identification: an Efficient Baseline Using Triplet Embedding",
+        "arxiv_id": "1901.01015v4",
+        "authors": [
+          "Ratnesh Kumar",
+          "Edwin Weill",
+          "Farzin Aghdasi",
+          "Parthsarathy Sriram"
+        ],
+        "updated": "2019-08-08T20:03:45Z",
+        "published": "2019-01-04T08:13:54Z",
+        "title_similarity": 0.4667
+      },
+      {
+        "title": "On the Compositionality Prediction of Noun Phrases using Poincaré Embeddings",
+        "arxiv_id": "1906.03007v1",
+        "authors": [
+          "Abhik Jana",
+          "Dmitry Puzyrev",
+          "Alexander Panchenko",
+          "Pawan Goyal",
+          "Chris Biemann",
+          "Animesh Mukherjee"
+        ],
+        "updated": "2019-06-07T11:05:30Z",
+        "published": "2019-06-07T11:05:30Z",
+        "title_similarity": 0.4194
+      },
+      {
+        "title": "Efficient Malware Analysis Using Metric Embeddings",
+        "arxiv_id": "2212.02663v1",
+        "authors": [
+          "Ethan M. Rudd",
+          "David Krisiloff",
+          "Scott Coull",
+          "Daniel Olszewski",
+          "Edward Raff",
+          "James Holt"
+        ],
+        "updated": "2022-12-05T23:49:04Z",
+        "published": "2022-12-05T23:49:04Z",
+        "title_similarity": 0.4118
+      }
+    ]
+  },
+  {
+    "openreview_id": "ih0uFRFhaZZ",
+    "title": "Continual Unsupervised Disentangling of Self-Organizing Representations",
+    "authors": [
+      "Zhiyuan Li",
+      "Xiajun Jiang",
+      "Ryan Missel",
+      "Prashnna Gyawali",
+      "Nilesh Kumar",
+      "Linwei Wang"
+    ],
+    "candidates": [
+      {
+        "title": "Unsupervised Document and Template Clustering using Multimodal Embeddings",
+        "arxiv_id": "2506.12116v3",
+        "authors": [
+          "Phillipe R. Sampaio",
+          "Helene Maxcici"
+        ],
+        "updated": "2025-10-26T20:20:07Z",
+        "published": "2025-06-13T14:07:44Z",
+        "title_similarity": 0.4733
+      },
+      {
+        "title": "Supervised Typing of Big Graphs using Semantic Embeddings",
+        "arxiv_id": "1703.07805v1",
+        "authors": [
+          "Mayank Kejriwal",
+          "Pedro Szekely"
+        ],
+        "updated": "2017-03-22T18:20:07Z",
+        "published": "2017-03-22T18:20:07Z",
+        "title_similarity": 0.4696
+      },
+      {
+        "title": "On periodic distributed representations using Fourier embeddings",
+        "arxiv_id": "2605.10818v2",
+        "authors": [
+          "Jakeb Chouinard"
+        ],
+        "updated": "2026-05-12T17:19:23Z",
+        "published": "2026-05-11T16:35:32Z",
+        "title_similarity": 0.4553
+      }
+    ]
+  },
+  {
+    "openreview_id": "vSVLM2j9eie",
+    "title": "Crossformer: Transformer Utilizing Cross-Dimension Dependency for Multivariate Time Series Forecasting",
+    "authors": [
+      "Yunhao Zhang",
+      "Junchi Yan"
+    ],
+    "candidates": [
+      {
+        "title": "TRACE: TRansformer-based Attribution using Contrastive Embeddings in LLMs",
+        "arxiv_id": "2407.04981v1",
+        "authors": [
+          "Cheng Wang",
+          "Xinyang Lu",
+          "See-Kiong Ng",
+          "Bryan Kian Hsiang Low"
+        ],
+        "updated": "2024-07-06T07:19:30Z",
+        "published": "2024-07-06T07:19:30Z",
+        "title_similarity": 0.3871
+      },
+      {
+        "title": "TabTransformer: Tabular Data Modeling Using Contextual Embeddings",
+        "arxiv_id": "2012.06678v1",
+        "authors": [
+          "Xin Huang",
+          "Ashish Khetan",
+          "Milan Cvitkovic",
+          "Zohar Karnin"
+        ],
+        "updated": "2020-12-11T23:31:23Z",
+        "published": "2020-12-11T23:31:23Z",
+        "title_similarity": 0.3624
+      },
+      {
+        "title": "Unsupervised Document and Template Clustering using Multimodal Embeddings",
+        "arxiv_id": "2506.12116v3",
+        "authors": [
+          "Phillipe R. Sampaio",
+          "Helene Maxcici"
+        ],
+        "updated": "2025-10-26T20:20:07Z",
+        "published": "2025-06-13T14:07:44Z",
+        "title_similarity": 0.3567
+      }
+    ]
+  },
+  {
+    "openreview_id": "VA1YpcNr7ul",
+    "title": "DASHA: Distributed Nonconvex Optimization with Communication Compression and Optimal Oracle Complexity",
+    "authors": [
+      "Alexander Tyurin",
+      "Peter Richtarik"
+    ],
+    "candidates": [
+      {
+        "title": "DASHA: Distributed Nonconvex Optimization with Communication Compression, Optimal Oracle Complexity, and No Client Synchronization",
+        "arxiv_id": "2202.01268v2",
+        "authors": [
+          "Alexander Tyurin",
+          "Peter Richtárik"
+        ],
+        "updated": "2022-05-22T10:31:19Z",
+        "published": "2022-02-02T20:10:40Z",
+        "title_similarity": 0.8585
+      },
+      {
+        "title": "BLens: Contrastive Captioning of Binary Functions using Ensemble Embedding",
+        "arxiv_id": "2409.07889v2",
+        "authors": [
+          "Tristan Benoit",
+          "Yunru Wang",
+          "Moritz Dannehl",
+          "Johannes Kinder"
+        ],
+        "updated": "2025-02-03T15:26:39Z",
+        "published": "2024-09-12T09:49:34Z",
+        "title_similarity": 0.4103
+      },
+      {
+        "title": "Global optimization using random embeddings",
+        "arxiv_id": "2107.12102v1",
+        "authors": [
+          "Coralia Cartis",
+          "Estelle Massart",
+          "Adilet Otemissov"
+        ],
+        "updated": "2021-07-26T10:45:49Z",
+        "published": "2021-07-26T10:45:49Z",
+        "title_similarity": 0.4
+      }
+    ]
+  },
+  {
+    "openreview_id": "27uBgHuoSQ",
+    "title": "Data Continuity Matters: Improving Sequence Modeling with Lipschitz Regularizer",
+    "authors": [
+      "Eric Qu",
+      "Xufang Luo",
+      "Dongsheng Li"
+    ],
+    "candidates": [
+      {
+        "title": "Improving Sequential Latent Variable Models with Autoregressive Flows",
+        "arxiv_id": "2010.03172v2",
+        "authors": [
+          "Joseph Marino",
+          "Lei Chen",
+          "Jiawei He",
+          "Stephan Mandt"
+        ],
+        "updated": "2022-03-08T05:32:41Z",
+        "published": "2020-10-07T05:14:37Z",
+        "title_similarity": 0.4697
+      },
+      {
+        "title": "Toward Interpretable Deep Reinforcement Learning with Linear Model U-Trees",
+        "arxiv_id": "1807.05887v1",
+        "authors": [
+          "Guiliang Liu",
+          "Oliver Schulte",
+          "Wang Zhu",
+          "Qingcan Li"
+        ],
+        "updated": "2018-07-16T14:31:35Z",
+        "published": "2018-07-16T14:31:35Z",
+        "title_similarity": 0.4444
+      },
+      {
+        "title": "Recruitment Market Trend Analysis with Sequential Latent Variable Models",
+        "arxiv_id": "1712.02975v1",
+        "authors": [
+          "Chen Zhu",
+          "Hengshu Zhu",
+          "Hui Xiong",
+          "Pengliang Ding",
+          "Fang Xie"
+        ],
+        "updated": "2017-12-08T08:06:03Z",
+        "published": "2017-12-08T08:06:03Z",
+        "title_similarity": 0.3731
+      }
+    ]
+  },
+  {
+    "openreview_id": "fk7RbGibe1",
+    "title": "Domain Generalization via Heckman-type Selection Models ",
+    "authors": [
+      "Hyungu Kahng",
+      "Hyungrok Do",
+      "Judy Zhong"
+    ],
+    "candidates": [
+      {
+        "title": "Learning Multi-Relational Semantics Using Neural-Embedding Models",
+        "arxiv_id": "1411.4072v1",
+        "authors": [
+          "Bishan Yang",
+          "Wen-tau Yih",
+          "Xiaodong He",
+          "Jianfeng Gao",
+          "Li Deng"
+        ],
+        "updated": "2014-11-14T22:08:01Z",
+        "published": "2014-11-14T22:08:01Z",
+        "title_similarity": 0.5421
+      },
+      {
+        "title": "Supervised Domain Adaptation using Graph Embedding",
+        "arxiv_id": "2003.04063v2",
+        "authors": [
+          "Lukas Hedegaard Morsing",
+          "Omar Ali Sheikh-Omar",
+          "Alexandros Iosifidis"
+        ],
+        "updated": "2020-09-08T09:35:19Z",
+        "published": "2020-03-09T12:25:13Z",
+        "title_similarity": 0.4043
+      },
+      {
+        "title": "Domain-Independent Game Abstraction using Word Embedding Techniques",
+        "arxiv_id": "2605.15543v1",
+        "authors": [
+          "Juho Kim",
+          "Tuomas Sandholm"
+        ],
+        "updated": "2026-05-15T02:30:36Z",
+        "published": "2026-05-15T02:30:36Z",
+        "title_similarity": 0.4037
+      }
+    ]
+  },
+  {
+    "openreview_id": "Wc5bmZZU9cy",
+    "title": "Dr.Spider: A Diagnostic Evaluation Benchmark towards Text-to-SQL Robustness",
+    "authors": [
+      "Shuaichen Chang",
+      "Jun Wang",
+      "Mingwen Dong",
+      "Lin Pan",
+      "Henghui Zhu",
+      "Alexander Hanbo Li",
+      "Wuwei Lan",
+      "Sheng Zhang",
+      "Jiarong Jiang",
+      "Joseph Lilien",
+      "Steve Ash",
+      "William Wang",
+      "Zhiguo Wang",
+      "Vittorio Castelli",
+      "Patrick Ng",
+      "Bing Xiang"
+    ],
+    "candidates": [
+      {
+        "title": "Improved Radar Localization on Lidar Maps Using Shared Embedding",
+        "arxiv_id": "2106.10000v1",
+        "authors": [
+          "Huan Yin",
+          "Yue Wang",
+          "Rong Xiong"
+        ],
+        "updated": "2021-06-18T08:40:04Z",
+        "published": "2021-06-18T08:40:04Z",
+        "title_similarity": 0.4
+      },
+      {
+        "title": "Geological Inference from Textual Data using Word Embeddings",
+        "arxiv_id": "2504.07490v1",
+        "authors": [
+          "Nanmanas Linphrachaya",
+          "Irving Gómez-Méndez",
+          "Adil Siripatana"
+        ],
+        "updated": "2025-04-10T06:46:38Z",
+        "published": "2025-04-10T06:46:38Z",
+        "title_similarity": 0.3932
+      },
+      {
+        "title": "Unsupervised Abbreviation Disambiguation Contextual disambiguation using word embeddings",
+        "arxiv_id": "1904.00929v2",
+        "authors": [
+          "Manuel Ciosici",
+          "Tobias Sommer",
+          "Ira Assent"
+        ],
+        "updated": "2019-05-22T07:26:11Z",
+        "published": "2019-04-01T15:59:18Z",
+        "title_similarity": 0.3862
+      }
+    ]
+  },
+  {
+    "openreview_id": "R98ZfMt-jE",
+    "title": "Efficient Discrete Multi Marginal Optimal Transport Regularization",
+    "authors": [
+      "Ronak Mehta",
+      "Jeffery Kline",
+      "Vishnu Lokhande",
+      "Glenn Fung",
+      "Vikas Singh"
+    ],
+    "candidates": [
+      {
+        "title": "Emergent Structure in Multi-agent Systems Using Geometric Embeddings",
+        "arxiv_id": "2411.11142v1",
+        "authors": [
+          "Dimitria Silveria",
+          "Kleber Cabral",
+          "Peter Jardine",
+          "Sidney Givigi"
+        ],
+        "updated": "2024-11-17T18:13:46Z",
+        "published": "2024-11-17T18:13:46Z",
+        "title_similarity": 0.4
+      },
+      {
+        "title": "On the Usefulness of Embeddings, Clusters and Strings for Text Generator Evaluation",
+        "arxiv_id": "2205.16001v4",
+        "authors": [
+          "Tiago Pimentel",
+          "Clara Meister",
+          "Ryan Cotterell"
+        ],
+        "updated": "2023-06-29T15:08:38Z",
+        "published": "2022-05-31T17:58:49Z",
+        "title_similarity": 0.3969
+      },
+      {
+        "title": "Multi-Domain Biometric Recognition using Body Embeddings",
+        "arxiv_id": "2503.10931v1",
+        "authors": [
+          "Anirudh Nanduri",
+          "Siyuan Huang",
+          "Rama Chellappa"
+        ],
+        "updated": "2025-03-13T22:38:18Z",
+        "published": "2025-03-13T22:38:18Z",
+        "title_similarity": 0.3818
+      }
+    ]
+  },
+  {
+    "openreview_id": "7YfHla7IxBJ",
+    "title": "Encoding Recurrence into Transformers",
+    "authors": [
+      "Feiqing Huang",
+      "Kexin Lu",
+      "Yuxi Cai",
+      "Zhen Qin",
+      "Yanwen Fang",
+      "Guangjian Tian",
+      "Guodong Li"
+    ],
+    "candidates": [
+      {
+        "title": "Personalizing Retrieval using Joint Embeddings or \"the Return of Fluffy\"",
+        "arxiv_id": "2510.05411v1",
+        "authors": [
+          "Bruno Korbar",
+          "Andrew Zisserman"
+        ],
+        "updated": "2025-10-06T22:08:30Z",
+        "published": "2025-10-06T22:08:30Z",
+        "title_similarity": 0.4
+      },
+      {
+        "title": "Mind the Gap when Conditioning Amortised Inference in Sequential Latent-Variable Models",
+        "arxiv_id": "2101.07046v2",
+        "authors": [
+          "Justin Bayer",
+          "Maximilian Soelch",
+          "Atanas Mirchev",
+          "Baris Kayalibay",
+          "Patrick van der Smagt"
+        ],
+        "updated": "2021-03-17T16:52:01Z",
+        "published": "2021-01-18T12:53:39Z",
+        "title_similarity": 0.3818
+      },
+      {
+        "title": "Learning Sequential Latent Variable Models from Multimodal Time Series Data",
+        "arxiv_id": "2204.10419v2",
+        "authors": [
+          "Oliver Limoyo",
+          "Trevor Ablett",
+          "Jonathan Kelly"
+        ],
+        "updated": "2023-01-20T07:11:44Z",
+        "published": "2022-04-21T21:59:24Z",
+        "title_similarity": 0.38
+      }
+    ]
+  },
+  {
+    "openreview_id": "c9lAOPvQHS",
+    "title": "Fisher-Legendre (FishLeg) optimization of deep neural networks",
+    "authors": [
+      "Jezabel R. Garcia",
+      "Federica Freddi",
+      "Stathi Fotiadis",
+      "Maolin Li",
+      "Sattar Vakili",
+      "Alberto Bernacchia",
+      "Guillaume Hennequin"
+    ],
+    "candidates": [
+      {
+        "title": "Khmer Text Classification Using Word Embedding and Neural Networks",
+        "arxiv_id": "2112.06748v1",
+        "authors": [
+          "Rina Buoy",
+          "Nguonly Taing",
+          "Sovisal Chenda"
+        ],
+        "updated": "2021-12-13T15:57:32Z",
+        "published": "2021-12-13T15:57:32Z",
+        "title_similarity": 0.5225
+      },
+      {
+        "title": "Global optimization using random embeddings",
+        "arxiv_id": "2107.12102v1",
+        "authors": [
+          "Coralia Cartis",
+          "Estelle Massart",
+          "Adilet Otemissov"
+        ],
+        "updated": "2021-07-26T10:45:49Z",
+        "published": "2021-07-26T10:45:49Z",
+        "title_similarity": 0.4348
+      },
+      {
+        "title": "Regularized Sequential Latent Variable Models with Adversarial Neural Networks",
+        "arxiv_id": "2108.04496v1",
+        "authors": [
+          "Jin Huang",
+          "Ming Xiao"
+        ],
+        "updated": "2021-08-10T08:05:14Z",
+        "published": "2021-08-10T08:05:14Z",
+        "title_similarity": 0.4228
+      }
+    ]
+  },
+  {
+    "openreview_id": "UkU05GOH7_6",
+    "title": "Generating Diverse Cooperative Agents by Learning Incompatible Policies",
+    "authors": [
+      "Rujikorn Charakorn",
+      "Poramate Manoonpong",
+      "Nat Dilokthanakul"
+    ],
+    "candidates": [
+      {
+        "title": "Appearance Codes using Joint Embedding Learning of Multiple Modalities",
+        "arxiv_id": "2311.11427v1",
+        "authors": [
+          "Alex Zhang",
+          "Evan Dogariu"
+        ],
+        "updated": "2023-11-19T21:24:34Z",
+        "published": "2023-11-19T21:24:34Z",
+        "title_similarity": 0.5238
+      },
+      {
+        "title": "Emerging-properties Mapping Using Spatial Embedding Statistics: EMUSES",
+        "arxiv_id": "2406.14309v1",
+        "authors": [
+          "Chris Foulon",
+          "Marcela Ovando-Tellez",
+          "Lia Talozzi",
+          "Maurizio Corbetta",
+          "Anna Matsulevits",
+          "Michel Thiebaut de Schotten"
+        ],
+        "updated": "2024-06-20T13:39:14Z",
+        "published": "2024-06-20T13:39:14Z",
+        "title_similarity": 0.4921
+      },
+      {
+        "title": "Generating Labels for Regression of Subjective Constructs using Triplet Embeddings",
+        "arxiv_id": "1904.01643v2",
+        "authors": [
+          "Karel Mundnich",
+          "Brandon M. Booth",
+          "Benjamin Girault",
+          "Shrikanth Narayanan"
+        ],
+        "updated": "2020-02-18T17:09:06Z",
+        "published": "2019-04-02T19:53:37Z",
+        "title_similarity": 0.438
+      }
+    ]
+  },
+  {
+    "openreview_id": "4t9q35BxGr",
+    "title": "Inequality phenomenon in $l_{\\infty}$-adversarial training, and its unrealized threats",
+    "authors": [
+      "Ranjie Duan",
+      "YueFeng Chen",
+      "Yao Zhu",
+      "Xiaojun Jia",
+      "Rong Zhang",
+      "Hui Xue'"
+    ],
+    "candidates": [
+      {
+        "title": "WellFactor: Patient Profiling using Integrative Embedding of Healthcare Data",
+        "arxiv_id": "2312.14129v1",
+        "authors": [
+          "Dongjin Choi",
+          "Andy Xiang",
+          "Ozgur Ozturk",
+          "Deep Shrestha",
+          "Barry Drake",
+          "Hamid Haidarian",
+          "Faizan Javed",
+          "Haesun Park"
+        ],
+        "updated": "2023-12-21T18:49:22Z",
+        "published": "2023-12-21T18:49:22Z",
+        "title_similarity": 0.4088
+      },
+      {
+        "title": "Regularized Sequential Latent Variable Models with Adversarial Neural Networks",
+        "arxiv_id": "2108.04496v1",
+        "authors": [
+          "Jin Huang",
+          "Ming Xiao"
+        ],
+        "updated": "2021-08-10T08:05:14Z",
+        "published": "2021-08-10T08:05:14Z",
+        "title_similarity": 0.3857
+      },
+      {
+        "title": "An Analysis of Hierarchical Text Classification Using Word Embeddings",
+        "arxiv_id": "1809.01771v1",
+        "authors": [
+          "Roger A. Stein",
+          "Patricia A. Jaques",
+          "Joao F. Valiati"
+        ],
+        "updated": "2018-09-06T00:31:51Z",
+        "published": "2018-09-06T00:31:51Z",
+        "title_similarity": 0.3817
+      }
+    ]
+  },
+  {
+    "openreview_id": "zKvm1ETDOq",
+    "title": "Is Adversarial Training Really a Silver Bullet for Mitigating Data Poisoning?",
+    "authors": [
+      "Rui Wen",
+      "Zhengyu Zhao",
+      "Zhuoran Liu",
+      "Michael Backes",
+      "Tianhao Wang",
+      "Yang Zhang"
+    ],
+    "candidates": [
+      {
+        "title": "Simultaneous Denoising and Dereverberation Using Deep Embedding Features",
+        "arxiv_id": "2004.02420v1",
+        "authors": [
+          "Cunhang Fan",
+          "Jianhua Tao",
+          "Bin Liu",
+          "Jiangyan Yi",
+          "Zhengqi Wen"
+        ],
+        "updated": "2020-04-06T06:34:01Z",
+        "published": "2020-04-06T06:34:01Z",
+        "title_similarity": 0.4122
+      },
+      {
+        "title": "Sprout: Designing Expressivity for Robots Using Fiber-Embedded Actuator",
+        "arxiv_id": "2401.06262v1",
+        "authors": [
+          "Amy Koike",
+          "Michael Wehner",
+          "Bilge Mutlu"
+        ],
+        "updated": "2024-01-11T21:16:15Z",
+        "published": "2024-01-11T21:16:15Z",
+        "title_similarity": 0.4062
+      },
+      {
+        "title": "Towards Interpretable Deep Reinforcement Learning Models via Inverse Reinforcement Learning",
+        "arxiv_id": "2203.16464v3",
+        "authors": [
+          "Sean Xie",
+          "Soroush Vosoughi",
+          "Saeed Hassanpour"
+        ],
+        "updated": "2024-03-01T18:40:56Z",
+        "published": "2022-03-30T17:01:59Z",
+        "title_similarity": 0.4054
+      }
+    ]
+  },
+  {
+    "openreview_id": "688hNNMigVX",
+    "title": "Learning a Data-Driven Policy Network for Pre-Training Automated Feature Engineering",
+    "authors": [
+      "Liyao Li",
+      "Haobo Wang",
+      "Liangyu Zha",
+      "Qingyi Huang",
+      "Sai Wu",
+      "Gang Chen",
+      "Junbo Zhao"
+    ],
+    "candidates": [
+      {
+        "title": "Deep Neural Networks for Query Expansion using Word Embeddings",
+        "arxiv_id": "1811.03514v1",
+        "authors": [
+          "Ayyoob Imani",
+          "Amir Vakili",
+          "Ali Montazer",
+          "Azadeh Shakery"
+        ],
+        "updated": "2018-11-08T16:01:35Z",
+        "published": "2018-11-08T16:01:35Z",
+        "title_similarity": 0.4409
+      },
+      {
+        "title": "Simultaneous Denoising and Dereverberation Using Deep Embedding Features",
+        "arxiv_id": "2004.02420v1",
+        "authors": [
+          "Cunhang Fan",
+          "Jianhua Tao",
+          "Bin Liu",
+          "Jiangyan Yi",
+          "Zhengqi Wen"
+        ],
+        "updated": "2020-04-06T06:34:01Z",
+        "published": "2020-04-06T06:34:01Z",
+        "title_similarity": 0.4058
+      },
+      {
+        "title": "It's All in the Embedding! Fake News Detection Using Document Embeddings",
+        "arxiv_id": "2304.07781v1",
+        "authors": [
+          "Ciprian-Octavian Truică",
+          "Elena-Simona Apostol"
+        ],
+        "updated": "2023-04-16T13:30:06Z",
+        "published": "2023-04-16T13:30:06Z",
+        "title_similarity": 0.391
+      }
+    ]
+  },
+  {
+    "openreview_id": "sKc6fgce1zs",
+    "title": "Learning About Progress From Experts",
+    "authors": [
+      "Jake Bruce",
+      "Ankit Anand",
+      "Bogdan Mazoure",
+      "Rob Fergus"
+    ],
+    "candidates": [
+      {
+        "title": "Learning Sequential Latent Variable Models from Multimodal Time Series Data",
+        "arxiv_id": "2204.10419v2",
+        "authors": [
+          "Oliver Limoyo",
+          "Trevor Ablett",
+          "Jonathan Kelly"
+        ],
+        "updated": "2023-01-20T07:11:44Z",
+        "published": "2022-04-21T21:59:24Z",
+        "title_similarity": 0.4082
+      },
+      {
+        "title": "Using Word Embeddings for Automatic Query Expansion",
+        "arxiv_id": "1606.07608v1",
+        "authors": [
+          "Dwaipayan Roy",
+          "Debjyoti Paul",
+          "Mandar Mitra",
+          "Utpal Garain"
+        ],
+        "updated": "2016-06-24T08:41:57Z",
+        "published": "2016-06-24T08:41:57Z",
+        "title_similarity": 0.3896
+      },
+      {
+        "title": "Generating Labels for Regression of Subjective Constructs using Triplet Embeddings",
+        "arxiv_id": "1904.01643v2",
+        "authors": [
+          "Karel Mundnich",
+          "Brandon M. Booth",
+          "Benjamin Girault",
+          "Shrikanth Narayanan"
+        ],
+        "updated": "2020-02-18T17:09:06Z",
+        "published": "2019-04-02T19:53:37Z",
+        "title_similarity": 0.381
+      }
+    ]
+  },
+  {
+    "openreview_id": "WH1yCa0TbB",
+    "title": "Learning Diffusion Bridges on Constrained Domains",
+    "authors": [
+      "Xingchao Liu",
+      "Lemeng Wu",
+      "Mao Ye",
+      "Qiang Liu"
+    ],
+    "candidates": [
+      {
+        "title": "Cropland Mapping using Geospatial Embeddings",
+        "arxiv_id": "2511.02923v1",
+        "authors": [
+          "Ivan Zvonkov",
+          "Gabriel Tseng",
+          "Inbal Becker-Reshef",
+          "Hannah Kerner"
+        ],
+        "updated": "2025-11-04T19:10:13Z",
+        "published": "2025-11-04T19:10:13Z",
+        "title_similarity": 0.5
+      },
+      {
+        "title": "Measuring Differences between Conditional Distributions using Kernel Embeddings",
+        "arxiv_id": "2605.02260v1",
+        "authors": [
+          "Peter Moskvichev",
+          "Siu Lun Chau",
+          "Dino Sejdinovic"
+        ],
+        "updated": "2026-05-04T06:16:00Z",
+        "published": "2026-05-04T06:16:00Z",
+        "title_similarity": 0.4828
+      },
+      {
+        "title": "Measuring Issue Ownership using Word Embeddings",
+        "arxiv_id": "1811.00127v1",
+        "authors": [
+          "Amaru Cuba Gyllensten",
+          "Magnus Sahlgren"
+        ],
+        "updated": "2018-10-31T21:31:08Z",
+        "published": "2018-10-31T21:31:08Z",
+        "title_similarity": 0.4651
+      }
+    ]
+  },
+  {
+    "openreview_id": "en9V5F8PR-",
+    "title": "Learning where and when to reason in neuro-symbolic inference",
+    "authors": [
+      "Cristina Cornelio",
+      "Jan Stuehmer",
+      "Xu Hu",
+      "Timothy Hospedales"
+    ],
+    "candidates": [
+      {
+        "title": "Learning Multi-Relational Semantics Using Neural-Embedding Models",
+        "arxiv_id": "1411.4072v1",
+        "authors": [
+          "Bishan Yang",
+          "Wen-tau Yih",
+          "Xiaodong He",
+          "Jianfeng Gao",
+          "Li Deng"
+        ],
+        "updated": "2014-11-14T22:08:01Z",
+        "published": "2014-11-14T22:08:01Z",
+        "title_similarity": 0.4545
+      },
+      {
+        "title": "Learning Where and When: Patch-Based Spatiotemporal Localization in Weakly Supervised Video Anomaly Detection",
+        "arxiv_id": "2606.29498v1",
+        "authors": [
+          "Hamza Karim",
+          "Nghia Nguyen",
+          "Lokman Bekit",
+          "Yasin Yilmaz"
+        ],
+        "updated": "2026-06-28T16:52:29Z",
+        "published": "2026-06-28T16:52:29Z",
+        "title_similarity": 0.449
+      },
+      {
+        "title": "TinySearch -- Semantics based Search Engine using Bert Embeddings",
+        "arxiv_id": "1908.02451v1",
+        "authors": [
+          "Manish Patel"
+        ],
+        "updated": "2019-08-07T06:02:17Z",
+        "published": "2019-08-07T06:02:17Z",
+        "title_similarity": 0.4112
+      }
+    ]
+  },
+  {
+    "openreview_id": "QC10RmRbZy9",
+    "title": "Loss Landscapes are All You Need: Neural Network Generalization Can Be Explained Without the Implicit Bias of Gradient Descent",
+    "authors": [
+      "Ping-yeh Chiang",
+      "Renkun Ni",
+      "David Y. Miller",
+      "Arpit Bansal",
+      "Jonas Geiping",
+      "Micah Goldblum",
+      "Tom Goldstein"
+    ],
+    "candidates": [
+      {
+        "title": "Deep Neural Networks for Query Expansion using Word Embeddings",
+        "arxiv_id": "1811.03514v1",
+        "authors": [
+          "Ayyoob Imani",
+          "Amir Vakili",
+          "Ali Montazer",
+          "Azadeh Shakery"
+        ],
+        "updated": "2018-11-08T16:01:35Z",
+        "published": "2018-11-08T16:01:35Z",
+        "title_similarity": 0.3727
+      },
+      {
+        "title": "DASHA: Distributed Nonconvex Optimization with Communication Compression, Optimal Oracle Complexity, and No Client Synchronization",
+        "arxiv_id": "2202.01268v2",
+        "authors": [
+          "Alexander Tyurin",
+          "Peter Richtárik"
+        ],
+        "updated": "2022-05-22T10:31:19Z",
+        "published": "2022-02-02T20:10:40Z",
+        "title_similarity": 0.362
+      },
+      {
+        "title": "On periodic distributed representations using Fourier embeddings",
+        "arxiv_id": "2605.10818v2",
+        "authors": [
+          "Jakeb Chouinard"
+        ],
+        "updated": "2026-05-12T17:19:23Z",
+        "published": "2026-05-11T16:35:32Z",
+        "title_similarity": 0.3515
+      }
+    ]
+  },
+  {
+    "openreview_id": "zt53IDUR1U",
+    "title": "MICN: Multi-scale Local and Global Context Modeling for Long-term Series Forecasting",
+    "authors": [
+      "Huiqiang Wang",
+      "Jian Peng",
+      "Feihu Huang",
+      "Jince Wang",
+      "Junhui Chen",
+      "Yifei Xiao"
+    ],
+    "candidates": [
+      {
+        "title": "Emergent Structure in Multi-agent Systems Using Geometric Embeddings",
+        "arxiv_id": "2411.11142v1",
+        "authors": [
+          "Dimitria Silveria",
+          "Kleber Cabral",
+          "Peter Jardine",
+          "Sidney Givigi"
+        ],
+        "updated": "2024-11-17T18:13:46Z",
+        "published": "2024-11-17T18:13:46Z",
+        "title_similarity": 0.4122
+      },
+      {
+        "title": "Actionable and Political Text Classification using Word Embeddings and LSTM",
+        "arxiv_id": "1607.02501v2",
+        "authors": [
+          "Adithya Rao",
+          "Nemanja Spasojevic"
+        ],
+        "updated": "2016-07-13T20:53:32Z",
+        "published": "2016-07-08T19:53:56Z",
+        "title_similarity": 0.4088
+      },
+      {
+        "title": "Mitigating Gradient Bias in Multi-objective Learning: A Provably Convergent Stochastic Approach",
+        "arxiv_id": "2210.12624v2",
+        "authors": [
+          "Heshan Fernando",
+          "Han Shen",
+          "Miao Liu",
+          "Subhajit Chaudhury",
+          "Keerthiram Murugesan",
+          "Tianyi Chen"
+        ],
+        "updated": "2024-03-19T15:47:43Z",
+        "published": "2022-10-23T05:54:26Z",
+        "title_similarity": 0.4026
+      }
+    ]
+  },
+  {
+    "openreview_id": "nN_nBVKAhhD",
+    "title": "Minimalistic Unsupervised Representation Learning with the Sparse Manifold Transform",
+    "authors": [
+      "Yubei Chen",
+      "Zeyu Yun",
+      "Yi Ma",
+      "Bruno Olshausen",
+      "Yann LeCun"
+    ],
+    "candidates": [
+      {
+        "title": "Simple Unsupervised Keyphrase Extraction using Sentence Embeddings",
+        "arxiv_id": "1801.04470v3",
+        "authors": [
+          "Kamil Bennani-Smires",
+          "Claudiu Musat",
+          "Andreea Hossmann",
+          "Michael Baeriswyl",
+          "Martin Jaggi"
+        ],
+        "updated": "2018-09-05T21:46:35Z",
+        "published": "2018-01-13T17:57:33Z",
+        "title_similarity": 0.5147
+      },
+      {
+        "title": "Toward Interpretable Deep Reinforcement Learning with Linear Model U-Trees",
+        "arxiv_id": "1807.05887v1",
+        "authors": [
+          "Guiliang Liu",
+          "Oliver Schulte",
+          "Wang Zhu",
+          "Qingcan Li"
+        ],
+        "updated": "2018-07-16T14:31:35Z",
+        "published": "2018-07-16T14:31:35Z",
+        "title_similarity": 0.4965
+      },
+      {
+        "title": "On periodic distributed representations using Fourier embeddings",
+        "arxiv_id": "2605.10818v2",
+        "authors": [
+          "Jakeb Chouinard"
+        ],
+        "updated": "2026-05-12T17:19:23Z",
+        "published": "2026-05-11T16:35:32Z",
+        "title_similarity": 0.4478
+      }
+    ]
+  },
+  {
+    "openreview_id": "dLAYGdKTi2",
+    "title": "Mitigating Gradient Bias in Multi-objective Learning: A Provably Convergent Approach",
+    "authors": [
+      "Heshan Fernando",
+      "Han Shen",
+      "Miao Liu",
+      "Subhajit Chaudhury",
+      "Keerthiram Murugesan",
+      "Tianyi Chen"
+    ],
+    "candidates": [
+      {
+        "title": "Mitigating Gradient Bias in Multi-objective Learning: A Provably Convergent Stochastic Approach",
+        "arxiv_id": "2210.12624v2",
+        "authors": [
+          "Heshan Fernando",
+          "Han Shen",
+          "Miao Liu",
+          "Subhajit Chaudhury",
+          "Keerthiram Murugesan",
+          "Tianyi Chen"
+        ],
+        "updated": "2024-03-19T15:47:43Z",
+        "published": "2022-10-23T05:54:26Z",
+        "title_similarity": 0.9359
+      },
+      {
+        "title": "Characterizing the Effects of Translation on Intertextuality using Multilingual Embedding Spaces",
+        "arxiv_id": "2501.10731v1",
+        "authors": [
+          "Hope McGovern",
+          "Hale Sirin",
+          "Tom Lippincott"
+        ],
+        "updated": "2025-01-18T11:36:17Z",
+        "published": "2025-01-18T11:36:17Z",
+        "title_similarity": 0.3899
+      },
+      {
+        "title": "WellFactor: Patient Profiling using Integrative Embedding of Healthcare Data",
+        "arxiv_id": "2312.14129v1",
+        "authors": [
+          "Dongjin Choi",
+          "Andy Xiang",
+          "Ozgur Ozturk",
+          "Deep Shrestha",
+          "Barry Drake",
+          "Hamid Haidarian",
+          "Faizan Javed",
+          "Haesun Park"
+        ],
+        "updated": "2023-12-21T18:49:22Z",
+        "published": "2023-12-21T18:49:22Z",
+        "title_similarity": 0.3857
+      }
+    ]
+  },
+  {
+    "openreview_id": "2QGJXyMNoPz",
+    "title": "MocoSFL: enabling cross-client collaborative self-supervised learning",
+    "authors": [
+      "Jingtao Li",
+      "Lingjuan Lyu",
+      "Daisuke Iso",
+      "Chaitali Chakrabarti",
+      "Michael Spranger"
+    ],
+    "candidates": [
+      {
+        "title": "Quantum device fine-tuning using unsupervised embedding learning",
+        "arxiv_id": "2001.04409v1",
+        "authors": [
+          "N. M. van Esbroeck",
+          "D. T. Lennon",
+          "H. Moon",
+          "V. Nguyen",
+          "F. Vigneau",
+          "L. C. Camenzind",
+          "L. Yu",
+          "D. M. Zumbühl",
+          "G. A. D. Briggs",
+          "D. Sejdinovic",
+          "N. Ares"
+        ],
+        "updated": "2020-01-13T17:18:54Z",
+        "published": "2020-01-13T17:18:54Z",
+        "title_similarity": 0.4237
+      },
+      {
+        "title": "Semantic Source Code Models Using Identifier Embeddings",
+        "arxiv_id": "1904.06929v1",
+        "authors": [
+          "Vasiliki Efstathiou",
+          "Diomidis Spinellis"
+        ],
+        "updated": "2019-04-15T09:35:11Z",
+        "published": "2019-04-15T09:35:11Z",
+        "title_similarity": 0.4
+      },
+      {
+        "title": "Can Cross Encoders Produce Useful Sentence Embeddings?",
+        "arxiv_id": "2502.03552v1",
+        "authors": [
+          "Haritha Ananthakrishnan",
+          "Julian Dolby",
+          "Harsha Kokel",
+          "Horst Samulowitz",
+          "Kavitha Srinivas"
+        ],
+        "updated": "2025-02-05T19:09:53Z",
+        "published": "2025-02-05T19:09:53Z",
+        "title_similarity": 0.3889
+      }
+    ]
+  },
+  {
+    "openreview_id": "dKkMnCWfVmm",
+    "title": "Multi-Objective Online Learning",
+    "authors": [
+      "Jiyan Jiang",
+      "Wenpeng Zhang",
+      "Shiji Zhou",
+      "Lihong Gu",
+      "Xiaodong Zeng",
+      "Wenwu Zhu"
+    ],
+    "candidates": [
+      {
+        "title": "Augmenting semantic lexicons using word embeddings and transfer learning",
+        "arxiv_id": "2109.09010v2",
+        "authors": [
+          "Thayer Alshaabi",
+          "Colin M. Van Oort",
+          "Mikaela Irene Fudolig",
+          "Michael V. Arnold",
+          "Christopher M. Danforth",
+          "Peter Sheridan Dodds"
+        ],
+        "updated": "2021-11-02T04:27:55Z",
+        "published": "2021-09-18T20:59:52Z",
+        "title_similarity": 0.4348
+      },
+      {
+        "title": "ALPINE: Active Link Prediction using Network Embedding",
+        "arxiv_id": "2002.01227v1",
+        "authors": [
+          "Xi Chen",
+          "Bo Kang",
+          "Jefrey Lijffijt",
+          "Tijl De Bie"
+        ],
+        "updated": "2020-02-04T11:09:03Z",
+        "published": "2020-02-04T11:09:03Z",
+        "title_similarity": 0.4267
+      },
+      {
+        "title": "Detection of Correlated Alarms Using Graph Embedding",
+        "arxiv_id": "2201.07748v1",
+        "authors": [
+          "Hossein Khaleghy",
+          "Iman Izadi"
+        ],
+        "updated": "2022-01-17T05:50:45Z",
+        "published": "2022-01-17T05:50:45Z",
+        "title_similarity": 0.4054
+      }
+    ]
+  },
+  {
+    "openreview_id": "d3QNWD_pcFv",
+    "title": "Neural Lagrangian Schr\\\"{o}dinger Bridge: Diffusion Modeling for Population Dynamics",
+    "authors": [
+      "Takeshi Koshizuka",
+      "Issei Sato"
+    ],
+    "candidates": [
+      {
+        "title": "TabTransformer: Tabular Data Modeling Using Contextual Embeddings",
+        "arxiv_id": "2012.06678v1",
+        "authors": [
+          "Xin Huang",
+          "Ashish Khetan",
+          "Milan Cvitkovic",
+          "Zohar Karnin"
+        ],
+        "updated": "2020-12-11T23:31:23Z",
+        "published": "2020-12-11T23:31:23Z",
+        "title_similarity": 0.4031
+      },
+      {
+        "title": "Deep Neural Networks for Query Expansion using Word Embeddings",
+        "arxiv_id": "1811.03514v1",
+        "authors": [
+          "Ayyoob Imani",
+          "Amir Vakili",
+          "Ali Montazer",
+          "Azadeh Shakery"
+        ],
+        "updated": "2018-11-08T16:01:35Z",
+        "published": "2018-11-08T16:01:35Z",
+        "title_similarity": 0.384
+      },
+      {
+        "title": "Temporal Link Prediction Using Graph Embedding Dynamics",
+        "arxiv_id": "2401.07516v1",
+        "authors": [
+          "Sanaz Hasanzadeh Fard",
+          "Mohammad Ghassemi"
+        ],
+        "updated": "2024-01-15T07:35:29Z",
+        "published": "2024-01-15T07:35:29Z",
+        "title_similarity": 0.3833
+      }
+    ]
+  },
+  {
+    "openreview_id": "bvpkw7UIRdU",
+    "title": "On the Usefulness of Embeddings, Clusters and Strings for Text Generation Evaluation",
+    "authors": [
+      "Tiago Pimentel",
+      "Clara Meister",
+      "Ryan Cotterell"
+    ],
+    "candidates": [
+      {
+        "title": "On the Usefulness of Embeddings, Clusters and Strings for Text Generator Evaluation",
+        "arxiv_id": "2205.16001v4",
+        "authors": [
+          "Tiago Pimentel",
+          "Clara Meister",
+          "Ryan Cotterell"
+        ],
+        "updated": "2023-06-29T15:08:38Z",
+        "published": "2022-05-31T17:58:49Z",
+        "title_similarity": 0.979
+      },
+      {
+        "title": "Using Person Embedding to Enrich Features and Data Augmentation for Classification",
+        "arxiv_id": "2206.15162v1",
+        "authors": [
+          "Ahmet Tuğrul Bayrak"
+        ],
+        "updated": "2022-06-30T09:48:27Z",
+        "published": "2022-06-30T09:48:27Z",
+        "title_similarity": 0.5139
+      },
+      {
+        "title": "Text Similarity Using Word Embeddings to Classify Misinformation",
+        "arxiv_id": "2003.06634v1",
+        "authors": [
+          "Caio Almeida",
+          "Débora Santos"
+        ],
+        "updated": "2020-03-14T14:02:27Z",
+        "published": "2020-03-14T14:02:27Z",
+        "title_similarity": 0.4651
+      }
+    ]
+  },
+  {
+    "openreview_id": "hQ9V5QN27eS",
+    "title": "Pink Noise Is All You Need: Colored Noise Exploration in Deep Reinforcement Learning",
+    "authors": [
+      "Onno Eberhard",
+      "Jakob Hollenstein",
+      "Cristina Pinneri",
+      "Georg Martius"
+    ],
+    "candidates": [
+      {
+        "title": "Simultaneous Denoising and Dereverberation Using Deep Embedding Features",
+        "arxiv_id": "2004.02420v1",
+        "authors": [
+          "Cunhang Fan",
+          "Jianhua Tao",
+          "Bin Liu",
+          "Jiangyan Yi",
+          "Zhengqi Wen"
+        ],
+        "updated": "2020-04-06T06:34:01Z",
+        "published": "2020-04-06T06:34:01Z",
+        "title_similarity": 0.4559
+      },
+      {
+        "title": "Toward Interpretable Deep Reinforcement Learning with Linear Model U-Trees",
+        "arxiv_id": "1807.05887v1",
+        "authors": [
+          "Guiliang Liu",
+          "Oliver Schulte",
+          "Wang Zhu",
+          "Qingcan Li"
+        ],
+        "updated": "2018-07-16T14:31:35Z",
+        "published": "2018-07-16T14:31:35Z",
+        "title_similarity": 0.4559
+      },
+      {
+        "title": "It's All in the Embedding! Fake News Detection Using Document Embeddings",
+        "arxiv_id": "2304.07781v1",
+        "authors": [
+          "Ciprian-Octavian Truică",
+          "Elena-Simona Apostol"
+        ],
+        "updated": "2023-04-16T13:30:06Z",
+        "published": "2023-04-16T13:30:06Z",
+        "title_similarity": 0.4427
+      }
+    ]
+  },
+  {
+    "openreview_id": "uVcDssQff_",
+    "title": "REVISITING PRUNING AT INITIALIZATION THROUGH THE LENS OF RAMANUJAN GRAPH",
+    "authors": [
+      "Duc Hoang",
+      "Shiwei Liu",
+      "Radu Marculescu",
+      "Zhangyang Wang"
+    ],
+    "candidates": [
+      {
+        "title": "Using Word Embeddings for Visual Data Exploration with Ontodia and Wikidata",
+        "arxiv_id": "1903.01275v1",
+        "authors": [
+          "Gerhard Wohlgenannt",
+          "Nikolay Klimov",
+          "Dmitry Mouromtsev",
+          "Daniil Razdyakonov",
+          "Dmitry Pavlov",
+          "Yury Emelyanov"
+        ],
+        "updated": "2019-03-04T14:36:21Z",
+        "published": "2019-03-04T14:36:21Z",
+        "title_similarity": 0.4062
+      },
+      {
+        "title": "Supervised Domain Adaptation using Graph Embedding",
+        "arxiv_id": "2003.04063v2",
+        "authors": [
+          "Lukas Hedegaard Morsing",
+          "Omar Ali Sheikh-Omar",
+          "Alexandros Iosifidis"
+        ],
+        "updated": "2020-09-08T09:35:19Z",
+        "published": "2020-03-09T12:25:13Z",
+        "title_similarity": 0.3889
+      },
+      {
+        "title": "Learning Multi-Relational Semantics Using Neural-Embedding Models",
+        "arxiv_id": "1411.4072v1",
+        "authors": [
+          "Bishan Yang",
+          "Wen-tau Yih",
+          "Xiaodong He",
+          "Jianfeng Gao",
+          "Li Deng"
+        ],
+        "updated": "2014-11-14T22:08:01Z",
+        "published": "2014-11-14T22:08:01Z",
+        "title_similarity": 0.3802
+      }
+    ]
+  },
+  {
+    "openreview_id": "OpC-9aBBVJe",
+    "title": "Sample-Efficient Reinforcement Learning by Breaking the Replay Ratio Barrier",
+    "authors": [
+      "Pierluca D'Oro",
+      "Max Schwarzer",
+      "Evgenii Nikishin",
+      "Pierre-Luc Bacon",
+      "Marc G Bellemare",
+      "Aaron Courville"
+    ],
+    "candidates": [
+      {
+        "title": "Toward Interpretable Deep Reinforcement Learning with Linear Model U-Trees",
+        "arxiv_id": "1807.05887v1",
+        "authors": [
+          "Guiliang Liu",
+          "Oliver Schulte",
+          "Wang Zhu",
+          "Qingcan Li"
+        ],
+        "updated": "2018-07-16T14:31:35Z",
+        "published": "2018-07-16T14:31:35Z",
+        "title_similarity": 0.5152
+      },
+      {
+        "title": "Towards Interpretable Deep Reinforcement Learning Models via Inverse Reinforcement Learning",
+        "arxiv_id": "2203.16464v3",
+        "authors": [
+          "Sean Xie",
+          "Soroush Vosoughi",
+          "Saeed Hassanpour"
+        ],
+        "updated": "2024-03-01T18:40:56Z",
+        "published": "2022-03-30T17:01:59Z",
+        "title_similarity": 0.4966
+      },
+      {
+        "title": "Speech Enhancement Using Continuous Embeddings of Neural Audio Codec",
+        "arxiv_id": "2502.16240v1",
+        "authors": [
+          "Haoyang Li",
+          "Jia Qi Yip",
+          "Tianyu Fan",
+          "Eng Siong Chng"
+        ],
+        "updated": "2025-02-22T14:25:55Z",
+        "published": "2025-02-22T14:25:55Z",
+        "title_similarity": 0.4252
+      }
+    ]
+  },
+  {
+    "openreview_id": "7C9aRX2nBf2",
+    "title": "Sequential Latent Variable Models for Few-Shot High-Dimensional Time-Series Forecasting",
+    "authors": [
+      "Xiajun Jiang",
+      "Ryan Missel",
+      "Zhiyuan Li",
+      "Linwei Wang"
+    ],
+    "candidates": [
+      {
+        "title": "Learning Sequential Latent Variable Models from Multimodal Time Series Data",
+        "arxiv_id": "2204.10419v2",
+        "authors": [
+          "Oliver Limoyo",
+          "Trevor Ablett",
+          "Jonathan Kelly"
+        ],
+        "updated": "2023-01-20T07:11:44Z",
+        "published": "2022-04-21T21:59:24Z",
+        "title_similarity": 0.7183
+      },
+      {
+        "title": "Improving Sequential Latent Variable Models with Autoregressive Flows",
+        "arxiv_id": "2010.03172v2",
+        "authors": [
+          "Joseph Marino",
+          "Lei Chen",
+          "Jiawei He",
+          "Stephan Mandt"
+        ],
+        "updated": "2022-03-08T05:32:41Z",
+        "published": "2020-10-07T05:14:37Z",
+        "title_similarity": 0.5652
+      },
+      {
+        "title": "Regularized Sequential Latent Variable Models with Adversarial Neural Networks",
+        "arxiv_id": "2108.04496v1",
+        "authors": [
+          "Jin Huang",
+          "Ming Xiao"
+        ],
+        "updated": "2021-08-10T08:05:14Z",
+        "published": "2021-08-10T08:05:14Z",
+        "title_similarity": 0.5479
+      }
+    ]
+  },
+  {
+    "openreview_id": "3RhuF8foyPW",
+    "title": "Single-shot General Hyper-parameter Optimization for Federated Learning",
+    "authors": [
+      "Yi Zhou",
+      "Parikshit Ram",
+      "Theodoros Salonidis",
+      "Nathalie Baracaldo",
+      "Horst Samulowitz",
+      "Heiko Ludwig"
+    ],
+    "candidates": [
+      {
+        "title": "Global optimization using random embeddings",
+        "arxiv_id": "2107.12102v1",
+        "authors": [
+          "Coralia Cartis",
+          "Estelle Massart",
+          "Adilet Otemissov"
+        ],
+        "updated": "2021-07-26T10:45:49Z",
+        "published": "2021-07-26T10:45:49Z",
+        "title_similarity": 0.3922
+      },
+      {
+        "title": "Toward Interpretable Deep Reinforcement Learning with Linear Model U-Trees",
+        "arxiv_id": "1807.05887v1",
+        "authors": [
+          "Guiliang Liu",
+          "Oliver Schulte",
+          "Wang Zhu",
+          "Qingcan Li"
+        ],
+        "updated": "2018-07-16T14:31:35Z",
+        "published": "2018-07-16T14:31:35Z",
+        "title_similarity": 0.3906
+      },
+      {
+        "title": "Detection of Correlated Alarms Using Graph Embedding",
+        "arxiv_id": "2201.07748v1",
+        "authors": [
+          "Hossein Khaleghy",
+          "Iman Izadi"
+        ],
+        "updated": "2022-01-17T05:50:45Z",
+        "published": "2022-01-17T05:50:45Z",
+        "title_similarity": 0.3853
+      }
+    ]
+  },
+  {
+    "openreview_id": "74A-FDAyiL",
+    "title": "Subquadratic Algorithms for Kernel Matrices via Kernel Density Estimation",
+    "authors": [
+      "Ainesh Bakshi",
+      "Piotr Indyk",
+      "Praneeth Kacham",
+      "Sandeep Silwal",
+      "Samson Zhou"
+    ],
+    "candidates": [
+      {
+        "title": "Subjective Depth and Timescale Transformers: Learning Where and When to Compute",
+        "arxiv_id": "2511.21408v1",
+        "authors": [
+          "Frederico Wieser",
+          "Martin Benfeghoul",
+          "Haitham Bou Ammar",
+          "Jun Wang",
+          "Zafeirios Fountas"
+        ],
+        "updated": "2025-11-26T14:00:18Z",
+        "published": "2025-11-26T14:00:18Z",
+        "title_similarity": 0.3759
+      },
+      {
+        "title": "Semantic Source Code Models Using Identifier Embeddings",
+        "arxiv_id": "1904.06929v1",
+        "authors": [
+          "Vasiliki Efstathiou",
+          "Diomidis Spinellis"
+        ],
+        "updated": "2019-04-15T09:35:11Z",
+        "published": "2019-04-15T09:35:11Z",
+        "title_similarity": 0.3509
+      },
+      {
+        "title": "Using Person Embedding to Enrich Features and Data Augmentation for Classification",
+        "arxiv_id": "2206.15162v1",
+        "authors": [
+          "Ahmet Tuğrul Bayrak"
+        ],
+        "updated": "2022-06-30T09:48:27Z",
+        "published": "2022-06-30T09:48:27Z",
+        "title_similarity": 0.3504
+      }
+    ]
+  },
+  {
+    "openreview_id": "0Ij9_q567Ma",
+    "title": "Targeted Hyperparameter Optimization with Lexicographic Preferences Over Multiple Objectives",
+    "authors": [
+      "Shaokun Zhang",
+      "Feiran Jia",
+      "Chi Wang",
+      "Qingyun Wu"
+    ],
+    "candidates": [
+      {
+        "title": "Global optimization using random embeddings",
+        "arxiv_id": "2107.12102v1",
+        "authors": [
+          "Coralia Cartis",
+          "Estelle Massart",
+          "Adilet Otemissov"
+        ],
+        "updated": "2021-07-26T10:45:49Z",
+        "published": "2021-07-26T10:45:49Z",
+        "title_similarity": 0.4228
+      },
+      {
+        "title": "Contagion Effect Estimation Using Proximal Embeddings",
+        "arxiv_id": "2306.02479v3",
+        "authors": [
+          "Zahra Fatemi",
+          "Elena Zheleva"
+        ],
+        "updated": "2023-10-17T23:42:09Z",
+        "published": "2023-06-04T20:55:13Z",
+        "title_similarity": 0.3939
+      },
+      {
+        "title": "Learning Where and When: Patch-Based Spatiotemporal Localization in Weakly Supervised Video Anomaly Detection",
+        "arxiv_id": "2606.29498v1",
+        "authors": [
+          "Hamza Karim",
+          "Nghia Nguyen",
+          "Lokman Bekit",
+          "Yasin Yilmaz"
+        ],
+        "updated": "2026-06-28T16:52:29Z",
+        "published": "2026-06-28T16:52:29Z",
+        "title_similarity": 0.3911
+      }
+    ]
+  },
+  {
+    "openreview_id": "hWwY_Jq0xsN",
+    "title": "Towards Interpretable Deep Reinforcement Learning with Human-Friendly Prototypes",
+    "authors": [
+      "Eoin Kenny",
+      "Mycal Tucker",
+      "Julie Shah"
+    ],
+    "candidates": [
+      {
+        "title": "Toward Interpretable Deep Reinforcement Learning with Linear Model U-Trees",
+        "arxiv_id": "1807.05887v1",
+        "authors": [
+          "Guiliang Liu",
+          "Oliver Schulte",
+          "Wang Zhu",
+          "Qingcan Li"
+        ],
+        "updated": "2018-07-16T14:31:35Z",
+        "published": "2018-07-16T14:31:35Z",
+        "title_similarity": 0.7883
+      },
+      {
+        "title": "Towards Interpretable Deep Reinforcement Learning Models via Inverse Reinforcement Learning",
+        "arxiv_id": "2203.16464v3",
+        "authors": [
+          "Sean Xie",
+          "Soroush Vosoughi",
+          "Saeed Hassanpour"
+        ],
+        "updated": "2024-03-01T18:40:56Z",
+        "published": "2022-03-30T17:01:59Z",
+        "title_similarity": 0.7013
+      },
+      {
+        "title": "Subjective Depth and Timescale Transformers: Learning Where and When to Compute",
+        "arxiv_id": "2511.21408v1",
+        "authors": [
+          "Frederico Wieser",
+          "Martin Benfeghoul",
+          "Haitham Bou Ammar",
+          "Jun Wang",
+          "Zafeirios Fountas"
+        ],
+        "updated": "2025-11-26T14:00:18Z",
+        "published": "2025-11-26T14:00:18Z",
+        "title_similarity": 0.4286
+      }
+    ]
+  },
+  {
+    "openreview_id": "paGvsrl4Ntr",
+    "title": "Transfer NAS with Meta-learned Bayesian Surrogates",
+    "authors": [
+      "Gresa Shala",
+      "Thomas Elsken",
+      "Frank Hutter",
+      "Josif Grabocka"
+    ],
+    "candidates": [
+      {
+        "title": "Efficient Malware Analysis Using Metric Embeddings",
+        "arxiv_id": "2212.02663v1",
+        "authors": [
+          "Ethan M. Rudd",
+          "David Krisiloff",
+          "Scott Coull",
+          "Daniel Olszewski",
+          "Edward Raff",
+          "James Holt"
+        ],
+        "updated": "2022-12-05T23:49:04Z",
+        "published": "2022-12-05T23:49:04Z",
+        "title_similarity": 0.382
+      },
+      {
+        "title": "TabTransformer: Tabular Data Modeling Using Contextual Embeddings",
+        "arxiv_id": "2012.06678v1",
+        "authors": [
+          "Xin Huang",
+          "Ashish Khetan",
+          "Milan Cvitkovic",
+          "Zohar Karnin"
+        ],
+        "updated": "2020-12-11T23:31:23Z",
+        "published": "2020-12-11T23:31:23Z",
+        "title_similarity": 0.3725
+      },
+      {
+        "title": "Improving Sequential Latent Variable Models with Autoregressive Flows",
+        "arxiv_id": "2010.03172v2",
+        "authors": [
+          "Joseph Marino",
+          "Lei Chen",
+          "Jiawei He",
+          "Stephan Mandt"
+        ],
+        "updated": "2022-03-08T05:32:41Z",
+        "published": "2020-10-07T05:14:37Z",
+        "title_similarity": 0.3585
+      }
+    ]
+  },
+  {
+    "openreview_id": "WzGdBqcBicl",
+    "title": "Understanding and Adopting Rational Behavior by Bellman Score Estimation",
+    "authors": [
+      "Kuno Kim",
+      "Stefano Ermon"
+    ],
+    "candidates": [
+      {
+        "title": "Using Person Embedding to Enrich Features and Data Augmentation for Classification",
+        "arxiv_id": "2206.15162v1",
+        "authors": [
+          "Ahmet Tuğrul Bayrak"
+        ],
+        "updated": "2022-06-30T09:48:27Z",
+        "published": "2022-06-30T09:48:27Z",
+        "title_similarity": 0.4559
+      },
+      {
+        "title": "Twitter Sentiment on Affordable Care Act using Score Embedding",
+        "arxiv_id": "1908.07061v1",
+        "authors": [
+          "Mohsen Farhadloo"
+        ],
+        "updated": "2019-08-19T20:55:52Z",
+        "published": "2019-08-19T20:55:52Z",
+        "title_similarity": 0.4068
+      },
+      {
+        "title": "Domain-Independent Game Abstraction using Word Embedding Techniques",
+        "arxiv_id": "2605.15543v1",
+        "authors": [
+          "Juho Kim",
+          "Tuomas Sandholm"
+        ],
+        "updated": "2026-05-15T02:30:36Z",
+        "published": "2026-05-15T02:30:36Z",
+        "title_similarity": 0.4032
+      }
+    ]
+  },
+  {
+    "openreview_id": "xSsW2Am-ukZ",
+    "title": "Unmasking the Lottery Ticket Hypothesis: What's Encoded in a Winning Ticket's Mask?",
+    "authors": [
+      "Mansheej Paul",
+      "Feng Chen",
+      "Brett Larsen",
+      "Jonathan Frankle",
+      "Surya Ganguli",
+      "Gintare Karolina Dziugaite"
+    ],
+    "candidates": [
+      {
+        "title": "Unmasking the Lottery Ticket Hypothesis: What's Encoded in a Winning Ticket's Mask?",
+        "arxiv_id": "2210.03044v1",
+        "authors": [
+          "Mansheej Paul",
+          "Feng Chen",
+          "Brett W. Larsen",
+          "Jonathan Frankle",
+          "Surya Ganguli",
+          "Gintare Karolina Dziugaite"
+        ],
+        "updated": "2022-10-06T16:50:20Z",
+        "published": "2022-10-06T16:50:20Z",
+        "title_similarity": 1.0
+      },
+      {
+        "title": "Measuring Differences between Conditional Distributions using Kernel Embeddings",
+        "arxiv_id": "2605.02260v1",
+        "authors": [
+          "Peter Moskvichev",
+          "Siu Lun Chau",
+          "Dino Sejdinovic"
+        ],
+        "updated": "2026-05-04T06:16:00Z",
+        "published": "2026-05-04T06:16:00Z",
+        "title_similarity": 0.4143
+      },
+      {
+        "title": "Using Molecular Embeddings in QSAR Modeling: Does it Make a Difference?",
+        "arxiv_id": "2104.02604v2",
+        "authors": [
+          "María Virginia Sabando",
+          "Ignacio Ponzoni",
+          "Evangelos E. Milios",
+          "Axel J. Soto"
+        ],
+        "updated": "2021-07-28T15:30:22Z",
+        "published": "2021-03-20T21:45:22Z",
+        "title_similarity": 0.378
+      }
+    ]
+  },
+  {
+    "openreview_id": "kPLzOfPfA2l",
+    "title": "Warping the Space: Weight Space Rotation for Class-Incremental Few-Shot Learning",
+    "authors": [
+      "Do-Yeon Kim",
+      "Dong-Jun Han",
+      "Jun Seo",
+      "Jaekyun Moon"
+    ],
+    "candidates": [
+      {
+        "title": "ISCUTE: Instance Segmentation of Cables Using Text Embedding",
+        "arxiv_id": "2402.11996v2",
+        "authors": [
+          "Shir Kozlovsky",
+          "Omkar Joglekar",
+          "Dotan Di Castro"
+        ],
+        "updated": "2024-02-27T14:53:53Z",
+        "published": "2024-02-19T09:41:57Z",
+        "title_similarity": 0.4667
+      },
+      {
+        "title": "It's All in the Embedding! Fake News Detection Using Document Embeddings",
+        "arxiv_id": "2304.07781v1",
+        "authors": [
+          "Ciprian-Octavian Truică",
+          "Elena-Simona Apostol"
+        ],
+        "updated": "2023-04-16T13:30:06Z",
+        "published": "2023-04-16T13:30:06Z",
+        "title_similarity": 0.4531
+      },
+      {
+        "title": "Toward Interpretable Deep Reinforcement Learning with Linear Model U-Trees",
+        "arxiv_id": "1807.05887v1",
+        "authors": [
+          "Guiliang Liu",
+          "Oliver Schulte",
+          "Wang Zhu",
+          "Qingcan Li"
+        ],
+        "updated": "2018-07-16T14:31:35Z",
+        "published": "2018-07-16T14:31:35Z",
+        "title_similarity": 0.4361
+      }
+    ]
+  },
+  {
+    "openreview_id": "CPdc77SQfQ5",
+    "title": "Win: Weight-Decay-Integrated Nesterov Acceleration for Adaptive Gradient Algorithms",
+    "authors": [
+      "Pan Zhou",
+      "Xingyu Xie",
+      "shuicheng YAN"
+    ],
+    "candidates": [
+      {
+        "title": "Metaphor Interpretation Using Word Embeddings",
+        "arxiv_id": "2010.02665v2",
+        "authors": [
+          "Kfir Bar",
+          "Nachum Dershowitz",
+          "Lena Dankin"
+        ],
+        "updated": "2021-12-06T06:52:11Z",
+        "published": "2020-10-06T12:35:13Z",
+        "title_similarity": 0.4211
+      },
+      {
+        "title": "It's All in the Embedding! Fake News Detection Using Document Embeddings",
+        "arxiv_id": "2304.07781v1",
+        "authors": [
+          "Ciprian-Octavian Truică",
+          "Elena-Simona Apostol"
+        ],
+        "updated": "2023-04-16T13:30:06Z",
+        "published": "2023-04-16T13:30:06Z",
+        "title_similarity": 0.406
+      },
+      {
+        "title": "Toward Interpretable Deep Reinforcement Learning with Linear Model U-Trees",
+        "arxiv_id": "1807.05887v1",
+        "authors": [
+          "Guiliang Liu",
+          "Oliver Schulte",
+          "Wang Zhu",
+          "Qingcan Li"
+        ],
+        "updated": "2018-07-16T14:31:35Z",
+        "published": "2018-07-16T14:31:35Z",
+        "title_similarity": 0.4058
+      }
+    ]
+  }
+]

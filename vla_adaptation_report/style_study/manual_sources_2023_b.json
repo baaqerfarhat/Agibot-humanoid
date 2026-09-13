@@ -1,0 +1,308 @@
+[
+  {
+    "openreview_id": "QC10RmRbZy9",
+    "pdf_url": null,
+    "source_url": "https://pingchiang.com/",
+    "searched_primary_urls": [
+      "https://pingchiang.com/",
+      "https://jonasgeiping.github.io/publications/",
+      "https://github.com/Ping-C/optimizer"
+    ],
+    "version_note": "No main-paper PDF retrieved; OpenReview download is HTTP 403 blocked. Do not count slides, posters, or journal extensions as this paper.",
+    "identity_evidence": "First-author and coauthor publication entries identify this paper but link only to OpenReview; public author website repository has no article PDF. Official ICLR slides were located but excluded because slides are not the main paper.",
+    "download_status": "unavailable",
+    "title": "Loss Landscapes are All You Need: Neural Network Generalization Can Be Explained Without the Implicit Bias of Gradient Descent"
+  },
+  {
+    "openreview_id": "zt53IDUR1U",
+    "pdf_url": null,
+    "source_url": "https://github.com/wanghq21/MICN",
+    "searched_primary_urls": [
+      "https://github.com/wanghq21/MICN"
+    ],
+    "version_note": "No main-paper PDF retrieved; OpenReview download is HTTP 403 blocked. Do not count slides, posters, or journal extensions as this paper.",
+    "identity_evidence": "Author repository README identifies exact title/authors and ICLR 2023 oral; its paper link is OpenReview only. Repository tree contains no paper PDF; Drive/cloud links contain benchmark datasets, not the paper.",
+    "download_status": "unavailable",
+    "title": "MICN: Multi-scale Local and Global Context Modeling for Long-term Series Forecasting"
+  },
+  {
+    "openreview_id": "nN_nBVKAhhD",
+    "pdf_url": "https://arxiv.org/pdf/2209.15261",
+    "source_url": "https://arxiv.org/abs/2209.15261",
+    "version_note": "Public author-deposited arXiv copy 2209.15261; retrieved 2026-09-08. Not certified identical to the ICLR proceedings/submission version.",
+    "identity_evidence": "PDF page 1 manually checked: title and full author list match the official event (minor final title variations retained in version_note). Published as a conference paper at ICLR 2023\nMINIMALISTIC\nUNSUPERVISED\nREPRESENTATION\nLEARNING\nWITH\nTHE SPARSE MANIFOLD TRANS-\nFORM\nYubei Chen1,2, Zeyu Yun4,5, Yi Ma4, Bruno Olshausen4,5,6, Yann LeCun1,2,3\n1 Meta AI\n2 Center for Data Science, 3 Courant Institute, New York University\n4 EECS Dept., 5 Redwood Center, 6 Helen Wills Neuroscience Inst., UC Berkeley\nABSTRACT\nWe describe a minimalistic and interpretable method for unsupervised represen-\ntation learning that does not require data augmentation, hyperparameter tuning,\nor other engineering designs, but nonetheless achieves performance close to the\nstate-of-the-art (SOTA) SSL methods. Our approach leverages the sparse mani-\nfold transform [21], which uniﬁes sparse coding, manifold learning, and slow fea-\nture analysis. With a one-layer deterministic (one training epoch) sparse manifold\ntransform, it is possible to achieve 99.3% KNN top-1 accuracy on MNIST, 81.1%\nKNN top-1 accuracy on CIFAR-10, and 53.2% on CIFAR-100. With simple gray-\nscale augmentation, the model achieves 83.2% KNN top-1 accuracy on CIFAR-10\nand 57% on CIFAR-100. These results signiﬁcantly close the gap between sim-\nplistic “white-box” methods and SOTA methods. We also provide visualization to\nillustrate how an unsupervised representation transform is formed. The proposed\nmethod is closely connected to latent-embedding self-supervised methods and can\nbe treated as the simplest form of VICReg. Though a small performance gap re-\nmains between our simple constructive model and SOTA methods, the evidence\npoints to this as a promising direction for achieving a principled and white-box\napproach to unsupervised representation learning, which has potential t",
+    "local_pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/nN_nBVKAhhD_arxiv_2209.15261.pdf",
+    "sha256": "95e9d81e5b527c97bb89267e86733ef60ddf4ad2a4ed761657c8925a6a06d9db",
+    "bytes": 5772132,
+    "pages": 24,
+    "download_status": "verified",
+    "title": "Minimalistic Unsupervised Representation Learning with the Sparse Manifold Transform",
+    "local_text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/nN_nBVKAhhD_arxiv_2209.15261.txt",
+    "text_sha256": "e03223b7e77654bce8c08c4e0fa4d05fcb7e55f51c3896c6a09df6e60f5d8fec",
+    "nonempty_text_pages": 24
+  },
+  {
+    "openreview_id": "dLAYGdKTi2",
+    "pdf_url": "https://arxiv.org/pdf/2210.12624v2",
+    "source_url": "https://arxiv.org/abs/2210.12624v2",
+    "version_note": "Public author-deposited arXiv copy 2210.12624v2; retrieved 2026-09-08. Not certified identical to the ICLR proceedings/submission version. This v2 title adds Stochastic; PDF spells first author Fernnado while the official event spells Fernando; the other five names and method identity match.",
+    "identity_evidence": "PDF page 1 manually checked: title and full author list match the official event (minor final title variations retained in version_note). Mitigating Gradient Bias in Multi-objective Learning:\nA Provably Convergent Stochastic Approach\nHeshan Fernnado*, Han Shen*, Miao Liu†, Subhajit Chaudhury†, Keerthiram Murugesan†,\nTianyi Chen*\n*Rensselaer Polytechnic Institute, New York, United States\n†IBM Research, New York, United States\nAbstract\nMachine learning problems with multiple objective functions appear either in learning with\nmultiple criteria where learning has to make a trade-off between multiple performance metrics\nsuch as fairness, safety and accuracy; or, in multi-task learning where multiple tasks are optimized\njointly, sharing inductive bias between them. This problems are often tackled by the multi-\nobjective optimization framework. However, existing stochastic multi-objective gradient methods\nand its variants (e.g., MGDA, PCGrad, CAGrad, etc.) all adopt a biased noisy gradient direction,\nwhich leads to degraded empirical performance. To this end, we develop a stochastic Multi-\nobjective gradient Correction (MoCo) method for multi-objective optimization. The unique\nfeature of our method is that it can guarantee convergence without increasing the batch size\neven in the nonconvex setting. Simulations on multi-task supervised and reinforcement learning\ndemonstrate the effectiveness of our method relative to state-of-the-art methods.\n1\nIntroduction\nMulti-objective optimization (MOO) involves optimizing multiple, potentially conflicting objectives simulta-\nneously. Recently, MOO has gained attention in various application settings such as optimizing hydrocarbon\nproduction [You et al., 2020], tissue engineering [Shi et al., 2019], safe reinforecement learning [Thomas et al.,\n2021], and training neural networ",
+    "local_pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/dLAYGdKTi2_arxiv_2210.12624v2.pdf",
+    "sha256": "7010d85b1dd31f43317e115860c8b9672c1974142958e78b35d39601c45d215a",
+    "bytes": 2952672,
+    "pages": 34,
+    "download_status": "verified",
+    "title": "Mitigating Gradient Bias in Multi-objective Learning: A Provably Convergent Approach",
+    "local_text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/dLAYGdKTi2_arxiv_2210.12624v2.txt",
+    "text_sha256": "0181f65caa24147a6780cdb5a512dc9cb6869e978fcbd20d6b95ecff87441c2e",
+    "nonempty_text_pages": 34
+  },
+  {
+    "openreview_id": "2QGJXyMNoPz",
+    "pdf_url": null,
+    "source_url": "https://github.com/SonyAI/MocoSFL",
+    "searched_primary_urls": [
+      "https://github.com/SonyAI/MocoSFL",
+      "https://ai.sony/publications/mocosfl-enabling-cross-client-collaborative-self-supervised-learning",
+      "https://faculty.engineering.asu.edu/chaitali/publications/"
+    ],
+    "version_note": "No main-paper PDF retrieved; OpenReview download is HTTP 403 blocked. Do not count slides, posters, or journal extensions as this paper.",
+    "identity_evidence": "Author repository identifies the 2023 ICLR paper; no PDF in repository tree. Sony institution page instead links the earlier NeurIPS workshop version on OpenReview, so it is not treated as the 2023 PDF. ASU publication index confirms ICLR top 5% but direct page request receives HTTP 403.",
+    "download_status": "unavailable",
+    "title": "MocoSFL: enabling cross-client collaborative self-supervised learning"
+  },
+  {
+    "openreview_id": "dKkMnCWfVmm",
+    "pdf_url": null,
+    "source_url": "https://iclr.cc/virtual/2023/oral/12729",
+    "searched_primary_urls": [
+      "https://iclr.cc/virtual/2023/oral/12729"
+    ],
+    "version_note": "No main-paper PDF retrieved; OpenReview download is HTTP 403 blocked. Do not count slides, posters, or journal extensions as this paper.",
+    "identity_evidence": "Exact official title/authors verified. Primary exact-title and title/author arXiv searches did not identify a matching arXiv entry; public search results lead to OpenReview. Searches for author/institution-hosted copies did not find a retrievable matching PDF.",
+    "download_status": "unavailable",
+    "title": "Multi-Objective Online Learning"
+  },
+  {
+    "openreview_id": "d3QNWD_pcFv",
+    "pdf_url": "https://arxiv.org/pdf/2204.04853",
+    "source_url": "https://arxiv.org/abs/2204.04853",
+    "version_note": "Public author-deposited arXiv copy 2204.04853; retrieved 2026-09-08. Not certified identical to the ICLR proceedings/submission version.",
+    "identity_evidence": "PDF page 1 manually checked: title and full author list match the official event (minor final title variations retained in version_note). Published as a conference paper at ICLR 2023\nNEURAL LAGRANGIAN SCHR ¨ODINGER BRIDGE: DIF-\nFUSION MODELING FOR POPULATION DYNAMICS\nTakeshi Koshizuka, Issei Sato\nThe University of Tokyo\n{koshizuka-takeshi938444, sato}@g.ecc.u-tokyo.ac.jp\nABSTRACT\nPopulation dynamics is the study of temporal and spatial variation in the size\nof populations of organisms and is a major part of population ecology. One of\nthe main difﬁculties in analyzing population dynamics is that we can only obtain\nobservation data with coarse time intervals from ﬁxed-point observations due to\nexperimental costs or measurement constraints. Recently, modeling population\ndynamics by using continuous normalizing ﬂows (CNFs) and dynamic optimal\ntransport has been proposed to infer the sample trajectories from a ﬁxed-point\nobserved population. While the sample behavior in CNFs is deterministic, the\nactual sample in biological systems moves in an essentially random yet directional\nmanner. Moreover, when a sample moves from point A to point B in dynamical\nsystems, its trajectory typically follows the principle of least action in which the\ncorresponding action has the smallest possible value. To satisfy these requirements\nof the sample trajectories, we formulate the Lagrangian Schr¨odinger bridge (LSB)\nproblem and propose to solve it approximately by modeling the advection-diffusion\nprocess with regularized neural SDE. We also develop a model architecture that\nenables faster computation of the loss function. Experimental results show that\nthe proposed method can efﬁciently approximate the population-level dynamics\neven for high-dimensional data and that using the prior knowledge introduced by\nthe Lagrangian enables u",
+    "local_pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/d3QNWD_pcFv_arxiv_2204.04853.pdf",
+    "sha256": "5fcee7117b4057959a87fdd3cd827732136f225dac6e402aade8050e45855a67",
+    "bytes": 13836411,
+    "pages": 37,
+    "download_status": "verified",
+    "title": "Neural Lagrangian Schr\\\"{o}dinger Bridge: Diffusion Modeling for Population Dynamics",
+    "local_text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/d3QNWD_pcFv_arxiv_2204.04853.txt",
+    "text_sha256": "9281afac18a1819f0b4a2094b2502d7d339006b5433049433114ce49e02b60cc",
+    "nonempty_text_pages": 37
+  },
+  {
+    "openreview_id": "bvpkw7UIRdU",
+    "pdf_url": "https://arxiv.org/pdf/2205.16001v4",
+    "source_url": "https://arxiv.org/abs/2205.16001v4",
+    "version_note": "Public author-deposited arXiv copy 2205.16001v4; retrieved 2026-09-08. Not certified identical to the ICLR proceedings/submission version. PDF title says Text Generator Evaluation rather than event Text Generation Evaluation.",
+    "identity_evidence": "PDF page 1 manually checked: title and full author list match the official event (minor final title variations retained in version_note). Published as a conference paper at ICLR 2023\nON THE USEFULNESS OF EMBEDDINGS, CLUSTERS\nAND STRINGS FOR TEXT GENERATOR EVALUATION\nTiago Pimentel∗,1\nClara Meister∗,2\nRyan Cotterell2\n1University of Cambridge,\n2ETH Zürich\ntp472@cam.ac.uk,\n{clara.meister, ryan.cotterell}@inf.ethz.ch\nABSTRACT\nA good automatic evaluation metric for language generation ideally correlates\nhighly with human judgements of text quality. Yet, there is a dearth of such metrics,\nwhich inhibits the rapid and efficient progress of language generators. One excep-\ntion is the recently proposed MAUVE. In theory, MAUVE measures an information-\ntheoretic divergence between two probability distributions over strings: one rep-\nresenting the language generator under evaluation and the other representing the\ntrue natural language distribution. MAUVE’s authors argue that its success comes\nfrom the qualitative properties of their proposed divergence. Yet in practice, as this\ndivergence is uncomputable, MAUVE approximates it by measuring the divergence\nbetween multinomial distributions over clusters instead, where cluster assignments\nare attained by grouping strings based on a pre-trained language model’s embed-\ndings. As we show, however, this is not a tight approximation—in either theory\nor practice. This begs the question: why does MAUVE work so well? In this work,\nwe show that MAUVE was right for the wrong reasons, and that its newly proposed\ndivergence is not necessary for its high performance. In fact, classical divergences\npaired with its proposed cluster-based approximation may actually serve as better\nevaluation metrics. We finish the paper with a probing analysis; this analysis leads\nus to conclude that—by ",
+    "local_pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/bvpkw7UIRdU_arxiv_2205.16001v4.pdf",
+    "sha256": "39023e7591862f3c7352e6faf3c042b8a9ef1658e7831c4a0fdb02f9c9e0122f",
+    "bytes": 4409339,
+    "pages": 21,
+    "download_status": "verified",
+    "title": "On the Usefulness of Embeddings, Clusters and Strings for Text Generation Evaluation",
+    "local_text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/bvpkw7UIRdU_arxiv_2205.16001v4.txt",
+    "text_sha256": "d8063a9a0fc3c1f710ab5659e288b6ed920573fdfc5db6cdb824b2579ec30bcc",
+    "nonempty_text_pages": 21
+  },
+  {
+    "openreview_id": "hQ9V5QN27eS",
+    "pdf_url": "https://onnoeberhard.com/bib/eberhard-2023-pink/doc.pdf",
+    "source_url": "https://onnoeberhard.com/publications",
+    "version_note": "Public author-hosted PDF retrieved 2026-09-08; not independently certified identical to the original submission.",
+    "identity_evidence": "Author publication page links this PDF and OpenReview hQ9V5QN27eS in the same publication entry. PDF page 1 title and authors verified against the official conference catalog.",
+    "local_pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/hQ9V5QN27eS_author.pdf",
+    "sha256": "083ce843ab88a0275943d6c92c97270fbcf78540ff98f9764cc8edb5dc4965fb",
+    "bytes": 8695957,
+    "pages": 27,
+    "download_status": "verified",
+    "title": "Pink Noise Is All You Need: Colored Noise Exploration in Deep Reinforcement Learning",
+    "local_text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/hQ9V5QN27eS_author.txt",
+    "text_sha256": "05fc1ddb2659451e54e13c00b80573d390fa785aed54b18d888d1732e1129d67",
+    "nonempty_text_pages": 27
+  },
+  {
+    "openreview_id": "uVcDssQff_",
+    "pdf_url": "https://par.nsf.gov/servlets/purl/10424269",
+    "source_url": "https://par.nsf.gov/biblio/10424269",
+    "version_note": "NSF public-access repository copy, retrieved 2026-09-08; printed Published as a conference paper at ICLR 2023.",
+    "identity_evidence": "PDF first-page title and complete author list verified against the official event; version differences are explicitly retained. Published as a conference paper at ICLR 2023\nREVISITING PRUNING AT INITIALIZATION THROUGH\nTHE LENS OF RAMANUJAN GRAPH\nDuc Hoang, Shiwei Liu, Radu Marculescu & Zhangyang Wang\nDepartment of Electrical and Computer Engineering\nUniversity of Texas at Austin, Austin, TX 78712, USA\n{hoangd,radum,atlaswang}@utexas.edu\nshiwei.liu@austin.utexas.edu\nABSTRACT\nPruning neural networks at initialization (PaI) has received an upsurge of inter-\nest due to its end-to-end saving potential. PaI is able to find sparse subnetworks\nat initialization that can achieve comparable performance to the full networks.\nThese methods can surpass the trivial baseline of random pruning but suffer from\na significant performance gap compared to post-training pruning. Previous ap-\nproaches firmly rely on weights, gradients, and sanity checks as primary signals\nwhen conducting PaI analysis. To better understand the underlying mechanism of\nPaI, we propose to interpret it through the lens of the Ramanujan Graph - a class of\nexpander graphs that are sparse while being highly connected. It is often believed\nthere should be a strong correlation between the Ramanujan graph and PaI since\nboth are about finding sparse and well-connected neural networks. However, the\nfiner-grained link relating highly sparse and connected networks to their relative\nperformance (i.e., ranking of difference sparse structures at the same specific global\nsparsity) is still missing. We observe that not only the Ramanujan property for\nsparse networks shows no significant relationship to PaI’s relative performance,\nbut maximizing it can also lead to the formation of pseudo-random graphs with\nno structural meanings. We reveal the underlying c",
+    "local_pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/uVcDssQff__alternative.pdf",
+    "sha256": "ba39d993962d7f41ab85e3cedcfba539352e2b09c38cb3525a2b7af4bbf02b84",
+    "bytes": 654464,
+    "pages": 14,
+    "download_status": "verified",
+    "title": "REVISITING PRUNING AT INITIALIZATION THROUGH THE LENS OF RAMANUJAN GRAPH",
+    "local_text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/uVcDssQff__alternative.txt",
+    "text_sha256": "1539cceb5e78c4087405d69356a7619ac0520eed9f1555a0d94ff7146c020aa8",
+    "nonempty_text_pages": 14
+  },
+  {
+    "openreview_id": "OpC-9aBBVJe",
+    "pdf_url": null,
+    "source_url": "https://proceduralia.com/science/rl-machinery",
+    "searched_primary_urls": [
+      "https://proceduralia.com/science/rl-machinery",
+      "https://evgenii-nikishin.github.io/",
+      "https://github.com/proceduralia/high_replay_ratio_continuous_control"
+    ],
+    "version_note": "No main-paper PDF retrieved; OpenReview download is HTTP 403 blocked. Do not count slides, posters, or journal extensions as this paper.",
+    "identity_evidence": "Two author pages and author repository identify exact title/authors but link only to OpenReview. A locally hosted conference poster is excluded because it is not the main paper; no matching arXiv paper found by title search.",
+    "download_status": "unavailable",
+    "title": "Sample-Efficient Reinforcement Learning by Breaking the Replay Ratio Barrier"
+  },
+  {
+    "openreview_id": "7C9aRX2nBf2",
+    "pdf_url": null,
+    "source_url": "https://john-x-jiang.github.io/publication/C_2023_ICLR",
+    "searched_primary_urls": [
+      "https://john-x-jiang.github.io/publication/C_2023_ICLR",
+      "https://www.rit.edu/cblwang/publications",
+      "https://github.com/john-x-jiang/meta_ssm"
+    ],
+    "version_note": "No main-paper PDF retrieved; OpenReview download is HTTP 403 blocked. Do not count slides, posters, or journal extensions as this paper.",
+    "identity_evidence": "First-author page identifies title/authors and links only to OpenReview. Institution publication listing confirms ICLR 2023 spotlight; author code repository has no paper PDF. Exact-title/author arXiv search did not produce a matching article.",
+    "download_status": "unavailable",
+    "title": "Sequential Latent Variable Models for Few-Shot High-Dimensional Time-Series Forecasting"
+  },
+  {
+    "openreview_id": "3RhuF8foyPW",
+    "pdf_url": "https://arxiv.org/pdf/2202.08338",
+    "source_url": "https://arxiv.org/abs/2202.08338",
+    "version_note": "Latest public author-deposited arXiv copy; title variant Single-shot Hyper-parameter Optimization for Federated Learning: A General Algorithm & Analysis. Not certified identical to original submission.",
+    "identity_evidence": "PDF first-page title and complete author list verified against the official event; version differences are explicitly retained. Single-shot Hyper-parameter Optimization for\nFederated Learning:\nA General Algorithm & Analysis\nYi Zhou\nParikshit Ram\nTheodoros Salonidis\nNathalie Baracaldo\nHorst Samulowitz\nHeiko Ludwig\nIBM Research\n{yi.zhou, Parikshit.Ram}@ibm.com\n{tsaloni, baracald, samulowitz, hludwig}@us.ibm.com\nFebruary 18, 2022\nAbstract\nWe address the relatively unexplored problem of hyper-parameter optimization (HPO) for\nfederated learning (FL-HPO). We introduce Federated Loss SuRface Aggregation (FLoRA), a general\nFL-HPO solution framework that can address use cases of tabular data and any Machine Learning\n(ML) model including gradient boosting training algorithms and therefore further expands the scope\nof FL-HPO. FLoRA enables single-shot FL-HPO: identifying a single set of good hyper-parameters\nthat are subsequently used in a single FL training. Thus, it enables FL-HPO solutions with minimal\nadditional communication overhead compared to FL training without HPO. We theoretically\ncharacterize the optimality gap of FLoRA, which explicitly accounts for the heterogeneous non-iid\nnature of the parties’ local data distributions, a dominant characteristic of FL systems. Our\nempirical evaluation of FLoRA for multiple ML algorithms on seven OpenML datasets demonstrates\nsigniﬁcant model accuracy improvements over the considered baseline, and robustness to increasing\nnumber of parties involved in FL-HPO training.\n1\nIntroduction\nTraditional machine learning (ML) approaches require training data to be gathered at a central location\nwhere the learning algorithm runs. In real world scenarios, however, training data is often subject\nto privacy or regulatory constraints restricting the way data can be shared, us",
+    "local_pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/3RhuF8foyPW_alternative.pdf",
+    "sha256": "6d3064caa504a9a3007042d3f46b9fbf259ac942f6f1c8b07400c91429002bcb",
+    "bytes": 927304,
+    "pages": 25,
+    "download_status": "verified",
+    "title": "Single-shot General Hyper-parameter Optimization for Federated Learning",
+    "local_text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/3RhuF8foyPW_alternative.txt",
+    "text_sha256": "310838cf36a6f50e308984b0334e478d95fdbfe021f251e356c0396f2072575f",
+    "nonempty_text_pages": 25
+  },
+  {
+    "openreview_id": "74A-FDAyiL",
+    "pdf_url": "https://arxiv.org/pdf/2212.00642",
+    "source_url": "https://arxiv.org/abs/2212.00642",
+    "version_note": "Public author-deposited arXiv copy 2212.00642; retrieved 2026-09-08. Not certified identical to the ICLR proceedings/submission version. PDF title hyphenates Sub-quadratic; 50-page latest author version is not certified equal to the conference layout.",
+    "identity_evidence": "PDF page 1 manually checked: title and full author list match the official event (minor final title variations retained in version_note). Sub-quadratic Algorithms for Kernel Matrices\nvia Kernel Density Estimation\nAinesh Bakshi*\nMIT\nainesh@mit.edu\nPiotr Indyk\nMIT\nindyk@mit.edu\nPraneeth Kacham\nCMU\npkacham@cs.cmu.edu\nSandeep Silwal\nMIT\nsilwal@mit.edu\nSamson Zhou*\nUC Berkeley and Rice University\nsamsonzhou@gmail.com\nAbstract\nKernel matrices, as well as weighted graphs represented by them, are ubiquitous objects\nin machine learning, statistics and other related ﬁelds. The main drawback of using kernel\nmethods (learning and inference using kernel matrices) is efﬁciency – given n input points, most\nkernel-based algorithms need to materialize the full n × n kernel matrix before performing any\nsubsequent computation, thus incurring Ω(n2) runtime. Breaking this quadratic barrier for\nvarious problems has therefore, been a subject of extensive research efforts.\nWe break the quadratic barrier and obtain subquadratic time algorithms for several fun-\ndamental linear-algebraic and graph processing primitives, including approximating the top\neigenvalue and eigenvector, spectral sparsiﬁcation, solving linear systems, local clustering, low-\nrank approximation, arboricity estimation and counting weighted triangles. We build on the\nrecently developed Kernel Density Estimation framework, which (after preprocessing in time\nsubquadratic in n) can return estimates of row/column sums of the kernel matrix. In particular,\nwe develop efﬁcient reductions from weighted vertex and weighted edge sampling on kernel graphs,\nsimulating random walks on kernel graphs, and importance sampling on matrices to Kernel Density\nEstimation and show that we can generate samples from these distributions in sublinear (in\nthe support of the distribution) t",
+    "local_pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/74A-FDAyiL_arxiv_2212.00642.pdf",
+    "sha256": "e9bf9dc72ed7ff947f2cdea6c1fa9d41bb0e24f60b63b0c94e3e56511545a97a",
+    "bytes": 1718128,
+    "pages": 50,
+    "download_status": "verified",
+    "title": "Subquadratic Algorithms for Kernel Matrices via Kernel Density Estimation",
+    "local_text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/74A-FDAyiL_arxiv_2212.00642.txt",
+    "text_sha256": "d64c423b871f84873c5b53358be7f27e45afb84657135821e13270dc140705ca",
+    "nonempty_text_pages": 50
+  },
+  {
+    "openreview_id": "0Ij9_q567Ma",
+    "pdf_url": null,
+    "source_url": "https://www.microsoft.com/en-us/research/publication/targeted-hyperparameter-optimization-with-lexicographic-preferences-over-multiple-objectives/",
+    "searched_primary_urls": [
+      "https://www.microsoft.com/en-us/research/publication/targeted-hyperparameter-optimization-with-lexicographic-preferences-over-multiple-objectives/",
+      "https://feiran.io/",
+      "https://qingyun-wu.github.io/"
+    ],
+    "version_note": "No main-paper PDF retrieved; OpenReview download is HTTP 403 blocked. Do not count slides, posters, or journal extensions as this paper.",
+    "identity_evidence": "Microsoft and two coauthor pages identify title/authors but all paper links resolve to OpenReview. Public FLAML project documentation provides the implementation, not a separate article PDF; no matching arXiv entry found.",
+    "download_status": "unavailable",
+    "title": "Targeted Hyperparameter Optimization with Lexicographic Preferences Over Multiple Objectives"
+  },
+  {
+    "openreview_id": "hWwY_Jq0xsN",
+    "pdf_url": null,
+    "source_url": "https://www.mycaltucker.com/publications",
+    "searched_primary_urls": [
+      "https://www.mycaltucker.com/publications",
+      "https://eoinkenny.github.io/",
+      "https://interactive.mit.edu/publications/"
+    ],
+    "version_note": "No main-paper PDF retrieved; OpenReview download is HTTP 403 blocked. Do not count slides, posters, or journal extensions as this paper.",
+    "identity_evidence": "Coauthor publication entry identifies all three authors and conference but links only to OpenReview. First-author homepage and MIT lab listing did not expose a matching paper PDF. Unrelated inverse-RL papers with similar title and a later self-driving-car paper were excluded.",
+    "download_status": "unavailable",
+    "title": "Towards Interpretable Deep Reinforcement Learning with Human-Friendly Prototypes"
+  },
+  {
+    "openreview_id": "paGvsrl4Ntr",
+    "pdf_url": null,
+    "source_url": "https://ml.informatik.uni-freiburg.de/profile/shala/",
+    "searched_primary_urls": [
+      "https://ml.informatik.uni-freiburg.de/profile/shala/",
+      "https://www.automl.org/nas-overview/nas-research/transfer-nas/"
+    ],
+    "version_note": "No main-paper PDF retrieved; OpenReview download is HTTP 403 blocked. Do not count slides, posters, or journal extensions as this paper.",
+    "identity_evidence": "First-author institution profile identifies exact ICLR 2023 paper and all four authors but links only to OpenReview. The same profile distinguishes a separate 2022 workshop version, also on OpenReview. Project page is indexed publicly but direct retrieval returned 404; no matching author-hosted main PDF found.",
+    "download_status": "unavailable",
+    "title": "Transfer NAS with Meta-learned Bayesian Surrogates"
+  },
+  {
+    "openreview_id": "WzGdBqcBicl",
+    "pdf_url": null,
+    "source_url": "https://khkim1.github.io/",
+    "searched_primary_urls": [
+      "https://khkim1.github.io/",
+      "https://cs.stanford.edu/~ermon/"
+    ],
+    "version_note": "No main-paper PDF retrieved; OpenReview download is HTTP 403 blocked. Do not count slides, posters, or journal extensions as this paper.",
+    "identity_evidence": "Both authors publication pages identify the exact title/authors and link only to OpenReview. First-author public website repository contains other PDFs but no Bellman score article. No matching arXiv entry found.",
+    "download_status": "unavailable",
+    "title": "Understanding and Adopting Rational Behavior by Bellman Score Estimation"
+  },
+  {
+    "openreview_id": "xSsW2Am-ukZ",
+    "pdf_url": "https://arxiv.org/pdf/2210.03044v1",
+    "source_url": "https://arxiv.org/abs/2210.03044v1",
+    "version_note": "Public author-deposited arXiv copy 2210.03044v1; retrieved 2026-09-08. Not certified identical to the ICLR proceedings/submission version.",
+    "identity_evidence": "PDF page 1 manually checked: title and full author list match the official event (minor final title variations retained in version_note). Unmasking the Lottery Ticket Hypothesis:\nWhat’s Encoded in a Winning Ticket’s Mask?\nMansheej Paul1,2∗\nFeng Chen1∗\nBrett W. Larsen1∗\nJonathan Frankle3,4\nSurya Ganguli1,2\nand\nGintare Karolina Dziugaite5,6\n1Stanford, 2Meta AI, 3MosaicML, 4Harvard, 5Google Research, Brain Team, 6Mila; McGill\nABSTRACT\nModern deep learning involves training costly, highly overparameterized net-\nworks, thus motivating the search for sparser networks that require less compute\nand memory but can still be trained to the same accuracy as the full network (i.e.\nmatching). Iterative magnitude pruning (IMP) is a state of the art algorithm that\ncan ﬁnd such highly sparse matching subnetworks, known as winning tickets. IMP\noperates by iterative cycles of training, masking a fraction of smallest magnitude\nweights, rewinding unmasked weights back to an early training point, and repeat-\ning. Despite its simplicity, the underlying principles for when and how IMP ﬁnds\nwinning tickets remain elusive. In particular, what useful information does an IMP\nmask found at the end of training convey to a rewound network near the beginning\nof training? How does SGD allow the network to extract this information? And\nwhy is iterative pruning needed, i.e. why can’t we prune to very high sparsities\nin one shot? We develop answers to these questions in terms of the geometry\nof the error landscape. First, we ﬁnd that—at higher sparsities—pairs of pruned\nnetworks at successive pruning iterations are connected by a linear path with zero\nerror barrier if and only if they are matching. This indicates that masks found at\nthe end of training convey to the rewind point the identity of an axial subspace that\nintersects a desired line",
+    "local_pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/xSsW2Am-ukZ_arxiv_2210.03044v1.pdf",
+    "sha256": "f61d714dcde067a5bc7e457d25fa4d1fa6320f3232598b777df04bf5b07f1c1d",
+    "bytes": 5979432,
+    "pages": 25,
+    "download_status": "verified",
+    "title": "Unmasking the Lottery Ticket Hypothesis: What's Encoded in a Winning Ticket's Mask?",
+    "local_text_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_alternatives/xSsW2Am-ukZ_arxiv_2210.03044v1.txt",
+    "text_sha256": "b8f445f0d2616220936ec8068a464ccfe104f59a117226b1d699b8f3134ff7a0",
+    "nonempty_text_pages": 25
+  },
+  {
+    "openreview_id": "kPLzOfPfA2l",
+    "pdf_url": null,
+    "source_url": "https://moonlab.kaist.ac.kr/Publications.html",
+    "searched_primary_urls": [
+      "https://moonlab.kaist.ac.kr/Publications.html",
+      "https://ee.kaist.ac.kr/ai-in-communication/warping-the-space-weight-space-rotation-for-class-incremental-few-shot-learning/",
+      "https://github.com/EdwinKim3069/WaRP-CIFSL"
+    ],
+    "version_note": "No main-paper PDF retrieved; OpenReview download is HTTP 403 blocked. Do not count slides, posters, or journal extensions as this paper.",
+    "identity_evidence": "Author lab publication page identifies title and all four authors but PDF links only to OpenReview. KAIST department article confirms exact conference paper. KOASAS search shows a matching repository entry, but direct retrieval returns JavaScript-required access page; no matching public PDF was recovered.",
+    "download_status": "unavailable",
+    "title": "Warping the Space: Weight Space Rotation for Class-Incremental Few-Shot Learning"
+  },
+  {
+    "openreview_id": "CPdc77SQfQ5",
+    "pdf_url": "https://ink.library.smu.edu.sg/cgi/viewcontent.cgi?article=10059&context=sis_research",
+    "source_url": "https://ink.library.smu.edu.sg/sis_research/9056/",
+    "searched_primary_urls": [
+      "https://ink.library.smu.edu.sg/sis_research/9056/",
+      "https://panzhous.github.io/publication/",
+      "https://github.com/sail-sg/win"
+    ],
+    "version_note": "No main-paper PDF retrieved; OpenReview download is HTTP 403 blocked. Do not count slides, posters, or journal extensions as this paper.",
+    "identity_evidence": "SMU institution record identifies exact title and three authors, acceptedVersion, ICLR 2023, 28 pages. Its public Download link is https://ink.library.smu.edu.sg/cgi/viewcontent.cgi?article=10059&context=sis_research; the web fetch returns 403 and ordinary requests receive HTML anti-bot page rather than PDF. Later 2024 JMLR 74-page five-author extension was excluded.",
+    "download_status": "blocked",
+    "title": "Win: Weight-Decay-Integrated Nesterov Acceleration for Adaptive Gradient Algorithms"
+  }
+]

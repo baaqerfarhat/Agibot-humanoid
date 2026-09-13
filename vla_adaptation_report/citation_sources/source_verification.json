@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "checked_utc": "2026-09-08T20:44:30.565119+00:00",
+  "refs_sha256": "854699a30c04d493648d5d4926540bb41a965a707a33d2f7eee38a16591f277f",
+  "source_record_count": 48,
+  "source_key_count": 30,
+  "bibtex_export_count": 29,
+  "checked_bytes": 1073409,
+  "manifest_sha256": "5d95b997f9c716bd02302ffd75ef68638080dbba2bcb5790b16848f1b7ec4635",
+  "integration_sha256": "671be59a2676a448a79712a9e7819b3719be6f4804b9fa1e1325e8d590da0cc4",
+  "all_record_hashes_match": true,
+  "all_integrated_entry_hashes_match": true
+}

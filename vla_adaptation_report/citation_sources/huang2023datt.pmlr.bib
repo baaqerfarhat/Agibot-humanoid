@@ -1,0 +1,15 @@
+@InProceedings{pmlr-v229-huang23a,
+  title = 	 {DATT: Deep Adaptive Trajectory Tracking for Quadrotor Control},
+  author =       {Huang, Kevin and Rana, Rwik and Spitzer, Alexander and Shi, Guanya and Boots, Byron},
+  booktitle = 	 {Proceedings of The 7th Conference on Robot Learning},
+  pages = 	 {326--340},
+  year = 	 {2023},
+  editor = 	 {Tan, Jie and Toussaint, Marc and Darvish, Kourosh},
+  volume = 	 {229},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {06--09 Nov},
+  publisher =    {PMLR},
+  pdf = 	 {https://proceedings.mlr.press/v229/huang23a/huang23a.pdf},
+  url = 	 {https://proceedings.mlr.press/v229/huang23a.html},
+  abstract = 	 {Precise arbitrary trajectory tracking for quadrotors is challenging due to unknown nonlinear dynamics, trajectory infeasibility, and actuation limits. To tackle these challenges, we present DATT, a learning-based approach that can precisely track arbitrary, potentially infeasible trajectories in the presence of large disturbances in the real world. DATT builds on a novel feedforward-feedback-adaptive control structure trained in simulation using reinforcement learning. When deployed on real hardware, DATT is augmented with a disturbance estimator using $\mathcal{L}_1$ adaptive control in closed-loop, without any fine-tuning. DATT significantly outperforms competitive adaptive nonlinear and model predictive controllers for both feasible smooth and infeasible trajectories in unsteady wind fields, including challenging scenarios where baselines completely fail. Moreover, DATT can efficiently run online with an inference time less than 3.2ms, less than 1/4 of the adaptive nonlinear model predictive control baseline.}
+}

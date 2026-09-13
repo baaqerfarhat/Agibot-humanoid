@@ -1,0 +1,313 @@
+{
+  "schema_version": 1,
+  "sources": {
+    "panda": {
+      "path": "results/phase05/adaptive_vs_frozen.mp4",
+      "sha256": "86b7533a406302ee98d64412990fffdbeedaf334755317eb91651acd20c6bdf9",
+      "origin_commit": "a04c285fcf8a8a878890ad21bb698586f0089698",
+      "renderer": "openpi/compare_video.py",
+      "renderer_sha256": "5e2747c8ee671ba2ea446dda9ef715189e20e0eaf252c72a828659c79508d545",
+      "fps": 20,
+      "geometry": [
+        768,
+        464
+      ],
+      "frames": 960,
+      "robot": "Panda",
+      "policy": "pi0.5",
+      "suite": "libero_spatial",
+      "task": "pick up the black bowl next to the ramekin and place it on the plate",
+      "fault": "command offset +0.05 on all six motion-action channels",
+      "method": "original continuous calibrated adaptation; rotation-only correction",
+      "timing": "Images precede env.step; the reported result belongs to the following transition.",
+      "selection": "Four repaired clips retained from six candidates; two off-success skips (record section 28.3).",
+      "pairing": "Same task and stored initial state by recording code; policy samples not pinned; no archived full-state hash.",
+      "header_geometry": "74px annotation bar in 458px original canvas, resized to 464px; crop starts at 75px.",
+      "stream": {
+        "width": 768,
+        "height": 464,
+        "r_frame_rate": "20/1",
+        "nb_frames": "960",
+        "disposition": {
+          "default": 1,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0
+        },
+        "tags": {
+          "language": "und",
+          "handler_name": "VideoHandler",
+          "vendor_id": "[0][0][0][0]"
+        }
+      },
+      "origin_video_and_renderer_bytes_verified": true
+    },
+    "aloha": {
+      "path": "results/phase05/adaptive_vs_frozen_aloha.mp4",
+      "sha256": "47154db5ba21397394e2215c32febb966d35e1b5c75bf84bb2c8e1f299e90c97",
+      "origin_commit": "f7174bbd038c3107f072592b092e62ea0bf7027d",
+      "renderer": "openpi/aloha_video.py",
+      "renderer_sha256": "f510f0de4d37480168433ef4057fbbf2ce12e67878b63c9f16adb9e9e99fec4d",
+      "fps": 25,
+      "geometry": [
+        1280,
+        560
+      ],
+      "frames": 1300,
+      "robot": "ALOHA",
+      "policy": "pi0",
+      "suite": "gym_aloha transfer_cube",
+      "task": "Transfer cube",
+      "fault": "joint-target command offset  +0.02 rad on left arm joints 0\u20135",
+      "method": "identify in one episode, then hold correction fixed during task",
+      "timing": "Renderer stores the post-env.step scene and that transition's success result.",
+      "selection": "Four historical off-failure/on-success clips; candidate count not archived.",
+      "pairing": "Same episode seed by recording code; policy samples not pinned; no archived full-state hash.",
+      "header_geometry": "74px annotation bar above 480px scene, encoded canvas resized from 554 to 560px; crop starts at 75px.",
+      "misleading_original_label": "The generic header says ADAPTIVE (online), but detailed overlay and origin commit establish identify-then-hold.",
+      "stream": {
+        "width": 1280,
+        "height": 560,
+        "r_frame_rate": "25/1",
+        "nb_frames": "1300",
+        "disposition": {
+          "default": 1,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0
+        },
+        "tags": {
+          "language": "und",
+          "handler_name": "VideoHandler",
+          "vendor_id": "[0][0][0][0]",
+          "encoder": "Lavc61.3.100 libx264"
+        }
+      },
+      "origin_video_and_renderer_bytes_verified": true
+    }
+  },
+  "assets": {
+    "panda_off_matched": {
+      "path": "paper/overview_assets/panda_off_matched.png",
+      "sha256": "c550937ae97367fee8df1eb0ce203204a4ecc07d7f33666ab0948489c9f7c02a",
+      "video_key": "panda",
+      "video_sha256": "86b7533a406302ee98d64412990fffdbeedaf334755317eb91651acd20c6bdf9",
+      "arm": "off",
+      "clip_index_zero_based": 0,
+      "frame_index_zero_based": 152,
+      "video_presentation_seconds": 7.6,
+      "displayed_step": 162,
+      "source_frame": "paper/overview_assets/panda_frame_0152_annotated.png",
+      "source_frame_sha256": "ef318457a0643bfaa530b52222f350732727e12e67d36eb465d5fe8c95ae3353",
+      "crop_xywh": [
+        0,
+        75,
+        384,
+        389
+      ],
+      "native_pixels_preserved": true,
+      "panel_held_at_frame": false,
+      "eventual_success": false,
+      "eventual_outcome": "timeout",
+      "outcome_reported_at_displayed_step": 229,
+      "outcome_already_reported_at_shown_frame": false,
+      "outcome_source": "Original burned-in annotations, read at full resolution; off terminal images retained separately.",
+      "recommended_label": "Off: eventual timeout"
+    },
+    "panda_on_success": {
+      "path": "paper/overview_assets/panda_on_success.png",
+      "sha256": "5f1a3309be2f395020f3c9431622e29d5dbd00c556c6670773fd1db257016515",
+      "video_key": "panda",
+      "video_sha256": "86b7533a406302ee98d64412990fffdbeedaf334755317eb91651acd20c6bdf9",
+      "arm": "on",
+      "clip_index_zero_based": 0,
+      "frame_index_zero_based": 152,
+      "video_presentation_seconds": 7.6,
+      "displayed_step": 162,
+      "source_frame": "paper/overview_assets/panda_frame_0152_annotated.png",
+      "source_frame_sha256": "ef318457a0643bfaa530b52222f350732727e12e67d36eb465d5fe8c95ae3353",
+      "crop_xywh": [
+        384,
+        75,
+        384,
+        389
+      ],
+      "native_pixels_preserved": true,
+      "panel_held_at_frame": false,
+      "eventual_success": true,
+      "eventual_outcome": "success",
+      "outcome_reported_at_displayed_step": 162,
+      "outcome_already_reported_at_shown_frame": true,
+      "outcome_source": "Original burned-in annotations, read at full resolution; off terminal images retained separately.",
+      "recommended_label": "Online: success"
+    },
+    "aloha_on_success": {
+      "path": "paper/overview_assets/aloha_on_success.png",
+      "sha256": "da7503f1ff2fd90b496b2573fc9537ecf6fe22e014ea3bef51e6f42d313b334a",
+      "video_key": "aloha",
+      "video_sha256": "47154db5ba21397394e2215c32febb966d35e1b5c75bf84bb2c8e1f299e90c97",
+      "arm": "on",
+      "clip_index_zero_based": 0,
+      "frame_index_zero_based": 272,
+      "video_presentation_seconds": 10.88,
+      "displayed_step": 272,
+      "source_frame": "paper/overview_assets/aloha_frame_0272_annotated.png",
+      "source_frame_sha256": "102af40c02b5484ff6514dbdda82c54932195297dce4b498636d1e92521b8239",
+      "crop_xywh": [
+        640,
+        75,
+        640,
+        485
+      ],
+      "native_pixels_preserved": true,
+      "panel_held_at_frame": false,
+      "eventual_success": true,
+      "eventual_outcome": "success",
+      "outcome_reported_at_displayed_step": 272,
+      "outcome_already_reported_at_shown_frame": true,
+      "outcome_source": "Original burned-in annotations, read at full resolution; off terminal images retained separately.",
+      "recommended_label": "Held: success"
+    }
+  },
+  "decoded_evidence_frames": [
+    {
+      "video_key": "panda",
+      "frame_index_zero_based": 152,
+      "video_presentation_seconds": 7.6,
+      "path": "paper/overview_assets/panda_frame_0152_annotated.png",
+      "sha256": "ef318457a0643bfaa530b52222f350732727e12e67d36eb465d5fe8c95ae3353"
+    },
+    {
+      "video_key": "panda",
+      "frame_index_zero_based": 219,
+      "video_presentation_seconds": 10.95,
+      "path": "paper/overview_assets/panda_frame_0219_annotated.png",
+      "sha256": "4bd336f0cf68bded93a10f7a3cc40172201f1dfe6f19f69e58d5f1ea5c5bc1d1"
+    },
+    {
+      "video_key": "aloha",
+      "frame_index_zero_based": 272,
+      "video_presentation_seconds": 10.88,
+      "path": "paper/overview_assets/aloha_frame_0272_annotated.png",
+      "sha256": "102af40c02b5484ff6514dbdda82c54932195297dce4b498636d1e92521b8239"
+    }
+  ],
+  "commands": [
+    [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-i",
+      "/home/fengze/vla-adaptation/results/phase05/adaptive_vs_frozen.mp4",
+      "-vf",
+      "select=eq(n\\,152),format=rgb24",
+      "-frames:v",
+      "1",
+      "-y",
+      "/home/fengze/vla-adaptation/paper/overview_assets/panda_frame_0152_annotated.png"
+    ],
+    [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-i",
+      "/home/fengze/vla-adaptation/results/phase05/adaptive_vs_frozen.mp4",
+      "-vf",
+      "select=eq(n\\,219),format=rgb24",
+      "-frames:v",
+      "1",
+      "-y",
+      "/home/fengze/vla-adaptation/paper/overview_assets/panda_frame_0219_annotated.png"
+    ],
+    [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-i",
+      "/home/fengze/vla-adaptation/results/phase05/adaptive_vs_frozen_aloha.mp4",
+      "-vf",
+      "select=eq(n\\,272),format=rgb24",
+      "-frames:v",
+      "1",
+      "-y",
+      "/home/fengze/vla-adaptation/paper/overview_assets/aloha_frame_0272_annotated.png"
+    ],
+    [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-i",
+      "/home/fengze/vla-adaptation/results/phase05/adaptive_vs_frozen.mp4",
+      "-vf",
+      "select=eq(n\\,152),format=rgb24,crop=384:389:0:75:exact=1",
+      "-frames:v",
+      "1",
+      "-y",
+      "/home/fengze/vla-adaptation/paper/overview_assets/panda_off_matched.png"
+    ],
+    [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-i",
+      "/home/fengze/vla-adaptation/results/phase05/adaptive_vs_frozen.mp4",
+      "-vf",
+      "select=eq(n\\,152),format=rgb24,crop=384:389:384:75:exact=1",
+      "-frames:v",
+      "1",
+      "-y",
+      "/home/fengze/vla-adaptation/paper/overview_assets/panda_on_success.png"
+    ],
+    [
+      "ffmpeg",
+      "-v",
+      "error",
+      "-i",
+      "/home/fengze/vla-adaptation/results/phase05/adaptive_vs_frozen_aloha.mp4",
+      "-vf",
+      "select=eq(n\\,272),format=rgb24,crop=640:485:640:75:exact=1",
+      "-frames:v",
+      "1",
+      "-y",
+      "/home/fengze/vla-adaptation/paper/overview_assets/aloha_on_success.png"
+    ]
+  ],
+  "scope": "Selected historical simulation illustrations; no new benchmark outcomes or estimator ranking.",
+  "correction_on_failure_available_for_current_protocol": false,
+  "excluded_failure_video": {
+    "path": "results/phase05/adaptive_vs_frozen_offset010.mp4",
+    "sha256": "69d3f81a3e597ea5fdf8b8551c200fbbb2d5a719a3fe37d68ade3db79e09bf99",
+    "observed_failure_frames": [
+      459,
+      699
+    ],
+    "reason": "On-failure annotations are visible, but exact generating source/CLI is absent; 432px encoded height mismatches 458px canvas of committed renderer. Historical renderer used all-six correction, axis-angle differences and recording-camera policy input, unlike current rotation-only SO(3) protocol. Not used as Figure 1 algorithm evidence."
+  },
+  "limitations": [
+    "No exact render CLI, selected task/init identifier or per-video episode JSON was saved.",
+    "No selected clip is a deterministic counterfactual with identical policy samples.",
+    "No image depicts physical joint 5 harm, torque faults, composite adaptation or the weighted allocator.",
+    "All four corrected ALOHA clips report SUCCESS. An initial reduced-preview misreading was corrected against full-resolution frames before producing assets."
+  ],
+  "script": {
+    "path": "paper/extract_overview_assets.py",
+    "sha256": "19240bba7a09e9d7b06968e18d6e47310387d5f63b14caf63b01c61d7482e191"
+  },
+  "ffmpeg_version": "ffmpeg version 4.4.2-0ubuntu0.22.04.1 Copyright (c) 2000-2021 the FFmpeg developers"
+}

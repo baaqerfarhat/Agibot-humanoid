@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "seed": 71,
+  "runtime": {
+    "python": "3.10.12",
+    "numpy": "1.21.5"
+  },
+  "sources_sha256": {
+    "/home/fengze/vla-adaptation/paper/verify_interface_theory.py": "39a90314ed1ee1596db993ad9c21068fdcb1e5bc2ed3db1d6d952234f5ce9add",
+    "/home/fengze/vla-adaptation/openpi/composite_observer.py": "57d04b1c114fb768d9088deb99ace2dc5273732e29db40955160a87b280da4e9",
+    "/home/fengze/vla-adaptation/paper/theory_appendix.tex": "f10ed8bba5fcfabb0c25c4dc2bebc8e0f9fe835def5ad641f4a2b2001857e842",
+    "/home/fengze/vla-adaptation/paper/authority_appendix.tex": "182b95de449374dcd9f607041f73bff4141c18416deaccc91fa1817d2fc4a3de"
+  },
+  "reproduce": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python paper/verify_interface_theory.py",
+  "interpretation": "Numerical sanity checks of finite constructed cases, not proofs, robot qualification, or policy evaluation.",
+  "checks": {
+    "composite": {
+      "steps": 80,
+      "cases": [
+        {
+          "damping": 0.0,
+          "clip": null,
+          "steps": 20,
+          "clipped_updates": 0
+        },
+        {
+          "damping": 0.0,
+          "clip": 0.08,
+          "steps": 20,
+          "clipped_updates": 20
+        },
+        {
+          "damping": 0.7,
+          "clip": null,
+          "steps": 20,
+          "clipped_updates": 0
+        },
+        {
+          "damping": 0.7,
+          "clip": 0.08,
+          "steps": 20,
+          "clipped_updates": 20
+        }
+      ],
+      "maximum_absolute_recursion_discrepancy": 8.881784197001252e-16
+    },
+    "scalar_tracking": {
+      "critical_rate_exact": "81/5",
+      "dt": 1,
+      "cases": [
+        {
+          "rate": 0.0,
+          "eigenvalues": [
+            0.8,
+            0.8
+          ]
+        },
+        {
+          "rate": 16.2,
+          "eigenvalues": [
+            -1.0,
+            -0.6400000000000006
+          ]
+        },
+        {
+          "rate": 20.0,
+          "eigenvalues": [
+            -2.094427190999917,
+            -0.30557280900008443
+          ]
+        }
+      ],
+      "scope": "Scalar constructed example; not the ALOHA rate or active-strength threshold."
+    },
+    "authority_counterexamples": {
+      "inverse_then_mask": {
+        "estimate": [
+          -0.19999999999999998,
+          0.19999999999999998
+        ],
+        "physical_error_ratio": 10.049875621120888,
+        "authority_floor": 0.02,
+        "optimal_permitted_correction": 0.0
+      },
+      "perturbed_ridge_map": {
+        "candidate": [
+          -0.19607823721664747,
+          0.19607843329488467
+        ],
+        "true_exact_correction": [
+          -0.20400000000000001,
+          0.2
+        ],
+        "nominal_objective_ratio": 0.01960783352557662,
+        "physical_error_ratio": 1.9609804038338605,
+        "relative_map_error": 0.014141958845930908
+      }
+    },
+    "robust_authority": {
+      "cases": 128,
+      "minimum_observed_improvement_minus_bound": -2.220446049250313e-16,
+      "maximum_sharp_envelope_discrepancy": 8.881784197001252e-16,
+      "includes_zero_uncertainty_and_zero_correction": true
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "year": 2026,
+  "completed_utc": "2026-09-08T21:41:36.316301+00:00",
+  "source_receipts": {
+    "orals.html": {
+      "url": "https://iclr.cc/virtual/2026/events/oral",
+      "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2026/raw/orals.html",
+      "sha256": "6ddf837e04916576ff2e5ec309a4f6a2967935433160c94fdc6a97d229fa4841",
+      "status": "cached",
+      "retrieved_utc": "2026-09-08T21:23:33.584259+00:00"
+    },
+    "orals_posters.json": {
+      "url": "https://iclr.cc/static/virtual/data/iclr-2026-orals-posters.json",
+      "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2026/raw/orals_posters.json",
+      "sha256": "064c43404a720a56ae51831dd6db48bfb58ec79f300f29b8d7cc8f889fcf1aca",
+      "status": "cached",
+      "retrieved_utc": "2026-09-08T21:24:45.375467+00:00"
+    },
+    "awards.html": {
+      "url": "https://blog.iclr.cc/2026/04/23/announcing-the-iclr-2026-outstanding-papers/",
+      "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2026/raw/awards.html",
+      "sha256": "ceb1c8428d2c929f17b99e186c9da17a18d791e4f4b5f428197147f0791e8434",
+      "status": "cached",
+      "retrieved_utc": "2026-09-08T21:23:33.234258+00:00"
+    },
+    "proceedings.html": {
+      "url": "https://proceedings.iclr.cc/paper_files/paper/2026",
+      "path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2026/raw/proceedings.html",
+      "sha256": "1e42ba7d9eca2c8ab1007944ccfdc0ed68a59c6e8eb0c82055f7f3b098904828",
+      "status": "cached",
+      "retrieved_utc": "2026-09-08T21:26:06.429791+00:00"
+    }
+  },
+  "scheduled_oral_urls": 223,
+  "unique_oral_acceptances": 224,
+  "supplemental_poster_only_oral": [
+    "Premise Selection for a Lean Hammer"
+  ],
+  "outstanding": 2,
+  "honorable_mention": 1,
+  "unnamed_shortlist_papers": 2,
+  "shortlist_scope": "Official committee had a five-paper shortlist and a 36-paper longlist; only three recognized titles are publicly named in its announcement. No unnamed finalist/candidate designations inferred.",
+  "pdf_version_scope": "Public official proceedings files. OpenReview latest-revision comparison unavailable because of access challenge reported in this collection session.",
+  "successful": 224,
+  "verified_printed_title_variants": [
+    "ItFuNJQGH4",
+    "g88nt4ieTG",
+    "vH7OAPZ2dR",
+    "gpsczXOsHn",
+    "3eTr9dGwJv",
+    "7xjoTuaNmN",
+    "EJ680UQeZG",
+    "EA80Zib9UI",
+    "P0GOk5wslg"
+  ],
+  "errors": [],
+  "total_pdf_bytes": 1903309628,
+  "total_pages": 7250,
+  "requested_deep_read_ids": [
+    "Yxz92UuPLQ",
+    "VKGTGGcwl6",
+    "yRtgZ1K8hO",
+    "bFYfV6c9zu",
+    "IZHk6BXBST",
+    "mIeKe74W43",
+    "yDmb7xAfeb",
+    "AufVSUgMUo",
+    "EJ680UQeZG"
+  ],
+  "automated_scope": "Metadata collection, title mapping, PDF validation and full-text extraction for every row; not a claim of reading every paper in depth.",
+  "script_sha256": "a4658b3b9dd6552ec238cd81afdf85087dcf4df07e8670a0bc9540da5cce95bb"
+}

@@ -1,0 +1,67 @@
+[
+  {
+    "openreview_id": "4t9q35BxGr",
+    "verified": true,
+    "printed_title": "Inequality Phenomenon in l∞-Adversarial Training, and Its Unrealized Threats",
+    "evidence": [
+      "First PDF page was read and visually rendered. The title matches the official title after interpreting the displayed l-infinity symbol as the catalog LaTeX l_{\\infty}; the automatic mismatch is a mathematics-encoding difference.",
+      "First five printed author names match the official record, allowing capitalization. The sixth is printed Hue Xue, whereas official metadata say Hui Xue'; the PDF contact hui.xueh@alibaba-inc.com supports the same identity. All six surnames match.",
+      "The first-page abstract matches the official abstract in its distinctive claim about feature concentration during l-infinity adversarial training, stronger perturbation budgets, and tests using noise/occlusion. Minor wording changes are present and do not imply the same revision."
+    ],
+    "anyversionheader": "Published as a conference paper at ICLR 2023",
+    "checked_pdf_pages": [
+      1
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_archive/4t9q35BxGr.pdf",
+    "pdf_sha256": "257666916f58457bf15f9cbe9eff78181d09df9dfb639219114eb10fc9509363",
+    "official_event_url": "https://iclr.cc/virtual/2023/oral/12663",
+    "official_identity_fields": {
+      "title": "Inequality phenomenon in $l_{\\infty}$-adversarial training, and its unrealized threats",
+      "authors": [
+        "Ranjie Duan",
+        "YueFeng Chen",
+        "Yao Zhu",
+        "Xiaojun Jia",
+        "Rong Zhang",
+        "Hui Xue'"
+      ],
+      "abstract": "The appearance of adversarial examples raises attention from both academia and industry. Along with the attack-defense arms race, adversarial training is the most effective against adversarial examples.However, we find inequality phenomena occur during the $l_{\\infty}$-adversarial training, that few features dominate the prediction made by the adversarially trained model. We systematically evaluate such inequality phenomena by extensive experiments and find such phenomena become more obvious when performing adversarial training with increasing adversarial strength (evaluated by $\\epsilon$). We hypothesize such inequality phenomena make $l_{\\infty}$-adversarially trained model less reliable than the standard trained model when few ``important features\" are influenced. To validate our hypothesis, we proposed two simple attacks that either perturb or replace important features with noise or occlusion. Experiments show that $l_{\\infty}$-adversarially trained model can be easily attacked when the few important features are influenced. Our work shed light on the limitation of the practicality of $l_{\\infty}$-adversarial training."
+    },
+    "official_identity_fields_sha256": "db8d98ed01ed766fc8a9c33293aa1cdd255b05808d5bd801055ef1fa196dfa26",
+    "mirror_manifest_sha256": "466d52ca1d36a22b9d8257adf8b41c65c996a2ac335fabb39bb415791037b636",
+    "mirror_collection_count_at_check": 43,
+    "checked_utc": "2026-09-08T21:59:31.469130+00:00",
+    "scope": "Verified paper identity only. Public archived PDF; byte identity to an OpenReview PDF and exact accepted/review/latest revision remain unestablished."
+  },
+  {
+    "openreview_id": "bvpkw7UIRdU",
+    "verified": true,
+    "printed_title": "On the Usefulness of Embeddings, Clusters and Strings for Text Generator Evaluation",
+    "evidence": [
+      "First PDF page was read and visually rendered. The title has Text Generator Evaluation where the official catalog says Text Generation Evaluation; the remaining distinctive title is the same.",
+      "The three printed authors Tiago Pimentel, Clara Meister, and Ryan Cotterell match the official record.",
+      "The first-page abstract describes the same MAUVE divergence, cluster approximation critique, comparison with classical divergences, and syntactic/coherence probing study as the official abstract. Small wording differences are present."
+    ],
+    "anyversionheader": "Published as a conference paper at ICLR 2023",
+    "checked_pdf_pages": [
+      1
+    ],
+    "pdf_path": "/home/fengze/online_adaptation_research/iclr_2023_2026/2023/pdfs_archive/bvpkw7UIRdU.pdf",
+    "pdf_sha256": "080d7d57e7d42fbbb92bd15e76891bc260c3e01a34ac984ef3991b81af77e899",
+    "official_event_url": "https://iclr.cc/virtual/2023/oral/12733",
+    "official_identity_fields": {
+      "title": "On the Usefulness of Embeddings, Clusters and Strings for Text Generation Evaluation",
+      "authors": [
+        "Tiago Pimentel",
+        "Clara Meister",
+        "Ryan Cotterell"
+      ],
+      "abstract": "A good automatic evaluation metric for language generation ideally correlates highly with human judgements of text quality.  Yet, there is a dearth of such metrics, which inhibits the rapid and efficient progress of language generators. One exception is  the recently proposed Mauve. In theory, Mauve measures an information-theoretic divergence between two probability distributions over strings: one representing the language generator under evaluation; the other representing the true natural language distribution. Mauve's authors argue that its success comes from the qualitative properties of their proposed divergence.  Yet in practice, as this divergence is uncomputable, Mauve approximates it by measuring the divergence between multinomial distributions over clusters instead, where cluster assignments are attained by grouping strings based on a pretrained language model's embeddings. As we show, however, this is not a tight approximation---in either theory or practice. This begs the question: why does Mauve work so well? In this work, we show that \\mauve was right for the wrong reasons, and that its newly proposed divergence is not necessary for its high performance. In fact, classical divergences paired with its proposed cluster-based approximation may actually serve as better evaluation metrics. We finish the paper with a probing analysis; this analysis leads us to conclude that---by encoding syntactic- and coherence-level features of text, while ignoring surface-level features---such cluster-based approximations to string distributions may simply be better for evaluating state-of-the-art language generators."
+    },
+    "official_identity_fields_sha256": "25968acd511c443e11735361bbebb44fe65668403ec81f77fd83c4797f58afd2",
+    "mirror_manifest_sha256": "466d52ca1d36a22b9d8257adf8b41c65c996a2ac335fabb39bb415791037b636",
+    "mirror_collection_count_at_check": 43,
+    "checked_utc": "2026-09-08T21:59:31.475123+00:00",
+    "scope": "Verified paper identity only. Public archived PDF; byte identity to an OpenReview PDF and exact accepted/review/latest revision remain unestablished."
+  }
+]

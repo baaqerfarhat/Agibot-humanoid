@@ -1,0 +1,8 @@
+% Tectonic build shim: this machine's tectonic bundle silently substitutes Latin Modern for the
+% psnfss `times` package, which widens the text by ~6% and breaks the page-count check. Loading
+% newtxtext (TeX Gyre Termes, Times-metric) at the end of the preamble restores the submission
+% metrics. The submission source iclr_draft.tex is unchanged; build with
+%   tectonic --keep-intermediates -o <out> build_tectonic.tex
+\RequirePackage{etoolbox}
+\AtEndPreamble{\usepackage{newtxtext}}
+\input{iclr_draft.tex}

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Search Engine Info --><title>Meta-Learning for Adaptive Control with Automated Mirror Descent</title><meta name="description" content="Meta-Learning for Adaptive Control with Automated Mirror DescentSunbochen Tang,&nbsp;Haoyuan Sun,&nbsp;Navid AzizanAdaptive control achieves concurrent param..."><!-- Solution from http://stackoverflow.com/questions/31593297/using-execcommand-javascript-to-copy-hidden-text-to-clipboard -->
+<script src="https://proceedings.mlr.press/v283/assets/js/copy_input.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://proceedings.mlr.press/v283/assets/js/download.js"></script>
+<meta name="citation_publisher" content="PMLR"/><meta name="citation_title" content="Meta-Learning for Adaptive Control with Automated Mirror Descent"/><meta name="citation_language" content="en"/>
+<meta name="citation_abstract_html_url" content="https://proceedings.mlr.press/v283/tang25b.html"/><meta name="citation_pdf_url" content="https://raw.githubusercontent.com/mlresearch/v283/main/assets/tang25b/tang25b.pdf"><meta name="citation_firstpage" content="1025"><meta name="citation_lastpage" content="1037"><meta name="citation_author" content="Sunbochen Tang"><meta name="citation_author" content="Haoyuan Sun"><meta name="citation_author" content="Navid Azizan"><meta name="citation_publication_date" content="2025/05/22"><meta name="citation_inbook_title" content="7th Annual Learning for Dynamics \& Control Conference"/><meta name="citation_conference_title" content="7th Annual Learning for Dynamics \& Control Conference"/><meta name="citation_issn" content="2640-3498"><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Meta-Learning for Adaptive Control with Automated Mirror Descent"/><meta name="twitter:site" content="@MLResearchPress" /><meta name="twitter:description" content="Adaptive control achieves concurrent parameter learning and stable control under uncertainties that are linearly parameterized with known nonlinear features...."/><meta name="twitter:image" content="https://proceedings.mlr.press/v283/assets/images/logo-pmlr.png"/>
+<meta name="twitter:image:alt" content="PMLR Logo"/><meta property="og:title" content="Meta-Learning for Adaptive Control with Automated Mirror Descent"/>
+<meta property="og:description" content="Adaptive control achieves concurrent parameter learning and stable control under uncertainties that are linearly parameterized with known nonlinear features. Nonetheless, it is often difficult to o..."/>
+<meta property="og:type" content="article"/><meta property="article:published_time" content="2025-05-22T00:00:00+00:00"><meta property="og:url" content="https://proceedings.mlr.press/v283/tang25b.html"/><meta property="og:image" content="https://proceedings.mlr.press/v283/assets/images/logo-pmlr.png"/><meta property="og:site_name" content="PMLR"/><!-- Style Info -->
+  <link rel="stylesheet" type="text/css" href="https://proceedings.mlr.press/v283/assets/css/pmlr.css" />
+  <style>.hero-text {
+    color: #303030;
+  }</style>
+
+  <!-- Icon Info -->
+  <link rel="shortcut icon" href="https://proceedings.mlr.press/v283/assets/images/favicon-pmlr.ico" type="image/x-icon">
+  <link rel="icon" href="https://proceedings.mlr.press/v283/assets/images/favicon-pmlr.ico" type="image/x-icon">
+
+  <!-- Feed Info --><link type="application/atom+xml" rel="alternate" href="https://proceedings.mlr.press/v283/feed.xml" title="Proceedings of Machine Learning Research" /><!-- Scripting info --><!-- Solution from http://stackoverflow.com/questions/31593297/using-execcommand-javascript-to-copy-hidden-text-to-clipboard -->
+<script src="https://proceedings.mlr.press/v283/assets/js/copy_input.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://proceedings.mlr.press/v283/assets/js/download.js"></script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92432422-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+          autoNumber: "AMS"
+        }
+      },
+      tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(', '\\)'] ],
+      displayMath: [ ['$$','$$'], ['\\[', '\\]'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script  async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  <!-- User custom header -->
+</head>
+
+
+
+
+
+
+<body>
+
+
+<header class="site-header">
+  <div class="wrapper">
+    
+
+
+<div class="hero-image">
+  <div class="hero-text">
+    <a href="/" target="_top"><img src="/v283/assets/images/logo-pmlr.svg" alt="[7th Annual Learning for Dynamics \& Control Conference Logo]"></a>
+    Proceedings of Machine Learning Research
+  </div>
+</div>
+
+
+    <nav class="site-nav">
+  <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+  <label for="nav-trigger">
+  <span class="menu-icon"><svg viewBox="0 0 18 15" width="18px" height="15px">
+  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+</svg>
+</span>
+  </label>
+  <div class="trigger"><a class="page-link" href="https://proceedings.mlr.press/v283/">Volume 283</a><a class="page-link" href="https://www.jmlr.org/">JMLR</a> 
+    <a class="page-link" href="https://data.mlr.press/">DMLR</a> 
+    <a class="page-link" href="https://jmlr.org/tmlr/">TMLR</a> 
+    <a class="page-link" href="https://www.jmlr.org/mloss">MLOSS</a>
+    <a class="page-link" href="/faq.html">FAQ</a>
+    <a class="page-link" href="/spec.html">Submission Format</a>
+    <a class="page-link" href="https://proceedings.mlr.press//v283/assets/rss/feed.xml">
+      <img src="https://proceedings.mlr.press/v283/assets/images/RSS.gif" class="rss" alt="RSS Feed">
+    </a>
+  </div>
+</nav>
+
+  </div>
+</header>
+
+
+
+
+
+<main class="page-content" aria-label="Content"><div class="wrapper">
+
+
+<p style="text-align:right">[<a href="https://github.com/mlresearch/v283/edit/gh-pages/_posts/2025-05-22-tang25b.md" target="_blank" onclick="ga('send', 'event', 'Edit Page', 'Edit', 'https://github.com/mlresearch/v283/edit/gh-pages/_posts/2025-05-22-tang25b.md', 13);">edit</a>]</p>
+
+<article class="post-content">
+  <h1>Meta-Learning for Adaptive Control with Automated Mirror Descent</h1><span class="authors">Sunbochen Tang,&nbsp;Haoyuan Sun,&nbsp;Navid Azizan</span>
+<div id="info"><i>Proceedings of the 7th Annual Learning for Dynamics \& Control Conference</i>,&nbsp;PMLR 283:1025-1037,&nbsp;2025.
+  </div> <!-- info -->
+  
+  <h4>Abstract</h4>
+  <div id="abstract" class="abstract">
+    Adaptive control achieves concurrent parameter learning and stable control under uncertainties that are linearly parameterized with known nonlinear features. Nonetheless, it is often difficult to obtain such nonlinear features. To address this difficulty, recent progress has been made in integrating meta-learning with adaptive control to learn such nonlinear features from data. However, these meta-learning-based control methods rely on classical adaptation laws using gradient descent, which is confined to the Euclidean geometry. In this paper, we propose a novel method that combines meta-learning and adaptation laws based on mirror descent, a popular generalization of gradient descent, which takes advantage of the potentially non-Euclidean geometry of the parameter space. In our approach, meta-learning not only learns the nonlinear features but also searches for a suitable mirror-descent potential function that optimizes control performance. Through numerical simulations, we demonstrate the effectiveness of the proposed method in learning efficient representations and real-time tracking control performance under uncertain dynamics.
+  </div>
+  <h4>Cite this Paper</h4>
+<hr class="bibhr">
+
+<div class="bibbuttongroup row row--justified">
+  <div class="bibbuttontext column">
+    BibTeX
+  </div>
+  <div class="column">
+  <div class="codebox">
+    <code class="citecode" id="bibtex">@InProceedings{pmlr-v283-tang25b,
+  title = 	 {Meta-Learning for Adaptive Control with Automated Mirror Descent},
+  author =       {Tang, Sunbochen and Sun, Haoyuan and Azizan, Navid},
+  booktitle = 	 {Proceedings of the 7th Annual Learning for Dynamics \& Control Conference},
+  pages = 	 {1025--1037},
+  year = 	 {2025},
+  editor = 	 {Ozay, Necmiye and Balzano, Laura and Panagou, Dimitra and Abate, Alessandro},
+  volume = 	 {283},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {04--06 Jun},
+  publisher =    {PMLR},
+  pdf = 	 {https://raw.githubusercontent.com/mlresearch/v283/main/assets/tang25b/tang25b.pdf},
+  url = 	 {https://proceedings.mlr.press/v283/tang25b.html},
+  abstract = 	 {Adaptive control achieves concurrent parameter learning and stable control under uncertainties that are linearly parameterized with known nonlinear features. Nonetheless, it is often difficult to obtain such nonlinear features. To address this difficulty, recent progress has been made in integrating meta-learning with adaptive control to learn such nonlinear features from data. However, these meta-learning-based control methods rely on classical adaptation laws using gradient descent, which is confined to the Euclidean geometry. In this paper, we propose a novel method that combines meta-learning and adaptation laws based on mirror descent, a popular generalization of gradient descent, which takes advantage of the potentially non-Euclidean geometry of the parameter space. In our approach, meta-learning not only learns the nonlinear features but also searches for a suitable mirror-descent potential function that optimizes control performance. Through numerical simulations, we demonstrate the effectiveness of the proposed method in learning efficient representations and real-time tracking control performance under uncertain dynamics.}
+}
+</code>
+  </div>
+  <button class="button"  id="button-bibtex1" onclick="CopyToClipboard('bibtex');  ga('send', 'event', 'Ref Copy', 'CopyToClipboard', '/v283/pmlr-v283-tang25b.bib', 15);">Copy to Clipboard</button>
+  <button class="button" id="button-bibtex2" onclick="DownloadTexToFile('pmlr-v283-tang25b.bib', 'bibtex'); ga('send', 'event', 'Ref Downloads', 'Download', '/v283/pmlr-v283-tang25b.bib', 16);">Download</button>
+  </div>
+</div>
+
+
+<div class="bibbuttongroup row row--justified">
+  <div class="bibbuttontext column">
+    Endnote
+  </div>
+  <div class="column">
+  <div class="codebox">
+    <code class="citecode" id="endnote">%0 Conference Paper
+%T Meta-Learning for Adaptive Control with Automated Mirror Descent
+%A Sunbochen Tang
+%A Haoyuan Sun
+%A Navid Azizan
+%B Proceedings of the 7th Annual Learning for Dynamics \& Control Conference
+%C Proceedings of Machine Learning Research
+%D 2025
+%E Necmiye Ozay
+%E Laura Balzano
+%E Dimitra Panagou
+%E Alessandro Abate	
+%F pmlr-v283-tang25b
+%I PMLR
+%P 1025--1037
+%U https://proceedings.mlr.press/v283/tang25b.html
+%V 283
+%X Adaptive control achieves concurrent parameter learning and stable control under uncertainties that are linearly parameterized with known nonlinear features. Nonetheless, it is often difficult to obtain such nonlinear features. To address this difficulty, recent progress has been made in integrating meta-learning with adaptive control to learn such nonlinear features from data. However, these meta-learning-based control methods rely on classical adaptation laws using gradient descent, which is confined to the Euclidean geometry. In this paper, we propose a novel method that combines meta-learning and adaptation laws based on mirror descent, a popular generalization of gradient descent, which takes advantage of the potentially non-Euclidean geometry of the parameter space. In our approach, meta-learning not only learns the nonlinear features but also searches for a suitable mirror-descent potential function that optimizes control performance. Through numerical simulations, we demonstrate the effectiveness of the proposed method in learning efficient representations and real-time tracking control performance under uncertain dynamics.
+</code>
+  </div>
+  <button class="button"  id="button-endnote1" onclick="CopyToClipboard('endnote');  ga('send', 'event', 'Ref Copy', 'CopyToClipboard', '/v283/pmlr-v283-tang25b.enw', 15);">Copy to Clipboard</button>
+  <button class="button" id="button-endnote2" onclick="DownloadTexToFile('pmlr-v283-tang25b.enw', 'endnote'); ga('send', 'event', 'Ref Downloads', 'Download', '/v283/pmlr-v283-tang25b.enw', 16);">Download</button>
+  </div>
+</div>
+
+
+
+<div class="bibbuttongroup row row--justified">
+  <div class="bibbuttontext column">
+    APA
+  </div>
+  <div class="column">
+  <div class="codebox">
+    <code class="citecode" id="apa">Tang, S., Sun, H. & Azizan, N.. (2025). Meta-Learning for Adaptive Control with Automated Mirror Descent. <i>Proceedings of the 7th Annual Learning for Dynamics \& Control Conference</i>, in <i>Proceedings of Machine Learning Research</i> 283:1025-1037 Available from https://proceedings.mlr.press/v283/tang25b.html.
+
+</code>
+  </div>
+  <button class="button"  id="button-apa1" onclick="CopyToClipboard('apa');  ga('send', 'event', 'Ref Copy', 'CopyToClipboard', '/v283/pmlr-v283-tang25b.txt', 15);">Copy to Clipboard</button>
+  <button class="button" id="button-apa2" onclick="DownloadTexToFile('pmlr-v283-tang25b.txt', 'apa'); ga('send', 'event', 'Ref Downloads', 'Download', '/v283/pmlr-v283-tang25b.txt', 16);">Download</button>
+  </div>
+</div>
+
+<hr class="bibhr">
+
+
+  
+  <h4>Related Material</h4>
+  <div id="extras">
+    <ul>
+      <li><a href="https://raw.githubusercontent.com/mlresearch/v283/main/assets/tang25b/tang25b.pdf" target="_blank" onclick="ga('send', 'event', 'PDF Downloads', 'Download', 'https://raw.githubusercontent.com/mlresearch/v283/main/assets/tang25b/tang25b.pdf', 10);">Download PDF</a></li>
+    </ul>
+  </div>
+  
+
+</article>
+
+
+
+
+
+
+
+
+
+      </div>
+    </main>
+
+
+<footer class="site-footer">
+  <div class="wrapper">
+    <p>This site last compiled Sun, 05 Jul 2026 15:02:49 +0000</p>
+      <div class="footer-left"><i><a href="https://github.com/mlresearch/v283">Github Account</a></i>
+      </div>
+      <div class="footer-right">Copyright &copy; <a href="https://proceedings.mlr.press">The authors and PMLR</a> 2026.<a href="https://twitter.com/MLResearchPress"><i class="icon-twitter"></i>&nbsp;MLResearchPress</a></div>
+  </div>
+</footer>
+
+
+
+
+
+</body>
+
+</html>

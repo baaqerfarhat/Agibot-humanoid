@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "interpretation": "Symbolic method schematic and selected historical illustrations; photographs do not depict torque faults, composite adaptation, or weighted allocation.",
+  "sources_sha256": {
+    "paper/overview_assets/provenance.json": "e8e009e4158fabb5e46485acf80a45813f05f72a544629a3fa6e169324090f2d",
+    "results/joint_map/cell_torque_5.json": "37ca8911d3b176c2cf1bb2ac317f804f6bba2878c9a581b1ec7fdf5325b45cc4",
+    "paper/make_interface_figure.py": "f87cdcb32b409fb27fead05d9470b0f56947e236eac179f0f33f0300b1786667",
+    "paper/overview_assets/panda_off_matched.png": "c550937ae97367fee8df1eb0ce203204a4ecc07d7f33666ab0948489c9f7c02a",
+    "paper/overview_assets/panda_on_success.png": "5f1a3309be2f395020f3c9431622e29d5dbd00c556c6670773fd1db257016515",
+    "paper/overview_assets/aloha_on_success.png": "da7503f1ff2fd90b496b2573fc9537ecf6fe22e014ea3bef51e6f42d313b334a"
+  },
+  "selected_scenes": {
+    "panda_off_matched": {
+      "path": "paper/overview_assets/panda_off_matched.png",
+      "sha256": "c550937ae97367fee8df1eb0ce203204a4ecc07d7f33666ab0948489c9f7c02a",
+      "video_key": "panda",
+      "video_sha256": "86b7533a406302ee98d64412990fffdbeedaf334755317eb91651acd20c6bdf9",
+      "arm": "off",
+      "clip_index_zero_based": 0,
+      "frame_index_zero_based": 152,
+      "video_presentation_seconds": 7.6,
+      "displayed_step": 162,
+      "source_frame": "paper/overview_assets/panda_frame_0152_annotated.png",
+      "source_frame_sha256": "ef318457a0643bfaa530b52222f350732727e12e67d36eb465d5fe8c95ae3353",
+      "crop_xywh": [
+        0,
+        75,
+        384,
+        389
+      ],
+      "native_pixels_preserved": true,
+      "panel_held_at_frame": false,
+      "eventual_success": false,
+      "eventual_outcome": "timeout",
+      "outcome_reported_at_displayed_step": 229,
+      "outcome_already_reported_at_shown_frame": false,
+      "outcome_source": "Original burned-in annotations, read at full resolution; off terminal images retained separately.",
+      "recommended_label": "Off: eventual timeout"
+    },
+    "panda_on_success": {
+      "path": "paper/overview_assets/panda_on_success.png",
+      "sha256": "5f1a3309be2f395020f3c9431622e29d5dbd00c556c6670773fd1db257016515",
+      "video_key": "panda",
+      "video_sha256": "86b7533a406302ee98d64412990fffdbeedaf334755317eb91651acd20c6bdf9",
+      "arm": "on",
+      "clip_index_zero_based": 0,
+      "frame_index_zero_based": 152,
+      "video_presentation_seconds": 7.6,
+      "displayed_step": 162,
+      "source_frame": "paper/overview_assets/panda_frame_0152_annotated.png",
+      "source_frame_sha256": "ef318457a0643bfaa530b52222f350732727e12e67d36eb465d5fe8c95ae3353",
+      "crop_xywh": [
+        384,
+        75,
+        384,
+        389
+      ],
+      "native_pixels_preserved": true,
+      "panel_held_at_frame": false,
+      "eventual_success": true,
+      "eventual_outcome": "success",
+      "outcome_reported_at_displayed_step": 162,
+      "outcome_already_reported_at_shown_frame": true,
+      "outcome_source": "Original burned-in annotations, read at full resolution; off terminal images retained separately.",
+      "recommended_label": "Online: success"
+    },
+    "aloha_on_success": {
+      "path": "paper/overview_assets/aloha_on_success.png",
+      "sha256": "da7503f1ff2fd90b496b2573fc9537ecf6fe22e014ea3bef51e6f42d313b334a",
+      "video_key": "aloha",
+      "video_sha256": "47154db5ba21397394e2215c32febb966d35e1b5c75bf84bb2c8e1f299e90c97",
+      "arm": "on",
+      "clip_index_zero_based": 0,
+      "frame_index_zero_based": 272,
+      "video_presentation_seconds": 10.88,
+      "displayed_step": 272,
+      "source_frame": "paper/overview_assets/aloha_frame_0272_annotated.png",
+      "source_frame_sha256": "102af40c02b5484ff6514dbdda82c54932195297dce4b498636d1e92521b8239",
+      "crop_xywh": [
+        640,
+        75,
+        640,
+        485
+      ],
+      "native_pixels_preserved": true,
+      "panel_held_at_frame": false,
+      "eventual_success": true,
+      "eventual_outcome": "success",
+      "outcome_reported_at_displayed_step": 272,
+      "outcome_already_reported_at_shown_frame": true,
+      "outcome_source": "Original burned-in annotations, read at full resolution; off terminal images retained separately.",
+      "recommended_label": "Held: success"
+    }
+  },
+  "video_methods": {
+    "panda": {
+      "robot": "Panda",
+      "policy": "pi0.5",
+      "fault": "command offset +0.05 on all six motion-action channels",
+      "method": "original continuous calibrated adaptation; rotation-only correction",
+      "timing": "Images precede env.step; the reported result belongs to the following transition."
+    },
+    "aloha": {
+      "robot": "ALOHA",
+      "policy": "pi0",
+      "fault": "joint-target command offset  +0.02 rad on left arm joints 0\u20135",
+      "method": "identify in one episode, then hold correction fixed during task",
+      "timing": "Renderer stores the post-env.step scene and that transition's success result."
+    }
+  },
+  "joint5": {
+    "source": "results/joint_map/cell_torque_5.json",
+    "joint_fault": "torque:5:5.0",
+    "continuous_update": true,
+    "correction_dimensions": "0,1,2",
+    "law": "legacy",
+    "counts": {
+      "off": {
+        "successes": 12,
+        "n": 20
+      },
+      "legacy": {
+        "successes": 3,
+        "n": 20
+      }
+    },
+    "rates": {
+      "off": 0.6,
+      "legacy": 0.15
+    },
+    "scope": "Separate historical translation-only torque experiment; no photo represents this condition."
+  },
+  "rendering": {
+    "width_inches": 5.5,
+    "height_inches": 4.1,
+    "preview_dpi": 240,
+    "native_image_embedding": {
+      "panda_off_matched": {
+        "native_shape": [
+          389,
+          384,
+          3
+        ],
+        "exact_pixel_content": true,
+        "storage": "reversed storage rows; PDF placement restores source orientation"
+      },
+      "panda_on_success": {
+        "native_shape": [
+          389,
+          384,
+          3
+        ],
+        "exact_pixel_content": true,
+        "storage": "reversed storage rows; PDF placement restores source orientation"
+      },
+      "aloha_on_success": {
+        "native_shape": [
+          485,
+          640,
+          3
+        ],
+        "exact_pixel_content": true,
+        "storage": "reversed storage rows; PDF placement restores source orientation"
+      }
+    },
+    "all_nonimage_marks_are_vector": true
+  },
+  "outputs": {
+    "paper/fig_interface.pdf": {
+      "sha256": "0ea5a6aeec069bcfaad07d89ae7098302744ec25c1537783f1b63cc9f0d6b1c6",
+      "bytes": 288250
+    },
+    "paper/fig_interface.png": {
+      "sha256": "256dc880d065cde1b92e3766baee2aef51b06782b05fbb936837e039adfcf003",
+      "bytes": 268788
+    }
+  },
+  "reproduce": "python paper/make_interface_figure.py (Matplotlib, NumPy, Pillow, and Poppler pdfimages required)"
+}

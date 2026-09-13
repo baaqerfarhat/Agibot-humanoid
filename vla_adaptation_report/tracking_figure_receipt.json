@@ -1,0 +1,291 @@
+{
+  "schema_version": 1,
+  "script_sha256": "5e93d36cd72b344b8f75f059663e1d55f825d7945a867137f68c6638a8a0867c",
+  "sources": {
+    "results/composite_tuning/confirmation/diagnosis_v1/artifact_manifest.json": "34c52d3940e1f82211b4e96a897b62001d445fc8ae4a808c107f49daee9464ca",
+    "results/composite_tuning/audit/diagnosis_confirmation_v1_run_receipt.json": "e47ede53111496525c877abe25a945de1e4f578d2d4377ef7975ec0b05787e1f",
+    "results/composite_tuning/confirmation/diagnosis_v1/summary_compact.json": "5f765b2a684887a2bbc31d81b5f6b23b3d7cba3aea82125a9b4d71c05c1f7b5a",
+    "results/composite_tuning/confirmation/diagnosis_v1/diagnostic_comparison.json": "f6fc48925aa6f23b969faccca28797ebb6ad74e1f9a21e1d3e2b3d8d198a890d",
+    "results/composite_tuning/confirmation/diagnosis_v1/per_episode.jsonl.gz": "86679cfdca621eb2a2736d57dd4a171873316991bcb0086192fa4fbbc871bce8"
+  },
+  "outputs": {
+    "fig_tracking_analysis.pdf": "0e430874686beb26f040b75d901822f2cc2dbdad6d07d0c14f5bb20b802e0bf8",
+    "fig_tracking_analysis.png": "f9ed28e71ba0782c30bdc69e1f12b660445f0276572ccaa75fd41b4caeaa3520"
+  },
+  "figure_size_inches": [
+    5.5,
+    1.9
+  ],
+  "rms_definition": "sqrt((1/30)*sum_episode((1/100)*sum_last100steps(sum_joint0to5(error_j^2))))",
+  "aggregation": "Equal 100-step late windows from each of 30 episodes; pool squared errors before final root, not mean episode RMS and not per-coordinate RMS.",
+  "offset_relative_change": "100*(composite_RMS/Kalman_RMS-1); exact injected command offset is the parameter target.",
+  "scope": "All eight confirmation conditions; each controller follows its own raw-policy-command reference. No common counterfactual reference, causal isolation, confidence intervals or statistical ranking is claimed.",
+  "tracking_concentration_scope": "Unplotted diagnostic: fraction of last100 pre-projection tracking-increment energy on corrected left joint1, normalized over six active coordinates separately per condition.",
+  "data": {
+    "rows": [
+      {
+        "condition": "healthy",
+        "arms": {
+          "kalman": {
+            "candidate": "kalman_17",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.00582904462337027,
+            "diagnostic_parameter_error_rms_rad": 0.0038973995233902215,
+            "active_tracking_increment_rms_rad": 0.0
+          },
+          "composite": {
+            "candidate": "composite_22_0",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.00498821930097881,
+            "diagnostic_parameter_error_rms_rad": 0.005137561539132579,
+            "active_tracking_increment_rms_rad": 0.0004213476452387237,
+            "tracking_increment_energy_fraction": [
+              2.5589706415746437e-05,
+              0.9996248351485308,
+              1.1252132894544304e-05,
+              0.00032048891773299486,
+              1.7077722040143806e-05,
+              7.563723858612777e-07
+            ]
+          }
+        }
+      },
+      {
+        "condition": "offset",
+        "arms": {
+          "kalman": {
+            "candidate": "kalman_17",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.009498997876721038,
+            "diagnostic_parameter_error_rms_rad": 0.005112920482544961,
+            "active_tracking_increment_rms_rad": 0.0
+          },
+          "composite": {
+            "candidate": "composite_22_0",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.007467907067190025,
+            "diagnostic_parameter_error_rms_rad": 0.005761451528708481,
+            "active_tracking_increment_rms_rad": 0.00027107906862730086,
+            "tracking_increment_energy_fraction": [
+              2.8901541511722514e-05,
+              0.9939155301662873,
+              1.2571753878136568e-05,
+              0.00593290978466912,
+              0.00010266354218480866,
+              7.423211469025175e-06
+            ]
+          }
+        }
+      },
+      {
+        "condition": "joint0",
+        "arms": {
+          "kalman": {
+            "candidate": "kalman_17",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.00843212953938632,
+            "diagnostic_parameter_error_rms_rad": 0.004946418144191712,
+            "active_tracking_increment_rms_rad": 0.0
+          },
+          "composite": {
+            "candidate": "composite_22_0",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.0033284815899423943,
+            "diagnostic_parameter_error_rms_rad": 0.0031066737167553876,
+            "active_tracking_increment_rms_rad": 0.0002707685839067339,
+            "tracking_increment_energy_fraction": [
+              2.5519609609131266e-05,
+              0.9996744863109683,
+              1.1586720601370003e-05,
+              0.0002662028911868562,
+              2.1511653679786215e-05,
+              6.928139545698637e-07
+            ]
+          }
+        }
+      },
+      {
+        "condition": "joint1",
+        "arms": {
+          "kalman": {
+            "candidate": "kalman_17",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.008392224306546564,
+            "diagnostic_parameter_error_rms_rad": 0.005627062796536078,
+            "active_tracking_increment_rms_rad": 0.0
+          },
+          "composite": {
+            "candidate": "composite_22_0",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.0048420492911462705,
+            "diagnostic_parameter_error_rms_rad": 0.0049400321239600285,
+            "active_tracking_increment_rms_rad": 0.0003969090661000107,
+            "tracking_increment_energy_fraction": [
+              2.5525394963754133e-05,
+              0.9995217364474152,
+              1.1210919315561872e-05,
+              0.0004211326082624867,
+              1.9528017428393303e-05,
+              8.666126146047063e-07
+            ]
+          }
+        }
+      },
+      {
+        "condition": "joint2",
+        "arms": {
+          "kalman": {
+            "candidate": "kalman_17",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.00597239713868653,
+            "diagnostic_parameter_error_rms_rad": 0.003774404135202777,
+            "active_tracking_increment_rms_rad": 0.0
+          },
+          "composite": {
+            "candidate": "composite_22_0",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.004589687078077735,
+            "diagnostic_parameter_error_rms_rad": 0.004687233705585522,
+            "active_tracking_increment_rms_rad": 0.00039616799937710327,
+            "tracking_increment_energy_fraction": [
+              2.5527773005633893e-05,
+              0.9996778704298046,
+              1.1507132115360425e-05,
+              0.0002675119018113405,
+              1.688573807821416e-05,
+              6.97025184947959e-07
+            ]
+          }
+        }
+      },
+      {
+        "condition": "joint3",
+        "arms": {
+          "kalman": {
+            "candidate": "kalman_17",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.006197709965669628,
+            "diagnostic_parameter_error_rms_rad": 0.004423321277175597,
+            "active_tracking_increment_rms_rad": 0.0
+          },
+          "composite": {
+            "candidate": "composite_22_0",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.004382855148334733,
+            "diagnostic_parameter_error_rms_rad": 0.0048829688356011505,
+            "active_tracking_increment_rms_rad": 0.0003551869343243698,
+            "tracking_increment_energy_fraction": [
+              2.5584456611859696e-05,
+              0.9994691325944655,
+              1.13078095302497e-05,
+              0.00047524710770749005,
+              1.7773313519414366e-05,
+              9.547181654493237e-07
+            ]
+          }
+        }
+      },
+      {
+        "condition": "joint4",
+        "arms": {
+          "kalman": {
+            "candidate": "kalman_17",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.011156563784545737,
+            "diagnostic_parameter_error_rms_rad": 0.009025596815066175,
+            "active_tracking_increment_rms_rad": 0.0
+          },
+          "composite": {
+            "candidate": "composite_22_0",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.004960258420442696,
+            "diagnostic_parameter_error_rms_rad": 0.005847819860042322,
+            "active_tracking_increment_rms_rad": 0.00039444466635165157,
+            "tracking_increment_energy_fraction": [
+              2.5540131640750966e-05,
+              0.9995163074193881,
+              1.1717348753651587e-05,
+              0.0004209450612355015,
+              2.4634425821611382e-05,
+              8.55613160378275e-07
+            ]
+          }
+        }
+      },
+      {
+        "condition": "joint5",
+        "arms": {
+          "kalman": {
+            "candidate": "kalman_17",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.0054628608478895745,
+            "diagnostic_parameter_error_rms_rad": 0.0043274472338553395,
+            "active_tracking_increment_rms_rad": 0.0
+          },
+          "composite": {
+            "candidate": "composite_22_0",
+            "episodes": 30,
+            "samples": 3000,
+            "position_reference_error_rms_rad": 0.004966511434202283,
+            "diagnostic_parameter_error_rms_rad": 0.006544168327337562,
+            "active_tracking_increment_rms_rad": 0.00039989010668019503,
+            "tracking_increment_energy_fraction": [
+              2.5447452024161125e-05,
+              0.9994917426685609,
+              1.1234360760931566e-05,
+              0.00045243552987049286,
+              1.8166445499943195e-05,
+              9.735432836672016e-07
+            ]
+          }
+        }
+      }
+    ],
+    "offset_tradeoff": [
+      {
+        "metric": "position_reference_error",
+        "label": "Reference",
+        "kalman_mrad": 9.498997876721038,
+        "composite_mrad": 7.4679070671900245,
+        "relative_change_percent": -21.38215879075579
+      },
+      {
+        "metric": "diagnostic_parameter_error",
+        "label": "Parameter",
+        "kalman_mrad": 5.112920482544961,
+        "composite_mrad": 5.7614515287084815,
+        "relative_change_percent": 12.684160615787876
+      }
+    ],
+    "joint1_active_tracking_energy_fraction_range": [
+      0.9939155301662873,
+      0.9996778704298046
+    ],
+    "total_confirmation_episodes_checked": 1920,
+    "total_confirmation_steps_checked": 543062,
+    "plotted_episodes": 480,
+    "uncompressed_episode_sha256": "00f1eab0f07d255a0b6f8d7c466aa975fda6b1c3b3074d87ad72b38a7c902392"
+  },
+  "verification": {
+    "all_source_hashes_match": true,
+    "all_output_hashes_match": true,
+    "script_hash_matches": true,
+    "agent_preview_inspected": true,
+    "layout": "Eight condition pairs, both offset bars, units and interpretation caveats visible without overlap or clipping."
+  }
+}

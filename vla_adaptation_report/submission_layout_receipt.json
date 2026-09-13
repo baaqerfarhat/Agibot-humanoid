@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "initial_submission_main_limit": 9,
+  "required_main_pages": 9,
+  "main_pages": 9,
+  "backmatter_first_page": 10,
+  "total_pdf_pages": 15,
+  "deferred_main_floats_counted": true,
+  "official_style_matches": true,
+  "undefined_references_or_citations": false,
+  "overfull_boxes": false,
+  "bibliography_warnings": false,
+  "source_hashes": {
+    "iclr_draft.tex": "8bbe6a834c0e3db40461adbe409d658b1d8173a03a12af90f4b84adcfc04679e",
+    "iclr_draft.pdf": "3e8d67c7caadead5a5adf9200d085e6b17c102cd74377eab2fdc6529918971cc",
+    "theory_appendix.tex": "f10ed8bba5fcfabb0c25c4dc2bebc8e0f9fe835def5ad641f4a2b2001857e842",
+    "authority_appendix.tex": "182b95de449374dcd9f607041f73bff4141c18416deaccc91fa1817d2fc4a3de",
+    "refs.bib": "8bfc7a8317077d1658657910835839aa1f1b65512487f24864bb37382f961ab4",
+    "fig_interface.pdf": "0ea5a6aeec069bcfaad07d89ae7098302744ec25c1537783f1b63cc9f0d6b1c6",
+    "fig_video_evidence.pdf": "0eeb82ef8c76db32086cb4dbcb3743fe708744516d8b8ab3f7682fb3048c94c8",
+    "fig_theory_analysis.pdf": "c2893236610e554e45b34dcfdc74a1b63ad69ccb2e04d1a85936ab45d3347710",
+    "fig_results_analysis.pdf": "2f20a997d5441e836b94ccc087c2fe497d5bdc560c867fd92018ca64f122f170",
+    "fig_tracking_analysis.pdf": "0e430874686beb26f040b75d901822f2cc2dbdad6d07d0c14f5bb20b802e0bf8",
+    "fig_convergence.pdf": "e7f1907ca09104bac93bb3fc26098807154707998a658d83cf3c43c5cae9b86f",
+    "official_style_manifest.json": "4197ee1379f8f750f1ea429029bcb29612d2401256d6ababc584ebcb03e2f292",
+    "check_submission_layout.py": "0dd06fbef4469e38466b556a5158f19b0efb07afb3693233ed67d5b68658026f"
+  },
+  "policy": "https://iclr.cc/Conferences/2027/AuthorGuidelines",
+  "limitations": "Layout and build checks do not establish scientific acceptance or certify anonymization of a separate code archive."
+}

@@ -1,0 +1,15 @@
+{
+  "year": 2025,
+  "complete": true,
+  "expected_unique_papers": 213,
+  "downloaded_verified": 213,
+  "errors": [],
+  "total_bytes": 1592763101,
+  "total_pages": 6769,
+  "manifest_sha256": "4088f9598ae963cadda81714072899d2045d8b9c5f70ba8b6ca40f037563966c",
+  "catalog_sha256": "6b276f3a99eeffa1e3ed983e527096484625671b98e87d7fac7cabd03c3763df",
+  "script_sha256": "1a571ae00001fc11d40f3718b2d2b7707bb707db749f70a3209878eba570d8e9",
+  "finished_utc": "2026-09-08T21:33:28.008731+00:00",
+  "post_collection_change": "Collection script/catalog wording spaced for readability only; no paper records or PDF/text artifacts changed.",
+  "executed_script_sha256": "6577c15b6ec8a17b69efc15440df3dcab4bae0211255525668a20bb41139abc4"
+}

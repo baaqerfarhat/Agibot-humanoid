@@ -1,0 +1,25 @@
+{
+  "papers": 793,
+  "downloaded": 793,
+  "outstanding": 14,
+  "honorable_mentions": 20,
+  "close_reading_profiles": 34,
+  "bulk_directory": "/home/fengze/online_adaptation_research/iclr_2023_2026",
+  "input_hashes": {
+    "writing_guide_body.md": "640776032aeacc0253781207e3d02f2f36f6e87880e24bdfcca9a92502b22bf4",
+    "corpus_receipt.json": "ab27fa736a76340d6a3d1fc3b02515584b2313f99bb73d0ddf892598f84e09dc",
+    "structure_metrics.json": "633c71b1a953a51e172b68d6077149c9bdfbdd78c446f075e811f20d0689ab43",
+    "YEAR_2023.md": "5a0d419740c4faf9ef2ea92f807b7dd5fac8261578b6aa796d7de82db2b2632d",
+    "YEAR_2024.md": "280392c2a2365a625e6d4c38ed1c5596e9e979aab0b21838b6bb3a018f6f5a2a",
+    "YEAR_2025.md": "97d30101d97cd5080c1e893180815f332ea903e8976f6bc66d15265225ee512e",
+    "YEAR_2026.md": "d9b845415e163a459866f7d187a9394abf224c6580103602fa41f65a3782fb0b",
+    "manifest_2023.json": "3344d40a20a1837c278853befac24d1123a0cfcfda5fbb99940e7ef6e54e106d",
+    "manifest_2024.json": "50297f12b3ffee32174f7bb43a0e66532e102dd6a12f0d86a10f0e461d7958bf",
+    "manifest_2025.json": "4088f9598ae963cadda81714072899d2045d8b9c5f70ba8b6ca40f037563966c",
+    "manifest_2026.json": "3152326abfd30f3b25075265bc4c434c7cabbef49e0be384195547a1161de02a"
+  },
+  "output_hashes": {
+    "ICLR_WRITING_STUDY.md": "bcda4e8bbefaf1e0561e013733378c843a0257381b2858c779157a666febf445",
+    "CORPUS_INDEX.md": "150dd443a5e87e785f6600c9ca4195498528a9851ca69c05f1bdfdfd828a7a76"
+  }
+}

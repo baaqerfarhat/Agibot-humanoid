@@ -1,0 +1,232 @@
+% Method section for the independent successor study.
+% NOT part of iclr_draft.tex. INDEPENDENT_PAPER_PLAN.md forbids replacing the
+% predecessor draft's method while its old success tables remain in place.
+% Compile standalone, or \input into the successor manuscript.
+
+\section{Method}\label{sec:method}
+
+We adapt the coefficients of a learned dynamics model at the frozen policy's own
+action interface. The policy, its weights and its output semantics are untouched.
+Everything below acts between the action the policy emits and the action the
+robot receives.
+
+\subsection{Interface, state and units}\label{sec:method:interface}
+
+At control step $k$ the frozen policy emits a nominal action $a_{\mathrm{nom}}\in\R^m$
+in the interface's own units. The adapter emits $a_{\mathrm{sent}}$, and the robot
+executes $a_{\mathrm{sent}}$. We write $\xi$ for the \emph{context}: whatever
+measured quantities the basis is allowed to read (configuration, past measured
+motion, contact information), which is not in general the estimator state.
+
+Two properties of the interface drive the design, and both were violated by the
+predecessor system we build on.
+
+\textbf{The model must carry state.} A correction that is a function of past
+\emph{commands} alone cannot represent a plant whose response depends on where the
+arm currently is. Measured on the predecessor's own residual, past measured motion
+explains $44$--$71\%$ of what its command-only model left unexplained. We therefore
+use a descriptor model with an explicit state term.
+
+\textbf{One input map, used twice.} The residual and the allocation must be
+computed with the same matrix. When identification and allocation use two
+separately fitted input maps, the correction is applied through a different
+channel from the one it was estimated in. On our calibration those two maps
+disagree by $\|I-M\,\mathrm{pinv}(E)\|_2=2.79$, with $71.6\%$ of the mismatch
+off-diagonal, while each is individually well determined.
+
+\subsection{Descriptor model and healthy reference}\label{sec:method:model}
+
+The plant is written in descriptor form,
+\begin{equation}
+B\,\dot x \;=\; A\,x \;+\; E(\xi,z_E)\,a_{\mathrm{sent}} \;+\; \Phi_d(\xi)\,z_d ,
+\label{eq:plant}
+\end{equation}
+with state $x$, known nominal pair $(A,B)$, input map $E$, and an unknown additive
+disturbance expanded in a basis $\Phi_d(\xi)$ with coefficients $z_d$. The input
+map carries its own coefficients $z_E$, so loss of actuation authority and additive
+disturbance occupy structurally distinct locations: an additive estimate cannot
+manufacture a control direction the robot no longer has.
+
+The healthy reference runs the \emph{unmodified} policy action through the
+\emph{nominal} model,
+\begin{equation}
+B\,\dot x_r \;=\; A\,x_r \;+\; E_0\,a_{\mathrm{nom}},
+\qquad e \;=\; x - x_r ,
+\label{eq:reference}
+\end{equation}
+so $e$ measures departure from what the frozen policy would have achieved on a
+healthy robot, not departure from a hand-specified trajectory. The adapter has no
+task-level target of its own.
+
+\subsection{Residual measured from the command actually sent}\label{sec:method:residual}
+
+The prediction residual must subtract the action the robot actually received,
+$a_{\mathrm{sent}}$, not the one the policy requested:
+\begin{equation}
+y \;=\; B\,\dot x - A\,x - E\,a_{\mathrm{sent}} \;\approx\; \Phi(\xi)\,z .
+\label{eq:residual}
+\end{equation}
+Subtracting $a_{\mathrm{nom}}$ instead would feed the adapter's own correction back
+in as though it were disturbance, and the loop would chase itself. This is enforced
+structurally in our implementation: \code{allocate} and \code{observe} must
+alternate, and calling either twice in a row raises rather than silently producing
+a residual computed against a stale command.
+
+\subsection{Composite coefficient law}\label{sec:method:law}
+
+The coefficients follow a composite law with a leakage term, a prediction-error
+term and a tracking term, with the gain supplied by a Riccati flow:
+\begin{align}
+\dot z &= -\Lambda z \;+\; P\!\left[\,\Phi^\top R^{-1}\!\left(y-\Phi z\right)
+        \;+\; \Phi^\top B^{-\top} L\,e \,\right], \label{eq:zdot}\\
+\dot P &= -2\Lambda P \;+\; Q \;-\; P\,\Phi^\top R^{-1}\Phi\,P . \label{eq:pdot}
+\end{align}
+The same coefficient both predicts the residual and feeds forward into the
+correction; the tracking term is what cancels the $e^\top\Phi\tilde z$ cross term
+in the Lyapunov ledger and removes the need for persistent excitation. Reading
+\eqref{eq:pdot} as a Kalman--Bucy flow gives the tuning dictionary: $\Lambda$ is
+mean reversion of the environment, $Q$ how fast it drifts, $R$ representation plus
+measurement error. After the deterministic tracking injection $P$ is an adaptation
+metric, not a posterior covariance, and we do not report it as one.
+
+\subsection{Allocation}\label{sec:method:allocation}
+
+The correction is the action that cancels the estimated disturbance through the
+\emph{same} input map used in \eqref{eq:residual},
+\begin{equation}
+\hat E\,a_{\mathrm{sent}} \;=\; E_0\,a_{\mathrm{nom}} \;-\; \Phi_d\,\hat z_d .
+\label{eq:allocate}
+\end{equation}
+When the target is not reachable the solve is a constrained least-squares problem
+under the interface's box limits, and an infeasible target raises rather than
+being silently clipped to something the caller did not ask for. A bounded
+correction limit is applied on top; in our experiments it is not the binding
+mechanism (Section~\ref{sec:method:status}).
+
+\subsection{Discretisation}\label{sec:method:discrete}
+
+The sampled implementation is derived rather than obtained by replacing
+derivatives with differences. We propagate $(\Lambda,Q)$ over one interval by the
+Van Loan construction to obtain $(F_z,Q_d)$, apply the measurement update in
+Joseph form, and distinguish the window-integrated basis $\Psi$ used for the
+prediction residual from the endpoint basis $H_{k+1}$ used for tracking. Using one
+where the other belongs changes the fixed point, not merely the transient.
+
+\subsection{Geometry}\label{sec:method:geometry}
+
+Geometry enters as a transformation law on the representation and on every
+estimator object, not as an extra network input.
+
+\paragraph{Wrench features.} Contact acts on the arm through generalized forces,
+so the disturbance basis is built from a wrench dictionary pulled back through the
+contact Jacobians,
+\begin{equation}
+\Phi_\tau(q) \;=\; \sum_c J_c(q)^\top \Phi_{F,c},
+\label{eq:wrench}
+\end{equation}
+with $J_c$ the world-axis Jacobian at contact $c$ and $\Phi_{F,c}$ in force and
+moment units. The output is in generalized-force units and therefore belongs in
+torque rows. It cannot be inserted into a first-order position-servo residual
+without an explicitly identified conversion; we return to this in
+Section~\ref{sec:method:status}.
+
+\paragraph{Equivariance.} For a group element $g$ acting on the context we require
+the basis to be equivariant,
+\begin{equation}
+\Phi(g\cdot\xi) \;=\; \rho_x\,\Phi(\xi)\,\rho_z^\top .
+\label{eq:equivariance}
+\end{equation}
+This is a condition on the \emph{map}, not invariance of a matrix: the family is
+equivariant while any individual member may be asymmetric, and a one-sided fault
+is carried to its mirror rather than being forbidden. Imposing $\rho_z z=z$ instead
+would collapse exactly the coefficients that distinguish the two sides.
+
+Prior specifications of this construction take $G$ to be a finite morphological
+group of replicated limbs, which for a single seven-degree-of-freedom arm is
+trivial and makes \eqref{eq:equivariance} vacuous. The relevant structure here is
+instead a \emph{placement} covariance. Rotate the base mounting and the whole
+scene together about the gravity axis, holding the joint coordinates $q$ fixed and
+carrying base placement in the context $\xi$. Recomputed world-axis Jacobians then
+satisfy $J_c' = D_\theta J_c$ with
+$D_\theta=\mathrm{blkdiag}(R_z(\theta),R_z(\theta))$, so \eqref{eq:wrench} obeys
+\eqref{eq:equivariance} with
+\begin{equation}
+\rho_x \;=\; I_{n_q},\qquad \rho_z \;=\; D_\theta ,
+\label{eq:yawrep}
+\end{equation}
+joint torques being frame-independent scalars. Two independent checks confirm it:
+on an analytic serial chain the defect of \eqref{eq:equivariance} is
+$1.3\times10^{-15}$ while the corresponding \emph{invariance} defect is $5.66$, and
+on the actual Panda kinematics over $64$ legal configurations and $8$ yaw angles
+the maximum defect is $4.4\times10^{-15}$. The condition is therefore a genuine
+constraint rather than one that holds vacuously.
+
+\paragraph{Commutant.} Equivariance of the basis is only consistent if the
+estimator and controller transform with it. Every fixed design matrix must lie in
+the commutant of the representation acting on its own index,
+\begin{equation}
+[L,\rho_x]=[R,\rho_x]=0,\qquad [Q,\rho_z]=[\Lambda,\rho_z]=0 ,
+\label{eq:commutant}
+\end{equation}
+so that the adapted response does not depend on the arbitrary orientation of the
+world frame. The online estimate itself stays free, transforming as
+$\hat z\mapsto\rho_z\hat z$ and $P\mapsto\rho_zP\rho_z^\top$; asymmetric faults
+remain representable. For the raw wrench basis $\rho_x=I_{n_q}$ leaves $L$ and $R$
+unrestricted, and the constraint falls entirely on the latent gains: under the
+gravity-preserving yaw group a symmetric $Q$ drops from $21$ free parameters to
+$7$ and a general $\Lambda$ from $36$ to $12$; imposing the full rotation group
+would reduce them to $3$ and $4$, and adding reflections to $2$ and $2$, since
+parity makes the polar force block and the axial moment block inequivalent. We
+enforce \eqref{eq:commutant} at construction, so a violating design matrix raises
+rather than being silently projected.
+
+\paragraph{What this does not claim.} \eqref{eq:yawrep} is a covariance of the
+basis map over base placements. It is \emph{not} a symmetry of the deployed
+experiment, and we claim no nontrivial active symmetry there. Three concrete
+facts break one: Panda's first joint is bounded at $\pm2.8973$\,rad, so shifting
+it is not a circle action on the legal configuration domain; the interface's
+coordinatewise action box is not rotation invariant, failing at quarter-turn
+$\pi/4$ on an admissible command; and our own identified nominal model is not
+yaw-equivariant, with relative Frobenius defects of $0.080$ and $0.153$ on its
+two blocks at $0.37$\,rad. The last of these matters most: imposing
+\eqref{eq:commutant} is consistent only alongside a nominal model that respects
+the same law, which the current artifact does not. Geometry here is a specified
+and algebraically verified construction, and the parameter reductions above are
+what it \emph{would} buy once a compatible mechanical model is identified.
+
+\subsection{What is established, and what is not}\label{sec:method:status}
+
+We state the evidence for each component separately, because they are not equally
+supported.
+
+\begin{itemize}\itemsep2pt
+\item \textbf{Descriptor model, residual convention, composite law, allocation and
+discretisation} are implemented and evaluated end to end on a frozen policy under
+physical joint faults. Across eight paired cells spanning six joints and two task
+suites, the adapter repairs $39$ of $41$ episodes the fault had broken while
+breaking $5$ of $119$ that were already succeeding (exact McNemar
+$p=1.4\times10^{-7}$). Saturation of the correction limit stays below $10\%$ in
+every cell, so the bound is not the mechanism producing the improvement.
+
+\item \textbf{The equivariance and commutant construction} is implemented and
+verified algebraically and numerically, as reported above. It has never run in
+closed loop, and no nontrivial symmetry of the deployed controller or the frozen
+policy is certified.
+
+\item \textbf{The wrench basis \eqref{eq:wrench} is specified but not switched on.}
+Our identified model's rows are normalized end-effector motion increments, while
+\eqref{eq:wrench} produces generalized forces. The obstruction is not dimensional:
+the admissible bridge is a local, single-interval, state-dependent rectangular map
+$C_\tau(\xi,a_{\mathrm{sent}})\in\R^{6\times n_q}$ from a held generalized joint
+torque to the next six normalized-motion innovation rows, giving the feature
+$[\,C_\tau\Phi_\tau\,;\,0\,]$. What is missing is its \emph{identification}. Our
+existing rollouts cannot supply it: they carry only persistent single-joint torque
+faults, both arms are faulted, and the frozen policy keeps reacting, so a matrix
+pooled from them would record a policy and trajectory association rather than a
+plant-local mobility. Identifying $C_\tau$ needs a controlled experiment that
+holds a known torque over one interval from a matched state, without policy
+inference in the loop. Until then the adapter refuses every current identified
+model before touching the robot rather than forcing a placement. \emph{All
+reported task results use the plain supplied basis; none of them evaluate the
+geometric addition.}
+\end{itemize}

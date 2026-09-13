@@ -1,0 +1,266 @@
+% Compact main-text version (notation and complete proofs are below):
+% At a fixed state and horizon, write e(c)=d-Dc. For a residual proxy v,
+% nominal map Dhat, and bounds ||d-v||_R<=delta and
+% ||R^{-1/2}(D-Dhat)||_2<=epsilon, let c minimize the box-constrained
+% ridge objective. Put eta=epsilon||c||_2 and
+% Delta=||v||_R^2-||v-Dhat*c||_R^2. Then physical squared-error reduction
+% is at least Delta-2*eta*||v-Dhat*c||_R-eta^2
+% -2*delta*(||Dhat*c||_R+eta). Positivity certifies local improvement
+% under the stated uncertainty bounds, not task recovery; these bounds
+% are not estimated or certified by the implemented allocator.
+
+\section{Finite-horizon correction authority and model mismatch}
+\label{app:authority}
+
+This appendix separates three quantities: a measured residual, the physical
+error it is intended to represent, and the response to an available correction.
+The results concern a fixed initial state, nominal input sequence, disturbance,
+and observation horizon. They are finite-dimensional statements, not stability
+or task-success theorems.
+
+Write the physical error relative to the corresponding healthy response as
+\begin{equation}
+ e(c)=d-Dc,\qquad d\in\mathbb R^m,\quad D\in\mathbb R^{m\times p},
+ \qquad c\in\mathcal C:=\{c:|c_i|\leq\kappa_i\},\quad \kappa_i>0.
+ \label{eq:authority-physical-map}
+\end{equation}
+The controller applies the negative of $c$ in the $p$ permitted input
+coordinates. The vector $d$ may be written $Gf$ when a physical fault map $G$
+and fault parameters $f$ are available. The matrix $D$ describes correction
+authority; it is distinct from a fault-to-observation matrix $H$. In
+particular, identifying $Hf$ does not establish that it equals $d$ or that
+$d$ is cancelable through $D$.
+
+Let $R\succ0$, set $W_R=R^{-1/2}$, and define
+$\|x\|_R:=\|W_R x\|_2$; thus the subscript $R$ denotes the inverse-covariance
+norm, $\|x\|_R^2=x^\top R^{-1}x$. An inverse Cholesky factor gives the same
+norm and all results below. Input coordinates and their units are fixed when
+using $\|c\|_2$. A change of input scaling must also change $D$ and the
+operator-norm uncertainty bound.
+
+\begin{proposition}[The available-input authority floor]
+\label{prop:authority-floor}
+Let $\Pi_D=(W_R D)(W_R D)^\dagger$ be the Euclidean orthogonal projector onto
+$\operatorname{range}(W_R D)$. Then
+\begin{align}
+ \inf_{c\in\mathbb R^p}\|d-Dc\|_R^2
+   &=\|(I-\Pi_D)W_R d\|_2^2, \label{eq:authority-projection-floor}\\
+ \min_{c\in\mathcal C}\|d-Dc\|_R^2
+   &=\|(I-\Pi_D)W_R d\|_2^2
+     +\min_{c\in\mathcal C}\|\Pi_D W_R d-W_R Dc\|_2^2.
+     \label{eq:authority-box-floor}
+\end{align}
+Consequently, exact cancellation with bounded permitted inputs is possible
+if and only if $d\in D\mathcal C$. Perfect identification of $d$ alone does
+not remove either the missing-direction floor or the bound-induced floor.
+\end{proposition}
+
+\begin{proof}
+For every $c$, $W_R Dc$ lies in $\operatorname{range}(W_R D)$. Hence
+\[
+ W_R d-W_R Dc=(I-\Pi_D)W_R d+(\Pi_D W_R d-W_R Dc)
+\]
+is an orthogonal decomposition. Taking squared norms gives the identity
+underlying both displays. Over $\mathbb R^p$, the second term attains zero,
+for example at $c=(W_R D)^\dagger W_R d$. Over $\mathcal C$, it attains a minimum
+because $\mathcal C$ is compact and the objective is continuous. The total
+minimum is zero exactly when some $c\in\mathcal C$ satisfies $W_R Dc=W_R d$;
+$W_R$ is invertible, so this is equivalent to $Dc=d$.
+\end{proof}
+
+The weighted allocator instead has a nominal map $\widehat D$ and a filtered
+residual proxy $v$. With prior scales
+$S=\operatorname{diag}(\sigma_1,\ldots,\sigma_p)\succ0$, its ideal numerical
+solution is
+\begin{equation}
+ \widehat c=\mathop{\arg\min}_{c\in\mathcal C}J(c),\qquad
+ J(c):=\|v-\widehat D c\|_R^2+\|S^{-1}c\|_2^2.
+ \label{eq:authority-ridge}
+\end{equation}
+In the implementation, $v$ is the filtered, optionally bias-corrected FIR
+residual and $\widehat D$ consists of the permitted columns of $M$. This
+identifies the optimization actually performed. It does \emph{not} identify
+$M$ with the physical correction map $D$ in
+\eqref{eq:authority-physical-map}.
+
+\begin{proposition}[Conditional physical improvement from a nominal allocator]
+\label{prop:authority-certificate}
+Suppose \eqref{eq:authority-physical-map} holds and
+\begin{equation}
+ \|d-v\|_R\leq\delta,\qquad
+ \|W_R(D-\widehat D)\|_2\leq\varepsilon,
+ \qquad \delta,\varepsilon\geq0.
+ \label{eq:authority-uncertainty}
+\end{equation}
+For any fixed feasible candidate $c$, define
+\[
+ a=W_R v,\quad b=W_R\widehat D c,\quad q=\|c\|_2,\quad
+ \eta=\varepsilon q,\quad
+ \Delta(c)=\|a\|_2^2-\|a-b\|_2^2.
+\]
+Then
+\begin{align}
+ \|e(c)\|_R &\leq \|a-b\|_2+\delta+\eta,
+   \label{eq:authority-error-envelope}\\
+ \|d\|_R^2-\|e(c)\|_R^2
+ &\geq \Delta(c)-2\eta\|a-b\|_2-\eta^2
+             -2\delta(\|b\|_2+\eta).
+   \label{eq:authority-improvement-certificate}
+\end{align}
+Strict positivity of the right-hand side of
+\eqref{eq:authority-improvement-certificate} guarantees physical error
+reduction for every $(d,D)$ satisfying \eqref{eq:authority-uncertainty}.
+For the unique ridge minimizer in \eqref{eq:authority-ridge},
+\begin{equation}
+ \Delta(\widehat c)\geq\|S^{-1}\widehat c\|_2^2.
+ \label{eq:authority-nominal-guarantee}
+\end{equation}
+This last inequality is a nominal guarantee and does not by itself imply
+physical improvement when $\delta$ or $\varepsilon$ is nonzero.
+\end{proposition}
+
+\begin{proof}
+Let $u=W_R(d-v)$ and $h=W_R(D-\widehat D)c$. The assumptions imply
+$\|u\|_2\leq\delta$ and $\|h\|_2\leq\varepsilon\|c\|_2=\eta$.
+Since $W_R e(c)=a-b+u-h$, the triangle inequality proves
+\eqref{eq:authority-error-envelope}.
+
+To compare against the \emph{same} physical baseline $d$, expand the
+squared-error improvement before bounding the terms:
+\begin{align*}
+ \|W_R d\|_2^2-\|W_R e(c)\|_2^2
+ &=\|a+u\|_2^2-\|a+u-b-h\|_2^2\\
+ &=\Delta(c)+2(a-b)^\top h-\|h\|_2^2
+                      +2u^\top(b+h)\\
+ &\geq\Delta(c)-2\|a-b\|_2\eta-\eta^2
+                      -2\delta(\|b\|_2+\eta).
+\end{align*}
+The last step uses Cauchy--Schwarz and $\|b+h\|_2\leq\|b\|_2+\eta$.
+This proves \eqref{eq:authority-improvement-certificate} without treating
+the baseline and corrected uncertainties as independent errors.
+
+The ridge objective is continuous and strictly convex: its Hessian is
+$2\widehat D^\top R^{-1}\widehat D+2S^{-2}\succ0$.
+The compact convex box therefore contains a unique minimizer. Because zero
+is feasible, $J(\widehat c)\leq J(0)=\|W_R v\|_2^2$. Rearranging yields
+\eqref{eq:authority-nominal-guarantee}.
+\end{proof}
+
+\paragraph{Sharpness and an exact special-case threshold.}
+For a fixed $c$, the upper bound in
+\eqref{eq:authority-error-envelope} is attained by some admissible $(d,D)$.
+For $c\ne0$, choose a unit vector $w$ parallel to $a-b$ (arbitrary when
+$a=b$), put $W_R(d-v)=\delta w$, and choose the rank-one perturbation
+\[
+ W_R(D-\widehat D)=-\varepsilon w\frac{c^\top}{\|c\|_2}.
+\]
+Its operator norm is $\varepsilon$ and its product with $c$ is $-\eta w$,
+so all three terms of $W_R e(c)$ align. If $c=0$, only the vector uncertainty
+is needed. Thus, when the physical disturbance is known exactly ($v=d$)
+and $c\ne0$, uniform strict improvement over the operator-norm ball is
+equivalent to
+\begin{equation}
+ \|v-\widehat D c\|_R+\varepsilon\|c\|_2<\|v\|_R.
+ \label{eq:authority-sharp-threshold}
+\end{equation}
+In particular, a nominal residual decrease must exceed the uncertainty
+amplified by the chosen correction norm. A projection bound limits this
+amplification to $\varepsilon\|\kappa\|_2$, but does not make it zero.
+
+\paragraph{Numerical and nonlinear qualifications.}
+The implementation checks box feasibility, KKT residuals, and its objective
+against the zero-feasible objective up to numerical tolerance. For any
+returned feasible candidate satisfying $J(c)\leq J(0)+\tau_{\rm opt}$,
+the exact replacement for \eqref{eq:authority-nominal-guarantee} is
+$\Delta(c)\geq\|S^{-1}c\|_2^2-\tau_{\rm opt}$; the physical inequalities
+remain valid for that candidate without assuming exact optimality.
+If a local nonlinear response is instead
+$e(c)=d-Dc+\xi(c)$ with a separately justified
+$\|\xi(c)\|_R\leq\nu(c)$, the error envelope acquires $+\nu(c)$.
+Consequently, $\|v-\widehat D c\|_R+\delta+\varepsilon\|c\|_2+\nu(c)
+<\|v\|_R-\delta$ is sufficient for strict physical improvement.
+No such conclusion follows outside the region where these bounds hold.
+The present allocator does not estimate or certify $\delta$, $\varepsilon$,
+or $\nu$. A healthy residual covariance provides a weighting matrix; it is
+not a uniform bound on these physical uncertainties.
+
+\paragraph{Counterexample 1: identify first and mask afterward.}
+Take $R=I$,
+\[
+ M=\begin{pmatrix}1&1\\0&0.1\end{pmatrix},\qquad
+ d=\begin{pmatrix}0\\0.02\end{pmatrix},\qquad
+ M^{-1}d=\begin{pmatrix}-0.2\\0.2\end{pmatrix}.
+\]
+Suppose only the first input can be corrected. Then $D=(1,0)^\top$ and
+the authority floor is $\|d\|_2=0.02$. Applying the first component of the
+full inverse gives $c=-0.2$, hence
+$e(c)=(0.2,0.02)^\top$ and $\|e(c)\|_2/\|d\|_2=\sqrt{101}$.
+All components fit inside a $0.3$ box. In contrast, allocation using the
+permitted column gives $c=0$, with or without positive ridge. Thus even
+an exact full inverse does not justify inverting and then masking.
+
+\paragraph{Counterexample 2: a nearly correct map can give the wrong intervention.}
+Here the disturbance proxy is exact, both physical directions are available,
+and the actual box-constrained authority floor is zero. Set
+\[
+ \alpha=\frac1{100},\quad t=\frac15,\quad \tau=\frac1{100},
+ \quad \lambda=\tau\alpha^2=10^{-6},
+\]
+\[
+ \widehat D=\begin{pmatrix}1&1\\0&\alpha\end{pmatrix},\quad
+ D=\begin{pmatrix}1&1+2\alpha\\0&\alpha\end{pmatrix},\quad
+ v=d=\begin{pmatrix}0\\t\alpha\end{pmatrix}.
+\]
+Use $\mathcal C=[-0.3,0.3]^2$, $S=0.1I$, and
+$R=10^{-8}I=0.01\lambda I$. Multiplication by $10^{-8}$ converts
+\eqref{eq:authority-ridge} into
+$\|v-\widehat D c\|_2^2+\lambda\|c\|_2^2$ without changing its minimizer.
+Writing $Z=1+2\tau+\tau(1+\tau)\alpha^2$, its unconstrained minimizer is
+\begin{equation}
+ \widehat c=\frac{t}{Z}
+             \begin{pmatrix}-1\\1+\tau\alpha^2\end{pmatrix}
+ \approx\begin{pmatrix}-0.19607824\\0.19607843\end{pmatrix}.
+ \label{eq:authority-counterexample-candidate}
+\end{equation}
+Both bounds are inactive, so this is also the unique box-constrained
+minimizer. Direct substitution gives
+\begin{align}
+ \frac{J(\widehat c)}{J(0)}
+ &=\frac{2\tau+\tau^2\alpha^2}{Z}
+   =0.01960783\ldots<0.02,\\
+ \frac{\|d-D\widehat c\|_R}{\|d\|_R}
+ &=\frac{\sqrt{[2(1+\tau\alpha^2)+\tau\alpha]^2
+                     +(2\tau+\tau^2\alpha^2)^2}}{Z}
+   =1.9609804\ldots>1.96.
+ \label{eq:authority-counterexample-harm}
+\end{align}
+For completeness, \eqref{eq:authority-counterexample-candidate} follows
+by solving
+\[
+ \begin{pmatrix}1+\lambda&1\\1&1+\alpha^2+\lambda\end{pmatrix}
+ \widehat c=\begin{pmatrix}0\\t\alpha^2\end{pmatrix},
+\]
+whose determinant is $\alpha^2Z$. At this stationary point the normalized
+objective is $1-(1+\lambda)/Z$, giving the first ratio. The two physical
+error coordinates divided by $t\alpha$ are
+$-[2(1+\tau\alpha^2)+\tau\alpha]/Z$ and
+$(2\tau+\tau^2\alpha^2)/Z$, proving the second ratio.
+
+There is no sign reversal in the maps: their diagonals agree and are
+positive, and only one positive cross-coupling changes. Moreover,
+$\|D-\widehat D\|_2=0.02$ and
+$\|D-\widehat D\|_2/\|\widehat D\|_2<0.02/\sqrt2<1.415\%$.
+The actual exact correction $c_*=(-(1+2\alpha)t,t)^\top=(-0.204,0.2)^\top$
+is feasible and satisfies $Dc_*=d$. Nevertheless, the nominal ridge
+objective decreases by more than $98\%$ while physical error nearly doubles.
+The small singular direction and cancellation between correction components
+make an apparently small map error consequential. These are constructed
+numbers, not fitted robot parameters or a causal reconstruction of a recorded
+task failure.
+
+The geometric floor concerns the chosen observed physical coordinates.
+Cancellation of a six-dimensional endpoint error, for example, does not
+establish cancellation of every coordinate of a seven-joint robot. Likewise,
+even a valid finite-horizon physical-improvement bound does not establish
+recovery of a task after an earlier trajectory error or guarantee repeated
+closed-loop adaptation.
