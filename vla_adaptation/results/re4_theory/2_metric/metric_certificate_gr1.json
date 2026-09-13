@@ -1,0 +1,521 @@
+{
+ "schema_version": "re4t-v1",
+ "robot": "gr1",
+ "created_utc": "2026-09-13T09:40:33.523840+00:00",
+ "model": "q[k+1]-q[k] = a*dt*(u[k]-q[k]) per joint; pole = 1-a*dt; metric M_c = I on the certified joints",
+ "dt": 0.05,
+ "episodes": 6,
+ "folds": "leave-one-episode-out",
+ "r2_min": 0.5,
+ "k_free": 10,
+ "domain": [
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  26
+ ],
+ "outside": [
+  {
+   "joint": 0,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 1,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 2,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 3,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 4,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 5,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 6,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 14,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 15,
+   "reason": "pole outside (0,1) on a fold"
+  },
+  {
+   "joint": 16,
+   "reason": "pole outside (0,1) on a fold"
+  },
+  {
+   "joint": 17,
+   "reason": "pole outside (0,1) on a fold"
+  },
+  {
+   "joint": 18,
+   "reason": "pole outside (0,1) on a fold"
+  },
+  {
+   "joint": 19,
+   "reason": "pole outside (0,1) on a fold"
+  },
+  {
+   "joint": 20,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 21,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 22,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 23,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 24,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 25,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 27,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 28,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  }
+ ],
+ "arm_pole_range": [
+  0.7242738293821167,
+  0.7655364726561378
+ ],
+ "per_joint": [
+  {
+   "joint": 0,
+   "group": "other_arm",
+   "a": 5.003443213572029,
+   "pole": 0.7498278393213985,
+   "pole_fold_min": 0.7453843819255859,
+   "pole_fold_max": 0.7581385356540029,
+   "heldout_r2_min": 0.25346116345290115,
+   "heldout_r2_median": 0.7594597606340567,
+   "one_step_rmse": 0.0018172276392419747,
+   "k10_rmse": 0.002077157990569879,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 1,
+   "group": "other_arm",
+   "a": 4.958531146639525,
+   "pole": 0.7520734426680238,
+   "pole_fold_min": 0.7447143744977618,
+   "pole_fold_max": 0.7656911406854634,
+   "heldout_r2_min": 0.40944695357123273,
+   "heldout_r2_median": 0.6843635326732624,
+   "one_step_rmse": 0.0011440900779318714,
+   "k10_rmse": 0.0014134740048632481,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 2,
+   "group": "other_arm",
+   "a": 4.420489384629531,
+   "pole": 0.7789755307685234,
+   "pole_fold_min": 0.7730268411211227,
+   "pole_fold_max": 0.7855818606294667,
+   "heldout_r2_min": 0.3746559762270558,
+   "heldout_r2_median": 0.5599263743825768,
+   "one_step_rmse": 0.0017275595276214537,
+   "k10_rmse": 0.00293729724967365,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 3,
+   "group": "other_arm",
+   "a": 4.323446811781402,
+   "pole": 0.7838276594109299,
+   "pole_fold_min": 0.7809110593746794,
+   "pole_fold_max": 0.7868379091565161,
+   "heldout_r2_min": 0.19926592426891,
+   "heldout_r2_median": 0.610886317055434,
+   "one_step_rmse": 0.001662375474353133,
+   "k10_rmse": 0.0018669260444967128,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 4,
+   "group": "other_arm",
+   "a": 4.363590970436878,
+   "pole": 0.7818204514781562,
+   "pole_fold_min": 0.766591377084672,
+   "pole_fold_max": 0.7931312326817622,
+   "heldout_r2_min": 0.12934547235325355,
+   "heldout_r2_median": 0.43375333164199975,
+   "one_step_rmse": 0.001963964869017583,
+   "k10_rmse": 0.002671213331906892,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 5,
+   "group": "other_arm",
+   "a": 4.743608822951228,
+   "pole": 0.7628195588524386,
+   "pole_fold_min": 0.758897522645857,
+   "pole_fold_max": 0.7654372287993193,
+   "heldout_r2_min": 0.4535944572757671,
+   "heldout_r2_median": 0.637733007952798,
+   "one_step_rmse": 0.0013583073330561747,
+   "k10_rmse": 0.0018664920299881838,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 6,
+   "group": "other_arm",
+   "a": 4.430477221840861,
+   "pole": 0.778476138907957,
+   "pole_fold_min": 0.7644044865664525,
+   "pole_fold_max": 0.7918999466367119,
+   "heldout_r2_min": 0.13148979524021664,
+   "heldout_r2_median": 0.5299256003827653,
+   "one_step_rmse": 0.0016361661612733685,
+   "k10_rmse": 0.00231869578718578,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 7,
+   "group": "arm",
+   "a": 5.409101027857176,
+   "pole": 0.7295449486071413,
+   "pole_fold_min": 0.7181472863899385,
+   "pole_fold_max": 0.7315844678072925,
+   "heldout_r2_min": 0.9466303948073201,
+   "heldout_r2_median": 0.9539621370554437,
+   "one_step_rmse": 0.0035555826053861386,
+   "k10_rmse": 0.007156110081374539,
+   "in_domain": true,
+   "reason": ""
+  },
+  {
+   "joint": 8,
+   "group": "arm",
+   "a": 5.210483091622396,
+   "pole": 0.7394758454188801,
+   "pole_fold_min": 0.7381458634922619,
+   "pole_fold_max": 0.7408936716685095,
+   "heldout_r2_min": 0.7374294879517287,
+   "heldout_r2_median": 0.8462947149459159,
+   "one_step_rmse": 0.006283598894333293,
+   "k10_rmse": 0.009463756967068995,
+   "in_domain": true,
+   "reason": ""
+  },
+  {
+   "joint": 9,
+   "group": "arm",
+   "a": 5.514523412357665,
+   "pole": 0.7242738293821167,
+   "pole_fold_min": 0.7221346992911664,
+   "pole_fold_max": 0.7269900152540059,
+   "heldout_r2_min": 0.8261977315204501,
+   "heldout_r2_median": 0.9048308593676988,
+   "one_step_rmse": 0.0032939922254310787,
+   "k10_rmse": 0.005247480094258358,
+   "in_domain": true,
+   "reason": ""
+  },
+  {
+   "joint": 10,
+   "group": "arm",
+   "a": 5.507775008470978,
+   "pole": 0.7246112495764511,
+   "pole_fold_min": 0.7181128650528628,
+   "pole_fold_max": 0.7261080854594644,
+   "heldout_r2_min": 0.9131093559909526,
+   "heldout_r2_median": 0.9726305200038826,
+   "one_step_rmse": 0.004046994005588465,
+   "k10_rmse": 0.010361888830645318,
+   "in_domain": true,
+   "reason": ""
+  },
+  {
+   "joint": 11,
+   "group": "arm",
+   "a": 5.3497116081852285,
+   "pole": 0.7325144195907385,
+   "pole_fold_min": 0.7302965982962419,
+   "pole_fold_max": 0.7378086870660379,
+   "heldout_r2_min": 0.8017856191731072,
+   "heldout_r2_median": 0.8755274707550731,
+   "one_step_rmse": 0.007354499680069777,
+   "k10_rmse": 0.008318213236831348,
+   "in_domain": true,
+   "reason": ""
+  },
+  {
+   "joint": 12,
+   "group": "arm",
+   "a": 4.689270546877245,
+   "pole": 0.7655364726561378,
+   "pole_fold_min": 0.7585579949538597,
+   "pole_fold_max": 0.7708287096710145,
+   "heldout_r2_min": 0.8343569464823949,
+   "heldout_r2_median": 0.9010212112016944,
+   "one_step_rmse": 0.0059158884840286394,
+   "k10_rmse": 0.01980148688647143,
+   "in_domain": true,
+   "reason": ""
+  },
+  {
+   "joint": 13,
+   "group": "arm",
+   "a": 5.1245363481948445,
+   "pole": 0.7437731825902578,
+   "pole_fold_min": 0.7267826857589891,
+   "pole_fold_max": 0.7472197654820465,
+   "heldout_r2_min": 0.8087233254697497,
+   "heldout_r2_median": 0.9338294310158616,
+   "one_step_rmse": 0.005518512409403693,
+   "k10_rmse": 0.015334548591654184,
+   "in_domain": true,
+   "reason": ""
+  },
+  {
+   "joint": 14,
+   "group": "gripper",
+   "a": 0.011520980209004378,
+   "pole": 0.9994239509895498,
+   "pole_fold_min": 0.9982328841097655,
+   "pole_fold_max": 0.999948877161258,
+   "heldout_r2_min": -0.004315991565871258,
+   "heldout_r2_median": -0.0023877821111149,
+   "one_step_rmse": 0.00025949760046114915,
+   "k10_rmse": 0.0009420905606823122,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 15,
+   "group": "gripper",
+   "a": 0.010449714003129225,
+   "pole": 0.9994775142998436,
+   "pole_fold_min": 0.9982848125661429,
+   "pole_fold_max": 1.0010650815365574,
+   "heldout_r2_min": -0.01779793249827799,
+   "heldout_r2_median": -0.008758972651186858,
+   "one_step_rmse": 0.0002905563561381173,
+   "k10_rmse": 0.0010381478791275406,
+   "in_domain": false,
+   "reason": "pole outside (0,1) on a fold"
+  },
+  {
+   "joint": 16,
+   "group": "gripper",
+   "a": -0.07088050875408551,
+   "pole": 1.0035440254377044,
+   "pole_fold_min": 1.00283355538527,
+   "pole_fold_max": 1.004497735099181,
+   "heldout_r2_min": -0.03403004552646549,
+   "heldout_r2_median": 0.004600322486725039,
+   "one_step_rmse": 0.0002877421708416129,
+   "k10_rmse": 0.0009429698300685867,
+   "in_domain": false,
+   "reason": "pole outside (0,1) on a fold"
+  },
+  {
+   "joint": 17,
+   "group": "gripper",
+   "a": -0.00890640788566129,
+   "pole": 1.0004453203942831,
+   "pole_fold_min": 0.9992831790210269,
+   "pole_fold_max": 1.0010495473465655,
+   "heldout_r2_min": -0.009453474081460245,
+   "heldout_r2_median": -0.004361718637609924,
+   "one_step_rmse": 0.00028094616463938607,
+   "k10_rmse": 0.0009635906238720263,
+   "in_domain": false,
+   "reason": "pole outside (0,1) on a fold"
+  },
+  {
+   "joint": 18,
+   "group": "gripper",
+   "a": -0.08915250838629328,
+   "pole": 1.0044576254193147,
+   "pole_fold_min": 1.0033441193179056,
+   "pole_fold_max": 1.006247033073483,
+   "heldout_r2_min": -0.06419500934672695,
+   "heldout_r2_median": -0.0012703022394517371,
+   "one_step_rmse": 0.0006040913471194547,
+   "k10_rmse": 0.0019515760186549936,
+   "in_domain": false,
+   "reason": "pole outside (0,1) on a fold"
+  },
+  {
+   "joint": 19,
+   "group": "gripper",
+   "a": -0.025776655657938324,
+   "pole": 1.0012888327828968,
+   "pole_fold_min": 1.0008256945418075,
+   "pole_fold_max": 1.002359460002608,
+   "heldout_r2_min": -0.013972403868611316,
+   "heldout_r2_median": -0.004610889877807001,
+   "one_step_rmse": 0.0006128654180840576,
+   "k10_rmse": 0.0020583712461796715,
+   "in_domain": false,
+   "reason": "pole outside (0,1) on a fold"
+  },
+  {
+   "joint": 20,
+   "group": "gripper",
+   "a": 0.28409003182779674,
+   "pole": 0.9857954984086101,
+   "pole_fold_min": 0.9849530764547867,
+   "pole_fold_max": 0.986457772512489,
+   "heldout_r2_min": 0.16496916688587815,
+   "heldout_r2_median": 0.22469218197469687,
+   "one_step_rmse": 0.034600038709720414,
+   "k10_rmse": 0.2656374286335873,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 21,
+   "group": "gripper",
+   "a": 0.27375155105282034,
+   "pole": 0.986312422447359,
+   "pole_fold_min": 0.9858998464645944,
+   "pole_fold_max": 0.9870565729178818,
+   "heldout_r2_min": 0.16919318243335302,
+   "heldout_r2_median": 0.20881187969884324,
+   "one_step_rmse": 0.032878672841903885,
+   "k10_rmse": 0.251984960629234,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 22,
+   "group": "gripper",
+   "a": 0.2639351550103903,
+   "pole": 0.9868032422494805,
+   "pole_fold_min": 0.9862942327207443,
+   "pole_fold_max": 0.9875607042938555,
+   "heldout_r2_min": 0.14133674479604363,
+   "heldout_r2_median": 0.22429206688324865,
+   "one_step_rmse": 0.03206471102674852,
+   "k10_rmse": 0.24487454135431347,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 23,
+   "group": "gripper",
+   "a": 0.26468460699411517,
+   "pole": 0.9867657696502943,
+   "pole_fold_min": 0.9860322723364741,
+   "pole_fold_max": 0.9875146740492277,
+   "heldout_r2_min": 0.16044023779300065,
+   "heldout_r2_median": 0.1946764951871881,
+   "one_step_rmse": 0.03282456908763437,
+   "k10_rmse": 0.25220274359842115,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 24,
+   "group": "gripper",
+   "a": 0.021082179408667436,
+   "pole": 0.9989458910295667,
+   "pole_fold_min": 0.9987037558272026,
+   "pole_fold_max": 0.999532760862389,
+   "heldout_r2_min": -0.10679812348555617,
+   "heldout_r2_median": -0.00530618227236096,
+   "one_step_rmse": 0.023381573095159015,
+   "k10_rmse": 0.14162209153706617,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 25,
+   "group": "gripper",
+   "a": 0.12634015013410935,
+   "pole": 0.9936829924932945,
+   "pole_fold_min": 0.9905155502413112,
+   "pole_fold_max": 0.9941256519300186,
+   "heldout_r2_min": -0.10408477495153656,
+   "heldout_r2_median": 0.04809593214197533,
+   "one_step_rmse": 0.03721247886851687,
+   "k10_rmse": 0.31186025887710855,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 26,
+   "group": "waist",
+   "a": 4.717530568673175,
+   "pole": 0.7641234715663412,
+   "pole_fold_min": 0.7397026755356564,
+   "pole_fold_max": 0.7684671072302734,
+   "heldout_r2_min": 0.747785843106531,
+   "heldout_r2_median": 0.8443728518177607,
+   "one_step_rmse": 0.0009663436056061204,
+   "k10_rmse": 0.001890046322475351,
+   "in_domain": true,
+   "reason": ""
+  },
+  {
+   "joint": 27,
+   "group": "waist",
+   "a": 2.4185128534679894,
+   "pole": 0.8790743573266006,
+   "pole_fold_min": 0.8187693179953008,
+   "pole_fold_max": 0.8880200608728831,
+   "heldout_r2_min": 0.041979572880155414,
+   "heldout_r2_median": 0.37052202176024107,
+   "one_step_rmse": 0.0007539158446339756,
+   "k10_rmse": 0.0023077891157521494,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 28,
+   "group": "waist",
+   "a": 1.502400486357531,
+   "pole": 0.9248799756821234,
+   "pole_fold_min": 0.8761265128648235,
+   "pole_fold_max": 0.9316635839537377,
+   "heldout_r2_min": -0.07248830265865402,
+   "heldout_r2_median": 0.18482212061189662,
+   "one_step_rmse": 0.0008303041344657816,
+   "k10_rmse": 0.0026333569837255657,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  }
+ ],
+ "source": "results/gr1/screen_PosttrainPnPNovelFromPlateToPlateSplitA.json",
+ "source_sha256": "8d8ae23e5bde281cba8dd3fd7f3c38c94c826cf4ce74420e353b405730fde1b1"
+}

@@ -111,6 +111,11 @@ control steps.
 | **a humanoid (Fourier GR1 under GR00T N1.5, joint space)** | right-arm +0.10 rad zeroes the frozen policy on two tasks; identify over three episodes then hold: plate-to-plate 1/30 → 19/30 (18 fixed / 0 broken, p = 7.6×10⁻⁶), tray-to-plate 1/30 → 13/30 (12 / 0, p = 4.9×10⁻⁴), both at their healthy rates, paired on identical scenes (§32) |
 | **a second simulator (WidowX in SimplerEnv / SAPIEN, GR00T N1.7 Bridge)** | a +0.005 pose-increment offset on x,y,z zeroes the policy (0/20); identify over three episodes then hold: 0/20 → 14/20 on the next 20 paired episodes, healthy 14/20 (14 fixed / 0 broken, p = 1.2×10⁻⁴); continuous adaptation 6/20 at γ = 0.08 and 12/20 at γ = 0.2 because this controller keeps the transient drift; +0.003 held: 2/20 → 13/20 (11 / 0, p = 9.8×10⁻⁴); null 16/20 vs 15/20 (§34) |
 | **channel mask from healthy data alone (answers audit §4.5)** | a per-channel gate at 3 sd of the healthy phantom, measured on 20 healthy episodes, reproduces the rotation-only headline on the same scenarios: uniform +0.05, 9/20 → **19/20**, 10 fixed / 0 broken, p = 0.002; nothing in the rule has seen a fault (§37, prereg `PREREG_HEALTHY_GATE.md`) |
+| **healthy controls on the exact 120 primary scenarios** | 116/120 (shipped calibration) and 118/120 (held-out) without the law; 117/120 and 118/120 with it (4/3 and 2/2 fixed/broken, p = 1.0): the headline's 78/120 is 67 % of health on the same samples (§43) |
+| **held-out calibration** | plant and M re-identified on initial states the evaluation never visits: spatial, object, goal within one episode of the headline; libero_10 15/40 → 7/40, a registered refutation; pooled 34/120 → 68/120 (§39). At a third state the z sensitivity doubles and cond(M) is 1.3 (§45) |
+| **matched baselines under one protocol** | static observer (K = 0) equal on spatial, six of forty worse on libero_10 (p = 0.07); innovation law within three of the legacy law; the known-fault oracle is the ceiling, 19/20 and 22/40, and the method reaches 109 % and 71 % of it; exact −f on all six channels 20/20 (§44) |
+| **held vs continued updating, initial estimate matched** | ALOHA: held 15/40, innovation law updating throughout **14/40**, legacy law 0/40; GR1: 22/30, 17/30, 1/30. The ALOHA failure of continuous adaptation was the legacy law's bias at the grasp, not the correction's movement, a registered refutation (§47) |
+| **decoder-bias edit, measured** | linear and diagonal at a fixed observation but its gain varies 27–41 % across observations: an intended correction lands with median error 43 %; the external subtraction every cohort uses is exact (§46) |
 | **not a result: base OpenVLA on the SimplerEnv Google robot** | healthy 2/10 (published 46%), plant R² 0.57 on a planner-interpolated 3 Hz delta controller, a +0.02 offset reaches the residual at 20–60% of its linear signature (1–2 sd): both stated conditions fail, no cell run, recorded as a boundary (§35) |
 | **faults below the controller (joint-level, in the MuJoCo model)** | elbow torque bias 20/40 → 32/40 (p = 0.0075, 3 broken); heavy friction 0/40 → 13/40 (p = 2.4×10⁻⁴, 0 broken; rerun at n = 40 under guaranteed fault restoration, §40); a joint lock is identified and not repairable, a rank change rather than an input (§29) |
 | intermittent | solved — 12/20 → 19/20, `p` = 0.039 |
@@ -146,7 +151,8 @@ paper/            the ICLR draft (9 main pages; original story, audit correction
                   computes the abstract's paired-episode count (results/aggregate_manifest.json)
 results/          every run behind every number above; results/phase05/*.mp4 are the
                   comparison videos (spatial, object, goal, libero_10, OpenVLA-OFT, GR00T rotation and translation, ALOHA, GR1 humanoid on two tasks and at 0.20 rad, WidowX in SimplerEnv); results/groot/ is the third backbone, results/gr1/ the humanoid, results/widowx/ the SimplerEnv WidowX
-prereg_records/   predictions registered before their experiments ran
+prereg_records/   predictions registered before their experiments ran; the re4 evidence plan's runs and their
+                  outcomes (four refutations) are in results/re4_evidence/README.md
 ```
 
 `docs/ADAPTIVE_CONTROL_VLA.md` is the document to read. It is written as a running record and

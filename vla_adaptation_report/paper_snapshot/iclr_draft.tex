@@ -321,8 +321,7 @@ quote intervals. \textbf{Calibration.} Plant and $M$ were identified once on
 \code{libero\_spatial} healthy rollouts with $\pi_{0.5}$ driving and are used unchanged for
 every LIBERO suite and for OpenVLA-OFT; ALOHA has its own from eight healthy rollouts, the
 GR1 from six, the WidowX from ten. The shipped $M$ was probed at initial state 45, which the
-headline cells evaluate; its preregistered recalibration on
-disjoint states is Table~1's right-hand column.
+headline cells evaluate; Table~1's right-hand column recalibrates on disjoint states.
 
 \subsection{Four suites}
 \label{sec:headline}
@@ -347,17 +346,17 @@ suite & $n$ & frozen & corrected & fixed & broken & McNemar & frozen & corrected
 \end{tabular}
 \end{center}
 
-Every suite is individually significant in both columns (held-out: $0.0039$, $0.0063$,
-$0.039$, $0.016$; 37 fixed, 3 broken pooled). The single regression in the left column is one
+Every suite is individually significant in both columns by exact McNemar (held-out $0.0039$,
+$0.0063$, $0.039$, $0.016$; 37 fixed, 3 broken); resampling by task, the pooled effect holds
+($95\%$ interval $[+36,+65]$ episodes; held-out $[+20,+49]$) and three suites of four stay
+significant (\code{goal} $p=0.061$). The single regression in the left column is one
 of the 28 episodes the frozen policy was winning ($3.6\%$, the denominator that can regress).
 The right column answers an objection the left invites: the shipped $M$ was probed at initial
-state 45, which these cells evaluate. Re-identifying plant and $M$ at states from 25 upward
-leaves three suites within one episode and costs the long-horizon suite half its repair,
-$15/40\to7/40$ (preregistered; the drop refutes the registered bound of five,
-Appendix~\ref{app:heldout}). A $20\%$ error in $M$'s translation block has two hundred steps to
-accumulate on \code{libero\_10} and forty on the others: the cost of calibrating away from the
-deployment state. \code{libero\_90}, on which the checkpoint was never fine-tuned,
-scores $6/20$ unfaulted and is a competence floor, not a repair result.
+state 45, which these cells evaluate. Re-identified at states from 25 upward, three suites stay
+within one episode and the long-horizon suite loses half its repair, $15/40\to7/40$
+(preregistered; the drop refutes the registered bound, Appendix~\ref{app:heldout}): a $20\%$
+error in $M$'s translation block accumulates over two hundred steps there and forty elsewhere. \code{libero\_90}, on which the checkpoint was never fine-tuned,
+scores $6/20$ unfaulted and is a competence floor.
 
 \subsection{Fault families and severity}
 \label{sec:severity}
@@ -500,9 +499,8 @@ Nothing in the method was $\pi_{0.5}$-specific. OFT is more fragile (frozen $0/2
 three faults), recovers less on rotation ($55\%$ vs $85\%$; its $r_y$ fault is only $23\%$
 identified where $\pi_{0.5}$ reached $87$--$100\%$), and the healthy control lost one episode
 to a sustained phantom four to ten times the usual size, which a confidence gate does not
-remove without delaying genuine repair by one to two seconds (\S\ref{sec:fail}). The three
-cells replicate on \code{libero\_object} with the same calibration ($0/20\to10/20$,
-$0/20\to15/20$, $0/20\to19/20$).
+remove without delaying genuine repair by one to two seconds (\S\ref{sec:fail}). The three cells
+replicate on \code{libero\_object} with the same calibration ($10/20$, $15/20$, $19/20$ from $0/20$).
 
 GR00T N1.7 is a third developer and a third architecture. Its healthy control is a null
 ($18/20$ both arms, 1 fixed, 1 broken; rotation phantom below $0.005$). With no retuning: rotation $0.10$,
@@ -520,12 +518,12 @@ Bimanual ALOHA in \code{gym\_aloha} driven by $\pi_0$: fourteen absolute joint t
 50\,Hz, transfer-cube, 300-step episodes, healthy success $25\%$. The plant is identified on
 \emph{position} from eight healthy rollouts ($R^2\ge0.989$ on the arm joints, $0.77$ on the uncorrected gripper),
 $M\approx I$. A $+0.05$\,rad offset on the six left-arm joints displaces the gripper by
-$5.3$\,cm; the frozen policy scores $0/20$ at every severity tested.
+$5.3$\,cm; the frozen policy scores $0/20$ at every severity.
 
 \textbf{Identification transfers.} Separation against the healthy control: $85$--$91\%$ of
 the fault at $0.05$\,rad, $94$--$106\%$ at $0.02$\,rad, leakage $\le0.007$\,rad onto
 uncorrected joints. \textbf{Repair does not, at first.} With the legacy law updating throughout the task
-returns $0/20$ at every severity, warm-started or cold. The reason is quantitative:
+returns $0/20$ at every severity, warm-started or cold. Quantitatively:
 
 \begin{center}\small
 \resizebox{\linewidth}{!}{%
@@ -545,11 +543,11 @@ healthy, no fault, $n=40$ (law running: 14/40, 5 fixed, 8 broken, $p=0.58$) & --
 A static-correction sweep puts the task's margin under $0.5$\,cm: a $90\%$ correction held
 for the whole episode restores nothing, $100\%$ restores the healthy rate. The updating legacy law
 reaches a mean residual inside that margin and still fails. Its correction moves by $0.43$\,cm
-within an episode, but movement is not the cause: with the initial estimate matched across
-arms, the innovation law updating throughout moves $0.30$\,cm and repairs $14/40$, the held
-estimate $15/40$, the legacy law $0/40$. The legacy law's estimate is pulled $20\%$ below the
-fault by step 20, a $0.4$\,cm residual during the grasp, and a correct estimate is not its
-fixed point; the innovation law's is. The same number, applied stationary, repairs. \emph{Identify, then hold} (adapt during one sacrificial episode, hold thereafter)
+within an episode, but movement is not the cause: from the same initial estimate, the innovation
+law updating throughout moves $0.30$\,cm and repairs $14/40$, the held estimate $15/40$, the
+legacy law $0/40$, whose estimate is pulled $20\%$ below the fault by step 20, a $0.4$\,cm
+residual during the grasp. A correct estimate is a fixed point of the innovation law, not of
+the legacy one. \emph{Identify, then hold} (adapt during one sacrificial episode, hold thereafter)
 recovers $15/40$ from a frozen zero (held estimate $95$--$101\%$ of the fault),
 the difference from the healthy arm's $17/40$ on the same seeds unresolved ($p=0.75$); on a
 healthy arm the law holds a phantom below $0.001$\,rad and scores $14/40$ against $17/40$
@@ -566,8 +564,7 @@ pretrained embodiment. Plant from six healthy episodes
 constants from the measured residual. A $+0.10$\,rad offset on the working arm zeros the
 policy on both tasks. The simulator's scene generator is reseeded per episode so both arms
 see identical scenes. The estimate is the median over three episodes of the reach-window
-(steps 50--200) estimate: an episode's end reads a contact standoff, $0.2$\,rad wrong on a
-wrist on two of three draws.
+(steps 50--200) estimate: an episode's end reads a contact standoff ($0.2$\,rad wrong on a wrist, two draws of three).
 
 \begin{center}\small
 \begin{tabular}{lrrrrrcc}

@@ -239,3 +239,40 @@ Client (robocasa venv, `MUJOCO_GL=egl`): `openpi/gr1_adapt.py {log,openloop,run}
 `aloha_adapt.py`, plus `--task`, `--fault-vec arm:left:0.15`, `--corr-joints arm:left`. Measure the
 sensitivity matrix with a direct step response from a held pose, not the replay probe, on any arm
 that touches objects early in an episode (record, section 32.1).
+
+## A second simulator: WidowX in SimplerEnv with GR00T N1.7 (optional)
+
+SimplerEnv runs in SAPIEN, in its own venv; the policy server is the N1.7 venv above with the
+Bridge finetune (not gated).
+
+```bash
+git clone https://github.com/NVIDIA/Isaac-GR00T ...   # the N1.7 checkout above already has gr00t/eval/sim/SimplerEnv
+python3.10 -m venv --without-pip simpler-venv && simpler-venv/bin/python get-pip.py
+simpler-venv/bin/pip install -e "<n17>/gr00t/eval/sim/SimplerEnv" -e "<n17>/gr00t/eval/sim/SimplerEnv/ManiSkill2_real2sim"
+simpler-venv/bin/pip install numpy==1.26.4 gymnasium websockets msgpack msgpack-numpy imageio   # numpy 2 segfaults in compute_fk
+<n17 venv>/bin/hf download nvidia/GR00T-N1.7-SimplerEnv-Bridge --local-dir <n17>/checkpoints/GR00T-N1.7-SimplerEnv-Bridge  # 6.5 GB
+# Turing / pre-Ampere GPU: set "use_flash_attention": false in the checkpoint's config.json
+```
+
+Server (N1.7 venv): `GROOT_HF_LOCAL_FIRST=1 CUDA_VISIBLE_DEVICES=1 .venv/bin/python openpi/groot_widowx_server.py --model-path checkpoints/GR00T-N1.7-SimplerEnv-Bridge --port 8005`.
+Client (simpler venv, headless: `unset DISPLAY; export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/nvidia_icd.json`):
+`openpi/widowx_adapt.py {log,openloop,run}`; the fault is `--fault-vec 0.005,0.005,0.005,0,0,0`
+in action units, `--corr-dims 0,1,2`. Use the sensitivity in `results/widowx/openloop_dc.json`
+(the plant's DC gain); the held-pose probe (`openloop_p005.json`) is wrong on z on this
+controller (record, section 34). Deploy with `--identify-episodes 3 --hold-stat window`:
+the WidowX controller accumulates its target, so the online transient is a permanent drift
+(section 34.1). Video: `openpi/widowx_video.py`, same flags as `gr1_video.py`.
+
+## Runner flags added for the re4 evidence plan (2026-09-11)
+
+`openpi/adaptive_law.py`: `--scenario-reset` (reset through `libero_reset.reset_libero`: forces
+cleared, cached env seeded per scenario, state fingerprint; use it for every new paired cell),
+`--fir-k K` (FIR order; `0` is the static observer of re4 D.1), `--timing FILE` (one JSON line per
+control step with policy/adapter/env/sensor-to-command times, for latency and recovery
+statistics), `--gate-stats FILE --gate-k 3` (the healthy-phantom channel gate; stats from
+`openpi/gate_stats.py` on an `--estimate-only` healthy run).
+`openpi/aloha_adapt.py`, `openpi/gr1_adapt.py`: `--f-init v1,...` (every adaptive episode starts
+from the given estimate, no carry across episodes), `--skip-frozen` (adaptive arm only);
+`aloha_adapt.py` also takes `--timing`.
+`openpi/re4_record.py {record,calibration,timing}` writes the run configuration, per-episode CSV,
+calibration arrays and timing summary for any finished run. GPU chains: `scripts/re4/`.

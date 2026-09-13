@@ -1,0 +1,263 @@
+{
+ "schema_version": "re4t-v1",
+ "robot": "aloha",
+ "created_utc": "2026-09-13T09:40:34.072502+00:00",
+ "model": "q[k+1]-q[k] = a*dt*(u[k]-q[k]) per joint; pole = 1-a*dt; metric M_c = I on the certified joints",
+ "dt": 0.02,
+ "episodes": 8,
+ "folds": "leave-one-episode-out",
+ "r2_min": 0.5,
+ "k_free": 10,
+ "domain": [
+  1,
+  6,
+  7,
+  8
+ ],
+ "outside": [
+  {
+   "joint": 0,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 2,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 3,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 4,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 5,
+   "reason": "pole outside (0,1) on a fold"
+  },
+  {
+   "joint": 9,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 10,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 11,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 12,
+   "reason": "pole outside (0,1) on a fold"
+  },
+  {
+   "joint": 13,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  }
+ ],
+ "arm_pole_range": [
+  0.5567511049322975,
+  4.299847936954533
+ ],
+ "per_joint": [
+  {
+   "joint": 0,
+   "group": "arm",
+   "a": 6.401269211535985,
+   "pole": 0.8719746157692803,
+   "pole_fold_min": 0.8711366871995694,
+   "pole_fold_max": 0.8754077069679145,
+   "heldout_r2_min": 0.21378426511529458,
+   "heldout_r2_median": 0.5780066860784583,
+   "one_step_rmse": 2.1518976491400614e-05,
+   "k10_rmse": 3.1472017576291496e-05,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 1,
+   "group": "arm",
+   "a": 16.373105245325004,
+   "pole": 0.6725378950934999,
+   "pole_fold_min": 0.6649677192692385,
+   "pole_fold_max": 0.6796016414237002,
+   "heldout_r2_min": 0.6754544629005543,
+   "heldout_r2_median": 0.7961349559023301,
+   "one_step_rmse": 0.0016483318666368216,
+   "k10_rmse": 0.004399147629388022,
+   "in_domain": true,
+   "reason": ""
+  },
+  {
+   "joint": 2,
+   "group": "arm",
+   "a": 20.294681649391755,
+   "pole": 0.5941063670121649,
+   "pole_fold_min": 0.5847669661326186,
+   "pole_fold_max": 0.6132242145772109,
+   "heldout_r2_min": 0.41650072216967315,
+   "heldout_r2_median": 0.5623579502773974,
+   "one_step_rmse": 0.0017311457357057454,
+   "k10_rmse": 0.004257318626720132,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 3,
+   "group": "arm",
+   "a": 4.398986686410168,
+   "pole": 0.9120202662717967,
+   "pole_fold_min": 0.9005727560330747,
+   "pole_fold_max": 0.9451053742506706,
+   "heldout_r2_min": -1.324564530016802,
+   "heldout_r2_median": -0.11472954106349409,
+   "one_step_rmse": 0.0011400883168029832,
+   "k10_rmse": 0.005690218330626851,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 4,
+   "group": "arm",
+   "a": 9.431146394359903,
+   "pole": 0.811377072112802,
+   "pole_fold_min": 0.8050024916238248,
+   "pole_fold_max": 0.8189212495720872,
+   "heldout_r2_min": 0.22763068953082266,
+   "heldout_r2_median": 0.3755799871232429,
+   "one_step_rmse": 0.00217003060225347,
+   "k10_rmse": 0.009687474825252448,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 5,
+   "group": "arm",
+   "a": -164.99239684772664,
+   "pole": 4.299847936954533,
+   "pole_fold_min": 4.001839619051751,
+   "pole_fold_max": 5.247732366571382,
+   "heldout_r2_min": -1.0837568886941433,
+   "heldout_r2_median": 0.35914868151372104,
+   "one_step_rmse": 0.0020970656900835684,
+   "k10_rmse": 714.5743230338798,
+   "in_domain": false,
+   "reason": "pole outside (0,1) on a fold"
+  },
+  {
+   "joint": 6,
+   "group": "gripper",
+   "a": 5.890354708067369,
+   "pole": 0.8821929058386526,
+   "pole_fold_min": 0.8793531545450048,
+   "pole_fold_max": 0.883808807457755,
+   "heldout_r2_min": 0.8293721321878702,
+   "heldout_r2_median": 0.9132538016852695,
+   "one_step_rmse": 0.0022133954643918574,
+   "k10_rmse": 0.012410968888737753,
+   "in_domain": true,
+   "reason": ""
+  },
+  {
+   "joint": 7,
+   "group": "arm",
+   "a": 8.25711925413216,
+   "pole": 0.8348576149173568,
+   "pole_fold_min": 0.8308148681717525,
+   "pole_fold_max": 0.8393342201111602,
+   "heldout_r2_min": 0.7469340599582761,
+   "heldout_r2_median": 0.9019632911822961,
+   "one_step_rmse": 0.0005742559157656042,
+   "k10_rmse": 0.0021775666296851093,
+   "in_domain": true,
+   "reason": ""
+  },
+  {
+   "joint": 8,
+   "group": "arm",
+   "a": 19.817302935209067,
+   "pole": 0.6036539412958186,
+   "pole_fold_min": 0.5917296965142116,
+   "pole_fold_max": 0.6121700501941584,
+   "heldout_r2_min": 0.5830833113011458,
+   "heldout_r2_median": 0.7334754758196984,
+   "one_step_rmse": 0.004789085103644511,
+   "k10_rmse": 0.013500748874746345,
+   "in_domain": true,
+   "reason": ""
+  },
+  {
+   "joint": 9,
+   "group": "arm",
+   "a": 22.162444753385124,
+   "pole": 0.5567511049322975,
+   "pole_fold_min": 0.5318774469472136,
+   "pole_fold_max": 0.5793058535479669,
+   "heldout_r2_min": 0.21611872544340915,
+   "heldout_r2_median": 0.6211912297506423,
+   "one_step_rmse": 0.00201161699638364,
+   "k10_rmse": 0.004992049328623406,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 10,
+   "group": "arm",
+   "a": 2.193517067072134,
+   "pole": 0.9561296586585574,
+   "pole_fold_min": 0.9013518573048848,
+   "pole_fold_max": 0.9699780531053375,
+   "heldout_r2_min": -0.6898672210742001,
+   "heldout_r2_median": -0.041951645549299754,
+   "one_step_rmse": 0.004193347707922004,
+   "k10_rmse": 0.027093332437847395,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 11,
+   "group": "arm",
+   "a": 6.0955335381997156,
+   "pole": 0.8780893292360057,
+   "pole_fold_min": 0.8020397384999046,
+   "pole_fold_max": 0.9056422159815543,
+   "heldout_r2_min": -2.478368299674222,
+   "heldout_r2_median": 0.21077040873882258,
+   "one_step_rmse": 0.0067374336668965615,
+   "k10_rmse": 0.038603995463889415,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  },
+  {
+   "joint": 12,
+   "group": "arm",
+   "a": -5.457464062395505,
+   "pole": 1.10914928124791,
+   "pole_fold_min": 1.0969517746720947,
+   "pole_fold_max": 1.1705598667011812,
+   "heldout_r2_min": -0.18246932496830448,
+   "heldout_r2_median": -0.10264206487478955,
+   "one_step_rmse": 0.013225415189451858,
+   "k10_rmse": 0.19163062911017853,
+   "in_domain": false,
+   "reason": "pole outside (0,1) on a fold"
+  },
+  {
+   "joint": 13,
+   "group": "gripper",
+   "a": 1.0452135173652881,
+   "pole": 0.9790957296526942,
+   "pole_fold_min": 0.9772101352769924,
+   "pole_fold_max": 0.9814233718393549,
+   "heldout_r2_min": -0.01030672144487732,
+   "heldout_r2_median": 0.12024205252292969,
+   "one_step_rmse": 0.010911569309319788,
+   "k10_rmse": 0.08869542236840768,
+   "in_domain": false,
+   "reason": "held-out R^2 < 0.5 on a fold"
+  }
+ ],
+ "source": "results/aloha/healthy_log.json",
+ "source_sha256": "d4dd02228bdef5412ea8abcdd2370fedc5a52d266d703d9e010b31368a5e5e4f"
+}

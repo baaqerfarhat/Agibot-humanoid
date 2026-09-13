@@ -1,0 +1,146 @@
+{
+ "B": 20000,
+ "seed": 0,
+ "results": {
+  "shipped:libero_spatial": {
+   "clusters": 10,
+   "pairs": 20,
+   "effect": 10,
+   "ci95_cluster": [
+    5.0,
+    16.0
+   ],
+   "ci95_iid": [
+    6.0,
+    14.0
+   ],
+   "signflip_p": 0.0313
+  },
+  "shipped:libero_object": {
+   "clusters": 10,
+   "pairs": 20,
+   "effect": 11,
+   "ci95_cluster": [
+    6.0,
+    16.0
+   ],
+   "ci95_iid": [
+    7.0,
+    15.0
+   ],
+   "signflip_p": 0.0162
+  },
+  "shipped:libero_goal": {
+   "clusters": 10,
+   "pairs": 40,
+   "effect": 14,
+   "ci95_cluster": [
+    5.0,
+    24.0
+   ],
+   "ci95_iid": [
+    7.0,
+    20.0
+   ],
+   "signflip_p": 0.0612
+  },
+  "shipped:libero_10": {
+   "clusters": 10,
+   "pairs": 40,
+   "effect": 15,
+   "ci95_cluster": [
+    8.0,
+    23.0
+   ],
+   "ci95_iid": [
+    9.0,
+    21.0
+   ],
+   "signflip_p": 0.00725
+  },
+  "shipped:pooled": {
+   "clusters": 40,
+   "pairs": 120,
+   "effect": 50,
+   "ci95_cluster": [
+    36.0,
+    65.0
+   ],
+   "ci95_iid": [
+    39.0,
+    61.0
+   ],
+   "signflip_p": 0.0
+  },
+  "heldout:libero_spatial": {
+   "clusters": 10,
+   "pairs": 20,
+   "effect": 9,
+   "ci95_cluster": [
+    6.0,
+    12.0
+   ],
+   "ci95_iid": [
+    5.0,
+    13.0
+   ],
+   "signflip_p": 0.00865
+  },
+  "heldout:libero_object": {
+   "clusters": 10,
+   "pairs": 20,
+   "effect": 8,
+   "ci95_cluster": [
+    2.0,
+    14.0
+   ],
+   "ci95_iid": [
+    2.0,
+    14.0
+   ],
+   "signflip_p": 0.08075
+  },
+  "heldout:libero_goal": {
+   "clusters": 10,
+   "pairs": 40,
+   "effect": 10,
+   "ci95_cluster": [
+    0.0,
+    21.0
+   ],
+   "ci95_iid": [
+    4.0,
+    16.0
+   ],
+   "signflip_p": 0.19055
+  },
+  "heldout:libero_10": {
+   "clusters": 10,
+   "pairs": 40,
+   "effect": 7,
+   "ci95_cluster": [
+    1.0,
+    14.0
+   ],
+   "ci95_iid": [
+    3.0,
+    12.0
+   ],
+   "signflip_p": 0.12695
+  },
+  "heldout:pooled": {
+   "clusters": 40,
+   "pairs": 120,
+   "effect": 34,
+   "ci95_cluster": [
+    20.0,
+    49.0
+   ],
+   "ci95_iid": [
+    23.0,
+    45.0
+   ],
+   "signflip_p": 0.0
+  }
+ }
+}

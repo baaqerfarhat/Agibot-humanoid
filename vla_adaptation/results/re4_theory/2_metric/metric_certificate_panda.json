@@ -1,0 +1,90 @@
+{
+ "schema_version": "re4t-v1",
+ "robot": "panda_libero_osc",
+ "created_utc": "2026-09-13T09:42:50.329086+00:00",
+ "model": "d[k+1] = lam d[k] + g u[k] per end-effector axis; P = diag(1/(1-lam^2)) candidate metric",
+ "episodes": 23,
+ "folds": "leave-one-episode-out over the pooled logs",
+ "r2_min": 0.3,
+ "domain": [
+  "x",
+  "y",
+  "z",
+  "rx",
+  "ry",
+  "rz"
+ ],
+ "per_axis": [
+  {
+   "axis": "x",
+   "lam": 0.707458075418407,
+   "g": 0.0035138836694800423,
+   "lam_fold_min": 0.6868294546732174,
+   "lam_fold_max": 0.7150455080199176,
+   "heldout_r2_min": 0.9611545682550467,
+   "heldout_r2_median": 0.9918053202592948,
+   "in_domain": true,
+   "P": 2.0019896913674584
+  },
+  {
+   "axis": "y",
+   "lam": 0.6662345678754151,
+   "g": 0.004277605973394612,
+   "lam_fold_min": 0.6334292022311254,
+   "lam_fold_max": 0.6734946487133325,
+   "heldout_r2_min": 0.9708834542874331,
+   "heldout_r2_median": 0.9912838696690889,
+   "in_domain": true,
+   "P": 1.798135870704883
+  },
+  {
+   "axis": "z",
+   "lam": 0.8184187930069553,
+   "g": 0.0021553010461186533,
+   "lam_fold_min": 0.7920309223695944,
+   "lam_fold_max": 0.8325519099789664,
+   "heldout_r2_min": 0.9652967562671284,
+   "heldout_r2_median": 0.9836598752938052,
+   "in_domain": true,
+   "P": 3.0285530841216133
+  },
+  {
+   "axis": "rx",
+   "lam": 0.8285211430051864,
+   "g": 0.020060308463476208,
+   "lam_fold_min": 0.815804739968504,
+   "lam_fold_max": 0.835993932658159,
+   "heldout_r2_min": 0.8467337834183605,
+   "heldout_r2_median": 0.946418041319018,
+   "in_domain": true,
+   "P": 3.189256384233704
+  },
+  {
+   "axis": "ry",
+   "lam": 0.9275181418580803,
+   "g": 0.007708576699489339,
+   "lam_fold_min": 0.9229339760631542,
+   "lam_fold_max": 0.9312044060744114,
+   "heldout_r2_min": 0.8387954138966948,
+   "heldout_r2_median": 0.9376036497203765,
+   "in_domain": true,
+   "P": 7.157678828367692
+  },
+  {
+   "axis": "rz",
+   "lam": 0.6086732777279482,
+   "g": 0.04861411867843405,
+   "lam_fold_min": 0.5835336094018446,
+   "lam_fold_max": 0.6324230724995056,
+   "heldout_r2_min": 0.8427295274528956,
+   "heldout_r2_median": 0.9638945855829953,
+   "in_domain": true,
+   "P": 1.5885198534853873
+  }
+ ],
+ "sources": {
+  "results/phase05/error_signal_so3.json": "9010c84546505db347fed92acf0a78ed515cdc16e2b4a7944e5b0eaba551099d",
+  "results/heldout/error_signal_init25.json": "77a71c70b118f5c67947f7dba912843a22abb5007495428aa669fecf16204ab7",
+  "results/re4_evidence/H_third_init/error_signal_init5.json": "e80a7d8f280edbcdadc0d3eb58dc3ea49c758343b2eac46b36577b16dc78dc36"
+ }
+}
