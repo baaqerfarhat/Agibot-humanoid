@@ -104,3 +104,16 @@ frozen 0/40, adaptive **11/40** (11 fixed, 0 broken), r_y settle **37 %** (r_x 9
 Against the FIR plant's 15/40 (shipped calibration) and 7/40 (held-out) it sits between the
 two; had the branch been live, a count ≤ 16/40 would have refuted the identification-price
 reading. It is consistent with §49–50: the r_y estimate is not what an ARX plant changes.
+
+## Scoring definition of the plant-fit R² (added 2026-09-14, after the consistency review)
+
+The R² values quoted above were computed in-session without a stored script. They are now
+reproduced by `openpi/re4_theory/ry_fit.py` (output `results/re4_theory/6_ry/fit_r2.json`):
+per-axis ridge (λ = 0.01, intercept), **leave-one-episode-out on the pooled healthy logs** (the
+shipped three episodes plus the held-out ten at init 25). Reproduced values, r_x / r_y / r_z:
+FIR K = 6 **0.76 / 0.39 / 0.97** (quoted 0.71 / 0.41 / 0.96); FIR K = 20 r_y **0.35** (quoted 0.35);
+ARX(1) **0.94 / 0.96 / 0.98** (quoted 0.98 / 0.95). In-sample on the deployed three-episode log the
+same models score 0.52 / 0.34 / 0.97 (FIR) and 0.76 / 0.88 / 0.97 (ARX). The quoted numbers were
+off by up to 0.05 on r_x; the diagnosis (r_y a third of the other rotation channels under the FIR,
+lifted to the others' level by one AR term) is unchanged. The record and the paper now carry the
+reproduced values.

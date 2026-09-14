@@ -3963,9 +3963,11 @@ gaps (0.32 vs 0.50). Measured input sensitivity 0.5–0.6 cm per unit command on
 factor 2.3–2.9 below the FIR first tap.
 
 **6 The r_y diagnosis.** Sensitivity and excitation are ruled out (M's r_y column 0.25–0.28 at
-all three states; r_y commanded as much as r_z); the six-tap FIR explains 0.41 of r_y's
-increments against 0.71 and 0.96 on r_x, r_z, longer windows do not help (K = 20: 0.35), and a
-single autoregressive term lifts r_y to 0.95 and r_x to 0.98. Model error, the FIR's absent AR
+all three states; r_y commanded as much as r_z); the six-tap FIR explains 0.39 of r_y's
+increments against 0.76 and 0.97 on r_x, r_z (leave-one-episode-out on the pooled healthy logs,
+`ry_fit.py`; the in-session figures 0.41/0.71/0.96 first quoted here were off by up to 0.05),
+longer windows do not help (K = 20: 0.35), and a
+single autoregressive term lifts r_y to 0.96 and r_x to 0.94. Model error, the FIR's absent AR
 structure. The registered intervention was changed before any run to an ARX plant (`--ar 1`,
 sensitivity rescaled by 1 − a per channel); the GPU test (does the r_y estimate reach 70 %, does
 libero_10 move toward the oracle's 22/40) is queued.
@@ -4070,7 +4072,7 @@ before the rerun: LIBERO stores 50 initial states per task, so n = 80 on ten tas
 
 **What pinning buys.** With `--pin-rng` (one sampler key per policy call) and `--scenario-reset`,
 two runs' frozen arms agree on every outcome (80/80 and 20/20 pairs) and execute identical
-commands to the last step in 61/80 and 17/20 episodes; the rest diverge at a policy-call
+commands (within 1e-6 per channel over the shared steps) to the last step in 61/80 and 17/20 episodes; the rest diverge at a policy-call
 boundary (steps 10–150), the GPU's own nondeterminism. Two adaptive arms under different
 observers diverge at step 10–11 in every pair, the first update. So the pairing is exact up to
 the first update, and the outcome comparison carries no sampling noise from the policy's draws.
@@ -4095,3 +4097,30 @@ comparisons within a pinned design are unaffected; counts across designs are not
 This closes the GPU items of the theory plan. Open: Part 7 (composite on the GR1, stretch) and
 the unregistered next lever on r_y (constrain the plant's DC gain to the probed M, record 50).
 
+
+## 52. Corrections from the consistency review of the unified manuscript (2026-09-14)
+
+The review in `iclr2027/evidence/consistency_review.md` (written against d8b54db) found four
+things on this side of the repository, all fixed here; the raw result files are untouched.
+
+1. **Record contract, joint-space runners** (`openpi/re4_record.py`): the GR1 configuration
+   said `normaliser_channels = "all"` while `gr1_adapt.py` norms over the selected joints
+   (now recorded as such; ALOHA and LIBERO follow their own `--norm-channels` flag); the
+   `command` string named the Panda runner for ALOHA/GR1 runs and dropped numerically zero
+   options such as `--freeze-after 0` (now the runner that ran, every explicit option kept); and
+   `eval_init_base = 45`, a LIBERO default, appeared in ALOHA/GR1 metadata (now
+   `scene_seed_base` and the seed range, ALOHA 200–239, GR1 100–129). The six
+   `F_held_vs_continued` configurations were regenerated.
+2. **Part 6 plant-fit R²**: the 0.41 / 0.71 / 0.96 (FIR) and 0.95 / 0.98 (ARX) quoted in §48 had
+   no stored script. `openpi/re4_theory/ry_fit.py` reproduces the intended definition
+   (leave-one-episode-out on the pooled shipped + held-out healthy logs): 0.39 / 0.76 / 0.97 and
+   0.96 / 0.94; in-sample on the deployed three-episode fit 0.34 (FIR r_y) and 0.88 (ARX r_y).
+   §48, the prereg and the paper carry the reproduced values; the diagnosis is unchanged.
+3. **Wording**: the pinned "identical commands" are equal within 1e-6 per channel over the shared
+   steps (§51, prereg 8.2, paper); the healthy gate's threshold is 3·max(sd, 0.002) with the floor
+   active on r_z (paper, App. gate); the Part 1 end-effector metrics are position only (paper).
+4. **Rule-constants wording**: "unbiased estimate" replaced by the measured settle (r_z at the
+   truth, r_x 85–93 %); unbiased describes the fixed point, not the measurement.
+
+Not changed, stated: the review's rule-constants section predates the goal and libero_10 healthy
+controls (goal 40 → 39/40 landed after it; libero_10 running).

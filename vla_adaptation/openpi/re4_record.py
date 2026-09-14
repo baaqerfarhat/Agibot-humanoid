@@ -138,7 +138,10 @@ def cmd_record(ns):
                            if rn == "libero" else RN["units"]),
         update_law=dict(law=a.get("law", "legacy"), baseline=a.get("baseline", "none"),
                         gamma=a.get("gamma"), deadzone=a.get("dead"), normaliser_rho=a.get("norm_r"),
-                        normaliser_channels=a.get("norm_channels", "all"),
+                        # the GR1 runner always norms over the selected (corrected) joints (gr1_adapt.episode:
+                        # ne = norm(e[sel])); ALOHA and LIBERO as their --norm-channels flag says (default all)
+                        normaliser_channels=("corrected (gr1_adapt norms over the selected joints)" if rn == "gr1"
+                                             else a.get("norm_channels") or "all"),
                         deadzone_mode=a.get("deadzone_mode", "zero"),
                         bias_subtracted=a.get("bias") or "none: no bias vector subtracted",
                         static_correction=a.get("static_corr") or "none: estimator-driven correction",
@@ -162,14 +165,21 @@ def cmd_record(ns):
         policy_rng_pinned=bool(a.get("pin_rng")),
         policy_seed=("server key 0 on every policy call (pin_rng)" if a.get("pin_rng") else "not applicable: pin_rng=False, policy sampling unpinned"),
         fault=dict(family=fam, magnitude=mag, profile=a.get("profile", "step"), onset=a.get("onset", 0)),
-        episodes_per_arm=a.get("episodes"), suite=a.get("suite"), eval_init_base=a.get("eval_init", 45),
+        episodes_per_arm=a.get("episodes"), suite=a.get("suite"),
+        # LIBERO evaluates stored initial states from --eval-init; the joint-space runners key scenes by
+        # --seed + episode instead (a Panda default of 45 here was a recorder error, corrected 2026-09-14)
+        **(dict(eval_init_base=a.get("eval_init", 45)) if rn == "libero"
+           else dict(scene_seed_base=a.get("seed"), scene_seeds=f"{a.get('seed')}..{a.get('seed') + a.get('episodes') - 1}"
+                     if a.get("seed") is not None and a.get("episodes") else "not recorded")),
         source_sha256={f: sha(HERE / f) for f in SOURCES},
         timing_file=str(ns.timing) if ns.timing else "not recorded for this run",
         arms={k: dict(successes=v.get("successes"), n=v.get("n")) for k, v in res["arms"].items()},
         paired=paired(res["arms"]),
-        command=" ".join(["python openpi/adaptive_law.py"] +
+        # the runner that actually ran, with every explicitly set option including numeric zeros
+        # (e.g. --freeze-after 0); options left at None/False are the runner's defaults
+        command=" ".join([f"python {RN['script']}"] +
                          [f"--{k.replace('_', '-')}" + ("" if v is True else f" {v}")
-                          for k, v in sorted(a.items()) if v not in (None, False, "")]),
+                          for k, v in sorted(a.items()) if v is not None and v is not False and v != ""]),
     )
     def nonull(x, path="cfg"):
         if x is None:

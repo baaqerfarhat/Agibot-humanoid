@@ -43,7 +43,7 @@ method, 8.2a static, 8.2b method, 8.2b integral, all on the server already runni
 
 libero_10, ten tasks × inits 42–49, uniform +0.05, rotation corrected, pinned sampler
 (`pinned:key0`), 80 pairs each run. Frozen 0/80 in both runs, outcomes identical pair by pair,
-executed commands identical to the last step in 61 of 80 frozen episodes (the other 19 diverge at
+executed commands identical (within 1e-6 per channel, over the shared recorded steps) to the last step in 61 of 80 frozen episodes (the other 19 diverge at
 a policy-call boundary, steps 10–150: the pinned sampler is exact up to the GPU's own
 nondeterminism). The adaptive arms diverge at step 10–11 in every pair, the first update.
 
@@ -62,7 +62,7 @@ nondeterminism). The adaptive arms diverge at step 10–11 in every pair, the fi
 
 libero_spatial, the headline 20 scenarios, translation +0.15 with translation corrected, pinned
 sampler, method vs the integral baseline at its best gain (k_i = 0.005). Frozen 2/20 in both
-runs, identical pair by pair, commands identical to the end in 17 of 20 frozen episodes; the
+runs, identical pair by pair, commands identical within 1e-6 to the end in 17 of 20 frozen episodes; the
 adaptive arms diverge at step 11 in every pair (the first update).
 
 - Method **18/20**; integral **3/20**. Paired table: both 3, method-only 15, integral-only 0,

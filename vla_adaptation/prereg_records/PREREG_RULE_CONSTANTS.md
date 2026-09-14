@@ -72,11 +72,11 @@ Pooled over the four suites: 29/120 → **79/120**, 51 fixed, 1 broken, against 
 - **Adoption rule, applied as registered:** prediction 2 must hold on all four suites; it does not
   (libero_10). The configuration therefore does not replace the legacy reference as the headline
   on this evidence and is reported as an ablation row — equal to the shipped configuration in
-  aggregate (79 vs 78 of 120), with an unbiased estimate, and the theory-covered law. The healthy
+  aggregate (79 vs 78 of 120), with an estimate at the truth on r_z and 85–93 % on r_x (unbiased in its fixed point, not in the measurement), and the theory-covered law. The healthy
   controls (prediction 3) decide whether it is a safe row; they are running.
 
 Reading, stated plainly: the one constant set against the paper's rule cost the estimate, not the
-task outcome. Fixing it makes the estimate honest (r_z at the truth, r_x at 85–93 %) and leaves
+task outcome. Fixing it moves the estimate to the truth on r_z and to 85–93 % on r_x and leaves
 the counts where they were, because the task margins on these suites tolerate a 10–15 %
 under-correction on rotation. The r_y deficit (45–60 %) survives every law and normaliser and
 remains the plant's DC-gain mismatch (record 50).

@@ -1,0 +1,103 @@
+{
+ "definition": "Reproducible scoring of the r_y plant-fit numbers quoted in record 48 / PREREG_RE4T_6_RY.md.\n\nPer-axis increment models (the deployed ridge, lam = 1e-2, intercept included) are fitted on the\nhealthy logs and scored two ways, both reported:\n  * training R^2 on the shipped three-episode log (what the deployed plant was fitted on);\n  * leave-one-episode-out R^2 on the POOLED healthy logs (shipped 3 episodes + held-out 10 at\n    init 25), the definition behind the 0.41 / 0.95 quoted in record 48.\nModels: FIR K=6, FIR K=20, ARX(1) (K=6 + one own-channel past measured increment).\n",
+ "shipped_episodes": 3,
+ "heldout_episodes": 10,
+ "models": {
+  "fir_k6": {
+   "x": {
+    "train_r2_shipped_log": 0.9706,
+    "train_r2_pooled": 0.9575,
+    "loo_r2_pooled": 0.9541
+   },
+   "y": {
+    "train_r2_shipped_log": 0.9828,
+    "train_r2_pooled": 0.976,
+    "loo_r2_pooled": 0.9747
+   },
+   "z": {
+    "train_r2_shipped_log": 0.9791,
+    "train_r2_pooled": 0.9638,
+    "loo_r2_pooled": 0.9625
+   },
+   "rx": {
+    "train_r2_shipped_log": 0.5207,
+    "train_r2_pooled": 0.766,
+    "loo_r2_pooled": 0.7595
+   },
+   "ry": {
+    "train_r2_shipped_log": 0.3358,
+    "train_r2_pooled": 0.4103,
+    "loo_r2_pooled": 0.3863
+   },
+   "rz": {
+    "train_r2_shipped_log": 0.9708,
+    "train_r2_pooled": 0.9746,
+    "loo_r2_pooled": 0.9733
+   }
+  },
+  "fir_k20": {
+   "x": {
+    "train_r2_shipped_log": 0.9683,
+    "train_r2_pooled": 0.9528,
+    "loo_r2_pooled": 0.9454
+   },
+   "y": {
+    "train_r2_shipped_log": 0.9784,
+    "train_r2_pooled": 0.9703,
+    "loo_r2_pooled": 0.9679
+   },
+   "z": {
+    "train_r2_shipped_log": 0.9808,
+    "train_r2_pooled": 0.9656,
+    "loo_r2_pooled": 0.9635
+   },
+   "rx": {
+    "train_r2_shipped_log": 0.549,
+    "train_r2_pooled": 0.7536,
+    "loo_r2_pooled": 0.7392
+   },
+   "ry": {
+    "train_r2_shipped_log": 0.3624,
+    "train_r2_pooled": 0.3945,
+    "loo_r2_pooled": 0.3539
+   },
+   "rz": {
+    "train_r2_shipped_log": 0.9735,
+    "train_r2_pooled": 0.9731,
+    "loo_r2_pooled": 0.9708
+   }
+  },
+  "arx1_k6": {
+   "x": {
+    "train_r2_shipped_log": 0.9965,
+    "train_r2_pooled": 0.9957,
+    "loo_r2_pooled": 0.9954
+   },
+   "y": {
+    "train_r2_shipped_log": 0.9973,
+    "train_r2_pooled": 0.9979,
+    "loo_r2_pooled": 0.9978
+   },
+   "z": {
+    "train_r2_shipped_log": 0.9979,
+    "train_r2_pooled": 0.9952,
+    "loo_r2_pooled": 0.995
+   },
+   "rx": {
+    "train_r2_shipped_log": 0.7628,
+    "train_r2_pooled": 0.9503,
+    "loo_r2_pooled": 0.9427
+   },
+   "ry": {
+    "train_r2_shipped_log": 0.8801,
+    "train_r2_pooled": 0.9582,
+    "loo_r2_pooled": 0.9558
+   },
+   "rz": {
+    "train_r2_shipped_log": 0.9739,
+    "train_r2_pooled": 0.9852,
+    "loo_r2_pooled": 0.9837
+   }
+  }
+ }
+}
