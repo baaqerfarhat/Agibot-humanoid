@@ -4124,3 +4124,29 @@ things on this side of the repository, all fixed here; the raw result files are 
 
 Not changed, stated: the review's rule-constants section predates the goal and libero_10 healthy
 controls (goal 40 → 39/40 landed after it; libero_10 running).
+
+## 53. The law's constants set by the paper's rule: same repair, honest estimate, not adopted (2026-09-14)
+
+`results/rule_constants/`, prereg `PREREG_RULE_CONSTANTS.md` (outcomes appended). The constants
+audit found ρ = 0.15 compared against the six-channel residual norm — dominated by the
+*uncorrected* translation residual — so the rotation estimate settled at 87 / 41 / 88 % of the
+fault. Configuration tested, registered before the runs: innovation law + normaliser over the
+corrected channels, nothing else changed, the four shipped cells and their healthy controls.
+
+| | faulted, frozen → adaptive (fixed / broken) | healthy, frozen → adaptive |
+|---|---|---|
+| spatial 20 | 9 → 19 (10 / 0) | 20 → 20 |
+| object 20 | 3 → 17 (14 / 0) | 20 → 20 |
+| goal 40 | 17 → 30 (14 / 1) | 40 → 39 |
+| libero_10 40 | 0 → 13 (13 / 0) | 38 → 36 (1 / 3) |
+| pooled | 29 → **79** / 120 (51 / 1); shipped 28 → 78 (51 / 1) | 118 → **115**; shipped 116 → 117 |
+
+Estimate: r_z at the truth (94–102 %), r_x 85–93 %, r_y 42–60 % on every suite. Registered
+scoring: prediction 1 holds in substance and misses its 90 % letter on r_x on two suites;
+prediction 2 holds on three suites and fails on libero_10 by two episodes (13 vs ≥ 15; paired
+against the shipped cell 4 won / 6 lost, noise; the ≤ 12 refutation not triggered); prediction 3
+holds at its letter on all four (losses 0 / 0 / 1 / 2) with libero_10 breaking three healthy
+episodes. **Adoption rule not met; the configuration is an ablation row and the legacy reference
+stays the headline.** The one mis-set constant cost the estimate, not the outcome: the task
+margins on these suites tolerate a 10–15 % under-correction on rotation. The r_y deficit is
+untouched by law or normaliser (record 50); the DC-gain-constrained plant is the next lever.

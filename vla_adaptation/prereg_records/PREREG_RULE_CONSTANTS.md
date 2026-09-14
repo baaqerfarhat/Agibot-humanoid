@@ -80,3 +80,30 @@ task outcome. Fixing it moves the estimate to the truth on r_z and to 85–93 % 
 the counts where they were, because the task margins on these suites tolerate a 10–15 %
 under-correction on rotation. The r_y deficit (45–60 %) survives every law and normaliser and
 remains the plant's DC-gain mismatch (record 50).
+
+## Outcome, healthy controls and adoption decision (2026-09-14; `results/rule_constants/healthy_*`)
+
+| suite | healthy frozen → adaptive | fixed / broken | shipped legacy healthy control | phantom on r_x / r_y / r_z |
+|---|---|---|---|---|
+| libero_spatial, n = 20 | 20 → **20** | 0 / 0 | 19 → 20 | −0.0004 / −0.0006 / 0.0015 |
+| libero_object, n = 20 | 20 → **20** | 0 / 0 | 20 → 20 | −0.0002 / 0.0043 / 0.0013 |
+| libero_goal, n = 40 | 40 → **39** | 0 / 1 | 39 → 40 | 0.0012 / 0.0040 / 0.0004 |
+| libero_10, n = 40 | 38 → **36** | 1 / 3 | 38 → 37 | 0.0011 / 0.0007 / 0.0004 |
+
+Pooled healthy: 118/120 → **115/120** (1 fixed, 4 broken), against the legacy law's 116 → 117.
+
+- **Prediction 3 (harm): holds on all four suites at the registered level** (no suite loses more
+  than two: 0, 0, −1, −2). It is not free: libero_10 breaks three healthy episodes and repairs one,
+  and the pooled healthy count moves from 118 to 115 where the legacy law moved 116 to 117. The
+  unattenuated law acts on healthy phantoms that the attenuated law damped; the phantoms
+  themselves are small (≤ 0.004, a tenth of the fault scale), so the harm is the long-horizon
+  suite's sensitivity to any sustained correction, as record 43 already saw with the legacy law
+  (38 → 37).
+- **Adoption decision, as registered:** not adopted. Prediction 2 failed on libero_10 (13 against
+  ≥ 15) and prediction 3 holds only at its letter. The configuration is reported as an ablation
+  row: pooled faulted 79/120 against the shipped 78/120 (51 fixed / 1 broken in both), estimate at
+  the truth on r_z and 85–93 % on r_x, healthy 115/120 against 117/120. Same repair, honest
+  estimate, slightly more healthy harm. The legacy reference stays the headline.
+- What the exercise settled: the one constant set against the rule cost the estimate, not the
+  task outcome; the r_y deficit (42–60 %) survives every law and normaliser and is the plant's
+  DC-gain mismatch (record 50), which is the next lever.
