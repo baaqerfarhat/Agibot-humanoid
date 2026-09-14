@@ -139,7 +139,7 @@ def publish_pose(commander, pos_by_name, kp_by_name, kd_by_name, gain_scale, eng
 
 def _default_policy_path() -> str:
     here = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(here, "policies", "x2_boxhug_policy_v40b2_robust_best.npz")
+    return os.path.join(here, "policies", "x2_boxhug_policy_v40b2_iter49750.npz")
 
 
 # =============================== main ===============================
