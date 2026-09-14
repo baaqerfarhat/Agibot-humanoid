@@ -1,0 +1,70 @@
+{
+  "status": "post hoc consistency audit; not a predictive certificate",
+  "source_head": "b540d525de1486b8cdaa3aa7ea690b5ca00c36b4",
+  "runs": {
+    "T1_headline": {
+      "telemetry_sha256": "20b61aeef37ac36f1df80a69f2bdbc63a43d4cb9d41e02ff975173e8cb083a1d",
+      "law": "legacy",
+      "episodes": 20,
+      "steps": 2634,
+      "corrected_channels": [
+        3,
+        4,
+        5
+      ],
+      "update_map_max_absolute_error_all_channels": 2.7755575615628914e-17,
+      "error_recursion_max_algebra_error_before_projection": 5.551115123125783e-17,
+      "deadzone_steps": 0,
+      "projection_steps_any_channel": 505,
+      "projection_steps_corrected_channels": 0,
+      "corrected_triangle_bound_coverage": 1.0,
+      "corrected_triangle_bound_violations": 0,
+      "median_bound_over_actual_error": 1.236572515457943,
+      "median_final_bound_over_final_actual_error": 1.659107596007848,
+      "median_actual_error_norm_corrected": 0.03403024367615043,
+      "median_observed_w_norm_corrected": 0.037497260663969675,
+      "median_last50_mean_w_corrected": [
+        -0.002194158907714811,
+        -0.02722605113949033,
+        0.0010951867683585681
+      ],
+      "median_effective_attenuation": 0.9415273213840143,
+      "median_model_error_forcing_term": 0.0026216507624690186,
+      "median_legacy_attenuation_bias_forcing_term": 0.0004051106008701335,
+      "median_total_fault_model_eps_norm": 0.010208570529821843,
+      "median_archived_4_2_eps_norm": 0.017426315744443116
+    },
+    "T4_innov": {
+      "telemetry_sha256": "56a448863aee5c70f1b3d58619d3333c74991ff6da4eccb08481128bbec6567b",
+      "law": "innov",
+      "episodes": 20,
+      "steps": 2292,
+      "corrected_channels": [
+        3,
+        4,
+        5
+      ],
+      "update_map_max_absolute_error_all_channels": 2.7755575615628914e-17,
+      "error_recursion_max_algebra_error_before_projection": 5.551115123125783e-17,
+      "deadzone_steps": 138,
+      "projection_steps_any_channel": 467,
+      "projection_steps_corrected_channels": 0,
+      "corrected_triangle_bound_coverage": 1.0,
+      "corrected_triangle_bound_violations": 0,
+      "median_bound_over_actual_error": 1.182228831967464,
+      "median_final_bound_over_final_actual_error": 1.5043245731638963,
+      "median_actual_error_norm_corrected": 0.03327983297540034,
+      "median_observed_w_norm_corrected": 0.03742247427231912,
+      "median_last50_mean_w_corrected": [
+        -0.002195152562901144,
+        -0.027845981304888693,
+        6.644546564592714e-05
+      ],
+      "median_effective_attenuation": 0.9738027539351908,
+      "median_model_error_forcing_term": 0.002684903420571255,
+      "median_legacy_attenuation_bias_forcing_term": 0.0,
+      "median_total_fault_model_eps_norm": 0.010142458921413003,
+      "median_archived_4_2_eps_norm": 0.01846575858970015
+    }
+  }
+}

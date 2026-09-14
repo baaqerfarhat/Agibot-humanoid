@@ -1,0 +1,21 @@
+{
+  "evidence_head": "b540d525de1486b8cdaa3aa7ea690b5ca00c36b4",
+  "status": "Standalone analysis; existing manuscript and archived scorers unchanged",
+  "latex_pages": 5,
+  "latex_warnings": [],
+  "local_links_missing": [],
+  "source_sha256": {
+    "audit_recursions.py": "7e3d507b2f8ee8de87918d168ed8380a34ff616dea43f431b6c991a5e76cdd0c",
+    "general_adaptation_theory.tex": "c5b0299cf249032171dec6cff5df7f80bf4b5ad0577794d267b9e2fd33e6ba42",
+    "verify_theory.py": "2b77dd9d10951e74e41cd678e14e1580668d8b8b557c8930d35e5005976b36a9",
+    "GENERAL_ADAPTATION_THEORY.md": "b78c0cfd1a1a2cf2d21559e5ca41d8611354367a81f31ef44a349b44d1bf8839"
+  },
+  "validation": [
+    "Exact telemetry update replay: 4926 steps; max absolute error 2.78e-17",
+    "128 finite-horizon matrix cases; zero bound violations",
+    "Jury stability grid agrees with eigenvalues",
+    "Joint Lyapunov equation and forced bound pass",
+    "Scalar transient, leakage and gain-mismatch formulas agree with recurrence simulation",
+    "PDF compiled offline and representative theory page/figure visually inspected"
+  ]
+}
