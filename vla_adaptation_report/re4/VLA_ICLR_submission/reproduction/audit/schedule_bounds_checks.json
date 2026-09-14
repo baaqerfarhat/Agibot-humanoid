@@ -1,0 +1,102 @@
+{
+  "projected_scheduled_legacy": {
+    "checks": 4000,
+    "maximum_positive_violation": 4.440892098500626e-16
+  },
+  "projected_scheduled_innovation": {
+    "checks": 4000,
+    "maximum_positive_violation": 4.440892098500626e-16
+  },
+  "legacy_envelope": {
+    "checks": 97,
+    "maximum_positive_violation": 0.0
+  },
+  "legacy_product_identity": {
+    "checks": 97,
+    "maximum_positive_violation": 2.7755575615628914e-16
+  },
+  "legacy_delay_increment_bound": {
+    "checks": 97,
+    "maximum_positive_violation": 0.0
+  },
+  "legacy_delay_age_bound": {
+    "checks": 97,
+    "maximum_positive_violation": 0.0
+  },
+  "legacy_mismatch_identity": {
+    "checks": 97,
+    "maximum_positive_violation": 0.0
+  },
+  "legacy_mismatch_bound": {
+    "checks": 97,
+    "maximum_positive_violation": 0.0
+  },
+  "legacy_noncontracting_phase_tube": {
+    "checks": 97,
+    "maximum_positive_violation": 0.0
+  },
+  "legacy_tube_product_identity": {
+    "checks": 97,
+    "maximum_positive_violation": 4.440892098500626e-16
+  },
+  "innovation_envelope": {
+    "checks": 97,
+    "maximum_positive_violation": 0.0
+  },
+  "innovation_product_identity": {
+    "checks": 97,
+    "maximum_positive_violation": 3.3306690738754696e-16
+  },
+  "innovation_delay_increment_bound": {
+    "checks": 97,
+    "maximum_positive_violation": 0.0
+  },
+  "innovation_delay_age_bound": {
+    "checks": 97,
+    "maximum_positive_violation": 0.0
+  },
+  "innovation_mismatch_identity": {
+    "checks": 97,
+    "maximum_positive_violation": 0.0
+  },
+  "innovation_mismatch_bound": {
+    "checks": 97,
+    "maximum_positive_violation": 0.0
+  },
+  "innovation_noncontracting_phase_tube": {
+    "checks": 97,
+    "maximum_positive_violation": 0.0
+  },
+  "innovation_tube_product_identity": {
+    "checks": 97,
+    "maximum_positive_violation": 4.440892098500626e-16
+  },
+  "constructed_schedule": {
+    "physical_steps": 96,
+    "active_updates": 42,
+    "last_application_snapshot": 70,
+    "maximum_snapshot_age": 26,
+    "maximum_local_gain": 1.15,
+    "measured_robot_schedule": false
+  },
+  "legacy_rectangle_corner_feasibility": {
+    "checks": 6000,
+    "maximum_positive_violation": 0.0
+  },
+  "legacy_rectangle_invariance": {
+    "checks": 120000,
+    "maximum_positive_violation": 0.0
+  },
+  "necessary_terms_examples": {
+    "full_hold_error_at_initially_exact_estimate": 0.0,
+    "target_only_gate_error": 0.04799999999999993,
+    "legacy_constant_target_error": 0.3600000000000001,
+    "legacy_attenuation_floor": 0.36,
+    "current_error_with_stale_zero_snapshot": 0.0,
+    "applied_error_with_stale_zero_snapshot": 0.6,
+    "active_updates_for_95pct_legacy_transient": 36
+  },
+  "scope": "Constructed deterministic algebra and bound checks; no robot reruns or latency measurements.",
+  "seed": 20260909,
+  "status": "passed"
+}

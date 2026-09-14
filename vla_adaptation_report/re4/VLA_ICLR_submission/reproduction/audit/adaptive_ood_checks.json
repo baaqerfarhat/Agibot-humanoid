@@ -1,0 +1,111 @@
+{
+  "scope": "Reproducible algebra checks and a newly constructed scalar plant; no original experimental outcomes are recomputed.",
+  "randomized_theorem_checks": {
+    "trials": 5000,
+    "seed": 20260909,
+    "maximum_inequality_excess": {
+      "unweighted": 1.7763568394002505e-15,
+      "weighted": 1.4210854715202004e-14,
+      "projection": 0.0,
+      "jump": -5.6543887350102295e-09,
+      "radial": -0.01013780291052005
+    },
+    "positive_definite_samples": {
+      "unweighted": 3594,
+      "weighted": 2236
+    },
+    "prediction_only_certificate_counterexample": {
+      "lambda": 0.2,
+      "kc_mu": 0.1,
+      "tau": 0.01,
+      "unweighted_min_eigenvalue": -0.3524937810560445,
+      "weighted_min_eigenvalue": 0.07928932188134524,
+      "actual_system_eigenvalues": [
+        -0.2,
+        -0.1
+      ],
+      "meaning": "Failure of the unweighted sufficient condition does not imply instability."
+    }
+  },
+  "stale_memory_checks": {
+    "trials": 500,
+    "maximum_decomposition_error": 4.986471270604724e-14,
+    "maximum_bias_bound_excess": -12.039496423529307,
+    "exact_scalar_old_regime": {
+      "H": 2.0,
+      "old_theta": 0.4,
+      "current_theta": 1.1,
+      "b_H": -1.4000000000000001,
+      "prediction_only_equilibrium": 0.4,
+      "equilibrium_parameter_error": -0.7000000000000001,
+      "meaning": "Positive information alone does not remove stale-regime bias."
+    }
+  },
+  "constructed_example": {
+    "status": "constructed analytical illustration; not robot or VLA validation",
+    "plant": "e_dot=-lambda e-(theta_hat-theta_star)+d",
+    "update": "theta_hat_dot=kappa e+kc*(-H*(theta_hat-theta_star)+b_H)",
+    "regression": "Ideal current regression h(t)=H theta_star(t)+b_H(t), H=0.65 throughout; no retained-data acquisition is modeled.",
+    "lambda": 1.0,
+    "Gamma": 1.0,
+    "kc": 2.0,
+    "H": 0.65,
+    "initial_e": 0.25,
+    "initial_theta_hat": 0.0,
+    "disturbance": "0.02 sin(2.3 t)",
+    "regression_bias": "0.006 sin(1.7 t+0.4)",
+    "theta_segments": [
+      {
+        "start": 0.0,
+        "end": 5.0,
+        "theta_start": 0.7,
+        "drift": 0.0
+      },
+      {
+        "start": 5.0,
+        "end": 10.0,
+        "theta_start": 1.15,
+        "drift": -0.03
+      },
+      {
+        "start": 10.0,
+        "end": 16.0,
+        "theta_start": 0.4,
+        "drift": 0.0
+      }
+    ],
+    "integrator": {
+      "method": "DOP853",
+      "rtol": 1e-11,
+      "atol": 1e-13,
+      "max_step": 0.025
+    },
+    "comparison": {
+      "0": {
+        "beta_unweighted": 0.6279846745544726,
+        "Q": 0.04651881339845203,
+        "radius_floor_bound": 0.07407635135595478,
+        "maximum_W_minus_bound": 0.0,
+        "maximum_dV_minus_radial_bound": -3.739550292470229e-05,
+        "maximum_jump_inequality_excess": -0.004607749360239444,
+        "integrated_squared_tracking_error": 0.29204063357608034,
+        "integrated_squared_parameter_error": 0.40269545877253393,
+        "peak_absolute_tracking_error": 0.35328378342320016
+      },
+      "1": {
+        "beta_unweighted": 1.0,
+        "Q": 0.04651881339845203,
+        "radius_floor_bound": 0.04651881339845203,
+        "maximum_W_minus_bound": 0.0,
+        "maximum_dV_minus_radial_bound": -0.00019894003010806582,
+        "maximum_jump_inequality_excess": -0.007250539238158216,
+        "integrated_squared_tracking_error": 0.17108143210173843,
+        "integrated_squared_parameter_error": 0.29853645887380786,
+        "peak_absolute_tracking_error": 0.3296101895688569
+      }
+    },
+    "interpretation": "The composite branch improves this unweighted sufficient rate. Actual parameter and tracking transients can trade off; no general speed dominance is claimed."
+  },
+  "figure": "paper/fig_theory_ood.pdf",
+  "result": "passed"
+}

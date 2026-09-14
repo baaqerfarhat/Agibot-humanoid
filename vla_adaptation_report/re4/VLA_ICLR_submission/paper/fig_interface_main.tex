@@ -1,0 +1,54 @@
+\begin{tikzpicture}[
+  x=1cm,y=1cm,
+  >=Latex,
+  font=\small,
+  online/.style={draw=black!70,rounded corners=2pt,align=center,
+    minimum height=1.12cm,fill=blue!5},
+  plant/.style={draw=black!70,rounded corners=2pt,align=center,
+    minimum height=1.12cm,fill=orange!8},
+  source/.style={draw=black!70,rounded corners=2pt,align=center,
+    minimum height=1.12cm,fill=gray!10},
+  offline/.style={draw=black!55,dashed,rounded corners=2pt,align=center,
+    minimum height=.72cm,fill=gray!4,font=\scriptsize},
+  signal/.style={-Latex,thick,draw=black!78},
+  calibration/.style={-Latex,dashed,draw=black!55}
+]
+\node[source,text width=2.25cm] (vla) at (1.15,2.10)
+  {Frozen VLA\\[-1pt]\textbf{unchanged}};
+\node[online,text width=3.25cm] (realize) at (4.65,2.10)
+  {Correction and realization\\[-1pt]
+   $u_k=a_k-D\widehat f_{\tau_k}+\zeta_k$};
+\node[plant,text width=2.40cm] (fault) at (8.05,2.10)
+  {Modeled interface\\[-1pt]fault: $u_k^{\rm eff}=u_k+f_k$};
+\node[plant,text width=2.55cm] (robot) at (11.45,2.10)
+  {Low-level controller\\[-1pt]+ robot};
+\node[online,text width=3.70cm] (observer) at (9.80,-.05)
+  {Calibrated FIR residual\\[-1pt]
+   $e_k^{\rm res}=y_k-\widehat y_k$\\[-1pt]
+   $z_k=S^{-1}e_k^{\rm res}-b_{\rm cal}$};
+\node[online,text width=4.10cm] (update) at (4.75,-.05)
+  {Scheduled prediction-only\\[-1pt]
+   update/hold: attenuation or\\[-1pt]
+   innovation $\longrightarrow\widehat f_{k+1}$};
+\node[offline,text width=2.50cm] (interfacecfg) at (1.15,-1.48)
+  {Fixed interface:\\mask $D$;\\command limits};
+\node[offline,text width=3.20cm] (updatecfg) at (5.10,-1.48)
+  {Fixed update configuration:\\gain, gate, projection limits};
+\node[offline,text width=3.80cm] (residualcfg) at (9.45,-1.48)
+  {Fixed residual calibration:\\$H_\ell$, $S$, $b_{\rm cal}$};
+
+\draw[signal] (vla) -- node[above] {$a_k$} (realize);
+\draw[signal] (realize) -- node[above] {$u_k$} (fault);
+\draw[signal] (fault) -- node[above] {$u_k^{\rm eff}$} (robot);
+\draw[signal] (robot.east) -- ++(.55,0) |- node[pos=.24,right] {post-command $y_k$}
+  (observer.east);
+\draw[signal] (realize.south east) -- ++(0,-.35) -| node[pos=.68,above] {issued $u$-history}
+  (observer.north);
+\draw[signal] (observer) -- node[above] {$z_k$} (update);
+\draw[signal] (update.north) -- ++(0,.36) -| node[pos=.73,left] {available snapshot
+  $\widehat f_{\tau_k}$} (realize.south west);
+\draw[calibration] (interfacecfg.north east) -- (realize.west);
+\draw[calibration] (updatecfg.north) -- (update.south);
+\draw[calibration] (residualcfg.north) -- (observer.south);
+
+\end{tikzpicture}

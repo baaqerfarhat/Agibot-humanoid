@@ -1,0 +1,254 @@
+\section{Structured physical OOD and the contraction interconnection}
+\label{sec:gen-theory}
+This appendix specifies the model and operating conditions behind
+Appendix~\ref{sec:composite-extension}, then derives the prediction-only comparison.
+The general composite controller is a theoretical extension; the reported
+VLA runs retain the sampled laws in Section~\ref{sec:vla-method}.
+
+\subsection{Physical matching and the same-command reference}
+The frozen VLA supplies a command signal $r(t)$, which can be
+piecewise continuous with locally finitely many jumps and can depend
+causally on deployment observations.
+Fix that entire supplied signal when defining the execution comparison.
+The state $\xi$ contains the robot and necessary low-level controller
+state; $k_0(\xi,r,t)$ is its nominal execution feedback. For manipulation,
+include evolving object and contact/environment state needed to close these
+dynamics, or explicitly bound its omitted influence below. Static geometry
+can be a fixed common parameter. Endogenous object motion is not a common
+input merely because both executions receive the same commands
+(Appendix~\ref{app:physical-closure}). Write
+\begin{equation}
+ \dot\xi=f_0(\xi,t)+G(\xi,t)\mathcal A(\xi,u;\theta^*(t))+d(t),
+ \qquad F_{\rm exec}=f_0+Gk_0(\xi,r,t).
+ \label{eq:gen-plant}
+\end{equation}
+Controller dynamics are included in $f_0,G$ as needed. An allocator
+chooses $u\in\mathcal U$ using $\hat\theta$. Assume
+$\mathcal A(\xi,u;\hat\theta)-\mathcal A(\xi,u;\theta^*)=
+\Psi(\xi,u,t)(\hat\theta-\theta^*)$ on the operating domain.
+With $\delta_A=\mathcal A(\xi,u;\hat\theta)-k_0$,
+$B_\theta=G\Psi$ and $d_{\rm eff}=d+G\delta_A$ give exactly
+\eqref{eq:gen-matching}. In a reduced-state model, $d(t)$ is a pathwise remainder that can depend
+on omitted physical state. A disjoint decomposition is
+\[
+\begin{aligned}
+ d_{\rm eff}&=d_{\rm base}+d_{\rm hist}+d_{\rm contact}+G\delta_A,\\
+ \|d_{\rm eff}\|_{M_c}&\le
+ \bar d_{\rm base,M}+\bar d_{\rm hist,M}+
+ \bar d_{\rm contact,M}+\bar d_{\rm real,M}.
+\end{aligned}
+\]
+These bounds must hold uniformly over admissible corrected states,
+commands, and omitted states within each certified smooth mode. Effects
+already represented by matching or realization error are not counted again
+as contact disturbance. Contact remainder bounds are assumptions, not
+consequences of servo stability; impacts require the separate hybrid jump
+conditions in Appendix~\ref{app:history-partition}, not a finite continuous
+force bound. For gain and bias,
+$\mathcal A=\operatorname{diag}(g)u+b$, the regressor contains command
+and identity columns. Estimated gains bounded away from zero and feasible
+commands are necessary for an inverse. Payload and friction changes need
+a valid parameterization or bounded remainder. A locked joint can remove
+authority. Perception changes can change the supplied commands; execution
+tracking alone does not establish that those commands remain task-correct.
+
+The nominal reference solves
+$\dot\xi^{\rm nom}=F_{\rm exec}(\xi^{\rm nom},r(t),t)$ with a declared initial state.
+It is the nominal physical response to the \emph{same commands actually
+supplied during deployment}, not a counterfactual rollout that recomputes
+VLA commands from a healthy observation stream. The reference may be an
+analytical comparison system for prediction-only adaptation. Computing it
+online is required only for a controller that uses its tracking signal.
+For a reduced state, this is the response of the declared nominal reduced
+model; a full-contact nominal simulation is a different comparison unless
+its projection realizes that model or its discrepancy is bounded.
+
+For every allowed command and each certified smooth operating mode,
+assume $F_{\rm exec}$ is continuously differentiable in $\xi$, and $M_c(\xi,t)$ is $C^2$ in $\xi$ and $C^1$
+in $t$ locally. Uniform positive metric bounds and
+\eqref{eq:contraction-metric} hold on a stated operating domain $\Omega$
+uniformly over $r\in\mathcal R$. The derivative $A_{\rm exec}$ holds $r$
+fixed: it includes the robot and low-level feedback sensitivity, with no
+VLA derivative. Although deployment commands can arise from feedback,
+the nominal comparison and all virtual trajectories in this proof use
+the same supplied $r(t)$. This is an input-conditioned execution
+certificate, not a contraction certificate for the complete VLA loop.
+Admissibility of the actual command signal and domain containment are
+separate assumptions; the certificate does not establish them. Shared
+commands do not imply shared object states or contact modes. A hybrid
+comparison must cover the realized mode sequences and event timing; a
+smooth servo metric alone supplies only its stated servo-domain guarantee.
+
+Take a neighborhood on which every relevant pair has a minimizing
+constant-speed geodesic contained in $\Omega$, and the squared metric
+distance is smooth. A strongly geodesically convex normal neighborhood
+is a sufficient local setting. The flow perturbations in first variation
+must remain in $\Omega$ for sufficiently small time increments. Bounds
+hold only until these conditions cease. Nonunique minimizers require a
+separate upper-Dini argument; we do not assume a differentiable geodesic
+choice through a cut locus.
+
+The metric is independent of the command, the estimated parameter, and
+the unknown parameter. Dependence on these quantities introduces extra
+derivative or switching terms and requires a different certificate.
+Similarly, $(\xi-\xi^{\rm nom})^\top M_c(\xi,t)(\xi-\xi^{\rm nom})/2$ is generally not
+the geodesic half-energy. With a command-independent metric, a jump of
+$r$ does not itself jump the energy if the physical/reference states are
+continuous; the flow bound holds on each command interval and extends
+across the jump by continuity. Direct reference resets, command-dependent
+tracking-coordinate resets, and state or metric resets need explicit
+jump bounds or a feasible interpolated reference. Physical controller
+memory, actuator delays, and contact resets must be covered by the state
+partition and sampled/hybrid conditions in
+Appendix~\ref{app:history-partition}. VLA internal policy memory is not
+part of the primary execution certificate.
+
+\subsection{Identification information and the available feedback signal}
+For measured or filtered regressions, declare weights $R_j\succ0$,
+$\omega_j\ge0$, and form
+\begin{align}
+ y_j&=\Phi_j\theta^*(t_j)+\varepsilon_j,\qquad
+ H_I=\sum_j\omega_j\Phi_j^\top R_j^{-1}\Phi_j,\nonumber\\
+ b_I&=\sum_j\omega_j\Phi_j^\top R_j^{-1}y_j,\qquad
+ \epsilon_I=b_I-H_I\theta^*(t).
+ \label{eq:gen-information}
+\end{align}
+Then $b_I-H_I\hat\theta=-H_I\tilde\theta+\epsilon_I$ is the negative
+gradient of the weighted prediction loss. Current data or a retained
+informative dataset can supply this statistic. A command-history FIR
+buffer supplies predictor context; it is not, by itself, an informative
+identification memory. Estimation requires observability of the physical
+parameter directions and a bias reference separating nominal mismatch
+from the change being identified.
+
+The geodesic signal $\sigma_{\rm exec}=B_\theta^\top p_\xi$ additionally
+requires the nominal physical reference, realization sensitivity, and
+metric endpoint covector. Appendix~\ref{app:gen-innerloop} constructs
+these quantities from robot/controller dynamics. A low-level reference
+generated from the current VLA chunk can be used when it realizes the
+same nominal execution dynamics, or its dynamics defect is retained.
+Neither the metric nor this tracking signal requires differentiating the
+VLA. The evaluated prediction-only method computes neither quantity.
+For a computed $\hat\sigma_{\rm exec}=\sigma_{\rm exec}+\epsilon_\sigma$ with
+$\|\epsilon_\sigma\|\le\bar\epsilon_\sigma$, the parameter forcing in
+\eqref{eq:gen-forcing} becomes
+$k_c\sqrt{\gamma_+}\bar\epsilon_I+
+\kappa\sqrt{\gamma_+}\bar\epsilon_\sigma+\nu/\sqrt{\gamma_-}$.
+Approximate metrics or geodesics must justify this error bound and any
+metric-inequality defect. If an approximate reference is used only to
+compute $\hat\sigma_{\rm exec}$, its error is relative to the exact $\xi^{\rm nom}$ in the
+theorem. Tracking a different reference satisfying
+$\dot\xi^{\rm nom}=F_{\rm exec}(\xi^{\rm nom},r,t)+\delta_r$ adds the separate first-variation term
+$-p_r^\top\delta_r$, where $p_r=M_c(\xi^{\rm nom},t)c_s(0)$. Its magnitude is
+at most $X\|\delta_r\|_{M_c(\xi^{\rm nom},t)}$; this reference-dynamics defect
+must be added to the tracking forcing $\bar d_M$. Approximate quantities
+cannot simply be substituted as exact ones.
+
+\subsection{Prediction-only contraction and feedback coupling}
+\label{sec:prediction-comparison}
+With $\kappa=0$, \eqref{eq:gen-law} is prediction-gradient adaptation in
+the parameter metric $\Gamma^{-1}$. Under a common exogenous stream
+$(H_I,b_I)$, two unprojected observers have variation
+\begin{equation}
+ \delta\dot{\hat\theta}=-k_c\Gamma H_I\delta\hat\theta,\qquad
+ \frac{d}{dt}\frac12\|\delta\hat\theta\|_{\Gamma^{-1}}^2
+ =-k_c\delta\hat\theta^\top H_I\delta\hat\theta.
+ \label{eq:observer-differential}
+\end{equation}
+If $H_I\succeq\mu I$, this is conditional observer contraction at rate
+$k_c\mu\gamma_-$. The projected case follows from normal-cone
+monotonicity (Appendix~\ref{app:gen-proof}), without differentiating
+through active faces. On the robot, correction changes the state and
+therefore its data stream; this conditional observer statement does not
+certify the feedback interconnection.
+
+To account for that dependence, suppose throughout the operating domain
+\begin{align}
+ \|M_c^{1/2}B_\theta\Gamma^{1/2}\|&\le L_B,\qquad
+ \|d_{\rm eff}\|_{M_c}\le d_0+\ell_xX+\ell_zZ,\nonumber\\
+ \|\epsilon_I\|&\le\epsilon_0+m_xX+m_zZ,
+ \qquad \|\dot\theta^*\|\le\nu.
+ \label{eq:gen-coupling}
+\end{align}
+All constants are nonnegative. For this execution/estimation comparison
+\eqref{eq:prediction-comparison}, define
+\begin{align}
+ a&=\lambda-\ell_x,& b&=L_B+\ell_z,\nonumber\\
+ c&=k_c\mu\gamma_- -k_c\sqrt{\gamma_+}m_z,&
+ d&=k_c\sqrt{\gamma_+}m_x,\qquad
+ q_z=k_c\sqrt{\gamma_+}\epsilon_0+\nu/\sqrt{\gamma_-}.
+ \label{eq:prediction-coefficients}
+\end{align}
+\begin{proposition}[Prediction-only interconnection]
+\label{prop:prediction-comparison}
+Assume the geometric, matching, projection, and information conditions
+above on an interval beginning at $t_e$, with $H_I\succeq\mu I$.
+The $\kappa=0$ law obeys \eqref{eq:prediction-comparison}. Write
+$\mathcal A_c=\left[\begin{smallmatrix}-a&b\\d&-c\end{smallmatrix}\right]$
+and $r_0=(d_0,q_z)^\top$. Componentwise,
+\begin{equation}
+ \begin{bmatrix}X(t)\\Z(t)\end{bmatrix}\le
+ e^{\mathcal A_c(t-t_e)}\begin{bmatrix}X(t_e)\\Z(t_e)\end{bmatrix}
+ +\int_{t_e}^t e^{\mathcal A_c(t-s)}r_0\,ds.
+ \label{eq:prediction-envelope}
+\end{equation}
+If $a,c>0$ and $ac>bd$, this comparison matrix is Hurwitz, and
+\begin{equation}
+ \limsup_{t\to\infty}X(t)\le\frac{cd_0+bq_z}{ac-bd},\qquad
+ \limsup_{t\to\infty}Z(t)\le\frac{dd_0+aq_z}{ac-bd},
+ \label{eq:prediction-floor}
+\end{equation}
+provided all assumptions remain valid for that infinite interval.
+\end{proposition}
+These are asymptotic comparison bounds, not startup bounds. A sufficient
+invariant rectangle contains $(X(t_e),Z(t_e))$ and satisfies
+$a\bar X\ge b\bar Z+d_0$, $c\bar Z\ge d\bar X+q_z$; its whole
+trajectory tube must remain in the domain. Alternatively propagate
+\eqref{eq:prediction-envelope} directly. Information acquisition requires
+its own transient bound. If $d=0$, both diagonal rates being positive
+suffice even for large $b$, although the transient may be large.
+The sampled coupled-error result in Appendix~\ref{app:smallgain} expresses
+the same feedback structure with the actual estimator and application schedule.
+
+\subsection{Recovery, regime changes, and task scope}
+For Theorem~\ref{thm:gen-adaptive}, if
+$W(t_e)>W_{\rm tar}>Q/\beta$, a sufficient additional recovery time is
+\begin{equation}
+ T_{\rm rec}=\beta^{-1}\log
+ \frac{W(t_e)-Q/\beta}{W_{\rm tar}-Q/\beta}.
+ \label{eq:gen-time}
+\end{equation}
+Information-acquisition time must be added and its tube enforced. A bound
+$\max\{W(t_e),Q/\beta\}<R$ proves containment only if the entire
+radius-$R$ tube about the same-command response lies in the certified
+domain and command admissibility persists. This is \emph{execution
+recovery}: approach to the nominal physical response under the supplied
+commands, up to estimation, model, timing, and realization errors.
+If a separate task specification guarantees success throughout
+$\|\xi-\xi^{\rm nom}\|<r_{\rm task}$ around a task-valid nominal response, one may
+take $R\le\sqrt{\underline m}r_{\rm task}$. Both path and terminal
+conditions must be included. A healthy VLA rerun generally supplies a
+different command sequence; comparing it requires an additional argument
+for command divergence or for the complete policy/plant interconnection.
+
+For example, $\dot z=-z+r$ contracts at rate one for a common supplied
+$r(t)$ in the metric $M_c=1$. Closing the feedback $r=2z$ instead gives
+$\dot z=z$. Execution contraction therefore proves neither full-loop
+stability nor task success. Dropping a VLA derivative while claiming
+contraction of that full loop would be invalid. No such derivative or
+full-loop contraction assumption enters the primary execution theorem.
+
+A parameter jump is distinct from bounded-rate drift. If the physical and
+reference states, metric, $\Gamma$, and estimate are continuous or unchanged,
+\begin{equation}
+ W(t_j^+)\le W(t_j^-)+\|\Delta\theta^*(t_j)\|_{\Gamma^{-1}}.
+ \label{eq:gen-jump}
+\end{equation}
+Restart the envelope with valid post-change information. A large $H_I$
+may encode obsolete parameters; Appendix~\ref{app:gen-regimes} bounds
+stale-data bias, reacquisition, and repeated changes. Separate reference,
+state, or metric resets require their own jump bounds. None of these
+tracking-storage results proves pairwise contraction of every augmented
+$(\xi,\hat\theta)$ trajectory. That stronger claim needs a differential
+metric inequality for the actual augmented dynamics, including
+state-dependent regressors, normalizers, and metric derivatives.

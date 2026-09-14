@@ -1,0 +1,17 @@
+{
+  "scope": "Constructed history partition counterexample; no VLA evaluation.",
+  "fault": 0.3,
+  "physical_steps": 25,
+  "initial_augmented_distance": 0.0,
+  "maximum_physical_tracking_error": 0.0,
+  "raw_command_memory_difference": -0.3,
+  "augmented_distance_under_perfect_physical_correction": 0.3,
+  "zero_forcing_q_only_tube_valid_for_raw_augmented_state": false,
+  "extra_input_bound": {
+    "nominal_amplification": 0.8,
+    "physical_input_gain": 0.2,
+    "history_input_gain": 1.0,
+    "sample_checks": 1000,
+    "maximum_positive_violation": 0.0
+  }
+}

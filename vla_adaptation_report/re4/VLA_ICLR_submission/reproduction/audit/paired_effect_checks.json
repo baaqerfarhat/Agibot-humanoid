@@ -1,0 +1,19 @@
+{
+  "source": "results_ledger.csv; four primary rows",
+  "n_pairs": 120,
+  "frozen_success": 28,
+  "corrected_success": 78,
+  "fixed": 51,
+  "broken": 1,
+  "both_success": 27,
+  "both_failure": 41,
+  "paired_effect": 0.4166666666666667,
+  "paired_standard_error": 0.04671765921511567,
+  "paired_normal95_interval": [
+    0.3251017371630242,
+    0.5082315961703091
+  ],
+  "exact_mcnemar_two_sided_p": 2.353672812205332e-14,
+  "assumptions": "Independent identically distributed episode pairs; normal approximation",
+  "limitations": "Not an exact confidence interval. Does not account for task clustering. No task bootstrap is identifiable from these aggregate counts."
+}

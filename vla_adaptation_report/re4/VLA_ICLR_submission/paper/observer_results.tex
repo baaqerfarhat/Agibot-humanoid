@@ -1,0 +1,29 @@
+\section{Identifiability and scope of the sampled guarantees}
+\label{app:implemented-theory}
+The main text states the update/hold recursions, delayed-application bound,
+finite-horizon tube, and its active-every-step invariant-region specialization.
+The following restriction explains the independent bias calibration they need.
+
+\begin{proposition}[Additive ambiguity]
+\label{prop:ambiguity}
+In $y_k=S(u_k+f)+b_y+\varepsilon_k^{\rm obs}$, with constant $f,b_y$ and invertible $S$,
+every pair $(f+v,b_y-Sv)$ produces the same observations. Without an
+independent restriction on $b_y$, only $Sf+b_y$ is identifiable.
+\end{proposition}
+Healthy calibration or a known healthy prefix supplies a bias reference,
+subject to history and modeling error. With known nonsingular sensitivity,
+additive fault observation does not require new command excitation. Gain
+identification has a different regressor and information requirement.
+For convenience the sampled analysis uses
+\begin{equation}
+z_k=f_k+w_k,\qquad \|w_k\|\le\epsilon_k,\qquad
+E_k=\|\fhat_k-f_k\|,\qquad \|f_{k+1}-f_k\|\le\nu_k.
+\label{eq:obsbound}
+\end{equation}
+Bounds on $w_k$ must hold on corrected trajectories. A mean healthy residual
+does not itself establish a bound in new contact modes. Likewise, the local
+incremental inequality in Eq.~\eqref{eq:incremental} concerns the physical execution map under the same supplied VLA commands
+(Appendix~\ref{app:history-partition}). The certificate includes necessary
+low-level controller state, but does not require VLA internal memory or a
+VLA Jacobian. A healthy task rollout generally supplies different commands.
+The proofs and quantitative error budget follow in Appendix~\ref{app:theory}.

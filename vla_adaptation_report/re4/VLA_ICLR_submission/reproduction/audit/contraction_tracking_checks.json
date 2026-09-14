@@ -1,0 +1,245 @@
+{
+  "scope": "Constructed globally certified execution servo; not a VLA evaluation or full adaptive-system contraction certificate.",
+  "proof": "A=a P^{-1/2} Rot(phi) P^{1/2}; orthogonality yields A^T P A=a^2 P for every x.",
+  "dt_seconds": 0.02,
+  "horizon_seconds": 12.0,
+  "number_commands": 600,
+  "nominal_contraction_factor": 0.92,
+  "equivalent_nominal_rate_per_second": 4.169080446952551,
+  "metric": [
+    [
+      1.0,
+      0.0
+    ],
+    [
+      0.0,
+      4.0
+    ]
+  ],
+  "nominal_matrix": [
+    [
+      0.9192640981280997,
+      -0.07358037490340685
+    ],
+    [
+      0.018395093725851713,
+      0.9192640981280997
+    ]
+  ],
+  "input_metric_gain": 2.0,
+  "sensitivity": [
+    [
+      1.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.7
+    ]
+  ],
+  "residual_selector": "I_2",
+  "fir_weights": [
+    0.4,
+    0.25,
+    0.15,
+    0.1,
+    0.05,
+    0.03,
+    0.02
+  ],
+  "post_fault_offset_m": [
+    0.006,
+    0.0025
+  ],
+  "onset_command_step": 50,
+  "fixed_observation_bias_m": [
+    0.0003,
+    -0.0002
+  ],
+  "adaptation_gain": 0.08,
+  "normalizer_scale_m": 0.015,
+  "observation_deadzone_m": 0.0008,
+  "estimate_box_m": [
+    -0.015,
+    0.015
+  ],
+  "command_limits_m": [
+    -0.025,
+    0.025
+  ],
+  "all_time_absolute_intended_command_bound_m": [
+    0.02205156535941622,
+    0.01852578267970811
+  ],
+  "analytical_innovation_gain_lower_bound": 0.008888888888888887,
+  "initial_state_m": [
+    0.0,
+    0.0
+  ],
+  "initial_reference_m": [
+    0.0,
+    0.0
+  ],
+  "initial_estimate_m": [
+    0.0,
+    0.0
+  ],
+  "prehistory": "u_k=f_k=v_k=0 for k<0; sensing bias enters after the FIR.",
+  "update_schedule": "chi_k=0 for 65<=k<100 or k mod 10=9; otherwise 1, except frozen always 0.",
+  "application_schedule": "tau_k=max(0,5 floor(k/5)-2)",
+  "observation_acquisition_times": "Observation z_k is acquired at t_{k+1}=DT*(k+1); plot uses this timestamp.",
+  "numerical_assertion_tolerance": 1e-11,
+  "numerical_metric_identity_spectral_error": 4.1009317259095906e-18,
+  "numerical_fault_onset_identity_error": 8.940560153363745e-19,
+  "bound_inputs": "Analytical fault-history and bias magnitude, true drift, declared gains, and logged estimate increments. These are constructed-model bounds, not fitted VLA quantities or a deployable online monitor.",
+  "runs": {
+    "frozen": {
+      "name": "frozen",
+      "family": "frozen",
+      "correction_mask": [
+        0.0,
+        0.0
+      ],
+      "total_commands": 600,
+      "active_updates": 0,
+      "zero_observation_gates_during_updates": null,
+      "maximum_snapshot_age_steps": 6,
+      "maximum_snapshot_age_seconds": 0.12,
+      "projection_events": 0,
+      "command_clipping_events": 0,
+      "minimum_realized_gain_on_active_steps": null,
+      "steady_attenuation": null,
+      "analytic_estimate_limit_m": [
+        0.0,
+        0.0
+      ],
+      "analytic_metric_tracking_floor_m": 0.08802940948310867,
+      "analytic_propagated_envelope_floor_m": 0.1625000000000001,
+      "final_metric_error_m": 0.08802940948310878,
+      "final_envelope_m": 0.16250000000000006,
+      "post_fault_integrated_squared_metric_error_m2_s": 0.08322580924457197,
+      "recovery_below_12mm_seconds_after_fault": null,
+      "envelope_below_12mm_seconds_after_fault": null,
+      "maximum_positive_assertion_excess": {
+        "observation_identity": 1.2754937010969697e-17,
+        "observation_bound": 0.0,
+        "selected_estimator_bound": 0.0,
+        "applied_snapshot_bound": 0.0,
+        "mismatch_bound": 0.0,
+        "one_step_metric_bound": 0.0,
+        "trajectory_envelope": 0.0
+      }
+    },
+    "attenuated": {
+      "name": "attenuated",
+      "family": "attenuated",
+      "correction_mask": [
+        1.0,
+        1.0
+      ],
+      "total_commands": 600,
+      "active_updates": 509,
+      "zero_observation_gates_during_updates": 45,
+      "maximum_snapshot_age_steps": 6,
+      "maximum_snapshot_age_seconds": 0.12,
+      "projection_events": 0,
+      "command_clipping_events": 0,
+      "minimum_realized_gain_on_active_steps": 0.08,
+      "steady_attenuation": 0.8418072141755846,
+      "analytic_estimate_limit_m": [
+        0.005303385449306183,
+        0.0019361565926038445
+      ],
+      "analytic_metric_tracking_floor_m": 0.014939721311309589,
+      "analytic_propagated_envelope_floor_m": 0.03329427538338144,
+      "final_metric_error_m": 0.014939721311309611,
+      "final_envelope_m": 0.03329427538338153,
+      "post_fault_integrated_squared_metric_error_m2_s": 0.004876680905159115,
+      "recovery_below_12mm_seconds_after_fault": null,
+      "envelope_below_12mm_seconds_after_fault": null,
+      "maximum_positive_assertion_excess": {
+        "observation_identity": 8.375768792001969e-18,
+        "observation_bound": 3.903127820947816e-18,
+        "selected_estimator_bound": 0.0,
+        "applied_snapshot_bound": 0.0,
+        "mismatch_bound": 0.0,
+        "one_step_metric_bound": 0.0,
+        "trajectory_envelope": 0.0
+      }
+    },
+    "innovation": {
+      "name": "innovation",
+      "family": "innovation",
+      "correction_mask": [
+        1.0,
+        1.0
+      ],
+      "total_commands": 600,
+      "active_updates": 509,
+      "zero_observation_gates_during_updates": null,
+      "maximum_snapshot_age_steps": 6,
+      "maximum_snapshot_age_seconds": 0.12,
+      "projection_events": 0,
+      "command_clipping_events": 0,
+      "minimum_realized_gain_on_active_steps": 0.07253013751888407,
+      "steady_attenuation": null,
+      "analytic_estimate_limit_m": [
+        0.0063,
+        0.0023
+      ],
+      "analytic_metric_tracking_floor_m": 0.0056355054662762605,
+      "analytic_propagated_envelope_floor_m": 0.009013878188659976,
+      "final_metric_error_m": 0.005635505466276268,
+      "final_envelope_m": 0.009013878188660035,
+      "post_fault_integrated_squared_metric_error_m2_s": 0.0024697787131080073,
+      "recovery_below_12mm_seconds_after_fault": 1.74,
+      "envelope_below_12mm_seconds_after_fault": 2.3000000000000003,
+      "maximum_positive_assertion_excess": {
+        "observation_identity": 1.0631817190634495e-17,
+        "observation_bound": 9.215718466126788e-18,
+        "selected_estimator_bound": 5.421010862427522e-20,
+        "applied_snapshot_bound": 0.0,
+        "mismatch_bound": 0.0,
+        "one_step_metric_bound": 0.0,
+        "trajectory_envelope": 0.0
+      }
+    },
+    "restricted": {
+      "name": "restricted",
+      "family": "innovation",
+      "correction_mask": [
+        1.0,
+        0.0
+      ],
+      "total_commands": 600,
+      "active_updates": 509,
+      "zero_observation_gates_during_updates": null,
+      "maximum_snapshot_age_steps": 6,
+      "maximum_snapshot_age_seconds": 0.12,
+      "projection_events": 0,
+      "command_clipping_events": 0,
+      "minimum_realized_gain_on_active_steps": 0.07253013751888408,
+      "steady_attenuation": null,
+      "analytic_estimate_limit_m": [
+        0.0063,
+        0.0023
+      ],
+      "analytic_metric_tracking_floor_m": 0.05645640262992953,
+      "analytic_propagated_envelope_floor_m": 0.07000000000000003,
+      "final_metric_error_m": 0.056456402629929486,
+      "final_envelope_m": 0.0700000000000002,
+      "post_fault_integrated_squared_metric_error_m2_s": 0.03562703903234426,
+      "recovery_below_12mm_seconds_after_fault": null,
+      "envelope_below_12mm_seconds_after_fault": null,
+      "maximum_positive_assertion_excess": {
+        "observation_identity": 1.215080616515955e-17,
+        "observation_bound": 1.2088854223213374e-17,
+        "selected_estimator_bound": 5.421010862427522e-20,
+        "applied_snapshot_bound": 0.0,
+        "mismatch_bound": 0.0,
+        "one_step_metric_bound": 0.0,
+        "trajectory_envelope": 0.0
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+\section{Proprioceptive embodiment adaptation}
+\label{sec:vla-method}
+The evaluated policies are from the $\pi_0/\pi_{0.5}$, OpenVLA-OFT, and
+GR00T families \citep{pi0,pi05,openvlaoft,grootn1,grootn17}.
+\subsection{Execution interface and calibration}
+At physical command step $k$, let $a_k$ be the nominal action decoded by the
+retained VLA and $D$ the fixed diagonal correction mask. Let
+$\fhat_k^{\rm app}=\fhat_{\tau_k}$ be the estimate snapshot used for this
+command, with $0\le\tau_k\le k$. The execution map includes the robot
+and its low-level controller. At the modeled interface, write
+\begin{equation}
+u_k=a_k-D\fhat_k^{\rm app}+\zeta_k,\qquad
+u_k^{\rm eff}=u_k+f_k.
+\label{eq:vla-command}
+\end{equation}
+Here $f_k$ is an additive physical offset in the interface's command units.
+The discrepancy $\zeta_k$ includes imperfect realization of the intended
+correction and any clipping relative to that correction. Exact external
+subtraction with no clipping has $\zeta_k=0$; editing a native decoder bias
+generally does not: a registered diagnostic on the native
+\code{action\_out\_proj/bias} edit measures a median realization error of
+43\% of the intended correction, because the decoder gain varies 27--41\%
+across observations (Appendix~\ref{app:gen-authority}). Every published
+cohort subtracts the correction outside the network.
+
+Fit a healthy finite-impulse-response (FIR) predictor, a sensitivity matrix
+$S$, and a healthy reference $b_{\rm cal}$ in inverse-sensitivity coordinates:
+\begin{equation}
+\widehat y_k=\sum_{\ell=0}^{K}H_\ell u_{k-\ell}+\widehat c,
+\qquad e_k^{\rm res}=y_k-\widehat y_k,\qquad
+z_k=S^{-1}e_k^{\rm res}-b_{\rm cal}=f_k+w_k.
+\label{eq:vla-observation}
+\end{equation}
+The response $y_k$ is acquired after executing $u_k$ and updates the next
+estimate. The predictor uses the command actually presented at the modeled
+interface, before the unknown fault, with response timestamps aligned to that
+command. An internal intended correction is not interchangeable with the
+final decoder/clipping output. Healthy rollouts fit $H_\ell,\widehat c$;
+controlled offset probes identify $S$. The error $w_k$ contains history,
+model/sensitivity mismatch, noise, and imperfect healthy centering
+(Appendix~\ref{app:centering}). The issued-command FIR buffer is observer
+memory; physical/controller delays remain in the execution state, while VLA
+internal memory belongs to the command source (Appendix~\ref{app:history-partition}).
+
+
+
+\begin{table}[H]
+\centering\small
+\caption{Documented interface families. New robots receive new calibration.
+The listed update families follow the documented mathematical descriptions.}
+\label{tab:implementation}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{.16\linewidth}>{\raggedright\arraybackslash}p{.30\linewidth}>{\raggedright\arraybackslash}p{.23\linewidth}>{\raggedright\arraybackslash}p{.22\linewidth}@{}}
+\toprule
+Interface & Predictor response & Offset estimate & Evaluation schedule\\
+\midrule
+LIBERO Panda & Position increments; relative rotations ($K=6$) & Observation attenuation & Within episode\\
+ALOHA & Absolute joint positions ($K=6$) & Observation attenuation & Prior identify, then hold\\
+Fourier GR1 & Absolute joint positions ($K=6$) & Innovation normalization & Three prior episodes; held median\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Documented update and causal timing}
+Let $P_r$ select residual coordinates in the run's declared units. Its
+normalization scale $\rho$ is tied to those coordinates; changing units or
+whitening changes the estimator. Position increments and relative-rotation
+coordinates have different physical units; exact scaling must accompany each
+configuration. $P_r$ is distinct from
+$D$: an uncorrected coordinate can still alter the shared gain; the
+recovered configurations use all six residual coordinates on LIBERO and all
+fourteen on ALOHA, while GR1 omits its unmodeled hand coordinates. LIBERO and ALOHA use observation attenuation,
+while GR1 uses innovation normalization:
+\begin{align}
+\mathcal T_k^{\rm att}(\fhat_k)
+&=\Pi_{\mathcal C}[(1-\gamma)\fhat_k+\gamma s_kz_k],
+&s_k&=\frac{\mathbf1[\|P_re_k^{\rm res}\|>\delta]}{1+\|P_re_k^{\rm res}\|^2/\rho^2},
+\label{eq:legacy}\\
+\mathcal T_k^{\rm inn}(\fhat_k)
+&=\Pi_{\mathcal C}[\fhat_k+\alpha_k(z_k-\fhat_k)],
+&\alpha_k&=\frac{\gamma}{1+\|P_rS(z_k-\fhat_k)\|^2/\rho^2}.
+\label{eq:innovation}
+\end{align}
+The set $\mathcal C$ bounds the estimate; the selected-coordinate results use a coordinatewise box. For a full-update flag
+$\chi_k\in\{0,1\}$, apply
+\begin{equation}
+\fhat_{k+1}=\begin{cases}\mathcal T_k(\fhat_k),&\chi_k=1,\\
+\fhat_k,&\chi_k=0.\end{cases}
+\label{eq:method-schedule}
+\end{equation}
+A zero observation gate in Eq.~\eqref{eq:legacy} retains leakage when
+$\chi_k=1$; $\chi_k=0$ holds the entire estimate. The analysis treats both
+schedules explicitly. The snapshot $\tau_k$ separately captures delayed
+application to an action chunk, even if estimation is updated more often.
+LIBERO reference settings are $\gamma=.08$, $\rho=.15$, $\delta=.008$,
+and a $\pm.15$ estimate box in action coordinates.
+
+\begin{algorithm}[H]
+\centering\small
+\begin{minipage}{.97\linewidth}
+\textbf{Inputs:} calibrated predictor and sensitivity; residual coordinates;
+mask $D$; projection set; update family; gate and snapshot-application rule.
+\begin{enumerate}[leftmargin=1.5em,itemsep=1pt,topsep=3pt]
+\item Obtain the next nominal action from the decoder or buffered chunk;
+select the available snapshot $\fhat_{\tau_k}$.
+\item Realize the correction, apply limits, and execute. Save the actual
+command $u_k$ at the modeled interface and its timestamp.
+\item Associate the next proprioceptive response with that command and form
+$e_k^{\rm res},z_k$ from the synchronized history and healthy reference.
+\item Set $\chi_k$ using the declared schedule, update by
+Eq.~\eqref{eq:method-schedule}, and store the estimate for later application.
+\end{enumerate}
+\end{minipage}
+\caption{Causal execution semantics used in the analysis. Fault truth is
+unavailable to the deployment estimator. The observed update/hold and
+application schedules must be logged to instantiate the schedule bounds.}
+\label{alg:execution}
+\end{algorithm}
+
+\subsection{Correction support, gain faults, and evidence scope}
+The primary LIBERO condition estimates six coordinates and applies three
+rotation corrections. Translation/rotation masks were informed by fault-family
+diagnostics; the evaluations therefore use family-informed support and do
+not establish autonomous unknown-support selection. Three healthy episodes
+(285 steps) calibrate LIBERO; that calibration is reused across policies.
+ALOHA and GR1 use eight and six healthy episodes, respectively. Probe and
+fault-development data are additional to those healthy budgets.
+
+For a matched diagonal FIR with constant actuator gain, define
+$\phi_{i,k}=\widehat y_{i,k}-\widehat c_i$ and
+$e_{i,k}^{\rm res}=(g_i-1)\phi_{i,k}+\varepsilon_{i,k}$. The gain branch uses gated
+recursive least squares and feasible inverse correction $a_i/\widehat g_i$.
+Gains must remain bounded away from zero; joint gain/offset estimation
+additionally needs informative regressor variation.
+
+A registered provenance pass closed the remaining implementation
+questions: every published cohort subtracts the correction outside the
+network, so native-edit realization error never enters the reported cells;
+the gate is a leakage deadzone on LIBERO and ALOHA and a full hold on GR1,
+and it never fired in the four headline samples or ALOHA's identification
+episodes; $K=6$ throughout. The realization and schedule terms remain in the
+analysis because the gated and native-edit regimes the map documents need
+them (Appendix~\ref{app:experiment}).

@@ -1,0 +1,87 @@
+\begin{abstract}
+Physical changes can make a pretrained vision--language--action (VLA) model's
+commands produce the wrong robot motion even when the task remains feasible.
+We study embodiment adaptation from proprioceptive residuals: a calibrated
+command-to-motion predictor supplies a compact physical estimate that drives
+correction at the action interface while retaining the task backbone.
+Healthy calibration, controlled sensitivity probes, and a specified correction
+support precede deployment; subsequent updates need neither task-progress
+rewards nor a healthy reference trajectory.
+We compose residual calibration, partial correction support, and the actual
+sampled updates with a conditional execution-recovery bound. The metric
+covers the physical execution subsystem under the same supplied VLA commands;
+no VLA Jacobian or full-policy contraction certificate is required. Update
+holds, estimate age, clipping, realization error, and trajectory-dependent
+prediction error remain explicit. Necessary contact variables must be modeled
+or their effects bounded.
+Across four LIBERO simulation cohorts, correction improves paired success
+from 28/120 to 78/120, and from 34/120 to 68/120 under a preregistered
+held-out calibration (67\% and 58\% of matched healthy performance on the
+same scenarios); one robot calibration serves three VLA policies. Simulated
+ALOHA and GR1 use new calibration and prior identification; from a matched
+estimate an innovation-form update repairs ALOHA while adapting, so holding
+is needed only where the task margin is below the update's own movement.
+Four preregistered checks refuted prior readings and are reported as
+primary.
+A constructed servo verifies the metric and envelope; on the evaluated
+robots the certificate is measured and splits, a humanoid arm certifying
+while the Panda under operational-space control has no same-command
+contraction, leaving its tube finite-horizon and its repair claim empirical.
+\end{abstract}
+
+\section{Introduction}
+A VLA can select a useful action yet fail because the robot executes it
+differently from the conditions under which the policy was trained.
+Actuator offsets, reduced effectiveness, and increased friction alter the
+mapping from command to motion. Those changes also alter subsequent
+observations and policy decisions, creating a closed-loop physical
+distribution shift. We use \emph{embodiment adaptation} to mean adaptation
+of this action-to-motion interface: structured physical OOD, rather than
+uncalibrated morphology transfer or missing visual and semantic competence.
+
+Our mechanism is identification from proprioceptive prediction errors.
+A healthy command-to-motion model predicts the robot response; a calibrated
+sensitivity maps its residual into a small physical estimate; and that estimate
+changes how the next action is realized. LIBERO's primary condition estimates six motion coordinates and corrects
+three rotation coordinates -- counts of identified quantities and physical
+correction directions, not of editable neural weights.
+
+Across four LIBERO suites, correction increases paired success from
+$28/120$ to $78/120$, and from $34/120$ to $68/120$ when the calibration is
+identified on held-out initial states; the long-horizon suite
+accounts for eight of the ten lost episodes. The same calibration serves three VLA policies. Torque
+bias and heavy friction recover under a corrected fault protocol; a locked
+joint is identified but not repaired. ALOHA and GR1 use new calibration and
+prior fault identification, a different information budget from LIBERO's
+within-episode adaptation.
+
+\paragraph{From physical identification to recovery.}
+Following selective neural fault recovery \citep{taheri2025closing}, we
+connect residual calibration, adaptation, and physical execution. The nominal
+physical copy follows the same supplied commands, not a rerun healthy VLA;
+the execution state includes necessary robot, controller, object, and
+contact variables, and a reduced servo model must bound omitted interaction
+effects.
+
+The evaluated chain is selected-coordinate estimation, applied mismatch,
+scheduled execution recovery, and predictor--trajectory feedback closure.
+Established same-input contraction supplies the propagation step; the
+contribution is its composition with calibration error, partial support,
+update holds, estimate age, and correction realization. Attenuation can
+converge to a biased target, innovation can reduce truth error without
+pairwise observer contraction, and the bounds preserve both mechanisms. Task
+success remains empirical or requires separate margin assumptions; the
+unevaluated composite extension is developed in the appendix.
+
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{\input{fig_interface_main.tex}}
+\caption{Evaluated prediction-only execution adapter. The frozen VLA emits
+$a_k$; the available estimate snapshot is masked and realized before the
+modeled additive interface fault $f_k$. After execution, the calibrated FIR
+residual $z_k$ drives the scheduled attenuation or innovation update. The
+task--observation loop is omitted; the theorem conditions on the supplied
+$a_k$. No nominal rollout, geodesic signal, task reward, or VLA update is
+used online (Appendix~\ref{app:figure-record}).}
+\label{fig:framework}
+\end{figure}

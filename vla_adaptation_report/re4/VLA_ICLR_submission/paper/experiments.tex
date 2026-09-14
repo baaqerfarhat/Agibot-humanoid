@@ -1,0 +1,173 @@
+\section{Experimental evidence}
+\label{sec:experiments}
+\paragraph{Protocol and scope.}
+All task-success results are in simulation. LIBERO \citep{libero} adapts
+within episodes; ALOHA \citep{zhao2023aloha} and GR1 identify on prior
+episodes. Comparisons pair task and initial state; policy sampling is not
+seed-pinned, and repeated $n{=}20$ cells vary by up to $\pm2$ successes
+(Appendix~\ref{app:statistics}). \emph{Fixed}/\emph{broken} count failure-to-success/success-to-failure
+changes. Implementation provenance was recovered for all nine cohorts, and
+the rotation mask is reproduced by a preregistered healthy-only gate
+(Appendix~\ref{app:protocols}). Every comparison below was preregistered with
+its refutation condition written first, and the refutations are reported as
+primary.
+
+\subsection{Episode-local recovery across four suites}
+\begin{table}[H]
+\centering\small
+\caption{Primary comparison: $\pi_{0.5}$ on LIBERO, uniform $+0.05$ six-axis
+offset; six coordinates estimated, three rotation corrections applied.
+Blocks: calibration probed at the evaluated initial states (shipped) and
+preregistered held-out calibration from disjoint states. Matched healthy
+controls on the same 120 scenarios: 116--118/120 frozen; the law on the
+healthy robot changes $+1$/$0$ net episodes, $p=1.0$.}
+\label{tab:headline}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrl|rrrl}
+\toprule
+ & \multicolumn{4}{c|}{Shipped calibration} & \multicolumn{4}{c}{Held-out calibration}\\
+Suite & Frozen & Corr. & f/b & Exact $p$ & Frozen & Corr. & f/b & Exact $p$\\
+\midrule
+Spatial & 8/20 & 18/20 & 10/0 & $.00195$ & 9/20 & 18/20 & 9/0 & $.00391$\\
+Goal & 15/40 & 29/40 & 15/1 & $.000519$ & 18/40 & 28/40 & 11/1 & $.00635$\\
+Object & 5/20 & 16/20 & 11/0 & $.000977$ & 7/20 & 15/20 & 10/2 & $.0386$\\
+Long (10) & 0/40 & 15/40 & 15/0 & $6.1\cdot10^{-5}$ & 0/40 & 7/40 & 7/0 & $.0156$\\
+\midrule
+Pooled & 28/120 & 78/120 & 51/1 & $2.4\cdot10^{-14}$ & 34/120 & 68/120 & 37/3 & $2.0\cdot10^{-8}$\\
+\bottomrule
+\end{tabular}
+\end{table}
+With the shipped calibration, success increases from 23.3\% to 65.0\%
+(paired gain 41.7 points; approximate 95\% interval $[32.5,50.8]$ under an
+episode-iid model), all four suites significant after Bonferroni correction.
+The held-out replication was registered with $\pm3$ reproduction bands:
+three suites reproduce within band; the long-horizon suite is
+\emph{refuted}, dropping to 7/40 against a registered threshold of five. A task-clustered bootstrap leaves the pooled effect intact under both
+calibrations ($[+36,+65]$ and $[+20,+49]$ episodes), and three of four suites
+individually significant at cluster level under the shipped calibration
+against one of four under the held-out one.
+The honest headline is therefore two numbers -- 78/120 and 68/120, or 67\%
+and 58\% of matched health -- because the measured sensitivity varies with
+the probed initial state by up to a factor of two in single axes
+(Appendix~\ref{app:calibration}) and long-horizon episodes give that error
+200+ steps to accumulate.
+
+\subsection{Where correction works, where it fails, and the interface ceiling}
+
+Translation offset $0.15$ improves $4/20\to19/20$, while uniform offset
+$0.15$ reaches only $2/20$ with translation left uncorrected; mixed-sign
+rotation improves $2/12\to10/12$. Under changing offsets correction still
+improves task success despite waveform RMS errors of 45--79\% of fault
+amplitude, and gain faults $g=.30$ and $.20$ both reach $17/20$, from $1/20$
+and $0/20$ (Appendices~\ref{app:severity}--\ref{app:gain},
+Figure~\ref{fig:map}).
+
+The measured residual exposes a limitation beyond matrix conditioning: for
+true $x$-offset $+0.05$ the separated $x$ estimate is $-0.0130$ under a
+uniform six-axis fault but $+0.0244$ under a single-axis one, so an
+approximately condition-$3$ healthy sensitivity does not ensure accurate
+reconstruction on faulted trajectories (Appendix~\ref{app:centering}).
+
+\begin{table}[H]
+\centering\small
+\caption{Disturbances below the Panda operational-space controller;
+friction, lock, and healthy rows use the corrected reset protocol, the
+torque row the historical one (Appendix~\ref{app:joint}). Translation
+correction with healthy-bias subtraction.}
+\label{tab:physical}
+\begin{tabular}{lrrrr}
+\toprule
+Physical intervention & Frozen & Corrected & Fixed & Broken\\
+\midrule
+Elbow torque bias $5$ N\,m & 20/40 & 32/40 & 15 & 3\\
+High elbow friction ($+20$), $n{=}40$ & 0/40 & 13/40 & 13 & 0\\
+Elbow lock within $\pm.05$ rad & 0/20 & 0/20 & 0 & 0\\
+Healthy elbow, law running & 19/20 & 20/20 & 1 & 0\\
+\bottomrule
+\end{tabular}
+\end{table}
+The friction rerun was registered before running ($p=2.4\cdot10^{-4}$), and
+the lock cell reproduces exactly, estimate included. Its residual sits
+15--23 healthy standard deviations from baseline with no recovered success:
+detection does not establish correction authority -- a limit of this
+interface, not an impossibility result for replanning or other controllers.
+
+\paragraph{Registered baselines and the ceiling.}
+On the headline fault with full logs, the method reproduces to the episode
+($6\to18$ of 20 spatial, $0\to15$ of 40 long-horizon; frozen rates move with
+unpinned sampling). A calibrated \emph{static} observer ($K=0$) matches it on the short suite;
+its six-of-forty long-horizon gap ($p=.07$) did not survive a seed-pinned
+rerun at $n=80$ ($10/80$ versus $9/80$, $p=1.0$), so FIR memory is
+\emph{refuted} as a resolvable advantage on that suite. The \emph{innovation} law lands
+within three episodes of the deployed law on both cohorts and removes the
+attenuation bias on the well-identified rotation channels.
+\emph{Known-fault correction through the same interface} reaches $19/20$
+and $22/40$: the estimated correction attains 1.09 and 0.71 of its net gain. The long-horizon shortfall localizes to $r_y$, and its cause is measured:
+plants fitted to the closed-loop healthy log recover an $r_y$ DC gain near
+$.10$ against the probe's $.28$, and on all three rotation channels the
+settled estimate tracks that ratio
+(Appendix~\ref{app:measured-certificates}). With all six channels corrected exactly,
+spatial reaches $20/20$ against a healthy $19/20$, so the fault is fully
+cancellable through this interface and the rotation-only mask costs at most
+one episode of ceiling. Against the best raw-error integral gain, run paired and seed-pinned on one
+scenario set, the method wins $18/20$ to $3/20$ (15 fixed, 0 broken,
+$p=6.1\cdot10^{-5}$): the integral's $x$ estimate never arrives and its $z$
+overshoots (Appendices~\ref{app:gain}--\ref{app:oracle}).
+
+\subsection{Policy reuse, new robots, and what holding buys}
+The LIBERO predictor and sensitivity fitted with $\pi_{0.5}$ are reused
+unchanged with OpenVLA-OFT and GR00T N1.7: on spatial rotation, translation
+and gain faults, OFT reaches $11$, $14$ and $17$ of 20 from zero, and N1.7
+$14$, $15$ and $19$ from $0$, $2$ and $0$ -- calibration reuse between
+policies on one robot. ALOHA and GR1 receive robot-specific calibration.
+
+\begin{table}[H]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\caption{Reported \emph{prior identification plus hold} evaluations. Extra fault-identification episodes are additional to healthy calibration and evaluation. Offsets are $.02$ rad on ALOHA and $.10$ rad on GR1.}
+\label{tab:transfer}
+\begin{tabular}{llrrrl}
+\toprule
+Robot / policy & Task & Healthy & Frozen & Held & Extra identification\\
+\midrule
+ALOHA / $\pi_0$ & Cube & 17/40 & 0/40 & 15/40 & 1 episode\\
+GR1 / N1.5 & Plate & 22/30 & 1/30 & 19/30 & 3 episodes\\
+ & Tray & 17/30 & 1/30 & 13/30 & 3 episodes\\
+\bottomrule
+\end{tabular}
+\end{table}
+A registered comparison then equalized the information budget: every arm
+starts from the \emph{same} stored estimate and differs only after step~0.
+On ALOHA the innovation law updating throughout repairs $14/40$ against the
+held $15/40$ ($p=1.0$), while the deployed attenuation law repairs $0/40$,
+its estimate pulled to $.016$ rad within twenty steps by the attenuated fixed
+point and deadzone leakage -- a $0.42$ cm standing error at the grasp. Failure
+under continued adaptation is that law's bias, not updating as such. On GR1
+the innovation law loses five of thirty to updating ($22/30$ against
+$17/30$), so holding is required where the task margin is smaller than the
+update's own movement (Appendix~\ref{app:transferdetails}). Healthy
+adaptation changes $+1$/$0$ net of 120 ($p=1.0$).
+
+\paragraph{The execution certificate, measured.}
+Figure~\ref{fig:servo-main} instantiates the same-command bound on a
+constructed servo; on the evaluated robots the certificate was then measured,
+and splits. The GR1 right arm certifies as a first-order servo (poles
+$.72$--$.77$); ALOHA at 50\,Hz does not. The Panda under \code{OSC\_POSE}
+certifies per-axis tracking yet has \emph{no same-command contraction}:
+replaying identical commands from perturbed states gives a per-step gap ratio
+of $1.00$ in all four preregistered metrics, because the controller sets each
+goal relative to the current pose. Theorem~\ref{thm:tube} is therefore
+finite-horizon only there -- propagated with the measured constants it covers
+every step but ends near $100\times$ the largest measured error -- and the
+small-gain condition fails through $a=1-\lambda$, not through the coupling
+constants, which are small (Appendix~\ref{app:measured-certificates}).
+
+\paragraph{Evidence boundary.}
+These results support correction of the tested execution shifts; task
+margins, arbitrary perceptual OOD, and deadlines remain uncertified. Adapter
+compute measures $.17$/$.46$/$.77$ ms (median/p99/max) per control step
+against a policy call near $900$ ms
+(Appendix~\ref{app:identificationtraces}). Sustained recovery time is not
+reported against a decay rate, the measured $\lambda\approx1$ implying none
+here. X2 hardware results are sensing diagnostics; paired physical-robot
+repair is unevaluated.

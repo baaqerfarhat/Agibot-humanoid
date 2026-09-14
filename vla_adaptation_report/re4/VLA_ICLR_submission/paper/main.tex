@@ -1,0 +1,64 @@
+\documentclass{article}
+\usepackage{iclr2027_conference,times}
+\usepackage{amsmath,amssymb,amsthm,booktabs,graphicx,enumitem,microtype,array}
+\usepackage{tikz,float}
+\newfloat{algorithm}{tbp}{loa}
+\floatname{algorithm}{Algorithm}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage{hyperref,xurl}
+\hypersetup{hidelinks}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\fhat}{\hat f}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\R}{\mathbb R}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\title{Embodiment Adaptation of\\Vision-Language-Action Models\\from Proprioceptive Residuals}
+\author{Anonymous authors}
+\begin{document}
+\maketitle
+\input{framework_sections.tex}
+\input{vla_method.tex}
+\input{contraction_core.tex}
+\input{discrete_theory.tex}
+\input{experiments.tex}
+\input{related_work.tex}
+\section{Discussion and limitations}
+The execution metric concerns the robot and its low-level controller under
+shared commands, and now has a measured answer: available on a humanoid arm,
+absent on the Panda under operational-space control. Manipulation further
+requires closed object/contact dynamics or bounds on omitted contact effects;
+useful commands, task success, and unmodeled perceptual or contact-topology
+change stay outside the guarantee. Measuring the theory's own constants
+separated its two halves: the estimator recursions are predictive on the
+deployed plant, while its execution certificate is unavailable there.\label{maintext:end}
+
+\clearpage
+\subsection*{Reproducibility statement}
+Sources, proofs, count ledgers, figure scripts, constructed checks,
+logging schemas, calibration arrays, and per-run configuration records are
+included. The primary LIBERO cells were independently rerun under a
+corrected reset protocol and reproduce to the episode; historical traces for
+the remaining legacy cohorts are absent, and the implementation manifest
+lists what their records recover.
+
+\subsection*{AI use statement}
+Claude assisted earlier coding and writing; ChatGPT assisted revision,
+mathematical analysis, literature checks, and constructed examples. The
+authors are responsible for the proofs, code, and empirical claims.
+\bibliography{refs}
+\bibliographystyle{iclr2027_conference}
+\clearpage
+\appendix
+\raggedbottom
+\input{observer_results.tex}
+\input{theory_appendix.tex}
+\input{general_theory.tex}
+\input{composite_extension.tex}
+\input{adaptive_appendix.tex}
+\input{contraction_example.tex}
+\input{experiment_appendix.tex}
+\end{document}

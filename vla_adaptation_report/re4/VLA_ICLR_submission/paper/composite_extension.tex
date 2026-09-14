@@ -1,0 +1,118 @@
+\section{Continuous composite adaptation as an optional extension}
+\label{sec:composite-extension}
+This appendix derives the geometric tracking term that can augment
+prediction feedback when the same-command nominal execution response is
+available online. The composite controller was not evaluated in the VLA
+experiments; the main results instead analyze the documented sampled laws.
+Appendix~\ref{sec:gen-theory} specifies physical matching, reference,
+and domain assumptions, including the closure of the physical state.
+
+\subsection{An execution metric generates the tracking signal}
+Let $r(t)$ be the commands actually supplied by the frozen VLA and $\xi$
+the robot and low-level controller state. The nominal physical response
+$\xi^{\rm nom}$ follows that \emph{same command sequence}, without rerunning the
+VLA. For $\tilde\theta=\hat\theta-\theta^*$, physical OOD and allocation give
+\begin{equation}
+ \dot\xi=F_{\rm exec}(\xi,r,t)-B_\theta\tilde\theta+d_{\rm eff},
+ \quad \dot\xi^{\rm nom}=F_{\rm exec}(\xi^{\rm nom},r,t).
+ \label{eq:gen-matching}
+\end{equation}
+Here $F_{\rm exec}$ contains the robot and its execution controller, and
+$B_\theta=G\Psi$; allocation/model errors enter $d_{\rm eff}$
+(Appendix~\ref{sec:gen-theory}). On a geodesically convex operating domain,
+assume a smooth metric $M_c(\xi,t)$ independent of $r$ and $\hat\theta$,
+with $0<\underline mI\preceq M_c\preceq\overline mI$, and uniformly over
+admissible commands,
+\begin{equation}
+ \partial_tM_c+\partial_{F_{\rm exec}}M_c+
+ A_{\rm exec}^\top M_c+M_cA_{\rm exec}\preceq-2\lambda M_c,
+ \quad A_{\rm exec}=\left.\partial_\xi F_{\rm exec}\right|_{r\,\mathrm{fixed}},
+ \quad\lambda>0.
+ \label{eq:contraction-metric}
+\end{equation}
+No VLA Jacobian is required. Appendix~\ref{app:gen-innerloop} constructs
+the metric from physical tracking dynamics and controller gains.
+For a constant-speed minimizing geodesic $c$ from $\xi^{\rm nom}$ to $\xi$, set
+\begin{equation}
+ V_\xi=\tfrac12\int_0^1c_s^\top M_c(c,t)c_s\,ds,\quad
+ X=\sqrt{2V_\xi},\quad p_\xi=M_c(\xi,t)c_s(1),\quad
+ \sigma_{\rm exec}=B_\theta^\top p_\xi.
+ \label{eq:contraction-energy}
+\end{equation}
+First variation of this half-energy (Appendix~\ref{app:first-variation})
+gives
+\begin{equation}
+ D^+V_\xi\le-\lambda X^2-\sigma_{\rm exec}^\top\tilde\theta
+                  +p_\xi^\top d_{\rm eff},\qquad
+ |p_\xi^\top d_{\rm eff}|\le X\|d_{\rm eff}\|_{M_c}.
+ \label{eq:gen-storage}
+\end{equation}
+Thus the metric generates the adaptive tracking signal; for constant
+$M_c=P$, $\sigma_{\rm exec}=B_\theta^\top P(\xi-\xi^{\rm nom})$
+\citep{lopez2020adaptivecontraction,tsukamoto2021adaptivecontraction}.
+The primary certificate excludes VLA policy memory; physical execution
+memory must satisfy the partition in Appendix~\ref{app:history-partition}.
+
+\subsection{Composite extension and the evaluated prediction branch}
+A weighted regression supplies $b_I=H_I\theta^*+\epsilon_I$.
+With constant $\Gamma\succ0$, its prediction gradient and the geodesic
+coupling suggest
+\begin{equation}
+ \dot{\hat\theta}=\operatorname{Proj}_{\Theta}^{\Gamma}
+ \!\left(\hat\theta,\Gamma[\kappa\sigma_{\rm exec}+k_c(b_I-H_I\hat\theta)]\right),
+ \quad k_c>0,\quad 0\le\kappa\le1.
+ \label{eq:gen-law}
+\end{equation}
+The velocity projection uses the $\Gamma^{-1}$ metric on a fixed convex
+set containing the true parameter and initial estimate. Adding
+$V_\theta=\|\tilde\theta\|_{\Gamma^{-1}}^2/2$ cancels
+$-\sigma_{\rm exec}^\top\tilde\theta$ exactly at $\kappa=1$.
+
+\begin{theorem}[Contraction-derived execution recovery]
+\label{thm:gen-adaptive}
+For the same-command execution pair in \eqref{eq:gen-matching}, suppose
+the metric, matching, and projection assumptions hold after $t_e$ without
+state, metric, or parameter jumps, with absolutely continuous $\theta^*$, $H_I\succeq\mu I$, $\mu>0$,
+$\|d_{\rm eff}\|_{M_c}\le\bar d_M$,
+$\|\epsilon_I\|\le\bar\epsilon_I$, and
+$\|\dot\theta^*\|\le\nu$. For \eqref{eq:gen-law} with $\kappa=1$, put
+$\gamma_+=\lambda_{\max}(\Gamma)$ and $\gamma_-=\lambda_{\min}(\Gamma)$.
+Then, while these domain assumptions hold,
+\begin{align}
+ W(t)&\le e^{-\beta(t-t_e)}W(t_e)+\frac Q\beta(1-e^{-\beta(t-t_e)}),
+ \quad W^2=X^2+\|\tilde\theta\|_{\Gamma^{-1}}^2,
+ \label{eq:gen-envelope}\\
+ \beta&=\min\{\lambda,k_c\mu\gamma_-\},\qquad
+ Q^2=\bar d_M^2+\left(k_c\sqrt{\gamma_+}\bar\epsilon_I+
+                  \nu/\sqrt{\gamma_-}\right)^2.
+ \label{eq:gen-forcing}
+\end{align}
+\end{theorem}
+This gives $\|\xi-\xi^{\rm nom}\|\le W/\sqrt{\underline m}$ and
+$\|\tilde\theta\|\le\sqrt{\gamma_+}W$, with a noise/drift floor.
+This bounds physical execution relative to the supplied-command response;
+it does not certify a separately evolving healthy VLA rollout or task
+success. The composite extension requires an available $\xi^{\rm nom}$ and
+$\sigma_{\rm exec}$; it was not evaluated in the VLA runs.
+
+The evaluated architecture uses prediction feedback only ($\kappa=0$);
+$\xi^{\rm nom}$ may then remain an analytical comparison and no online geodesic
+is required. Its observation-attenuated law is a biased prediction step, not a literal
+discretization of the unbiased law above. Actual normalization, holds, and
+sampling are analyzed in Section~\ref{sec:discrete}. For the prediction-only continuous law,
+\begin{equation}
+ \begin{bmatrix}D^+X\\D^+Z\end{bmatrix}\le
+ \begin{bmatrix}-a&b\\d&-c\end{bmatrix}
+ \begin{bmatrix}X\\Z\end{bmatrix}+\begin{bmatrix}d_0\\q_z\end{bmatrix},
+ \qquad a,c>0,\quad ac>bd,\quad Z=\|\tilde\theta\|_{\Gamma^{-1}}.
+ \label{eq:prediction-comparison}
+\end{equation}
+Appendix~\ref{sec:prediction-comparison} derives these coefficients from
+metric sensitivity, information, and predictor error. They express how
+nominal contraction and identification must dominate their feedback
+coupling. A stable cascade ($d=0$) permits large one-way sensitivity $b$.
+A physical execution metric and its domain have since been measured for the
+reported robots: established on the GR1 arm, refuted on the Panda under
+operational-space control (Appendix~\ref{app:measured-certificates}). The
+composite law is therefore evaluable on the humanoid arm and not on the
+Panda. Full-VLA contraction is not required.

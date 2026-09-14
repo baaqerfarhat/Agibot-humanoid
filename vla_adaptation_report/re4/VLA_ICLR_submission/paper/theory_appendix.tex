@@ -1,0 +1,931 @@
+% Standalone appendix section. Requires amsmath, amssymb, amsthm and
+% a proposition environment. No custom manuscript macros are used.
+\section{Conditional estimation and recovery guarantees}
+\label{app:theory}
+
+The results below describe the conditions under which a calibrated residual can
+support execution recovery. The metric concerns robot dynamics and their
+low-level controller under a shared supplied command stream. It is not a
+metric for the VLA feedback loop, and the reported robot experiments do not
+verify this physical metric. In particular,
+the estimator results and the trajectory results have different assumptions.
+All norms are Euclidean or their induced operator norms unless stated otherwise.
+
+\subsection{Residual history, calibration error, and identifiability}
+
+Let $u_k$ be the actual command sent by the adapter before the additive fault.
+An idealized local FIR description is
+\begin{equation}
+ y_k=\sum_{\ell=0}^{K}G_\ell(u_{k-\ell}+f_{k-\ell})+c+b_y+\varepsilon_k^{\rm FIR},
+ \qquad
+ \widehat y_k=\sum_{\ell=0}^{K}H_\ell u_{k-\ell}+\widehat c.
+ \label{eq:app-fir}
+\end{equation}
+Here $b_y$ is a constant healthy residual bias in measurement units, and
+$\varepsilon_k^{\rm FIR}$ includes departures from the local FIR description. Define
+$G_\Sigma=\sum_\ell G_\ell$, a calibrated nonsingular sensitivity $S$, a
+healthy bias calibration $\widehat b_y=S b_{\mathrm{cal}}$, and
+\begin{align}
+ z_k&=S^{-1}(y_k-\widehat y_k-\widehat b_y)=f_k+w_k,
+ \label{eq:app-observation}\\
+ w_k&=S^{-1}\left[
+  \sum_{\ell=0}^{K}G_\ell(f_{k-\ell}-f_k)
+  +(G_\Sigma-S)f_k+(b_y-\widehat b_y)+n_k\right],
+ \label{eq:app-observation-error}\\
+ n_k&=\varepsilon_k^{\rm FIR}+\sum_{\ell=0}^{K}(G_\ell-H_\ell)u_{k-\ell}
+       +(c-\widehat c).\nonumber
+\end{align}
+Thus $e_k^{\rm res}-\widehat b_y\simeq Sf_k$ is a steady or slowly varying approximation, not an
+instantaneous identity at fault onset. If $\|n_k\|\le\bar n$,
+$\|b_y-\widehat b_y\|\le\Delta_b$,
+$\|G_\Sigma-S\|\le\Delta_S$, $\|f_k\|\le F$, and
+$\|f_{k+1}-f_k\|\le\nu$, then
+\begin{equation}
+ \|w_k\|\le\epsilon:={\|S^{-1}\|}
+ \left(\bar n+\Delta_b+\Delta_S F+
+       \nu\sum_{\ell=0}^{K}\ell\|G_\ell\|\right).
+ \label{eq:app-fir-bound}
+\end{equation}
+This follows by $\|f_{k-\ell}-f_k\|\le\ell\nu$ and the triangle
+inequality. At an abrupt change, the exact history term in
+\eqref{eq:app-observation-error} is preferable to this uniform bound; for a
+constant post-onset fault it vanishes after the FIR window has filled. An
+incorrectly initialized history contributes to $n_k$ until that history has
+been replaced. Bounds on predictor error and sensitivity mismatch must hold
+on the corrected trajectories, not only on healthy calibration data.
+
+\paragraph{Proof of Proposition~\ref{prop:ambiguity} and its scope.}
+In the constant-sensitivity model $e_k^{\rm res}=Sf+b_y+\varepsilon_k^{\rm obs}$, with constant unknown
+$f$ and unrestricted constant unknown $b_y$, $f$ and $b_y$ cannot be separately
+identified. For every vector $v$, the pair $(f+v,b_y-Sv)$ gives exactly the
+same observations. With known $b_y$ and nonsingular $S$, the noiseless residual
+does determine $f$. The identity $S(f+v)+(b_y-Sv)=Sf+b_y$ proves the ambiguity. For known bias,
+$f=S^{-1}(e_k^{\rm res}-b_y)$ in the noiseless model.
+
+A known healthy pre-onset interval can therefore provide the bias calibration
+within the same episode, subject to noise and history transients. More generally,
+a known fault subspace or time-varying sensitivity can change identifiability;
+the proposition is not an impossibility statement for every sensor and model.
+An offline mean of the raw healthy residual estimates $b_y$ only when the
+remaining healthy modeling error is zero-mean under that sampling distribution.
+Otherwise it estimates an aggregate healthy offset whose transfer to corrected
+trajectories needs its own error bound. A mean of the settled, attenuated legacy
+estimate is a different quantity and must not be silently substituted for this
+raw residual calibration. For example, if a constant healthy observation in
+fault units is $b_0$ and attenuation is fixed at $s_0$, a settled legacy
+estimate equals $s_0b_0$ when projection is inactive. Subtracting that estimate
+before attenuation leaves $s_0(b_0-s_0b_0)=s_0(1-s_0)b_0$, generally nonzero.
+The averaging quantity, units, and subtraction order therefore affect the
+identification error and must match the executed implementation.
+
+\subsection{The two additive update laws and the physical command clock}
+
+Let $C\subset\mathbb R^d$ be closed and convex, assume $f_k\in C$, and let
+$\Pi_C$ denote Euclidean projection. Let $\widehat f_0\in C$ and
+$E_k=\|f_k-\widehat f_k\|$. The box constraint in the experiments is one
+choice of $C$; it bounds the estimate but does not by itself guarantee safe
+plant motion.
+
+\paragraph{Full-error counterpart of Proposition~\ref{thm:estimator}.}
+Suppose \eqref{eq:app-observation} holds with $\|w_k\|\le\epsilon_k$ and
+$\|f_{k+1}-f_k\|\le \nu_k$. First consider one active innovation update
+\begin{equation}
+ \widehat f_{k+1}=\Pi_C\{\widehat f_k+\alpha_k(z_k-\widehat f_k)\},
+ \qquad 0\le\alpha_k\le1.
+ \label{eq:app-innovation}
+\end{equation}
+Then
+\begin{equation}
+ E_{k+1}\le(1-\alpha_k)E_k+\alpha_k\epsilon_k+\nu_k.
+ \label{eq:app-estimator-recursion}
+\end{equation}
+Writing $P_{j,k}=\prod_{i=j}^{k-1}(1-\alpha_i)$ with empty products equal to
+one gives the finite-horizon bound
+\begin{equation}
+ E_k\le P_{0,k}E_0+
+ \sum_{j=0}^{k-1}P_{j+1,k}(\alpha_j\epsilon_j+\nu_j).
+ \label{eq:app-estimator-product}
+\end{equation}
+If $\epsilon_k\le\epsilon$, $\nu_k\le\nu$, and
+$\alpha_k\ge\underline\alpha>0$, then, with $q=1-\underline\alpha$,
+\begin{equation}
+ E_k\le q^k E_0+\epsilon+\frac{\nu}{\underline\alpha}.
+ \label{eq:app-estimator-uniform}
+\end{equation}
+In particular, an exactly modeled constant fault converges exponentially.
+\begin{proof}
+Since $f_k\in C$, projection nonexpansiveness gives
+\begin{align*}
+ \|\widehat f_{k+1}-f_k\|
+ &\le\|(1-\alpha_k)(\widehat f_k-f_k)+\alpha_k w_k\|\\
+ &\le(1-\alpha_k)E_k+\alpha_k\epsilon_k.
+\end{align*}
+Adding $\|f_{k+1}-f_k\|$ proves the recursion; induction proves the product
+bound. Also $P_{0,k}\le q^k$,
+$\sum_{j=0}^{k-1}\alpha_jP_{j+1,k}=1-P_{0,k}\le1$, and
+$\sum_{j=0}^{k-1}P_{j+1,k}\le\sum_{i=0}^{k-1}q^i
+\le1/\underline\alpha$, proving the uniform bound.
+\end{proof}
+
+The innovation normalizer corresponds to
+\begin{equation}
+ \alpha_k=\frac{\gamma}{1+\|P_rS(z_k-\widehat f_k)\|^2/\rho^2},
+ \qquad 0<\gamma\le1.
+ \label{eq:app-alpha}
+\end{equation}
+If $C$ has diameter $D_C$ and $\|w_k\|\le\epsilon$, then
+$\underline\alpha=\gamma/[1+\|P_rS\|^2(D_C+\epsilon)^2/\rho^2]$ is a
+valid, possibly conservative lower bound. This estimator does not require
+online persistent excitation when the full-rank, constant $S$ is already
+known: the fault is directly observed through $S$. Estimating $S$ from healthy
+data, and estimating multiplicative faults, are separate identification tasks.
+
+\paragraph{Deadzone placement.}
+Equation~\eqref{eq:app-estimator-product} remains valid when a gate sets
+$\alpha_k=0$. The uniform exponential bound then requires a positive lower
+bound on accumulated effective gain over every fixed-length sliding window,
+not merely a positive ungated gain or some active updates.
+For a full-channel innovation gate that skips updates when
+$\|S(z_k-\widehat f_k)\|\le\delta$, an inactive step implies
+\begin{equation}
+ E_k\le\epsilon+\|S^{-1}\|\delta.
+ \label{eq:app-deadzone}
+\end{equation}
+This full-error implication requires the full invertible $S$. A selected gate
+$\|P_rS(z_k-\widehat f_k)\|\le\delta$ gives it only when $P_rS$ is
+injective on the estimated fault space, with $\|S^{-1}\|$ replaced by
+$1/\sigma_{\min}(P_rS)$. A rank-deficient selection cannot bound the
+unobserved error components. For constant $f$ and bounded noise, this ball is forward invariant under
+active steps, and distance above it decreases by at least the ungated factor
+$q$ on every active step. Indeed, the inactive-step bound follows directly
+from $z_k-\widehat f_k=f_k-\widehat f_k+w_k$; for active steps,
+\eqref{eq:app-estimator-recursion} maps that ball into itself and contracts
+any excess. A raw-residual gate has no corresponding error implication:
+after a fault disappears, $e_k^{\rm res}$ can be small while $\widehat f_k$ is not.
+The distinct implementation that zeroes the observation but retains the
+$-\widehat f_k$ leakage decays on inactive steps rather than freezing. These
+gate conventions must be reported separately.
+
+\begin{proposition}[Attenuation in the legacy update]
+\label{prop:app-legacy}
+For
+\begin{equation}
+ \widehat f_{k+1}=\Pi_C\{(1-\gamma)\widehat f_k+\gamma s_k z_k\},
+ \qquad 0<\gamma\le1,\quad 0\le s_k\le1,
+ \label{eq:app-legacy}
+\end{equation}
+the estimation error obeys
+\begin{equation}
+ E_{k+1}\le(1-\gamma)E_k+
+ \gamma\{(1-s_k)\|f_k\|+s_k\epsilon_k\}+\nu_k.
+ \label{eq:app-legacy-bound}
+\end{equation}
+For constant noiseless observations and constant $s$, the unique fixed point
+is $\Pi_C(sf)$, approached with contraction factor at most $1-\gamma$.
+If $sf\in C$, the fixed point is $sf$, which is biased unless $s=1$ or $f=0$.
+\end{proposition}
+\begin{proof}
+Apply projection nonexpansiveness relative to $f_k$ and use
+$s_kz_k-f_k=-(1-s_k)f_k+s_kw_k$ to obtain the bound. For constant target
+$sf$, the update map is a contraction with factor $1-\gamma$.
+Let $p=\Pi_C(sf)$. The characterization
+$\langle sf-p,x-p\rangle\le0$ for all $x\in C$ also implies
+$\Pi_C\{p+\gamma(sf-p)\}=p$. Thus $p$ is its unique fixed point.
+\end{proof}
+
+The documented observation-attenuated normalization has
+\[
+s_k=\frac{\mathbf{1}[\|P_re_k^{\rm res}\|>\delta]}
+{1+\|P_re_k^{\rm res}\|^2/\rho^2},
+\]
+subject to the selected-channel norm and calibration convention. Its guaranteed error
+includes attenuation. The innovation proposition does not retrospectively
+give an unbiased-estimation guarantee to experiments run with this law.
+
+
+\paragraph{Update and hold are distinct from target-only gating.}
+Let $k$ index every physical command, including steps with no estimator update.
+The associated measurement becomes available after executing $u_k$ and can
+first affect $\widehat f_{k+1}$. A full-update indicator $\chi_k\in\{0,1\}$
+gives the exact scheduled maps
+\begin{align}
+\widehat f_{k+1}
+ &=\Pi_C\{(1-\chi_k\gamma)\widehat f_k+
+                       \chi_k\gamma s_kz_k\},\label{eq:app-scheduled-legacy}\\
+\widehat f_{k+1}
+ &=\Pi_C\{\widehat f_k+\chi_k\alpha_k(z_k-\widehat f_k)\}.
+\label{eq:app-scheduled-innovation}
+\end{align}
+Because $\widehat f_k\in C$, $\chi_k=0$ holds the estimate exactly.
+Applying the two projection arguments above with the effective step sizes
+$\chi_k\gamma$ or $\chi_k\alpha_k$ proves
+the full-error counterparts of Eqs.~\eqref{eq:legacybound}--\eqref{eq:estbound}. In particular, a full hold
+has $E_{k+1}\le E_k+\nu_k$. In contrast, zeroing a legacy observation while
+retaining leakage uses $\chi_k=1,s_k=0$ and gives
+$E_{k+1}\le(1-\gamma)E_k+\gamma\|f_k\|+\nu_k$.
+This can move the estimate toward zero even when the physical fault persists.
+The schedule indicator must represent the executed code path; it is not
+inferred from the displayed deadzone threshold.
+
+Both recursions have the form
+\begin{equation}
+ B_{k+1}=(1-\beta_k)B_k+\beta_k\omega_k+\nu_k,\qquad B_0\ge E_0,
+ \label{eq:app-schedule-envelope}
+\end{equation}
+where $(\beta_k,\omega_k)$ equals
+$(\chi_k\gamma,(1-s_k)\|f_k\|+s_k\epsilon_k)$ for observation attenuation
+and $(\chi_k\alpha_k,\epsilon_k)$ for innovation adaptation.
+With $P_{j,k}^{\beta}=\prod_{i=j}^{k-1}(1-\beta_i)$,
+\begin{equation}
+ E_k\le B_k=P_{0,k}^{\beta}B_0+
+ \sum_{j=0}^{k-1}P_{j+1,k}^{\beta}(\beta_j\omega_j+\nu_j).
+ \label{eq:app-schedule-product}
+\end{equation}
+This follows by induction and is valid for arbitrary finite schedules,
+including long holds and a fault jump represented by a single large $\nu_j$.
+For constant $s$ and noiseless constant $f$, the distance to the legacy
+fixed point $\Pi_C(sf)$ is at most $(1-\gamma)^{N_k}$ times its initial
+value, where $N_k=\sum_{j=0}^{k-1}\chi_j$. It need not decay
+at the same rate per physical step. Converting the count into seconds requires
+actual timestamps; a positive ungated gain alone supplies no such rate.
+
+\paragraph{Selected-coordinate proof of Proposition~\ref{thm:estimator}.}
+For a box $\mathcal C=\prod_i[\ell_i,u_i]$ and binary diagonal $D$,
+coordinatewise clipping gives, for any $v$ and $f\in\mathcal C$,
+\begin{equation}
+\|D(\Pi_{\mathcal C}(v)-f)\|^2
+=\sum_{i:D_{ii}=1}|\Pi_{[\ell_i,u_i]}(v_i)-f_i|^2
+\le\|D(v-f)\|^2.
+\label{eq:masked-projection}
+\end{equation}
+Apply this inequality to each scheduled update, expand $z_k=f_k+w_k$,
+and add $\|D(f_{k+1}-f_k)\|$. This proves the two main masked recursions.
+The scalar envelope and product in Eqs.~\eqref{eq:app-schedule-envelope}--
+\eqref{eq:app-schedule-product} then hold with $B_k^D,E_k^D,\nu_k^D$ and
+$\omega_k^D=(1-s_k)\|Df_k\|+s_k\epsilon_k^D$ for attenuation, or
+$\omega_k^D=\epsilon_k^D$ for innovation.
+
+This conclusion requires separable projection. For a counterexample with a
+coupled set, take the unit disk, $f=(1/2,0)$, $v=(1/2,2)$, and
+$D=\operatorname{diag}(1,0)$. Then $D(v-f)=0$, whereas the first coordinate
+of the projection is $1/\sqrt{17}\ne1/2$. Thus selected error can increase
+through projection even when the selected input error is zero. The full-error
+proof for arbitrary closed convex sets remains valid.
+
+\paragraph{Application snapshots and buffered commands.}
+Let $\widehat f_k^{\rm app}=\widehat f_{\tau_k}$ be the estimate used in
+physical command $k$, $0\le\tau_k\le k$. Define
+$E_k^{D,\rm app}=\|D(\widehat f_{\tau_k}-f_k)\|$.
+Inserting respectively $\widehat f_k$ and $f_{\tau_k}$ gives
+\begin{align}
+E_k^{D,\rm app}&\le E_k^D+
+\sum_{j=\tau_k}^{k-1}\|D(\widehat f_{j+1}-\widehat f_j)\|,
+\label{eq:app-delay-increments}\\
+E_k^{D,\rm app}&\le E_{\tau_k}^D+\sum_{j=\tau_k}^{k-1}\nu_j^D.
+\label{eq:app-delay-age}
+\end{align}
+Taking the minimum of these valid bounds proves Eq.~\eqref{eq:applied-delay}.
+For maximum age $d$ and masked drift $\nu$, the second is
+$B_{\tau_k}^D+d\nu$. An episode-long hold uses its full age. No delay
+limit is needed for the finite-horizon forms. Setting $D=I$ yields the
+full-error bounds $E_k^{\rm app}\le B_k^{\rm app}$ used for a general
+convex projection or nonbinary correction map. Snapshot creation time, full
+holds, and target-only gates are distinct quantities. If one decoder chunk
+uses multiple estimates, its commands must be represented at the matching
+finer resolution, or the discrepancy must be included in $\zeta_k$.
+
+\subsection{What contracts in the implemented and candidate observers}
+\label{app:sampled-gradient}
+The innovation bound controls error to truth along the realized gain
+sequence. It does not omit the gain derivative from a pairwise Jacobian.
+For scalar fixed data $z$ and inactive projection, put $e=z-h$ and
+$\upsilon=e^2/\rho^2$. Differentiating the actual map gives
+\[
+\frac{d}{dh}\!\left(h+\frac{\gamma e}{1+\upsilon}\right)
+=1-\frac{\gamma}{1+\upsilon}+\frac{2\gamma\upsilon}{(1+\upsilon)^2}
+=1+\gamma\frac{\upsilon-1}{(1+\upsilon)^2}.
+\]
+The derivative of $(\upsilon-1)/(1+\upsilon)^2$ is $(3-\upsilon)/(1+\upsilon)^3$, proving the maximum
+at $\upsilon=3$ in Eq.~\eqref{eq:innovation-counterexample}. When $z=f$, the
+truth error is still multiplied by $1-\gamma/(1+\upsilon)$. This interior
+counterexample rules out global Euclidean contraction of this map; it does
+not rule out another metric on a restricted domain. Conversely, the legacy
+map conditionally contracts under a common fixed observation stream but can
+converge to the biased attenuated target. Neither property certifies
+contraction of the robot--estimator feedback interconnection.
+
+\begin{proposition}[A different sampled prediction-gradient candidate]
+\label{prop:sampled-gradient}
+Let $\Theta$ be closed and convex, $\Gamma\succ0$ fixed, and
+$H_{I,k}=H_{I,k}^\top\succeq0$. Condition on a common exogenous data stream
+$(H_{I,k},b_{I,k})$ and gains $h_k$ independent of the compared estimates.
+The weighted prediction loss has gradient $H_{I,k}\theta-b_{I,k}$; its
+projected negative-gradient step is
+\begin{equation}
+T_k(\theta)=\Pi_\Theta^{\Gamma^{-1}}
+ \left[\theta+h_k\Gamma(b_{I,k}-H_{I,k}\theta)\right].
+\label{eq:sampled-gradient}
+\end{equation}
+Define $S_{I,k}=\Gamma^{1/2}H_{I,k}\Gamma^{1/2}$ and
+$q_{{\rm obs},k}=\max_i|1-h_k\lambda_i(S_{I,k})|$. Then
+\begin{equation}
+\|T_k(\theta_1)-T_k(\theta_2)\|_{\Gamma^{-1}}
+\le q_{{\rm obs},k}\|\theta_1-\theta_2\|_{\Gamma^{-1}}.
+\label{eq:sampled-gradient-contraction}
+\end{equation}
+For $S_{I,k}\succ0$, $0<h_k<2/\lambda_{\max}(S_{I,k})$ gives strict
+conditional contraction. A full hold has $h_k=0$ and factor one.
+\end{proposition}
+\begin{proof}
+Under $v=\Gamma^{-1/2}\theta$, metric projection is Euclidean projection
+onto $\Gamma^{-1/2}\Theta$, hence nonexpansive even at active faces. The
+unprojected difference is $(I-h_k S_{I,k})(v_1-v_2)$; its symmetric-matrix
+operator norm is exactly $q_{{\rm obs},k}$. This proves the bound without
+differentiating through projection. The step-size condition is equivalent
+to $|1-h_k\lambda_i|<1$ for every positive eigenvalue.
+\end{proof}
+If $b_{I,k}=H_{I,k}\theta_k^*+\epsilon_{I,k}$ and
+$\theta_k^*\in\Theta$, the same argument gives the truth-error bound
+\begin{equation}
+Z_{k+1}\le q_{{\rm obs},k}Z_k+
+ h_k\|\Gamma^{1/2}\epsilon_{I,k}\|
+ +\|\theta_{k+1}^*-\theta_k^*\|_{\Gamma^{-1}},
+\label{eq:sampled-gradient-error}
+\end{equation}
+for $h_k\ge0$. Uniform exponential forgetting requires a uniform factor
+below one or a proved windowed product condition. Rank-deficient information
+precludes per-step strict contraction in every parameter direction. A FIR
+command buffer alone is not an informative parameter dataset. Additive
+$z_k=f_k+w_k$ with already known invertible sensitivity corresponds to
+$H_I=I$, $b_I=z$, $\Gamma=I$; no new command excitation is then needed.
+Unknown gains and offsets require separate regressor-rank conditions.
+
+Equation~\eqref{eq:sampled-gradient} is an unevaluated candidate, not a
+replacement interpretation of the reported attenuation or state-dependent
+innovation runs. A gain selected from data quality or regressor energy is
+admissible here only after conditioning on a common stream that does not
+depend on the compared estimates. The actual robot stream changes when
+commands change; the coupled analysis below addresses that separate issue.
+
+\subsection{From an execution metric to a scheduled recovery tube}
+\label{app:history-partition}
+
+\paragraph{Execution state, command source, and observer state.}
+The certified state $\xi_k$ contains the physical robot and necessary
+low-level controller state, including actuator delays, filters, and reference
+interpolation memory when required for a closed execution model. Manipulation
+also requires the physical-state closure specified below. The VLA
+supplies $a_k$; its observation history, network state, and policy
+memory belong to the command source and are not part of $\xi_k$. The
+observer's issued pre-fault command history, estimate, gains, and applied
+snapshot belong to a separate state $\xi_k^{\rm obs}$. A received nominal
+chunk may be treated as an external command schedule; if its interpolation
+or phase is handled inside the execution controller, the required controller
+memory must instead be represented in $\xi_k$. The chosen realization and
+command schedule must be explicit.
+
+\paragraph{Physical state closure during manipulation.}
+\label{app:physical-closure}
+If object pose, velocity, deformation, or evolving contact variables affect
+execution, include their necessary state in $\xi_k$ and its nominal
+comparator, together with the relevant contact mode. A discrete mode
+indexes the vector field and metric; it is not a smooth Euclidean coordinate.
+Fixed environment
+geometry may be a common model parameter; prescribed environment motion may
+be a declared common exogenous input. An object moved by the robot is an
+endogenous physical state, not a common input merely because the commands
+are shared. The metric and its domains must cover the selected physical
+state and all allowed geometry, modes, and transitions. The actual and nominal
+systems receive the same commands but can reach different object states and
+contact sequences; agreement of those sequences is not assumed by notation.
+
+Alternatively, a reduced servo state may omit these variables if their
+remaining influence admits an explicit uniform transition-error bound
+$\eta_k^{\rm contact}$ as specified below. This is a bound over admissible
+corrected states, commands, omitted physical states, and contact events;
+it need not be small or vanish under perfect actuator correction. Without
+full state closure or such a bound, a servo/free-space certificate does not
+extend to contact manipulation. Even a complete physical state does not
+by itself establish contraction of its dynamics.
+
+The sufficient closure condition for a $q_k$-only execution transition is:
+at fixed $\xi_k$ and supplied command, any two observer/adapter states
+producing the same realized effective mismatch $q_k$ must produce the same
+next execution state. With no separate transition disturbance, $q_k=0$
+then recovers the nominal execution map. A corrected-command queue may be
+outside $\xi_k$ only if its entire effect is mediated by the command
+actually executed; plant or controller delays cannot simply be discarded.
+Under this closure, condition on the realized supplied commands and write
+\begin{equation}
+\xi_{k+1}^{\rm nom}=F_{\mathrm{exec},k}^0(\xi_{k}^{\rm nom},a_k),\qquad
+\xi_{k+1}=F_{\mathrm{exec},k}(\xi_k,a_k,q_k).
+\label{eq:app-closed-loop}
+\end{equation}
+The reference is the nominal physical response to these same commands.
+It does not rerun the VLA on hypothetical healthy observations. The commands
+may be generated using the actual robot's observations: the result is then
+a pathwise execution comparison, valid while those commands and the states
+remain in the assumed admissible sets. It does not establish stability of
+the feedback law that generated the commands. Computing $\xi_{k}^{\rm nom}$ online
+is unnecessary for the evaluated prediction-only laws.
+
+For binary $D$ and box projection,
+\begin{equation}
+\|q_k\|\le U_k^\perp+E_k^{D,\rm app}+\bar\zeta_k,
+\qquad U_k^\perp=\|(I-D)f_k\|.
+\label{eq:app-mask}
+\end{equation}
+The supplied nominal interface action $a_k$ is the one used to define the
+actual mismatch; it is not a newly queried healthy-policy action. For
+general $D$ or a coupled projection use instead
+$\|q_k\|\le U_k^\perp+\|D\|B_k^{\rm app}+\bar\zeta_k$.
+Native-decoder error and command clipping belong in $\zeta_k$; any other
+separate transition disturbance belongs in $\eta_k$ below. Each physical
+effect is counted once. In particular, bounded parameter projection does
+not imply command feasibility or repair of unmatched joint faults.
+
+\paragraph{Additional history and contact effects.}
+If a plant or low-level controller needs a history not determined by
+$(\xi_k,a_k,q_k)$, retain the required memory in $\xi_k$ and its
+nominal comparator, or use an effective-input history with an exact
+realization. A VLA policy that reads raw issued-action history changes the
+supplied command stream; this dependence alone does not place its memory
+inside the primary execution certificate. If a raw-command or corrected-queue
+update has an additional direct effect on the certified execution state,
+write its explicit map as $\mathcal F_{\mathrm{exec},k}(\xi,a,q,h)$ with
+$\mathcal F_{\mathrm{exec},k}(\xi,a,q,0)=F_{\mathrm{exec},k}(\xi,a,q)$.
+Require, uniformly on the certified domain and over allowed commands,
+\begin{equation}
+\begin{aligned}
+d_{k+1}(\mathcal F_{\mathrm{exec},k}(\xi,a,q,h),F_{\mathrm{exec},k}(\xi,a,q))
+&\le L_k^h\|h\|,\\
+\|h_k\|&\le\bar h_k,\\
+d_{k+1}(\xi_{k+1},\mathcal F_{\mathrm{exec},k}(\xi_k,a_k,q_k,h_k))
+&\le\eta_k^{\rm contact},\\
+\eta_k=\eta_k^{\rm base}+\eta_k^{\rm hist}+\eta_k^{\rm contact},\qquad
+\eta_k^{\rm hist}&=L_k^h\bar h_k.
+\end{aligned}
+\label{eq:app-history-forcing}
+\end{equation}
+The third line bounds the remaining omitted contact/environment effect on
+the reduced-state transition; it is zero when that effect is already
+represented exactly. Its validity must include the relevant event timing
+and resets. Here $\eta_k^{\rm base}$ bounds other base-map disturbance,
+excluding the displayed history/contact effects and realization error
+already included in $q_k$. The triangle inequality gives
+\[
+\begin{aligned}
+d_{k+1}(\xi_{k+1},F_{\mathrm{exec},k}^0(\xi_k,a_k))
+&\le L_k\|q_k\|+\eta_k^{\rm base}+L_k^h\|h_k\|+
+\eta_k^{\rm contact}\\
+&\le L_k\|q_k\|+\eta_k.
+\end{aligned}
+\]
+These are required bounds, not definitions that make omitted effects small
+or make them vanish at $q_k=0$. In a reduced model, the residual bound is
+required for every admissible hidden-state realization. A different
+execution-state realization requires its own distance-contraction and
+transition check. The tube proof
+uses total forcing $\eta_k$, with each physical effect counted once.
+
+For example, take $p_{k+1}=.8p_k+.2(u_k+f)$, supplied nominal $a_k=0$, a
+constant nonzero fault $f$, and exact correction $u_k=-\widehat f_k=-f$.
+Then $q_k=0$ and physical motion matches $p_{k+1}^{\rm nom}=.8p_k^{\rm nom}$ from equal
+initial positions. Nevertheless, a raw-command memory $v_{k+1}=u_k$ equals
+$-f$, whereas $v_{k+1}^{\rm nom}=0$. Starting with equal $(p_0,v_0)$, their next
+augmented distance is $|f|$, so a zero-forcing $q$-only tube for $(p,v)$
+fails even though its nominal Euclidean map contracts by $.8$. For the
+physical execution state $\xi=p$, the $q$-only model is exact; $v$ can stay
+in the observer. If $(p,v)$ is certified instead, its exact augmented map
+$\mathcal F((p,v),q,h)=(.8p+.2q,h)$ with $h=u-a$ has $L=.2$, $L^h=1$,
+and $\bar h=|f|$ under exact correction. The conditional tube proof is
+unchanged; its state and forcing must represent the chosen subsystem.
+
+\paragraph{Direct contraction and smooth sufficient conditions.}
+Theorem~\ref{thm:tube} assumes the distance contraction in
+Eq.~\eqref{eq:sampled-contraction} directly. For a smooth-mode sufficient
+construction, let $M_{c,k}(\xi)$ be smooth, independent of the supplied
+command and adapted estimate, and satisfy
+$0<\underline m I\preceq M_{c,k}\preceq\overline m I$ on the stated domains;
+let $d_k$ be its intrinsic Riemannian distance. With Euclidean
+$\delta_{\rm phys}$ these bounds imply Eq.~\eqref{eq:distance-equivalence}
+with $c_-=\sqrt{\underline m}$ and $c_+=\sqrt{\overline m}$. Suppose
+$F_{\mathrm{exec},k}^0(\cdot,a)$ is $C^1$ and, uniformly over allowed $a$,
+\begin{equation}
+J_k^\top M_{c,k+1}(F_{\mathrm{exec},k}^0(\xi,a))J_k
+\preceq(\lambda_k^{\rm exec})^2M_{c,k}(\xi),\qquad
+J_k=\partial_\xi F_{\mathrm{exec},k}^0(\xi,a),
+\label{eq:sampled-metric}
+\end{equation}
+with $a$ held fixed. If admissible connecting curves have admissible nominal
+images, this inequality contracts each image-curve length by
+$\lambda_k^{\rm exec}$; taking the infimum proves
+Eq.~\eqref{eq:sampled-contraction}. Thus Eq.~\eqref{eq:sampled-metric} is
+sufficient in a smooth mode but is not required when
+Eq.~\eqref{eq:sampled-contraction} is established directly. A geodesically
+convex neighborhood with its relevant images contained in the next domain is
+sufficient for this construction; no VLA Jacobian appears.
+
+Separately, Theorem~\ref{thm:tube} assumes the realized-transition bound in
+Eq.~\eqref{eq:sampled-transition}. Under this Riemannian construction, if
+$F_{\mathrm{exec},k}$ is differentiable in its actual physical input, a
+sufficient input-sensitivity condition is
+\[
+\left\|M_{c,k+1}^{1/2}(F_{\mathrm{exec},k}(\xi,a,v))
+D_qF_{\mathrm{exec},k}(\xi,a,v)\right\|\le L_k
+\quad\text{for every }v=sq,\ 0\le s\le1.
+\]
+Integrating the length of $s\mapsto F_{\mathrm{exec},k}(\xi,a,sq)$, then
+adding $d_{k+1}(F_{\mathrm{exec},k}(\xi,a,0),F_{\mathrm{exec},k}^0(\xi,a))
+\le\eta_k$, proves
+\begin{equation}
+d_{k+1}(F_{\mathrm{exec},k}(\xi,a,q),F_{\mathrm{exec},k}^0(\xi,a))
+\le L_k\|q\|+\eta_k.
+\label{eq:app-input-assumption}
+\end{equation}
+For the explicit decomposition in \eqref{eq:app-history-forcing}, the
+base-map argument uses $\eta_k^{\rm base}$ instead; adding its history
+and contact bounds once gives the same inequality for the realized next
+state and hence Eq.~\eqref{eq:sampled-transition}. The entire input path must
+lie in the domain. For a nonsmooth map, establish
+Eq.~\eqref{eq:sampled-transition} directly. The condition concerns the
+realized physical input, not merely the pre-decoder correction parameter.
+
+\paragraph{Proof and quantitative form of Theorem~\ref{thm:tube}.}
+Insert $F_{\mathrm{exec},k}^0(\xi_k,a_k)$ between the two next states and apply the triangle
+inequality, Eqs.~\eqref{eq:sampled-contraction} and
+\eqref{eq:sampled-transition}, and the masked mismatch bound. Thus
+$X_{k+1}\le \lambda_k^{\rm exec}X_k+g_k$, with $X_k=d_k(\xi_k,\xi_{k}^{\rm nom})$, where
+\begin{equation}
+g_k=L_k(U_k^\perp+B_k^{D,\rm app}+\bar\zeta_k)+\eta_k,
+\qquad R_{k+1}=\lambda_k^{\rm exec}R_k+g_k.
+\label{eq:app-tube-recursion}
+\end{equation}
+Induction proves inclusion from $R_0\ge d_0(\xi_0,\xi_{0}^{\rm nom})$ as long as the
+radius-$R_k$ balls remain in the domains. Expansion gives
+\begin{equation}
+R_k=\left(\prod_{i=0}^{k-1}\lambda_i^{\rm exec}\right)R_0+
+\sum_{j=0}^{k-1}\left(\prod_{i=j+1}^{k-1}\lambda_i^{\rm exec}\right)g_j.
+\label{eq:app-tube-product}
+\end{equation}
+Arbitrary finite nonnegative amplification factors give only this
+finite-horizon statement. If every subinterval satisfies
+$\prod_{i=j}^{k-1}\lambda_i^{\rm exec}\le C\varrho^{k-j}$, $C\ge1$, $0<\varrho<1$, then
+\begin{equation}
+R_k\le C\varrho^kR_0+C\sum_{j=0}^{k-1}\varrho^{k-1-j}g_j
+\le C\varrho^kR_0+\frac{C\bar g}{1-\varrho}(1-\varrho^k)
+\label{eq:app-product-recovery}
+\end{equation}
+when $g_j\le\bar g$. This allows transient expansion; a uniform
+$\lambda_k^{\rm exec}\le a<1$ is the special case $C=1,\varrho=a$.
+If $0\le a,q<1$, $\lambda_k^{\rm exec}\le a$, $L_k\le L$, $U_k^\perp\le U^\perp$,
+$\bar\zeta_k\le\bar\zeta$, $\eta_k\le\eta$, and
+$B_k^{D,\rm app}\le q^k E_0^D+\bar E$, then
+\begin{equation}
+R_k\le a^kR_0+LE_0^D\mathcal C_k(a,q)+
+\frac{L(U^\perp+\bar E+\bar\zeta)+\eta}{1-a}(1-a^k),
+\label{eq:app-tube-geometric}
+\end{equation}
+where $\mathcal C_k(a,q)=\sum_{j=0}^{k-1}a^{k-1-j}q^j$ equals
+$(a^k-q^k)/(a-q)$ if $a\ne q$, and $ka^{k-1}$ if $a=q$ for $k\ge1$;
+$\mathcal C_0=0$. Bounds on the applied error must already include its actual
+schedule; estimate convergence alone does not imply this geometric form.
+
+\paragraph{Hybrid execution, chunks, and reference jumps.}
+At a step containing an impact, reset, or mode change,
+Eq.~\eqref{eq:sampled-contraction} must hold for the complete nominal sampled
+transition; a within-mode Jacobian check alone is insufficient.
+If the domains form a hybrid union, $d_k$ must be defined for the cross-mode
+state pairs used by the comparison, or the certified event structure must
+exclude those pairs.
+The physical certificate includes relevant controller memory, actuator
+delays, and contact modes. Within a smooth mode, flow inequalities apply
+only on its certified domain. Impulsive contact forces are not ordinary
+bounded continuous disturbances: impacts require state/metric jump bounds,
+or a verified sampled transition bound that includes the impact.
+State-dependent event timing requires a valid saltation or incremental
+event-map bound; a reset Jacobian alone can omit event-time sensitivity.
+The compared executions need not impact at the same time. A common-mode
+flow estimate alone does not compare differing mode sequences; either
+justify the required hybrid comparison, restrict the admissible events,
+or bound the resulting sampled transition discrepancy explicitly.
+Uniform bounds can fail near grazing events or changes in contact sequence. A chunk-boundary metric may be appropriate
+when buffer shifts obstruct one-step contraction, but intermediate physical
+motion requires its own bounds. Boundary stability does not certify
+intermediate constraints.
+
+Both physical systems receive the same command changes. In physical-state
+coordinates their responses need not jump when the command changes; no
+command derivative enters a command-independent metric. A commanded reset
+of low-level controller state must nevertheless be included in the
+transition. If tracking coordinates are instead measured directly from a
+commanded reference that jumps, retain the resulting coordinate/reset jump
+and its metric gain or additive forcing, or use a feasible interpolated
+reference. Common commands cannot justify omitting a reset that the chosen
+coordinates actually undergo. This conditional pathwise result is neither
+a distributional success theorem nor a certificate of the VLA command
+source's feedback stability.
+
+\paragraph{Optional conditional corollary: task preservation.}
+\label{app:task-extension}
+Let $\mathcal S$ be the successful physical trajectories over horizon $N$,
+including any specified command-dependent constraints. Suppose the nominal
+execution trajectory $\xi_{0:N}^{\rm nom}$ for the supplied command sequence is
+successful and has positive radii $\mu_k^{\rm task}$ such that every
+admissible trajectory with $d_k(\xi_k,\xi_{k}^{\rm nom})<\mu_k^{\rm task}$ at
+all steps belongs to $\mathcal S$. If the execution-tube assumptions hold
+and $R_k<\mu_k^{\rm task}$ throughout, the realized execution succeeds.
+This follows immediately from tube inclusion and the assumed robustness
+neighborhood. The neighborhood must cover all path and terminal conditions
+and intermediate chunk motion; constraints on omitted variables require
+separate bounds. Neither success of the supplied nominal response nor
+its whole-task margin follows from contraction.
+
+When comparing two adapters, their observation feedback may produce
+different VLA command streams. Fixed-command replay gives the common-input
+comparison directly; otherwise each adapter first has its own nominal
+physical response. In a common certified metric, the triangle inequality
+then bounds their physical separation by the sum of their two execution
+radii and the distance between those nominal responses. That last
+command-divergence term requires separate evidence and cannot be set to
+zero because the VLA weights are frozen.
+
+An independently rerun healthy VLA generally supplies different commands.
+Comparing against that rollout requires a separate bound on the divergence
+between its nominal physical response and $\xi_{k}^{\rm nom}$. For example, if such
+a bound is $d_k(\xi_{k}^{\rm nom},\xi_k^h)\le C_k^{\rm cmd}$, the triangle
+inequality gives $d_k(\xi_k,\xi_k^h)\le R_k+C_k^{\rm cmd}$; a task
+margin around $\xi_k^h$ must exceed this sum. A bound on command differences
+together with a valid execution input-sensitivity bound can provide
+$C_k^{\rm cmd}$, but it must be established separately. Neither a VLA
+metric nor this outer-loop comparison is needed for the primary execution
+tube. The reported experiments establish no task margins. A uniform physical
+execution metric was measured directly by same-command replay rather than
+inferred from fitted gains or sampled Jacobians, and exists on the GR1 arm
+but not on the Panda under operational-space control
+(Appendix~\ref{app:measured-certificates}).
+
+\subsection{Closing the loop when predictor error depends on trajectory error}
+\label{app:smallgain}
+
+An independently bounded $\epsilon_k$ can be a strong assumption: a correction
+changes the visited physical states and commands, and predictor error can
+grow with execution deviation and estimation error. The assumed error bound
+must hold uniformly over admissible supplied commands; it does not follow
+from a healthy-data fit or from the physical metric alone. The following result gives a sufficient
+condition for closing this feedback loop. It applies when every physical step updates and applies the current estimate,
+with a uniformly positive active step size. Observation attenuation is included
+by adding its forcing to the constant observation-error term below. Arbitrary
+holds and delayed application instead use the scheduled tube.
+
+\begin{proposition}[A conditional small-gain bound]
+\label{prop:smallgain}
+Let $X_k=d_k(\xi_k,\xi_{k}^{\rm nom})$ be the same-command execution distance and write
+$E_k=E_k^D$ within this subsection. Suppose on
+the relevant local domain
+\begin{align}
+ X_{k+1}&\le\lambda X_k+b E_k+d_0,\nonumber\\
+ E_{k+1}&\le[1-\alpha_k(1-k_E)]E_k+
+       \alpha_k(\epsilon_0+k_X X_k)+\nu,
+ \label{eq:app-smallgain-recursions}
+\end{align}
+where $0\le\lambda<1$, $0\le k_E<1$, $b,k_X,\epsilon_0,\nu,d_0\ge0$ and
+$0<\underline\alpha\le\alpha_k\le\overline\alpha\le1$.
+The first inequality follows from the tube assumptions with
+$b=L$ and $d_0=L(U^\perp+\overline\zeta)+\eta$;
+equivalently, an adapter discrepancy can be absorbed into
+$\eta_k$ as $L_k\overline\zeta_k$, but must not be counted twice.
+For innovation adaptation the second follows from
+$\|Dw_k\|\le\epsilon_0+k_E E_k+k_X X_k$. For the observation-attenuated
+law take $\alpha_k=\gamma$ and replace $\epsilon_0$ throughout this
+proposition by $\epsilon_0+\bar a_{\rm att}$. If
+\begin{equation}
+ k_Xb<(1-k_E)(1-\lambda),
+ \label{eq:app-smallgain-condition}
+\end{equation}
+choose $s>0$ with
+$b/(1-\lambda)<s<(1-k_E)/k_X$, with the upper bound
+interpreted as $+\infty$ when $k_X=0$.
+Then $W_k=\max\{X_k,s E_k\}$ satisfies
+\begin{equation}
+ W_k\le\varrho^k W_0+\frac{d_*}{1-\varrho}(1-\varrho^k),
+ \label{eq:app-smallgain-bound}
+\end{equation}
+where
+\begin{equation}
+ \varrho=\max\{\lambda+b/s,\ 1-\underline\alpha(1-k_E-sk_X)\}<1,
+ \qquad d_*=\max\{d_0,\ s(\overline\alpha\epsilon_0+\nu)\}.
+ \label{eq:app-smallgain-constants}
+\end{equation}
+The bound holds inductively as long as its implied trajectory and estimator
+neighborhoods remain inside the domain of the assumptions.
+\end{proposition}
+\begin{proof}
+The strict small-gain inequality makes the interval for $s$ nonempty. Since
+$X_k\le W_k$ and $E_k\le W_k/s$, the first recursion gives
+$X_{k+1}\le(\lambda+b/s)W_k+d_0$. The second gives
+\begin{align*}
+ s E_{k+1}
+ &\le[1-\alpha_k(1-k_E)+sk_X\alpha_k]W_k+s(\alpha_k\epsilon_0+\nu)\\
+ &\le[1-\underline\alpha(1-k_E-sk_X)]W_k
+       +s(\overline\alpha\epsilon_0+\nu).
+\end{align*}
+Both coefficients are strictly below one. Taking the maximum and expanding
+$W_{k+1}\le\varrho W_k+d_*$ proves the claim.
+\end{proof}
+
+For a constant step size, the homogeneous comparison matrix is
+\[
+ A_\alpha=\begin{pmatrix}\lambda&b\\
+             \alpha k_X&1-\alpha(1-k_E)\end{pmatrix}.
+\]
+The weighted-maximum proof also covers the stated time-varying family.
+The result is a stability bound for the coupled error comparison, not a claim
+of global pairwise contraction of the nonlinear estimator. It explains why a
+well-conditioned sensitivity and small predictor error growth can matter even
+when healthy prediction fits appear good. The constants $k_E,k_X,\lambda$ were measured on the deployed plant
+(Appendix~\ref{app:measured-certificates}): the coupling terms are small
+($k_E=.012$, $k_X=.009$, $\epsilon_0=.0008$), and the condition nonetheless
+fails because $a=1-\lambda=9\cdot10^{-5}$. The obstruction is the absent
+contraction, not the feedback coupling this subsection bounds.
+
+\subsection{Invariant recovery regions and admissible startup error}
+\label{app:discrete-region}
+\paragraph{Proof of Corollary~\ref{thm:discrete-region}.}
+Throughout this subsection, $E_k$ abbreviates $E_k^D$, and $\nu$ bounds
+masked drift.
+In the active-every-step case with current application, the two estimator
+recursions imply the common comparison
+\[
+E_{k+1}\le[1-\beta_k c]E_k+\beta_k(k_XX_k+v),
+\]
+where $\beta_k=\gamma$ for observation attenuation and $\beta_k=\alpha_k$
+for innovation adaptation. For the first case use
+$(1-s_k)\|Df_k\|\le\bar a_{\rm att}$ and $s_k\le1$; for the second
+use $\nu\le\alpha_k\nu/\underline\alpha$.
+The coefficients multiplying $X_k,E_k$ are nonnegative because
+$0\le k_E<1$ and $0<\beta_k\le1$. At the upper corner of the
+rectangle, its second inequality gives
+$\beta_k(k_X\bar X+v)\le\beta_k c\bar E$. Hence
+$E_{k+1}\le\bar E$.
+The first inequality gives $X_{k+1}\le\bar X$. Induction from the stated
+initial conditions proves invariance, and the assumed domain containment
+makes each application valid. Solving the two corner equalities gives
+the equality corner
+\begin{equation}
+X_* =\frac{cd_0+bv}{\Delta},\qquad
+E_* =\frac{k_Xd_0+av}{\Delta}.
+\label{eq:discrete-corner}
+\end{equation}
+A task-preservation conclusion additionally
+requires the successful nominal response and whole-trajectory neighborhood
+in Appendix~\ref{app:task-extension}. \hfill$\square$
+
+For a chosen $\bar X<\mu_{\rm exec}$, where $\mu_{\rm exec}$ is a
+valid execution-domain tube radius, and $b>0$, a sufficient startup budget
+given valid parameter-error and domain bounds is
+\begin{equation}
+bv+c d_0\le\Delta\bar X,
+\quad bE_0+d_0\le a\bar X,\quad X_0\le\bar X,
+\label{eq:discrete-budget}
+\end{equation}
+with estimator radius chosen from the nonempty interval
+\begin{equation}
+\max\{E_0,(k_X\bar X+v)/c\}\le\bar E\le(a\bar X-d_0)/b.
+\label{eq:discrete-radius-choice}
+\end{equation}
+The second condition in Eq.~\eqref{eq:discrete-budget} is essential:
+the steady-state budget alone does not accommodate an arbitrarily large
+fault-onset estimation error. For $b=0$, use the two original rectangle
+inequalities directly. A common scaling of $(X_*,E_*)$ by a factor at least
+one preserves both inequalities. It can cover arbitrary finite initial errors
+when both corner components are positive. If either is zero, use the original
+rectangle inequalities or the product bound directly.
+
+For completeness, the primary observation-attenuated law has the explicit
+comparison below. Suppose
+$\bar a_{\rm att}\ge(1-s_k)\|Df_k\|$ and
+$\|Dw_k\|\le\epsilon_0+k_EE_k+k_XX_k$. Since $0\le s_k\le1$,
+the masked counterpart of Eq.~\eqref{eq:app-legacy-bound} implies
+\begin{equation}
+E_{k+1}\le[1-\gamma(1-k_E)]E_k+
+\gamma(\epsilon_0+\bar a_{\rm att}+k_XX_k)+\nu.
+\label{eq:discrete-legacy-region}
+\end{equation}
+The same rectangle proof applies with
+$v=\epsilon_0+\bar a_{\rm att}+\nu/\gamma$.
+It is conservative; retaining $s_k$ in the original recursion can be
+tighter. The attenuation floor cannot be removed when this is the executed law.
+
+\paragraph{An exact step-history contribution.}
+For an otherwise constant fault jumping by $\Delta f$ at $k_0$, the
+history part of Eq.~\eqref{eq:app-observation-error} at $j=k-k_0\ge0$ is
+\begin{equation}
+w_{k_0+j}^{\rm hist}=-S^{-1}\sum_{\ell=j+1}^{K}G_\ell\Delta f.
+\label{eq:discrete-onset}
+\end{equation}
+For each term with $\ell>j$, the delayed fault precedes the jump and
+$f_{k-\ell}-f_k=-\Delta f$; every other term is zero. This proves the
+identity and its disappearance after $K$ steps. Substituting its time-dependent
+norm into the estimator and trajectory recursions accounts for onset without
+treating the jump as a persistent drift rate.
+
+\paragraph{Rate, noise, and drift are separate quantities.}
+For fixed $s$, constant noiseless observations, and inactive projection,
+the legacy transient is
+$\widehat f_k-sf=(1-\gamma)^k(\widehat f_0-sf)$.
+With $\gamma=.08$, 36 updates reduce that transient by at least 95\%;
+this concerns the attenuated target. For a constant-gain innovation observer
+with independent zero-mean scalar measurement noise of variance $\sigma_w^2$,
+inactive projection, and constant fault, the stationary error variance is
+$\alpha\sigma_w^2/(2-\alpha)$, obtained by solving
+$v=(1-\alpha)^2v+\alpha^2\sigma_w^2$. This calculation is illustrative:
+correlated FIR residuals, normalization, and gates require their own
+stochastic analysis. The deterministic drift bound remains $\nu/\alpha$.
+
+\subsection{Why identifying first and then holding changes the bound}
+
+Suppose an estimate obtained before an evaluation episode is held at
+$\widehat f^H$, with $\|D(f_0-\widehat f^H)\|\le E_H$. If the persistent
+fault can drift in selected coordinates by at most $\nu$ per control step, then
+\begin{equation}
+ \|D(f_k-\widehat f^H)\|\le E_H+k\nu,
+ \label{eq:app-held}
+\end{equation}
+by telescoping. Substituting this quantity for $B_k^{D,\rm app}$ in
+\eqref{eq:app-tube-recursion} yields the held-estimate guarantee. For a constant
+fault and a valid initialization, holding removes the online estimation
+transient from the task episode, but retains calibration error; for a changing
+fault it accumulates drift. A prior identification episode also changes the
+information available at evaluation time. Its benefit cannot be attributed
+solely to removing within-episode variance or compared as if both protocols
+started with zero fault information.
+
+\subsection{Gain faults and adapter dimension}
+\label{app:gain-authority}
+
+For a diagonal per-channel FIR and a gain $g_i$ constant over the FIR window,
+the correct scalar regression is
+\begin{equation}
+ e_{i,k}^{\rm res}=\beta_i\phi_{i,k}+\nu_{i,k},\quad
+ \beta_i=g_i-1,\quad
+ \phi_{i,k}=\sum_{\ell=0}^{K}h_{i,\ell}u_{i,k-\ell}
+           =\widehat y_{i,k}-c_i.
+ \label{eq:app-gain-regressor}
+\end{equation}
+The equality is exact only for the stated diagonal, correctly calibrated
+plant; coupling and time-varying gains introduce model error. In particular,
+gain drift contributes
+$\sum_\ell h_{i,\ell}(g_{i,k-\ell}-g_{i,k})u_{i,k-\ell}$.
+Noiseless constant-gain identification requires
+$\sum_k\phi_{i,k}^2>0$; robustness depends on its magnitude. With an unknown
+constant intercept, the two-column regression $[\phi_{i,k},1]$ has full rank
+only when $\phi_{i,k}$ varies. Command quantile ranges alone establish neither
+of these conditions.
+
+The inverse-gain adapter $u_i=a_i/\widehat g_i$, with
+$\widehat g_i\ge g_{\min}>0$, gives
+\begin{equation}
+ q_i=\left(\frac{g_i}{\widehat g_i}-1\right)a_i
+     =\frac{g_i-\widehat g_i}{\widehat g_i}a_i,
+ \qquad
+ |q_i|\le\frac{|a_i|}{g_{\min}}|g_i-\widehat g_i|.
+ \label{eq:app-gain-mismatch}
+\end{equation}
+This is the physical mismatch to insert in the trajectory tube. The derivative
+of the \emph{command} with respect to its estimate is
+$-a_i/\widehat g_i^2$; the derivative of the \emph{executed command} is
+$-g_i a_i/\widehat g_i^2$. They have different amplification factors.
+Input limits must still permit the required inverse command.
+
+\begin{proposition}[Local correction authority and dimension]
+\label{prop:directions}
+Suppose a family of constant faults is $f=V\theta$ and an additive
+adapter can generate $B\vartheta$ with fixed $B\in\mathbb R^{d\times p}$. Exact
+action-level compensation of the whole family by unrestricted adapter
+coordinates is possible if and only if
+\begin{equation}
+ \operatorname{Range}(V)\subseteq\operatorname{Range}(B),
+ \qquad\text{which implies}\qquad
+ p\ge\operatorname{rank}(V).
+ \label{eq:app-rank}
+\end{equation}
+\end{proposition}
+\begin{proof}
+For necessity, apply the matching requirement to each coordinate basis vector
+$\theta$; every column of $V$ must then lie in the range of $B$.
+For sufficiency, choose $K$ with $BK=V$ and set $\vartheta=K\theta$
+(with the compensation sign in the commanded action).
+\end{proof}
+With bounded adapter coordinates, the required solutions must also be feasible
+inside those bounds; range inclusion alone does not ensure that. If only a local
+physical effect matters, the corresponding criterion uses
+$\operatorname{Range}(A V)\subseteq\operatorname{Range}(A B)$ for the
+linearized action-to-effect map $A$. For one shared parameter vector across
+multiple times, the time-indexed maps must be stacked before applying this
+range criterion. A six-channel interface spans arbitrary six-dimensional
+offsets, whereas a known uniform offset $f=\alpha\mathbf 1$ is a one-dimensional
+family. The experiments do not establish that six is a universal minimum.
+A joint lock can violate local matching or command feasibility; it does not
+prove that another policy or a different path through the remaining joints
+could never complete the task.

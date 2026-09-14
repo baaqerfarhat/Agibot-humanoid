@@ -1,0 +1,78 @@
+{
+  "seed": 20260909,
+  "scope": "Constructed algebra and numerical checks only; no VLA rollout validation.",
+  "checks": {
+    "masked_legacy_recursion": {
+      "count": 12000,
+      "maximum_signed_violation": 2.220446049250313e-16,
+      "tolerance": 5e-10,
+      "passed": true
+    },
+    "masked_actual_innovation_recursion": {
+      "count": 12000,
+      "maximum_signed_violation": 2.220446049250313e-16,
+      "tolerance": 5e-10,
+      "passed": true
+    },
+    "innovation_derivative_formula": {
+      "count": 1,
+      "maximum_signed_violation": -9.876101330897882e-10,
+      "tolerance": 5e-10,
+      "passed": true
+    },
+    "innovation_derivative_maximum": {
+      "count": 100002,
+      "maximum_signed_violation": 0.0,
+      "tolerance": 5e-10,
+      "passed": true
+    },
+    "candidate_metric_projection_pairwise": {
+      "count": 3500,
+      "maximum_signed_violation": -4.071837251906629e-05,
+      "tolerance": 5e-10,
+      "passed": true
+    },
+    "candidate_metric_projection_truth_error": {
+      "count": 3500,
+      "maximum_signed_violation": -0.022079623899941336,
+      "tolerance": 5e-10,
+      "passed": true
+    },
+    "time_varying_discrete_metric_equality": {
+      "count": 8000,
+      "maximum_signed_violation": 1.410974501936453e-13,
+      "tolerance": 5e-10,
+      "passed": true
+    },
+    "masked_snapshot_minimum_bound": {
+      "count": 8000,
+      "maximum_signed_violation": 0.0,
+      "tolerance": 5e-10,
+      "passed": true
+    },
+    "scheduled_metric_tube": {
+      "count": 8000,
+      "maximum_signed_violation": -0.022869822416507257,
+      "tolerance": 5e-10,
+      "passed": true
+    },
+    "expanding_steps_windowed_product": {
+      "count": 810,
+      "maximum_signed_violation": 0.0,
+      "tolerance": 5e-10,
+      "passed": true
+    }
+  },
+  "coupled_projection_counterexample": {
+    "preprojection_selected_error": 0.0,
+    "postprojection_selected_error": 0.25746437496366703
+  },
+  "innovation_counterexample": {
+    "gamma": 0.08,
+    "r": 3.0,
+    "derivative_exact": 1.01,
+    "derivative_finite_difference": 1.0100000000123899,
+    "truth_error_multiplier": 0.9800000000000002
+  },
+  "all_passed": true
+}

@@ -1,0 +1,105 @@
+{
+  "purpose": "Analytical consistency checks on constructed numerical examples",
+  "limitations": [
+    "Not robot experiments or empirical VLA validation",
+    "Not a substitute for proofs",
+    "Does not certify contraction, calibration, or task margins on the reported systems"
+  ],
+  "numpy_version": "2.3.5",
+  "absolute_tolerance": 2e-11,
+  "all_passed": true,
+  "checks": [
+    {
+      "name": "innovation_projection_drift_and_product_bound",
+      "passed": true,
+      "maximum_bound_excess": -5.159571391387223e-05,
+      "steps": 150,
+      "projected_steps": 1,
+      "observed_alpha_range": [
+        0.7445558007743032,
+        0.9499999896468093
+      ],
+      "theoretical_alpha_lower_bound": 0.3604989417120306,
+      "final_estimation_error": 0.01943951396936307,
+      "checked": "One-step, independently expanded product, and uniform bounds"
+    },
+    {
+      "name": "fir_step_onset_and_settled_history",
+      "passed": true,
+      "maximum_bound_excess": 6.736447455048117e-17,
+      "memory_K": 6,
+      "onset": 5,
+      "first_post_onset_error": 0.12142813479565862,
+      "largest_settled_error": 6.206335383118183e-17,
+      "checked": "Direct plant/predictor convolution and exact history decomposition"
+    },
+    {
+      "name": "legacy_attenuation_and_exact_fixed_point",
+      "passed": true,
+      "maximum_bound_excess": 3.3306690738754696e-16,
+      "attenuation": 0.062068965517241365,
+      "convergence_error": 3.8163916471489756e-17,
+      "remaining_true_fault_error": 1.1789610291288337,
+      "checked": "Closed-form iteration and error recursion at a boundary-feasible fault"
+    },
+    {
+      "name": "masked_finite_horizon_tube_with_adapter_discrepancy",
+      "passed": true,
+      "maximum_bound_excess": 6.938893903907228e-18,
+      "steps": 60,
+      "final_distance": 0.0019209876074837418,
+      "final_radius": 0.02619380869584836,
+      "includes_expansive_steps": true,
+      "adapter_discrepancy_needed_in_at_least_one_step": true,
+      "checked": "Explicit linear trajectories and independent tube-product expansion"
+    },
+    {
+      "name": "coupled_small_gain_variable_step_worst_case",
+      "passed": true,
+      "maximum_bound_excess": -0.0056212485333160915,
+      "configurations": [
+        {
+          "lam": 0.8,
+          "b": 0.12,
+          "kE": 0.15,
+          "kX": 0.2,
+          "amin": 0.12,
+          "weight_s": 1.5968719422671311,
+          "chi": 0.9363249266144111,
+          "forcing_dstar": 0.007984359711335655,
+          "largest_constant_matrix_spectral_radius": 0.9216704891960967,
+          "final_weighted_error": 0.016185437639014,
+          "final_bound": 0.1253922341501773
+        },
+        {
+          "lam": 0.95,
+          "b": 0.2,
+          "kE": 0.4,
+          "kX": 0.14,
+          "amin": 0.05,
+          "weight_s": 4.1403933560541235,
+          "chi": 0.9989827534923789,
+          "forcing_dstar": 0.020701966780270618,
+          "largest_constant_matrix_spectral_radius": 0.9987298334620741,
+          "final_weighted_error": 1.335376682717883,
+          "final_bound": 7.908196334773756
+        },
+        {
+          "lam": 0.6,
+          "b": 0.3,
+          "kE": 0.2,
+          "kX": 0.0,
+          "amin": 0.2,
+          "weight_s": 1.75,
+          "chi": 0.84,
+          "forcing_dstar": 0.00875,
+          "largest_constant_matrix_spectral_radius": 0.84,
+          "final_weighted_error": 0.01684825763235196,
+          "final_bound": 0.05468749999999999
+        }
+      ],
+      "steps_per_configuration": 400,
+      "checked": "Common weighted bound, forced recursion, near-boundary and kX=0 cases"
+    }
+  ]
+}

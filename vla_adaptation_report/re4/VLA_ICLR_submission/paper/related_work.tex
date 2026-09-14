@@ -1,0 +1,36 @@
+\section{Related work}
+\label{sec:related}
+\paragraph{VLA adaptation and residual recovery.}
+J-PARC is the closest architectural comparison: a frozen VLA, joint-motion
+history, inferred fault context, and learned residual action calibration
+\citep{jparc2026}, trained with fault labels and paired healthy/faulted
+information. Our distinction is online numerical identification from
+calibrated proprioceptive residuals, without training a fault-conditioned
+residual policy; healthy calibration, sensitivity probes, and fault-family
+development remain part of our data budget. TT-VLA uses test-time
+reinforcement learning with a pretrained progress estimator
+\citep{ttvla2026}, BORA learns a residual through reinforcement learning
+\citep{bora2026}, and VLA-Corrector uses visual prediction during inference
+\citep{vlacorrector2026}; Residual Control for Fast Recovery from Dynamics
+Shifts keeps a nominal policy fixed and learns a bounded, tracking-driven
+residual \citep{jayasinghe2026residual}. Our update requires neither
+task-progress reward nor tracking feedback, and a matched J-PARC comparison
+is needed to establish an empirical advantage.
+
+\paragraph{Adaptive and contraction-based control.}
+Disturbance observers and robust adaptation underpin estimation
+\citep{chen2016dob,ioannou1996}; composite control combines tracking and
+prediction \citep{slotine1989composite}, and informative stored data support
+parameter convergence \citep{chowdhary2010concurrent,parikh2019integral}.
+Neural-Fly combines learned representations with compact composite adaptation
+\citep{oconnell2022neuralfly}, RMA learns legged-dynamics adaptation
+\citep{rma2021}, and fault recovery depends on surviving authority
+\citep{tao2001actuator}. Contraction gives differential trajectory and
+perturbation bounds \citep{lohmiller1998,tsukamoto2021tutorial}; geodesic
+adaptive feedback and neural metric constructions are established
+\citep{lopez2020adaptivecontraction,tsukamoto2021adaptivecontraction}, and
+parameter-dependent metrics need extra transient terms
+\citep{gessow2023adaptive}. We specialize this foundation to physical
+execution with prediction-only adaptation, biased targets, limited support,
+native realization, and delayed application; the composite extension is
+unevaluated in the reported VLA trials.

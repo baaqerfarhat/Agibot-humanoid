@@ -1,0 +1,32 @@
+\section{From residual estimation to execution recovery}
+\label{sec:theory}\label{sec:contraction}
+We analyze the evaluated prediction-only updates in the order in which
+errors reach the robot: selected-coordinate estimation, the applied
+correction, a scheduled execution tube, and predictor--execution coupling.
+The nominal comparison follows the \emph{same supplied VLA commands}.
+Its contraction metric concerns the robot with its low-level controller;
+neither the VLA Jacobian nor a separately evolving healthy policy is required.
+The metric may be constructed from physical tracking dynamics
+(Appendix~\ref{app:gen-innerloop}) and, for the evaluated robots, was
+measured by same-command replay; that measurement is what decides whether
+the results below are certificates or finite-horizon statements
+(Appendix~\ref{app:measured-certificates}). Prediction-only adaptation does
+not compute the nominal response or a geodesic online.
+
+The execution state must close the physical transition: it contains robot
+and necessary low-level controller, delay, and interpolation states, plus
+object/contact states when their evolution affects execution. Omitted contact
+or environment effects require a uniform disturbance bound on the stated
+domain; otherwise the certificate applies only to the reduced servo model
+(Appendix~\ref{app:physical-closure}). VLA internal memory and the separate
+observer FIR history are excluded unless a retained physical dependence
+requires additional state or bounded forcing
+(Appendix~\ref{app:history-partition}).
+
+Same-input contraction and disturbance-to-tracking bounds are established
+machinery \citep{lohmiller1998,manchester2017}. Our
+specialization composes residual calibration with partial correction support,
+update holds, snapshot age, clipping and realization error, and a
+prediction-dependent small-gain condition. The optional continuous composite
+controller and fixed-data gradient candidate are developed only in
+Appendices~\ref{sec:composite-extension} and~\ref{app:sampled-gradient}.

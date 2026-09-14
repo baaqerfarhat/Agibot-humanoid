@@ -1,0 +1,14 @@
+{
+  "purpose": "Numerical checks of derived inequalities, not experimental controller validation",
+  "seed": 902026,
+  "randomized_trials": 5000,
+  "max_projection_inequality_excess": 0.0,
+  "max_composite_dissipation_bound_excess": -1.808851729378116,
+  "max_parameter_jump_bound_excess": -0.007451529940022739,
+  "scalar_euler_stable_factor": 0.4,
+  "scalar_euler_unstable_factor": 1.5,
+  "stale_memory_full_rank_mu": 4.0,
+  "stale_memory_bias": 8.0,
+  "stale_memory_equilibrium_parameter_error": 2.0,
+  "result": "passed"
+}

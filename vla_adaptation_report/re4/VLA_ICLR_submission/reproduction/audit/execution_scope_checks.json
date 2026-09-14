@@ -1,0 +1,54 @@
+{
+  "scope": "Constructed PD metric and shared-command counterexample; no VLA validation",
+  "pd": {
+    "Kp": 4,
+    "Kd": 3,
+    "Q_PD": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "P_exact": [
+      [
+        "29/24",
+        "1/8"
+      ],
+      [
+        "1/8",
+        "5/24"
+      ]
+    ],
+    "exact_lyapunov_identity": true,
+    "A_cl_eigenvalues": [
+      {
+        "real": -1.5,
+        "imag": 1.3228756555322951
+      },
+      {
+        "real": -1.5,
+        "imag": -1.3228756555322951
+      }
+    ],
+    "metric_eigenvalues": [
+      0.1929451301311258,
+      1.2237215365355407
+    ],
+    "contraction_rate": 0.40858968733650197,
+    "max_metric_inequality_eigenvalue": 8.222589276130066e-16
+  },
+  "common_command_counterexample": {
+    "actual_state": "z(t)=exp(t), r(t)=2*exp(t)",
+    "nominal_response": "z_r(t)=exp(t)-exp(-t)",
+    "execution_error": "z(t)-z_r(t)=exp(-t)",
+    "full_feedback_growth_rate": 1,
+    "execution_contraction_rate": 1,
+    "max_reference_ode_error": 1.7763568394002505e-15,
+    "max_execution_error_formula_defect": 3.4659775050016606e-15
+  },
+  "all_checks_pass": true
+}

@@ -1,0 +1,34 @@
+{
+  "nonconstant_metric_analytic_identities_numeric_check": {
+    "cases": 5000,
+    "metric_identity_error": 1.4210854715202004e-14,
+    "first_variation_identity_error": 2.1316282072803006e-14,
+    "domain": "[-2,2], with endpoints and relevant perturbations contained",
+    "metric": "cosh(x)^2",
+    "nominal_field": "-lambda*tanh(x)",
+    "energy": "(sinh(x)-sinh(xr))^2/2"
+  },
+  "innovation_counterexample_exact": {
+    "pair_multiplier": "101/100",
+    "truth_multiplier": "49/50"
+  },
+  "nonconstant_metric_projected_composite": {
+    "cases": 5000,
+    "max_positive_excess": 5.684341886080802e-14
+  },
+  "projected_common_data_observers": {
+    "cases": 5000,
+    "max_positive_excess": 4.547473508864641e-13
+  },
+  "sampled_metric_geodesic_input": {
+    "cases": 5000,
+    "metric_identity_error": 1.3322676295501878e-15,
+    "input_identity_error": 4.0245584642661925e-16,
+    "max_positive_tube_excess": 3.885780586188048e-16
+  },
+  "coupled_projection_mask_counterexample": {
+    "selected_input_difference": 0.0,
+    "selected_output_difference": 0.5
+  },
+  "scope": "Exact rational counterexample and constructed numerical checks of analytical identities only; not a formal proof of all hypotheses and not verification of any VLA experiment."
+}
