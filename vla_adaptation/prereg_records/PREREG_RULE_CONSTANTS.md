@@ -41,3 +41,42 @@ normaliser change.
 **Refutation handling.** Each prediction is scored separately and a failure is reported as
 primary with the count that failed it. The held-out calibration rerun (step 3 of the plan) is
 registered separately after these land.
+
+---
+
+## Outcome, faulted cells (2026-09-14; `results/rule_constants/faulted_*`; healthy controls pending)
+
+| suite | frozen → adaptive | fixed / broken | shipped legacy | D.2 innovation, all-channel normaliser | settle r_x / r_y / r_z (% of fault) |
+|---|---|---|---|---|---|
+| libero_spatial, n = 20 | 9 → **19** | 10 / 0 | 18 | 18 | 93 / 42 / 102 |
+| libero_object, n = 20 | 3 → **17** | 14 / 0 | 16 | — | 87 / 60 / 101 |
+| libero_goal, n = 40 | 17 → **30** | 14 / 1 | 29 | — | 85 / 58 / 94 |
+| libero_10, n = 40 | 0 → **13** | 13 / 0 | 15 | 12 | 91 / 45 / 97 |
+
+Pooled over the four suites: 29/120 → **79/120**, 51 fixed, 1 broken, against the shipped
+28/120 → 78/120 (51 fixed, 1 broken): the same aggregate, one episode apart.
+
+- **Prediction 1 (estimate): holds in substance, misses the letter on r_x.** r_z is at the truth
+  on every suite (94–102 %); r_x is 85–93 % (the registered floor was 90 %; two suites are below it
+  by three and five points); r_y is 42–60 %, above the registered 50 % ceiling on object and goal
+  and nowhere near the 70 % that would refute the record-50 diagnosis. Against the legacy law's
+  87 / 41 / 88 % on the headline cell, the unbiased law recovers the r_z shortfall in full and most
+  of r_x; the remaining r_x gap is not the attenuation.
+- **Prediction 2 (counts): holds on spatial (19 ≥ 19), object (17 vs 16) and goal (30 vs 29); fails
+  on libero_10 by two episodes (13 against the registered ≥ 15).** The registered refutation
+  (≤ 12/40) is not triggered. Paired on the same 40 scenarios against the shipped legacy cell the
+  difference is 4 episodes won and 6 lost (both runs unpinned), i.e. noise; against the D.2
+  innovation cell with the all-channel normaliser it is 7 won and 6 lost. On the long-horizon
+  suite the normaliser channel change buys nothing measurable, as the refutation clause
+  anticipated, and it costs nothing.
+- **Adoption rule, applied as registered:** prediction 2 must hold on all four suites; it does not
+  (libero_10). The configuration therefore does not replace the legacy reference as the headline
+  on this evidence and is reported as an ablation row — equal to the shipped configuration in
+  aggregate (79 vs 78 of 120), with an unbiased estimate, and the theory-covered law. The healthy
+  controls (prediction 3) decide whether it is a safe row; they are running.
+
+Reading, stated plainly: the one constant set against the paper's rule cost the estimate, not the
+task outcome. Fixing it makes the estimate honest (r_z at the truth, r_x at 85–93 %) and leaves
+the counts where they were, because the task margins on these suites tolerate a 10–15 %
+under-correction on rotation. The r_y deficit (45–60 %) survives every law and normaliser and
+remains the plant's DC-gain mismatch (record 50).
