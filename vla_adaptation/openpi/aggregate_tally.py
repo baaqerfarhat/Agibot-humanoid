@@ -6,7 +6,10 @@ its counts. Nothing here is hand-typed except the rules.
 
 Rules (the only editorial content):
   * excluded directories: diagnostics and other authors' studies that the paper does not sum
-    (ace*, oracle, gate04, observers, saturation, sweep, joint_followup, composite_*, descriptor,
+    (re4_evidence and re4_theory: replications and diagnostics of cells already counted, rerun
+    under variant protocols -- held-out calibration, healthy controls, pinned samplers, telemetry --
+    and reported in their own sections, never summed; ace*, oracle, gate04, observers, saturation,
+    sweep, joint_followup, composite_*, descriptor,
     mimo, norm_channels, joint_map, jointmap, hardware, suites/*_n20 superseded reruns);
   * excluded files: integral/matched-baseline sweeps (arm tag 'integral' or args.baseline != none),
     estimate-only probes, aborted/partial files (name contains 'aborted' or 'partial'), the
@@ -18,7 +21,7 @@ Usage: python aggregate_tally.py [--root results] [--out results/aggregate_manif
 """
 import argparse, glob, json, os, pathlib, re
 
-EXCL_DIRS = ("ace", "oracle", "gate04", "observers", "saturation", "sweep", "joint_followup",
+EXCL_DIRS = ("re4_evidence", "re4_theory", "ace", "oracle", "gate04", "observers", "saturation", "sweep", "joint_followup",
              "composite_", "descriptor", "mimo", "norm_channels", "joint_map", "jointmap", "hardware")
 CATS = [("suites", "headline four suites"), ("phase05/jf_", "faults below the controller"),
         ("phase05/abl_", "constants ablation"), ("phase05/map_", "map cells n=40"),

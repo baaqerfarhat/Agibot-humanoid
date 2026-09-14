@@ -1178,6 +1178,15 @@ def main():
     n_tasks = pr.suite.n_tasks
     eps = [(((i * a.task_stride) % n_tasks), a.eval_init + (i * a.task_stride) // n_tasks)
            for i in range(a.episodes)]
+    # LIBERO stores 50 initial states per task (0-49). A run that needs more states per task
+    # than 50 - eval_init (re4 theory Part 8.2: n = 80 on ten tasks from init 45) wraps DOWNWARD
+    # from eval_init - 1 rather than crashing at index 50 or silently reusing a state:
+    # 45, 46, ..., 49, 44, 43, ... The first n = 80 attempt crashed at episode 51 on this.
+    N_INIT = 50
+    if any(init >= N_INIT for _, init in eps):
+        eps = [(t, init if init < N_INIT else a.eval_init - 1 - (init - N_INIT)) for t, init in eps]
+        assert all(0 <= init < N_INIT for _, init in eps), "init wrap ran out of stored states"
+        print(f"initial states wrap below {a.eval_init}: using {sorted(set(i for _, i in eps))}")
     # Held-out check. error_signal.py --init-base and this script's --eval-init BOTH default
     # to 45, so unless one of them is moved the plant is identified on initial states the
     # evaluation then scores on. The published spatial cell evaluates inits {45,46}: half its

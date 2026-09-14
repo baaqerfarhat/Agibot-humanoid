@@ -17,7 +17,7 @@ section-0 logging contract of the first plan (`openpi/re4_record.py`).
 | 6 r_y as a theory test | `6_ry/arx_spatial`, `6_ry/arx_libero_10` | ARX run: prediction 1 refuted (r_y 32 %); every fitted plant shares the r_y DC gain 0.10 vs probed 0.28 — record 50; libero_10 (unregistered) 0/40 → 11/40 |
 | 7 composite on GR1 (stretch) | — | not started; the first-order channel it needs is certified (2.1) |
 | 8.1 task-clustered bootstrap | `8_statistics/clustered_bootstrap.json` | done |
-| 8.2 seed-pinned decision cells, paired integral | `8_statistics/` | queued behind Part 6 |
+| 8.2 seed-pinned decision cells, paired integral | `8_statistics/{a_*,b_*}`, `score_8_2*.json` | done: static vs method on libero_10 refuted (+1/80, p = 1); integral baseline paired +15/20, p = 6e-5 — record 51 |
 | 8.3 recovery vs geometric decay | — | settled by Part 1: no decay time exists when λ̂ = 1 |
 
 ## Deviations from the plan, stated

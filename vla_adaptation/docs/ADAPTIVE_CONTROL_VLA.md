@@ -4060,3 +4060,38 @@ gain to the probed M, or identify from open-loop segments — is not registered 
 
 Paper: Appendix "What a recovery theorem would need, measured", r_y paragraph.
 
+## 51. Seed-pinned decision cells (re4 theory Part 8.2, 2026-09-13)
+
+`results/re4_theory/8_statistics/{a_method,a_static}_libero10_n80`, `{b_method,b_integral}_spatial_tra015`,
+scores `score_8_2a_method_vs_static.json`, `score_8_2b_method_vs_integral.json` (scorer
+`openpi/re4_theory/decision_cells.py`; prereg `PREREG_RE4T_8_2_DECISION_CELLS.md`, amended
+before the rerun: LIBERO stores 50 initial states per task, so n = 80 on ten tasks uses inits
+42–49, the runner now wrapping downward instead of crashing at index 50 as the first attempt did).
+
+**What pinning buys.** With `--pin-rng` (one sampler key per policy call) and `--scenario-reset`,
+two runs' frozen arms agree on every outcome (80/80 and 20/20 pairs) and execute identical
+commands to the last step in 61/80 and 17/20 episodes; the rest diverge at a policy-call
+boundary (steps 10–150), the GPU's own nondeterminism. Two adaptive arms under different
+observers diverge at step 10–11 in every pair, the first update. So the pairing is exact up to
+the first update, and the outcome comparison carries no sampling noise from the policy's draws.
+
+**8.2a, static observer vs FIR method, libero_10, n = 80: refuted.** Method 10/80, static 9/80;
+method-only 5, static-only 4, gap +1, exact McNemar p = 1.0 (registered: gap ≥ 6, p < 0.05;
+refutation at gap ≤ 3 or p ≥ 0.05). The Part D.1 gap of 6/40 (record 44, p = 0.07) was cell-level
+sampling noise: **FIR memory does not resolve on the long-horizon suite at n = 80.** The
+README's baseline row says so now.
+
+**8.2b, method vs paired integral baseline, spatial translation 0.15, n = 20: holds.** Method
+18/20, integral 3/20; method-only 15, integral-only 0, gap +15, p = 6.1×10⁻⁵ (registered gap ≥ 8).
+The paper's cross-cohort 19/20 vs 7/20 is reproduced paired and larger. Estimates: method
+112 / 56 / 125 % of the fault on x / y / z, integral 18 / 41 / 163 % — the integral's x never
+arrives and its z overshoots, as Part D.4 showed unpaired.
+
+**Absolute levels under pinning are not comparable to unpinned cells.** On inits 45–48 the
+pinned method scores 5/40 on libero_10 against 15/40 unpinned (record 36): one key per call is
+one fixed noise realisation, a single policy rather than the policy's average. Paired
+comparisons within a pinned design are unaffected; counts across designs are not.
+
+This closes the GPU items of the theory plan. Open: Part 7 (composite on the GR1, stretch) and
+the unregistered next lever on r_y (constrain the plant's DC gain to the probed M, record 50).
+

@@ -1,5 +1,5 @@
 {
- "rules": "The aggregate paired-episode tally the abstract quotes, computed, not hand-assembled\n(dual-track audit finding 4.3). Sweeps every result file that carries paired per-episode\noutcomes for a frozen-faulted and an adaptive arm, assigns it to a category by path, applies\nthe EXCLUSION rules below, and writes a manifest naming every included and excluded file with\nits counts. Nothing here is hand-typed except the rules.\n\nRules (the only editorial content):\n  * excluded directories: diagnostics and other authors' studies that the paper does not sum\n    (ace*, oracle, gate04, observers, saturation, sweep, joint_followup, composite_*, descriptor,\n    mimo, norm_channels, joint_map, jointmap, hardware, suites/*_n20 superseded reruns);\n  * excluded files: integral/matched-baseline sweeps (arm tag 'integral' or args.baseline != none),\n    estimate-only probes, aborted/partial files (name contains 'aborted' or 'partial'), the\n    unpaired GR1 cohorts (files without per_ep in both arms are skipped anyway);\n  * a healthy control is counted (it is a paired comparison the paper reports);\n  * a corrected-protocol rerun extended to n=40 supersedes its own n=20 version (jf_rerun/X.json\n    is dropped when jf_rerun/X_n40.json exists: same scenarios, counted once).\nUsage: python aggregate_tally.py [--root results] [--out results/aggregate_manifest.json]\n",
+ "rules": "The aggregate paired-episode tally the abstract quotes, computed, not hand-assembled\n(dual-track audit finding 4.3). Sweeps every result file that carries paired per-episode\noutcomes for a frozen-faulted and an adaptive arm, assigns it to a category by path, applies\nthe EXCLUSION rules below, and writes a manifest naming every included and excluded file with\nits counts. Nothing here is hand-typed except the rules.\n\nRules (the only editorial content):\n  * excluded directories: diagnostics and other authors' studies that the paper does not sum\n    (re4_evidence and re4_theory: replications and diagnostics of cells already counted, rerun\n    under variant protocols -- held-out calibration, healthy controls, pinned samplers, telemetry --\n    and reported in their own sections, never summed; ace*, oracle, gate04, observers, saturation,\n    sweep, joint_followup, composite_*, descriptor,\n    mimo, norm_channels, joint_map, jointmap, hardware, suites/*_n20 superseded reruns);\n  * excluded files: integral/matched-baseline sweeps (arm tag 'integral' or args.baseline != none),\n    estimate-only probes, aborted/partial files (name contains 'aborted' or 'partial'), the\n    unpaired GR1 cohorts (files without per_ep in both arms are skipped anyway);\n  * a healthy control is counted (it is a paired comparison the paper reports);\n  * a corrected-protocol rerun extended to n=40 supersedes its own n=20 version (jf_rerun/X.json\n    is dropped when jf_rerun/X_n40.json exists: same scenarios, counted once).\nUsage: python aggregate_tally.py [--root results] [--out results/aggregate_manifest.json]\n",
  "included": [
   {
    "file": "aloha/healthy.json",
@@ -5567,6 +5567,478 @@
   {
    "file": "phase05/wrist_fault.json",
    "why": "no per-episode outcomes (unpaired)"
+  },
+  {
+   "file": "re4_evidence/A_provenance/implementation_map.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/B_gate/gate_phantom_estimate_only/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/B_gate/gate_spatial_healthy/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/B_gate/gate_spatial_uniform005/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/B_gate/phantom_stats.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/B_heldout/heldout_libero_10/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/B_heldout/heldout_libero_goal/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/B_heldout/heldout_libero_object/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/B_heldout/heldout_libero_spatial/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/heldout_libero_10/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/heldout_libero_10/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/heldout_libero_10/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/heldout_libero_goal/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/heldout_libero_goal/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/heldout_libero_goal/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/heldout_libero_object/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/heldout_libero_object/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/heldout_libero_object/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/heldout_libero_spatial/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/heldout_libero_spatial/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/heldout_libero_spatial/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/shipped_libero_10/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/shipped_libero_10/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/shipped_libero_10/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/shipped_libero_goal/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/shipped_libero_goal/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/shipped_libero_goal/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/shipped_libero_object/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/shipped_libero_object/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/shipped_libero_object/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/shipped_libero_spatial/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/shipped_libero_spatial/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/C_healthy/shipped_libero_spatial/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D0_method_libero_10/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D0_method_libero_10/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D0_method_libero_10/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D0_method_libero_spatial/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D0_method_libero_spatial/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D0_method_libero_spatial/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D1_static_k0_libero_10/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D1_static_k0_libero_10/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D1_static_k0_libero_10/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D1_static_k0_libero_spatial/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D1_static_k0_libero_spatial/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D1_static_k0_libero_spatial/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D2_innov_libero_10/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D2_innov_libero_10/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D2_innov_libero_10/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D2_innov_libero_spatial/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D2_innov_libero_spatial/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D2_innov_libero_spatial/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D3a_oracle_rot_libero_10/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D3a_oracle_rot_libero_10/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D3a_oracle_rot_libero_10/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D3a_oracle_rot_libero_spatial/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D3a_oracle_rot_libero_spatial/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D3a_oracle_rot_libero_spatial/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D3b_oracle_all_libero_spatial/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D3b_oracle_all_libero_spatial/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/D_baselines/D3b_oracle_all_libero_spatial/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/aloha_cont_innov/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/aloha_cont_innov/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/aloha_cont_innov/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/aloha_cont_legacy/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/aloha_cont_legacy/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/aloha_cont_legacy/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/aloha_held/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/aloha_held/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/aloha_held/timing_summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/gr1_cont_innov/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/gr1_cont_innov/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/gr1_cont_legacy/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/gr1_cont_legacy/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/gr1_held/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/F_held_vs_continued/gr1_held/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/G_forensics/decoder_bound.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/G_forensics/predictor_diagnostics.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/H_third_init/error_signal_init5.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/H_third_init/openloop_init5.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/calibration/heldout_init25.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/calibration/shipped_init45.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_evidence/calibration/third_init5.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/1_contraction/panda_replay.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/1_contraction/summary.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/2_metric/metric_certificate_aloha.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/2_metric/metric_certificate_gr1.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/2_metric/metric_certificate_panda.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/6_ry/arx_libero_10/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/6_ry/arx_libero_10/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/6_ry/arx_spatial/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/6_ry/arx_spatial/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/8_statistics/a_method_libero10_n80/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/8_statistics/a_method_libero10_n80/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/8_statistics/a_static_libero10_n80/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/8_statistics/a_static_libero10_n80/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/8_statistics/b_integral_spatial_tra015/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/8_statistics/b_integral_spatial_tra015/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/8_statistics/b_method_spatial_tra015/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/8_statistics/b_method_spatial_tra015/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/8_statistics/clustered_bootstrap.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/8_statistics/determinism_check_method_vs_partial.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/8_statistics/score_8_2a_method_vs_static.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/8_statistics/score_8_2b_method_vs_integral.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T1_headline/part_3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T1_headline/part_4.2.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T1_headline/part_4.3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T1_headline/part_5.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T1_headline/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T1_headline/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T2_onset40/part_4.1.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T2_onset40/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T2_onset40/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T3_ramp60/part_4.4.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T3_ramp60/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T3_ramp60/run_configuration.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T4_innov/part_4.3.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T4_innov/result.json",
+   "why": "excluded directory"
+  },
+  {
+   "file": "re4_theory/telemetry/T4_innov/run_configuration.json",
+   "why": "excluded directory"
   },
   {
    "file": "saturation/S3.json",

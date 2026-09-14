@@ -1,0 +1,42 @@
+{
+ "run_a": "results/re4_theory/8_statistics/a_method_libero10_n80",
+ "run_b": "results/re4_theory/8_statistics/a_method_libero10_n80_partial_crash_init50",
+ "arm_a": "adaptive",
+ "arm_b": "adaptive",
+ "n_pairs": 0,
+ "a_successes": 0,
+ "b_successes": 0,
+ "table": {
+  "both": 0,
+  "a_only": 0,
+  "b_only": 0,
+  "neither": 0
+ },
+ "gap": 0,
+ "mcnemar_exact_p": 1.0,
+ "divergence": {
+  "n_with_telemetry": 0,
+  "never_diverged": 0,
+  "median_step": null,
+  "steps": []
+ },
+ "frozen_check": {
+  "n_pairs": 50,
+  "outcome_agreement": 1.0,
+  "never_diverged": 39,
+  "n_with_telemetry": 50,
+  "divergence_steps": [
+   10,
+   10,
+   10,
+   15,
+   25,
+   25,
+   60,
+   65,
+   80,
+   130,
+   150
+  ]
+ }
+}

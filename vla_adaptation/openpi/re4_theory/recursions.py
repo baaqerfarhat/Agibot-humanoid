@@ -19,9 +19,21 @@ sys.path.insert(0, str(HERE))
 import adaptive_law as AL
 
 
+def open_log(path):
+    """Open a JSONL log that may be stored gzipped (large telemetry files are kept as .jsonl.gz)."""
+    import gzip
+    path = pathlib.Path(path)
+    if path.exists():
+        return open(path)
+    gz = path.with_name(path.name + ".gz")
+    if gz.exists():
+        return gzip.open(gz, "rt")
+    raise FileNotFoundError(path)
+
+
 def load_tel(path):
     eps = {}
-    for line in open(path):
+    for line in open_log(path):
         d = json.loads(line)
         if d.get("type") != "step" or d.get("phase") != "rollout":
             continue
