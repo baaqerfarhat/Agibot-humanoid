@@ -4150,3 +4150,27 @@ episodes. **Adoption rule not met; the configuration is an ablation row and the 
 stays the headline.** The one mis-set constant cost the estimate, not the outcome: the task
 margins on these suites tolerate a 10–15 % under-correction on rotation. The r_y deficit is
 untouched by law or normaliser (record 50); the DC-gain-constrained plant is the next lever.
+
+## 54. The r_y lever works by intervention: a plant with its DC gain constrained to the probe (2026-09-14)
+
+`results/dc_plant/`, prereg `PREREG_DC_CONSTRAINED_PLANT.md`, runner flag `--dc-constrain
+corrected` (constrained ridge: the command-tap sum of each corrected channel pinned to the probed
+M entry through the KKT system; on the shipped log the rotation tap sums move
+0.228 / 0.103 / 0.248 → 0.253 / 0.276 / 0.244). Legacy reference otherwise unchanged.
+
+| cell | frozen → adaptive (fixed / broken) | comparator | settle r_x / r_y / r_z (%) |
+|---|---|---|---|
+| spatial faulted, 20 | 7 → 17 (11 / 1) | shipped 18, oracle 19 | 94 / **82** / 86 |
+| libero_10 faulted, 40 | 0 → **18** (18 / 0) | shipped 15, oracle 22 | 96 / **70.5** / 89 |
+| spatial healthy, 20 | 20 → 19 (0 / 1) | legacy plant 19 → 20 | phantom ≤ 0.003 median; one episode ran to 0.078 |
+
+All three registered predictions hold (r_y ≥ 70 % on both suites; libero_10 ≥ 18/40 at the
+letter, 10 won / 7 lost paired against the shipped cell; no-harm within bounds). The record-50
+diagnosis is now confirmed by intervention rather than by regression: the r_y deficit was the
+2.7× gap between the closed-loop-fitted and the probed gain, and closing it doubles the
+estimate. What it did not resolve: whether the +3 on libero_10 is real (n = 40, unpinned) and
+whether the constrained plant's poorer healthy fit costs healthy episodes at scale (one lost of
+20). Both are E2's questions, and by the rule stated in `docs/UNIFIED_PLAN_EXECUTION.md` E2 goes
+ahead: probe-qualified constraint, innovation law, fresh partitions, three sampler seeds, 120
+paired keys, healthy arms. Healthy sources for E1/E2 are being collected
+(`PREREG_UNIFIED_PARTITIONS.md`).
