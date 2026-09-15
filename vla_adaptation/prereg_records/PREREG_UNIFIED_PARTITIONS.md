@@ -20,3 +20,7 @@ recorded as such; policy pi0.5, replan 5), 20 Hz, suite cap. Checkpoints for E1/
 steps 30 and 70 of each source (declared; a source shorter than checkpoint + horizon leaves that
 checkpoint missing). Horizons: E1 100 steps, E2 probes 40 steps. Faults: E1 +0.05 on normalised
 rotation-y; E2 core uniform +0.05 on six channels, rotation mask {3, 4, 5}.
+
+**Amendment 2026-09-15:** the E1 locked test moves to **state 33, tasks 0–9** (state 34's outcomes were
+seen before the driver defect was found; see the E1 prereg's supersession note). State 34 becomes a
+regression-diagnostic set only.

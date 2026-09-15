@@ -101,7 +101,11 @@ def main():
     # envelope from qualification residuals of the memory model
     res = [np.linalg.norm(r["e"] - predict_memory(G, r["d"]), axis=1) for r in qual]
     H = max(len(x) for x in res); r95 = np.array([np.percentile([x[k] for x in res if len(x) > k], 95) for k in range(H)])
-    frozen = dict(L=L, lam_geometric=float(lam), envelope_r95_by_step=r95.tolist(), fit_rows=len(fit), qual_rows=len(qual))
+    frozen = dict(L=L, lam_geometric=float(lam), G_memory=G.tolist(), B_geometric=Bg.tolist(), B_neutral=Bn.tolist(), ridge_memory=1e-6,
+                  fit_objective=dict(memory="direct response error over the continuation", geometric="one-step prediction error, lambda on a grid 0.5-0.999 (a comparator fit, not a measured contraction coefficient)", neutral="lambda = 1 fixed"),
+                  units=dict(e="m (ee position deviation from healthy)", d="normalised action units (remaining disturbance)"),
+                  envelope_r95_by_step=r95.tolist(), envelope_note="per-step 95th percentile of qualification residual norms; empirical, not a simultaneous or distribution-free bound",
+                  fit_rows=len(fit), qual_rows=len(qual))
     # locked scoring
     rows = []; cov_all = []; ratios = []
     for r in test:

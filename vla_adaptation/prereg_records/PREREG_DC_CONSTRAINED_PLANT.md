@@ -70,15 +70,18 @@ Healthy spatial, n = 20: frozen 20 → adaptive **19** (0 fixed, 1 broken); heal
 median 0.0006 / −0.0030 / 0.0016 on r_x / r_y / r_z. **Prediction 3 holds at its letter** (one
 episode lost, allowed two; the median r_y phantom is a third of the 0.01 bound). Reported with
 it: one healthy episode's r_y estimate ran to |0.078| over its last 50 steps, above the fault
-size — the constrained plant fits the healthy log worse on r_y by construction, and on that
-episode the residual it left was acted on until the projection bound; that is the lost episode.
+size — the constrained plant fits the healthy log worse on r_y by construction. **Correction
+(2026-09-15, after the consistency review):** that episode (task 6) *succeeded*; the lost episode
+is task 4, whose last-50-step r_y estimate was +0.027. The largest phantom and the regression are
+separate observations, and the regression is not attributed to a phantom without trace-level
+evidence.
 The legacy plant's healthy control on the same scenarios lost none (record 43: 19 → 20).
 
 **Summary.** The intervention does what record 50 said it would: raising the fitted r_y gain to
 the probed value doubles the r_y estimate (41 → 82 % spatial, 45 → 70.5 % libero_10) with nothing
 else changed, and libero_10 moves from 15 to 18 of 40 (paired 10 won / 7 lost, unpinned) toward
 the oracle's 22; spatial is unchanged within noise (17 vs 18) and the healthy control loses one
-episode to a runaway phantom. All three predictions hold; none of the count effects is resolved
+episode (task 4; the largest healthy phantom, 0.078, sat on a different, successful episode). All three predictions hold; none of the count effects is resolved
 at n ≤ 40. This is the pilot for E2 of `iclr2027/EXPERIMENT_PLAN.md`; E2's own design (probe-
 qualified constraint, innovation law, fresh partitions, three sampler seeds, 120 paired keys,
 healthy arms with a −5-point no-harm target) is what can resolve them, and it goes ahead.

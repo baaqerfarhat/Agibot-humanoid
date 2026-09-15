@@ -4162,7 +4162,7 @@ M entry through the KKT system; on the shipped log the rotation tap sums move
 |---|---|---|---|
 | spatial faulted, 20 | 7 → 17 (11 / 1) | shipped 18, oracle 19 | 94 / **82** / 86 |
 | libero_10 faulted, 40 | 0 → **18** (18 / 0) | shipped 15, oracle 22 | 96 / **70.5** / 89 |
-| spatial healthy, 20 | 20 → 19 (0 / 1) | legacy plant 19 → 20 | phantom ≤ 0.003 median; one episode ran to 0.078 |
+| spatial healthy, 20 | 20 → 19 (0 / 1) | legacy plant 19 → 20 | phantom ≤ 0.003 median; one (successful) episode ran to 0.078; the lost episode's was 0.027 |
 
 All three registered predictions hold (r_y ≥ 70 % on both suites; libero_10 ≥ 18/40 at the
 letter, 10 won / 7 lost paired against the shipped cell; no-harm within bounds). The record-50
@@ -4170,12 +4170,20 @@ diagnosis is now confirmed by intervention rather than by regression: the r_y de
 2.7× gap between the closed-loop-fitted and the probed gain, and closing it doubles the
 estimate. What it did not resolve: whether the +3 on libero_10 is real (n = 40, unpinned) and
 whether the constrained plant's poorer healthy fit costs healthy episodes at scale (one lost of
-20). Both are E2's questions, and by the rule stated in `docs/UNIFIED_PLAN_EXECUTION.md` E2 goes
+20 — task 4, r_y phantom 0.027; the 0.078 phantom was on task 6, which succeeded: the two are
+separate observations, corrected 2026-09-15 after the consistency review). Both are E2's questions, and by the rule stated in `docs/UNIFIED_PLAN_EXECUTION.md` E2 goes
 ahead: probe-qualified constraint, innovation law, fresh partitions, three sampler seeds, 120
 paired keys, healthy arms. Healthy sources for E1/E2 are being collected
 (`PREREG_UNIFIED_PARTITIONS.md`).
 
-## 55. E1 physical continuations on the Panda: the execution component is an integrator (2026-09-14)
+## 55. E1 physical continuations on the Panda: the execution component is an integrator (2026-09-14) — SUPERSEDED
+
+**Marked invalid for confirmatory use on 2026-09-15:** the driver mis-indexed every second
+checkpoint (15 of 35; the healthy prefix was advanced by the whole continuation instead of to
+the next checkpoint), found by the unified-manuscript review (`iclr2027/EXPERIMENTS_ASAP.md`).
+First-checkpoint traces are correct; the hold estimate and the aggregate scores are not. The
+corrected driver (v2) and the fresh test partition (state 33) are registered in the E1 prereg;
+the rerun follows the E2 core. The text below is kept as the record of what was scored.
 
 `results/iclr_unified_v1/E1/` (prereg `PREREG_E1_PHYSICAL_CONTINUATIONS.md`, outcome appended).
 Full-state snapshots at steps 20 and 40 of healthy sources; the same next 50 nominal commands

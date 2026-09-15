@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Score an e1_continuations.py output: PHYSICAL error of every branch against the healthy branch of
+"""Score an e1_continuations.py output (units: *_m / *_rad sums are per-step sums, i.e. m·step; *_m_s / *_rad_s are
+time integrals at 20 Hz, DT = 0.05 s; the estimate error is on the corrected rotation channels of the APPLIED estimate): PHYSICAL error of every branch against the healthy branch of
 the same checkpoint (joint-position norm in rad, end-effector translation in m, orientation angle in
 rad, augmented joint metric with velocity x control period), integrated over the continuation and at
 the endpoint; the remaining injected disturbance and the observation-side estimate error alongside,
@@ -23,7 +24,7 @@ def errors(branch, healthy):
         out["joint"].append(float(np.linalg.norm(dq))); out["joint_aug"].append(float(np.sqrt(np.sum(dq ** 2) + np.sum((dv * DT) ** 2))))
         out["ee"].append(float(np.linalg.norm(np.array(s["ee_pos"]) - np.array(h["ee_pos"])))); out["angle"].append(rot_angle(h["ee_mat"], s["ee_mat"]))
         out["remaining"].append(float(np.linalg.norm(s["remaining_disturbance"])))
-        out["est_err"].append(float(np.linalg.norm(np.array(s["f_hat"]) - np.array(s["injected"]))))
+        est = np.array(s.get("estimate_applied", s["f_hat"]))[3:6]; out["est_err"].append(float(np.linalg.norm(est - np.array(s["injected"])[3:6])))
         out["contact"].append(bool(s["contact"]) or bool(h["contact"]))
     return out
 
@@ -41,6 +42,7 @@ def main():
                 e = errors(br, h)
                 rows.append(dict(episode=ep["episode"], task=ep["task"], checkpoint=cp["checkpoint"], branch=name, steps=len(e["ee"]),
                                  integrated_ee_m=float(np.sum(e["ee"])), integrated_joint_rad=float(np.sum(e["joint"])), integrated_angle_rad=float(np.sum(e["angle"])),
+                                 integrated_ee_m_s=float(DT * np.sum(e["ee"])), integrated_joint_rad_s=float(DT * np.sum(e["joint"])), integrated_angle_rad_s=float(DT * np.sum(e["angle"])),
                                  endpoint_ee_m=e["ee"][-1], endpoint_joint_rad=e["joint"][-1], endpoint_angle_rad=e["angle"][-1],
                                  max_ee_m=float(np.max(e["ee"])), contact_fraction=float(np.mean(e["contact"])),
                                  final_remaining_disturbance=e["remaining"][-1], final_estimate_error=e["est_err"][-1],

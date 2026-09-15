@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""E1 (iclr2027/EXPERIMENT_PLAN.md): physical continuations from full-state snapshots, Panda/LIBERO.
+"""E1 (iclr2027/EXPERIMENT_PLAN.md), v2 (2026-09-15: overlapping checkpoints replayed correctly, replay index asserted,
+prefix/continuation hashes and the applied estimate recorded): physical continuations from full-state snapshots, Panda/LIBERO.
 
 For each healthy source episode (recorded nominal commands from an error_signal.py log): reset the
 scenario, replay the nominal commands to each checkpoint (fixed step rule, declared before any
@@ -130,19 +131,23 @@ def main():
                     f_hat, diag = AL.estimator_step(f_hat, r, M_inv, gamma=a.gamma, dead=a.dead, norm_r=a.norm_r, clip=a.clip,
                                                     mask=mask, norm_channels=a.norm_channels, law=law, M=M, state=est_state)
                     est_state = diag.get("estimator_state")
-                recs.append(dict(t=t, nominal=nominal[:6].tolist(), correction=corr.tolist(), believed=a_corr[:6].tolist(), executed=a_exec[:6].tolist(),
+                est_used = (hold if name == "hold_supplied" else (fvec if name == "exact_cancellation" else f_hat))
+                recs.append(dict(t=t, estimate_applied=np.asarray(est_used, float).tolist(),
+                                 nominal=nominal[:6].tolist(), correction=corr.tolist(), believed=a_corr[:6].tolist(), executed=a_exec[:6].tolist(),
                                  injected=f.tolist(), remaining_disturbance=(f + corr).tolist(), measured=y.tolist(), residual=r.tolist(),
                                  f_hat_before=fb.tolist(), f_hat=f_hat.tolist(), attenuation=diag.get("attenuation"), done=done, **phys()))
                 obs_prev = obs_new
             return recs
 
-        k = 0; obs_cur = obs; out_cps = []
-        for ks in cps:
+        k = 0; obs_cur = obs; out_cps = []; step_count = 0
+        for ci, ks in enumerate(sorted(cps)):
             if ks + H > n:                                            # commands must exist for the whole branch
                 out_cps.append(dict(checkpoint=ks, status="missing: fewer than H nominal commands remain")); continue
-            for c7 in cmds[k:ks]:
-                obs_cur, _ = step(c7)
+            assert k <= ks, f"checkpoint {ks} lies before the replay index {k}"
+            for c7 in cmds[k:ks]:                                     # healthy prefix from the previous checkpoint to this one
+                obs_cur, _ = step(c7); step_count += 1
             k = ks
+            assert step_count == ks, f"replay index {step_count} != requested checkpoint {ks}"
             snap = sim.get_state()
             extra = dict(warm=sim.data.qacc_warmstart.copy(), act=sim.data.act.copy(), ctrl=sim.data.ctrl.copy(),
                          grip=np.array(robot.gripper.current_action, float).copy(), obs=obs_cur)
@@ -161,13 +166,14 @@ def main():
                     continue
                 restore(); branches[name] = run_branch(name, seg, hist0, extra["obs"])
             dup = max(float(np.linalg.norm(np.array(x["q"]) - np.array(y["q"]))) for x, y in zip(branches["healthy"], branches["healthy_duplicate"]))
-            out_cps.append(dict(checkpoint=ks, status="ok", horizon=H, fingerprint=fp, duplicate_max_joint_gap=dup, branches=branches))
+            out_cps.append(dict(checkpoint=ks, status="ok", horizon=H, replay_index=step_count, fingerprint=fp, duplicate_max_joint_gap=dup,
+                                prefix_sha256=hashlib.sha256(np.ascontiguousarray(cmds[:ks]).tobytes()).hexdigest(),
+                                continuation_sha256=hashlib.sha256(np.ascontiguousarray(seg).tobytes()).hexdigest(),
+                                hist0=[h.tolist() for h in hist0], branches=branches))
             print(f"episode {ei} (task {tid}, init {init}) checkpoint {ks}: {len(branches)} branches, duplicate gap {dup:.2e}, "
                   f"healthy contact steps {sum(s['contact'] for s in branches['healthy'])}/{H}", flush=True)
-            restore()
-            for c7 in seg:                                            # continue the healthy prefix to the next checkpoint
-                obs_cur, _ = step(c7)
-            k = ks + H
+            restore(); obs_cur = extra["obs"]                        # back at the checkpoint state; the next checkpoint's prefix
+            k = ks                                                    # is replayed from here (overlapping checkpoints are correct)
         out_eps.append(dict(episode=ei, task=tid, init=init, n_commands=n, checkpoints=out_cps))
     meta = dict(log=a.log, log_sha256=hashlib.sha256(pathlib.Path(a.log).read_bytes()).hexdigest(), suite=a.suite, split_label=a.split_label,
                 plant_log=plant_log, fit_episodes=fit_eps, dc_constrain=a.dc_constrain, openloop=a.openloop, checkpoint_rule=a.checkpoints, horizon=H,

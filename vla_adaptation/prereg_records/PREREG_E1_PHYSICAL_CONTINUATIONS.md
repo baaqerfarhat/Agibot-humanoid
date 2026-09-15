@@ -104,3 +104,55 @@ remaining command disturbance over a 50-step horizon: what the estimator has not
 accumulates into pose error and stays. The envelope is usable (coverage 0.92, ratio 2.9), the
 memory distinction is not resolved against accumulation on ten sources. ALOHA's half of E1 is
 not run in this pass.
+
+---
+
+## Supersession and corrected protocol (2026-09-15, 00:40; after `iclr2027/EXPERIMENTS_ASAP.md` §3)
+
+**Defect, confirmed.** In the driver as run (`e1_continuations.py` at f362428/a939d6d), after branching at
+checkpoint 20 with H = 50 the healthy prefix was advanced by the whole continuation to step 70;
+for the requested checkpoint 40 the prefix slice `cmds[70:40]` was empty, the snapshot was taken
+at step 70, and the branches were fed commands 40–89 with a predictor history ending at step 40.
+Every **second** checkpoint is therefore mis-indexed: 5 of 11 in fit, 3 of 7 in qualification,
+7 of 17 in the locked test (15 of 35; 97 of 227 branch traces). The duplicate replay's zero gap
+proved repeatability of that mismatched branch, not correct indexing. First checkpoints (step
+20, replayed from a fresh reset) are correctly indexed. The amendment above said seven eligible
+second checkpoints in fit/qualification; the raw pass holds eight — corrected here, the original
+text left as written.
+
+**Consequences.** The pass-1/pass-2 scores (`pass1_score.json`, `pass2_score.json`,
+`memory_model_score.json`) and the hold estimate derived from qualification checkpoints are
+**superseded for confirmatory use**; the outcome section above is retained as the record of
+what was scored, marked invalid. Record 55 carries the same marking. The first-checkpoint traces
+may support a separately labelled post-hoc sensitivity analysis only. The state-34 test outcomes
+have been seen and are no longer an unseen test set.
+
+**Corrected driver (v2, committed before any new run).** The healthy prefix is replayed from the
+previous checkpoint to the next; the replay index is asserted equal to the requested checkpoint;
+prefix and continuation command hashes and the predictor's initial history are recorded; the
+applied estimate is logged per step in every branch so the hold branch's error is scored from the
+vector actually applied. Snapshot contents unchanged (MjSimState, warm start, actuator state,
+ctrl, gripper target); the OSC controller's goal is recomputed from the current pose at every
+step and its interpolator state is re-set by `set_goal`, which is why restore-then-step matched
+the healthy continuation exactly in the smoke test — this will be verified explicitly in the rerun
+by comparing a fresh-reset prefix continuation against a restored branch on the 20/40 overlap.
+Units: per-step sums are labelled m·step; time integrals (×0.05 s) are reported alongside. The
+memory model saves all coefficients; the geometric comparator's one-step fit objective and grid
+boundary are stated; the envelope is labelled empirical.
+
+**Fresh partitions for the rerun (declared now; outcomes unseen).** Fit and qualification:
+re-run on the same state-39 sources with v2 (their first-checkpoint outcomes were seen; the
+model choice does not use outcomes, and the partition is not the test). Locked test:
+**libero_spatial state 33, tasks 0–9** (unused by any stored result or calibration per the
+ledger), collected after the E2 core releases the server; the rule of checkpoints 20 and 40 with
+H = 50 and the four predictions stand. Missing checkpoints stay missing by the length rule.
+
+**Prospective coupled prediction (new, per §4 of the ASAP note).** Before opening the fresh test
+branches, from the known initial observer state, the injected fault, the frozen U predictor and
+M, the declared nominal command sequence and the frozen physical-response model, the adaptation
+transient (estimate, correction, remaining disturbance) and the physical deviation are forecast
+without the realised test correction as an input; the frozen quantitative decision is: **the
+innovation branch's forecast integrated ee deviation is within 30 % of the measured value on the
+median locked source, and the forecast ordering faulted > innovation ≈ legacy > hold > exact is
+observed.** Forecasts are written to `results/iclr_unified_v1/E1/forecast_v2.json` before the
+test pass and scored after.

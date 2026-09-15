@@ -12,7 +12,7 @@ Deadlines: abstract 2026-09-18, full paper 2026-09-25 (AoE). One GPU, one job at
 | shared protocol 4 (real sampler replication) | explicit seed, deterministic per-call schedule shared by arms, reset per episode | `ace_server.py`: `sampler_seed` + `episode` in the control file → `fold_in(fold_in(key(seed), episode), call)`; runner `--sampler-seed`, `--manifest`; old `pin_rng` kept for replay |
 | single-arm runner (840 not 1,200 rollouts) | run the frozen arm once per condition | runner `--arms {both,frozen,adaptive}` |
 | E2 constrained predictor C | FIR with the r_y tap sum constrained to a **separately probed** local response | done: `e2_probe.py` ran the six declared checkpoints; r_y finite-horizon gain 0.254 (fit) / 0.252 (qualification); C = `--dc-gain 4=0.254` (`PREREG_E2_PROBE_QUALIFICATION.md`) |
-| E1 physical continuations | 7-branch replays from full-state snapshots with physical traces and adapter-state branching | done on the Panda (`e1_continuations.py`, `e1_score.py`, `e1_memory_model.py`; record 55): 3 of 4 predictions hold, the memory model does not beat pure accumulation (λ fitted 0.999). ALOHA half not run |
+| E1 physical continuations | 7-branch replays from full-state snapshots with physical traces and adapter-state branching | first pass SUPERSEDED (second checkpoints mis-indexed, found by the review); driver v2 committed with index assertions; rerun on states 39 (fit/qual) and 33 (fresh test) after the E2 core; ALOHA half not run |
 | E3 / E4 | optional | not started |
 
 ## Done since: the DC pilot (record 54, all predictions held), the probe qualification, E1 on the Panda (record 55)
