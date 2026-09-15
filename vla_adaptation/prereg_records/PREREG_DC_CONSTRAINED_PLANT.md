@@ -32,3 +32,34 @@ its healthy residual and phantom must be measured. Outputs `results/dc_plant/<id
    A healthy loss ≥ 3 reports the constrained plant as unsafe on a healthy robot.
 
 **Refutation handling.** Each prediction scored separately, failures primary with the number.
+
+---
+
+## Outcome, faulted cells (2026-09-14; `results/dc_plant/dc_faulted_*`; healthy control pending)
+
+Constrained rotation tap sums on the shipped log: 0.228 / 0.103 / 0.248 → 0.253 / 0.276 / 0.244
+(the probed diagonal); translation unchanged.
+
+| suite | frozen → adaptive | fixed / broken | shipped legacy (same scenarios) | oracle D.3a | settle r_x / r_y / r_z (% of fault) |
+|---|---|---|---|---|---|
+| libero_spatial, n = 20 | 7 → **17** | 11 / 1 | 18 | 19 | 94 / **82** / 86 |
+| libero_10, n = 40 | 0 → **18** | 18 / 0 | 15 | 22 | 96 / **70.5** / 89 |
+
+- **Prediction 1 (r_y ≥ 70 %): holds on both suites** — 82 % on spatial (every episode passes
+  70 % within 18–40 steps) and 70.5 % on libero_10 (median; IQR 50–85 %), from 41 % and 45 %
+  under the unconstrained plant. The refutation band (< 60 %) is not entered. The record-50
+  reading — the estimate settles at (fitted gain)/(probed gain) — is confirmed by intervention:
+  raising the fitted r_y gain to the probed value doubles the r_y estimate with nothing else
+  changed. r_x and r_z stay at 86–96 % (the legacy law's attenuation at ρ = 0.15).
+- **Prediction 2 (libero_10 ≥ 18/40): holds at the letter** — 18/40, 18 fixed, 0 broken. Paired on
+  the same 40 scenarios against the shipped legacy cell (15/40) it is 10 won / 7 lost; against the
+  known-fault oracle (22/40) 4 won / 8 lost; against the rule-constants cell (13/40) 13 won / 8
+  lost. All runs unpinned, so these are between-run differences at n = 40: the direction is
+  toward the oracle, the size is inside the suite's noise (record 36: ± 11 points at n = 20).
+  The registered refutation (≤ 16/40 with r_y ≥ 70 %) is not triggered.
+- **Spatial no-harm: holds** (17 within 3 of 18); one episode broken.
+
+**E2 decision rule (docs/UNIFIED_PLAN_EXECUTION.md), applied:** r_y ≥ 70 % on both suites → the
+consistency intervention is worth its confirmation. E2's probe qualification and the 840-rollout
+core go ahead once the healthy control below passes and the probe tool is validated; the pilot
+is reported as a pilot (historical probe, legacy law, unpinned, shipped scenarios).
