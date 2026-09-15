@@ -1,0 +1,77 @@
+{
+ "schema_version": 2,
+ "status": "planned",
+ "records": [],
+ "calib_episodes": [
+  [
+   0,
+   39
+  ],
+  [
+   1,
+   39
+  ],
+  [
+   2,
+   39
+  ],
+  [
+   3,
+   39
+  ],
+  [
+   4,
+   39
+  ],
+  [
+   5,
+   39
+  ],
+  [
+   6,
+   39
+  ],
+  [
+   7,
+   39
+  ],
+  [
+   8,
+   39
+  ],
+  [
+   9,
+   39
+  ]
+ ],
+ "init_base": 39,
+ "suite": "libero_spatial",
+ "reset_protocol": "libero-reset-v1",
+ "args": {
+  "control": "/tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad/ctl.json",
+  "ack": "/tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad/ack.json",
+  "out": "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/iclr_unified_v1/sources/e1_fitqual_spatial_init39.json",
+  "host": "0.0.0.0",
+  "port": 8000,
+  "replan_steps": 5,
+  "suite": "libero_spatial",
+  "episodes": 10,
+  "healthy_only": true,
+  "max_steps": 220,
+  "init_base": 39
+ },
+ "created_utc": "2026-09-15T04:58:28.143568+00:00",
+ "source_hashes": {
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/error_signal.py": "d9c254952ce86ebd02ca4178b6e1ad5c7b723a5eb7c8c32bf2caa051bbb5e884",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/paired_probe.py": "7631ae2e64ed9b50cbd43fefee220ef30bb1dc988012d24119a23ed669ce78e9",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/gate_faults.py": "3129cf38cc45f54f39455e4ebd24c80f0a81fec683367e30bab7fe6b0639110b",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/so3.py": "cd07c7d21abb0a6d2ba1de00e0ffc86263a9dcc4573bccdd7225a2f2ae9cc12c",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/libero_reset.py": "4308ae24d3cda9b7e411e6071e52548cb17ac11717b82c88c06eca86cf2934bb"
+ },
+ "setup_probe": {
+  "task": 0,
+  "init": 8,
+  "scored": false
+ },
+ "policy_rng_pinned": false
+}
