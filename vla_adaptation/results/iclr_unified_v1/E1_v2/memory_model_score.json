@@ -1,0 +1,2024 @@
+{
+ "frozen_model": {
+  "L": 20,
+  "lam_geometric": 0.999,
+  "G_memory": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.5263937684922683,
+    -0.36078239259690104,
+    -0.5823724896787464
+   ],
+   [
+    -0.0011400377268967854,
+    -0.0048681763808991405,
+    -0.006951391830301786
+   ],
+   [
+    0.6943450069550626,
+    1.0297244896073992,
+    0.267562046291897
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.5688737356563958,
+    0.5733906432320185,
+    0.6707349605843039
+   ],
+   [
+    -0.016187636751670453,
+    -0.002421559419661063,
+    -0.010328899334638146
+   ],
+   [
+    -0.6747168622051272,
+    -1.1651650711322934,
+    -0.2516929728882916
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.06901935237895711,
+    -0.2751202229385109,
+    -0.16348566046409777
+   ],
+   [
+    -0.010752399503876808,
+    0.0009642169526115051,
+    -0.006999915342741014
+   ],
+   [
+    0.1329126466387501,
+    0.34688563369497105,
+    0.03147086681306662
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.15635779130340796,
+    0.033043599723777226,
+    -0.09468371186699209
+   ],
+   [
+    -0.008085075747121973,
+    0.0009528601217542851,
+    -0.0046498722853905725
+   ],
+   [
+    -0.0070489702956774754,
+    -0.1920472299272206,
+    0.012479773503133508
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.10245244859216998,
+    0.08879717772219076,
+    0.011459180738680342
+   ],
+   [
+    -0.006799103684105196,
+    0.001443970337173663,
+    -0.004128222166776004
+   ],
+   [
+    -0.09591314888926071,
+    0.03896197713692614,
+    -0.108529633341051
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.002239297089731189,
+    0.022316130165149356,
+    0.03493158781394645
+   ],
+   [
+    -0.006126231804817892,
+    0.0007061985730679763,
+    -0.0036050819745600026
+   ],
+   [
+    -0.0250486830369108,
+    0.12667976312922355,
+    0.03383654610023257
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.02786279884754844,
+    -0.07477856063264637,
+    -0.020185721596915035
+   ],
+   [
+    -0.0062058669910974845,
+    -0.0005052239013115719,
+    -0.004051777999494991
+   ],
+   [
+    0.15262481002826048,
+    0.08822460001762288,
+    0.09072020479933213
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.11671087237407675,
+    -0.04657404812764493,
+    0.11014654896493946
+   ],
+   [
+    -0.004527062962967839,
+    8.18434903107356e-05,
+    -0.002004345443337121
+   ],
+   [
+    0.18725210072878298,
+    0.05695691832836208,
+    -0.007392240156083823
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.001624549663243611,
+    -0.01960552557299658,
+    0.05833465297195418
+   ],
+   [
+    -0.005841182163162068,
+    -0.0022238250556265928,
+    -0.005506086803007929
+   ],
+   [
+    -0.10618331204238785,
+    0.0747395149014161,
+    -0.0022684786789237423
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.10048460925732076,
+    0.16463202098140384,
+    -0.12765320911151923
+   ],
+   [
+    -0.003500297365108863,
+    -0.0007930311018306765,
+    -0.0011640700315039168
+   ],
+   [
+    -0.21099488638283018,
+    -0.007821063876974683,
+    0.021792801330925954
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.18954346386128065,
+    0.0323754128458675,
+    0.06838463121747049
+   ],
+   [
+    -0.0009761200994811786,
+    0.0015538093120490263,
+    -0.0007845695680546936
+   ],
+   [
+    0.20182928288334653,
+    -0.1489395744941891,
+    -0.11976725697704212
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.07356505866958696,
+    0.013839620565360566,
+    0.030884716038066515
+   ],
+   [
+    -0.0033823066405850874,
+    7.492521160324741e-05,
+    -0.0006501796118356134
+   ],
+   [
+    0.2701249532639106,
+    0.2723942093879039,
+    0.19152275000274951
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.024302714284751448,
+    0.01355827974155689,
+    0.10018751767889475
+   ],
+   [
+    -0.001046203168438662,
+    -0.0012393957359156126,
+    0.0004594691973270349
+   ],
+   [
+    0.07417065144430716,
+    0.033124389595135605,
+    0.030906873582195595
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.1454347860964238,
+    -0.27487837030204565,
+    -0.12459129535586896
+   ],
+   [
+    0.0026779679689170064,
+    0.001970811025548869,
+    0.00408434069445844
+   ],
+   [
+    -0.24448845320426046,
+    0.08968691450061833,
+    -0.09104060695046413
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.12187206748687932,
+    -0.20386563042645778,
+    -0.17692000133110458
+   ],
+   [
+    -0.00012944378693026843,
+    -0.0006671623745442989,
+    -5.406885722655607e-05
+   ],
+   [
+    -0.12906183247209885,
+    -0.47244376188214177,
+    -0.024254641902529656
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.17322064345115062,
+    0.49304056895649084,
+    0.12138662354548008
+   ],
+   [
+    0.0005180357843084538,
+    0.0015602572865314336,
+    -0.0007063646859627386
+   ],
+   [
+    0.15573858090969156,
+    0.036467262025749084,
+    0.004366693902808919
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.29139965845383825,
+    0.396715190976073,
+    0.14628487064779372
+   ],
+   [
+    0.00012447006443474783,
+    0.0027741334140778304,
+    -0.0011887825510405237
+   ],
+   [
+    -0.057796858773139524,
+    0.3166384189480009,
+    -0.06057740809442724
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.1424527799702281,
+    -0.6320553619334419,
+    -0.05745167255534686
+   ],
+   [
+    0.004288880054934906,
+    0.002467751056230521,
+    0.0014809231535227267
+   ],
+   [
+    0.20847637324126753,
+    0.31281475398242903,
+    -0.020529044080899356
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.5045869574307873,
+    0.10141105750895689,
+    -0.07376230675029465
+   ],
+   [
+    0.0036274320875899343,
+    0.001280604987542691,
+    0.002573090011684637
+   ],
+   [
+    -0.09594825320200928,
+    -0.9025814349579512,
+    0.7651162582505611
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.5699398640215912,
+    0.18581087995347798,
+    -0.004049097931211299
+   ],
+   [
+    -0.004724504013718128,
+    0.009412789509690345,
+    0.015245693181163603
+   ],
+   [
+    0.033020999836284544,
+    0.8716377442558496,
+    -0.8547903432783254
+   ]
+  ],
+  "B_geometric": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -4.336808689942018e-18,
+    -8.673617379884035e-19,
+    -2.6020852139652106e-18
+   ],
+   [
+    0.007151570864867886,
+    0.005668602178389516,
+    0.0016902051301952072
+   ],
+   [
+    -0.0033235577790487626,
+    0.00027940159583855333,
+    -0.0014659917801935667
+   ],
+   [
+    0.030476465466178663,
+    0.01078629720680432,
+    0.021758515271554826
+   ]
+  ],
+  "B_neutral": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -4.336808689942018e-18,
+    -1.3010426069826053e-18,
+    -2.6020852139652106e-18
+   ],
+   [
+    0.007127556898713378,
+    0.005639823058219585,
+    0.0017570128988420419
+   ],
+   [
+    -0.0032660945785805014,
+    0.0002748890481679107,
+    -0.0014337108346661872
+   ],
+   [
+    0.03036224219780512,
+    0.010538498003403332,
+    0.021690796155907036
+   ]
+  ],
+  "ridge_memory": 1e-06,
+  "fit_objective": {
+   "memory": "direct response error over the continuation",
+   "geometric": "one-step prediction error, lambda on a grid 0.5-0.999 (a comparator fit, not a measured contraction coefficient)",
+   "neutral": "lambda = 1 fixed"
+  },
+  "units": {
+   "e": "m (ee position deviation from healthy)",
+   "d": "normalised action units (remaining disturbance)"
+  },
+  "envelope_r95_by_step": [
+   0.000539591701855141,
+   0.0021351399119294836,
+   0.0017257455161553757,
+   0.0019643951328480397,
+   0.002590522443430456,
+   0.0025535682332214604,
+   0.0031473242389805254,
+   0.0032623759358774893,
+   0.0036849437969814804,
+   0.004023285148438755,
+   0.004382718029561249,
+   0.005115247811867547,
+   0.005720652388490727,
+   0.006304826833013762,
+   0.0062161479036453105,
+   0.005846356472383985,
+   0.005730070825781683,
+   0.006156749254494598,
+   0.006765103252007017,
+   0.007988922042588015,
+   0.009141307302324769,
+   0.009513067249549409,
+   0.008599869239277209,
+   0.008175520189261697,
+   0.008540862957963503,
+   0.009434139781400083,
+   0.010097261432362798,
+   0.010621469964688754,
+   0.01093484686465299,
+   0.011340176854135828,
+   0.012547090891999426,
+   0.014081789030420974,
+   0.0139185489915837,
+   0.014694651395313046,
+   0.01517932030988068,
+   0.014711249760876148,
+   0.015047772291509092,
+   0.014718788773310388,
+   0.014073083278356418,
+   0.013632904226532187,
+   0.013465367782938473,
+   0.013381895173371433,
+   0.013116392237503258,
+   0.012669359211617772,
+   0.012633137277942966,
+   0.0127049803889289,
+   0.012520896434869639,
+   0.012180738870264968,
+   0.012573478399788184,
+   0.012734154175280623
+  ],
+  "envelope_note": "per-step 95th percentile of qualification residual norms; empirical, not a simultaneous or distribution-free bound",
+  "fit_rows": 44,
+  "qual_rows": 28
+ },
+ "n_locked_rows": 90,
+ "whole_continuation_coverage": 0.8555555555555555,
+ "median_endpoint_bound_over_error": 2.3916976237980707,
+ "prediction_4": {
+  "coverage_ge_0_9": false,
+  "median_ratio_le_10": true
+ },
+ "contrast_memory_minus_geometric": {
+  "n_sources": 10,
+  "mean": -0.0032805948147664283,
+  "ci95": [
+   -0.02140647553087079,
+   0.01773227109332091
+  ],
+  "memory_better_excluding_zero": false
+ },
+ "contrast_memory_minus_neutral": {
+  "n_sources": 10,
+  "mean": -0.003618363722312605,
+  "ci95": [
+   -0.022054479524356133,
+   0.01821658221955117
+  ],
+  "memory_better_excluding_zero": false
+ },
+ "rows": [
+  {
+   "episode": 0,
+   "task": 0,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.16116272564307327,
+   "int_err_geometric": 0.18011906553319132,
+   "int_err_neutral": 0.17976202903547478,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.2746329334744386,
+   "endpoint_error_m": 0.012937245857317366,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 0,
+   "task": 0,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.11585568973848907,
+   "int_err_geometric": 0.12876191025462994,
+   "int_err_neutral": 0.12870338731299832,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.404267243413084,
+   "endpoint_error_m": 0.00699946383243659,
+   "endpoint_pred_memory_m": 0.0040944274385012755
+  },
+  {
+   "episode": 0,
+   "task": 0,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.11771380434954132,
+   "int_err_geometric": 0.1282339470886813,
+   "int_err_neutral": 0.12817033891776677,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.4156365589413418,
+   "endpoint_error_m": 0.006883612947073738,
+   "endpoint_pred_memory_m": 0.0038941529172726486
+  },
+  {
+   "episode": 0,
+   "task": 0,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 0,
+   "task": 0,
+   "checkpoint": 20,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.11322730822425046,
+   "int_err_geometric": 0.1382797726361553,
+   "int_err_neutral": 0.13951785593709773,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 4.327290835351393,
+   "endpoint_error_m": 0.0036167640233161617,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.3161405486969482,
+   "int_err_geometric": 0.3263480784091499,
+   "int_err_neutral": 0.3267842054044956,
+   "whole_coverage": false,
+   "step_coverage": 0.86,
+   "endpoint_bound_over_error": 0.9187197353933046,
+   "endpoint_error_m": 0.017949151414640048,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.3024579020078015,
+   "int_err_geometric": 0.31476614231803296,
+   "int_err_neutral": 0.315291943697792,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.0820058243140838,
+   "endpoint_error_m": 0.016325862058343854,
+   "endpoint_pred_memory_m": 0.004930523658795746
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.30129150221140194,
+   "int_err_geometric": 0.31400181836072755,
+   "int_err_neutral": 0.3145369790980448,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.111454838685745,
+   "endpoint_error_m": 0.0161620518965928,
+   "endpoint_pred_memory_m": 0.005229236608277567
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 20,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.2209077745297232,
+   "int_err_geometric": 0.16592806868015283,
+   "int_err_neutral": 0.1658409396312471,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.2710333538047014,
+   "endpoint_error_m": 0.01231343753873626,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.2928744175399569,
+   "int_err_geometric": 0.26640509615624713,
+   "int_err_neutral": 0.2666127198543407,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.1572119639248313,
+   "endpoint_error_m": 0.014249973343054391,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.3578821698512508,
+   "int_err_geometric": 0.3478848761746421,
+   "int_err_neutral": 0.3487200035594543,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.267384210643601,
+   "endpoint_error_m": 0.011105978547182569,
+   "endpoint_pred_memory_m": 0.0013413876791651261
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.3090362726470796,
+   "int_err_geometric": 0.30708589181996704,
+   "int_err_neutral": 0.30791061192320984,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.506834108291595,
+   "endpoint_error_m": 0.009266733358847336,
+   "endpoint_pred_memory_m": 0.0012292757222740808
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 40,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.1328902661227391,
+   "int_err_geometric": 0.14329811010248425,
+   "int_err_neutral": 0.1444041919405646,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 4.322121757419503,
+   "endpoint_error_m": 0.003621089522722948,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.07578925432755423,
+   "int_err_geometric": 0.1493901624808279,
+   "int_err_neutral": 0.15018216801244696,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.5424891028375094,
+   "endpoint_error_m": 0.006485864430958136,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.04939579186639058,
+   "int_err_geometric": 0.08612457062025995,
+   "int_err_neutral": 0.0863788116741288,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 9.875668940965758,
+   "endpoint_error_m": 0.0013559674815705788,
+   "endpoint_pred_memory_m": 0.0006569317674255014
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.06054416463723864,
+   "int_err_geometric": 0.07791639024200196,
+   "int_err_neutral": 0.07820267570872007,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 11.47891568429246,
+   "endpoint_error_m": 0.0011868890072892295,
+   "endpoint_pred_memory_m": 0.0008900446660060222
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 20,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.09756759675670419,
+   "int_err_geometric": 0.14417664271541988,
+   "int_err_neutral": 0.14551186642670716,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 10.283165312285417,
+   "endpoint_error_m": 0.0015219817377657516,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.23789155037547743,
+   "int_err_geometric": 0.19272490927702698,
+   "int_err_neutral": 0.1926656905157108,
+   "whole_coverage": false,
+   "step_coverage": 0.88,
+   "endpoint_bound_over_error": 0.7104959639619686,
+   "endpoint_error_m": 0.023209476864917356,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.11088737326919267,
+   "int_err_geometric": 0.0886990262814382,
+   "int_err_neutral": 0.08848867832602784,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.6542313758051628,
+   "endpoint_error_m": 0.011364390467610069,
+   "endpoint_pred_memory_m": 0.006065177103141057
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.10344983443656645,
+   "int_err_geometric": 0.09223124733781898,
+   "int_err_neutral": 0.09202747321681062,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.6741995549391857,
+   "endpoint_error_m": 0.011054617996083307,
+   "endpoint_pred_memory_m": 0.0057734823537847636
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 40,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.09680258108871025,
+   "int_err_geometric": 0.08099686220953801,
+   "int_err_neutral": 0.08208312821452628,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.379128004183058,
+   "endpoint_error_m": 0.006578372321374447,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 3,
+   "task": 3,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.254475119435225,
+   "int_err_geometric": 0.33448456404364074,
+   "int_err_neutral": 0.33541031200966653,
+   "whole_coverage": false,
+   "step_coverage": 0.96,
+   "endpoint_bound_over_error": 2.886522545197079,
+   "endpoint_error_m": 0.005712839369860728,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 3,
+   "task": 3,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.26270934685968295,
+   "int_err_geometric": 0.2891728116715755,
+   "int_err_neutral": 0.28883074529096114,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 3.7771001904227766,
+   "endpoint_error_m": 0.0040681281585375996,
+   "endpoint_pred_memory_m": 0.002631573466996005
+  },
+  {
+   "episode": 3,
+   "task": 3,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.2719426350291793,
+   "int_err_geometric": 0.2935938215527439,
+   "int_err_neutral": 0.2931962928941209,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 3.1513085216084566,
+   "endpoint_error_m": 0.004822194801296027,
+   "endpoint_pred_memory_m": 0.0024620693948995452
+  },
+  {
+   "episode": 3,
+   "task": 3,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 3,
+   "task": 3,
+   "checkpoint": 20,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.1372744392741032,
+   "int_err_geometric": 0.1682715708489862,
+   "int_err_neutral": 0.1695965342453913,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 7.576151614432513,
+   "endpoint_error_m": 0.002065796806641253,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.385695173249904,
+   "int_err_geometric": 0.37574055918182436,
+   "int_err_neutral": 0.3757556463703182,
+   "whole_coverage": false,
+   "step_coverage": 0.82,
+   "endpoint_bound_over_error": 0.6360036432210963,
+   "endpoint_error_m": 0.02592790122188011,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.20226377005190324,
+   "int_err_geometric": 0.17080701825361932,
+   "int_err_neutral": 0.1707695461619903,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.2953042397472414,
+   "endpoint_error_m": 0.00829491273787975,
+   "endpoint_pred_memory_m": 0.0063051942003081625
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.22780866149844015,
+   "int_err_geometric": 0.19158953110966934,
+   "int_err_neutral": 0.19185422272877,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 3.118860473543067,
+   "endpoint_error_m": 0.006929283724793898,
+   "endpoint_pred_memory_m": 0.008877314943944344
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 20,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.09916121944469566,
+   "int_err_geometric": 0.11274570095367285,
+   "int_err_neutral": 0.11357832109432058,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.978889077807852,
+   "endpoint_error_m": 0.007908876746675507,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.5794832850748135,
+   "int_err_geometric": 0.49766188829127,
+   "int_err_neutral": 0.497843750855711,
+   "whole_coverage": false,
+   "step_coverage": 0.68,
+   "endpoint_bound_over_error": 0.40563614993196456,
+   "endpoint_error_m": 0.040652786101431776,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.3778489781708001,
+   "int_err_geometric": 0.15754891708571303,
+   "int_err_neutral": 0.1553404611147691,
+   "whole_coverage": false,
+   "step_coverage": 0.82,
+   "endpoint_bound_over_error": 0.790940702424399,
+   "endpoint_error_m": 0.027295779238179697,
+   "endpoint_pred_memory_m": 0.008855188628586553
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.3949550028774168,
+   "int_err_geometric": 0.15233164637579988,
+   "int_err_neutral": 0.1500994630716304,
+   "whole_coverage": false,
+   "step_coverage": 0.82,
+   "endpoint_bound_over_error": 0.7972240095284304,
+   "endpoint_error_m": 0.027853633677960215,
+   "endpoint_pred_memory_m": 0.009471431345398943
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 40,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.19713283308588142,
+   "int_err_geometric": 0.094452419300566,
+   "int_err_neutral": 0.09331779541906879,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.114306318339533,
+   "endpoint_error_m": 0.014045320890799982,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.12045809193245598,
+   "int_err_geometric": 0.20373456751023108,
+   "int_err_neutral": 0.2040949756769855,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.7616003229624186,
+   "endpoint_error_m": 0.0059712622065828435,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.1278502133665944,
+   "int_err_geometric": 0.19368220044106346,
+   "int_err_neutral": 0.19403098308400263,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 7.787601058555402,
+   "endpoint_error_m": 0.0023517110400928035,
+   "endpoint_pred_memory_m": 0.005580033209962519
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.11943359617891887,
+   "int_err_geometric": 0.17851606555758778,
+   "int_err_neutral": 0.17878158984294665,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 7.245562882680826,
+   "endpoint_error_m": 0.0024395499834874695,
+   "endpoint_pred_memory_m": 0.004941758635520808
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 20,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.12601983287923027,
+   "int_err_geometric": 0.17535085965633096,
+   "int_err_neutral": 0.17661837554827825,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 10.008669089425167,
+   "endpoint_error_m": 0.0015637233753947137,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.2307454490639967,
+   "int_err_geometric": 0.18562731007880987,
+   "int_err_neutral": 0.18630679029488303,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.7400440483627293,
+   "endpoint_error_m": 0.009476909307961905,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.18477753307720574,
+   "int_err_geometric": 0.17822664526526405,
+   "int_err_neutral": 0.18010411361705686,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 5.2233173495483545,
+   "endpoint_error_m": 0.003945969091413203,
+   "endpoint_pred_memory_m": 0.007876894640679519
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.1864798114911979,
+   "int_err_geometric": 0.18213455064699277,
+   "int_err_neutral": 0.18406076966709317,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 5.379181425692903,
+   "endpoint_error_m": 0.0038337561852530935,
+   "endpoint_pred_memory_m": 0.007888315887068096
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 40,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.10922831540210294,
+   "int_err_geometric": 0.09485504399064887,
+   "int_err_neutral": 0.09598943278790871,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 6.126700600319685,
+   "endpoint_error_m": 0.0025545217291845492,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.22233208519739203,
+   "int_err_geometric": 0.23139567747187254,
+   "int_err_neutral": 0.23183693149651702,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.0204736473854334,
+   "endpoint_error_m": 0.016159397825159214,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.1895460451729174,
+   "int_err_geometric": 0.21548565056423175,
+   "int_err_neutral": 0.21604711602988508,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.8654854181059108,
+   "endpoint_error_m": 0.007708464976323009,
+   "endpoint_pred_memory_m": 0.0016458748340300755
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.18938867209031754,
+   "int_err_geometric": 0.21659409081188286,
+   "int_err_neutral": 0.2171696234948077,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.961049348540924,
+   "endpoint_error_m": 0.007306298227783423,
+   "endpoint_pred_memory_m": 0.0015938572045597669
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 20,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.11704360388876732,
+   "int_err_geometric": 0.11988197409799602,
+   "int_err_neutral": 0.12112409418094922,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 3.7230576869407477,
+   "endpoint_error_m": 0.004203746255832253,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.39650429118917213,
+   "int_err_geometric": 0.44041273189415825,
+   "int_err_neutral": 0.4403219944253679,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.4766274962556474,
+   "endpoint_error_m": 0.01116750140438772,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.47018172346117015,
+   "int_err_geometric": 0.5376940448274796,
+   "int_err_neutral": 0.538501705043312,
+   "whole_coverage": false,
+   "step_coverage": 0.82,
+   "endpoint_bound_over_error": 1.0742181554435744,
+   "endpoint_error_m": 0.014118915537225614,
+   "endpoint_pred_memory_m": 0.0024326412299814984
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.47491840269928143,
+   "int_err_geometric": 0.5450029549116903,
+   "int_err_neutral": 0.5458852810800976,
+   "whole_coverage": false,
+   "step_coverage": 0.82,
+   "endpoint_bound_over_error": 1.049254165579966,
+   "endpoint_error_m": 0.014437851000896701,
+   "endpoint_pred_memory_m": 0.002414821129433124
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 40,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.10932991233710537,
+   "int_err_geometric": 0.13253536170559088,
+   "int_err_neutral": 0.13376381780183655,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 7.000260409819244,
+   "endpoint_error_m": 0.0022357439431497923,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.1769954497452598,
+   "int_err_geometric": 0.2440873280428932,
+   "int_err_neutral": 0.24397477840706522,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.4140577359530413,
+   "endpoint_error_m": 0.006830921809615424,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.1434077593377287,
+   "int_err_geometric": 0.11426653728770515,
+   "int_err_neutral": 0.11412603101213481,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.2767943592461486,
+   "endpoint_error_m": 0.007043996270978817,
+   "endpoint_pred_memory_m": 0.0033035768010348547
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.1605266378650781,
+   "int_err_geometric": 0.12324145684360155,
+   "int_err_neutral": 0.12301632866677334,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.0708698540312542,
+   "endpoint_error_m": 0.007858014377672085,
+   "endpoint_pred_memory_m": 0.0035387709119846637
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 20,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.2546465148972719,
+   "int_err_geometric": 0.17278530425799538,
+   "int_err_neutral": 0.17164551301467476,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.2654656851363992,
+   "endpoint_error_m": 0.01236761296300004,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.5195722039537858,
+   "int_err_geometric": 0.4632302411442749,
+   "int_err_neutral": 0.463549068423928,
+   "whole_coverage": false,
+   "step_coverage": 0.44,
+   "endpoint_bound_over_error": 0.6999664059635698,
+   "endpoint_error_m": 0.023558615810271768,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.6181668558154916,
+   "int_err_geometric": 0.5349738290414888,
+   "int_err_neutral": 0.5344231233149552,
+   "whole_coverage": false,
+   "step_coverage": 0.16,
+   "endpoint_bound_over_error": 0.8201357847386561,
+   "endpoint_error_m": 0.020841469918349387,
+   "endpoint_pred_memory_m": 0.004358681111311946
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.6268669711509607,
+   "int_err_geometric": 0.5340627599102972,
+   "int_err_neutral": 0.533378031076553,
+   "whole_coverage": false,
+   "step_coverage": 0.18,
+   "endpoint_bound_over_error": 0.8120575805466012,
+   "endpoint_error_m": 0.020267068142275718,
+   "endpoint_pred_memory_m": 0.0037238721451088963
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 40,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.6906067623841703,
+   "int_err_geometric": 0.6092288298524412,
+   "int_err_neutral": 0.6080163101879754,
+   "whole_coverage": false,
+   "step_coverage": 0.16,
+   "endpoint_bound_over_error": 0.7469027760777833,
+   "endpoint_error_m": 0.020954253100934742,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 8,
+   "task": 8,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.17689279865752203,
+   "int_err_geometric": 0.274550670208553,
+   "int_err_neutral": 0.2752192961807248,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 5.31941106599802,
+   "endpoint_error_m": 0.0031000122821112698,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 8,
+   "task": 8,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.11317028788704522,
+   "int_err_geometric": 0.18244224726925493,
+   "int_err_neutral": 0.18257671528146419,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 4.281534303309197,
+   "endpoint_error_m": 0.003551355020156888,
+   "endpoint_pred_memory_m": 0.0024710941667504187
+  },
+  {
+   "episode": 8,
+   "task": 8,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.1120270213249751,
+   "int_err_geometric": 0.1794807237346011,
+   "int_err_neutral": 0.17964111128021398,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 4.327402322951474,
+   "endpoint_error_m": 0.0035188734533921984,
+   "endpoint_pred_memory_m": 0.002493426981101051
+  },
+  {
+   "episode": 8,
+   "task": 8,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 8,
+   "task": 8,
+   "checkpoint": 20,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.1268357172489878,
+   "int_err_geometric": 0.1693461323249612,
+   "int_err_neutral": 0.17063033348328127,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 15.290608744345606,
+   "endpoint_error_m": 0.001023555704903655,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 8,
+   "task": 8,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.19197544269123984,
+   "int_err_geometric": 0.15180771832944462,
+   "int_err_neutral": 0.1510810227518046,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.2626127385967805,
+   "endpoint_error_m": 0.013060409683905998,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 8,
+   "task": 8,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.20875839642831398,
+   "int_err_geometric": 0.28220712872640086,
+   "int_err_neutral": 0.28348458156173045,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 6.070427334925457,
+   "endpoint_error_m": 0.0040830333580161625,
+   "endpoint_pred_memory_m": 0.012051603130633168
+  },
+  {
+   "episode": 8,
+   "task": 8,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.21123187047923137,
+   "int_err_geometric": 0.2824160522743492,
+   "int_err_neutral": 0.28369652462860956,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 6.6176641628712325,
+   "endpoint_error_m": 0.0038044112311002545,
+   "endpoint_pred_memory_m": 0.012442161689596358
+  },
+  {
+   "episode": 8,
+   "task": 8,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 8,
+   "task": 8,
+   "checkpoint": 40,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.10130694922447273,
+   "int_err_geometric": 0.13557854496044788,
+   "int_err_neutral": 0.13686044675777448,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 4.976887499106867,
+   "endpoint_error_m": 0.003144694312365568,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.3900981580775792,
+   "int_err_geometric": 0.4651977708650233,
+   "int_err_neutral": 0.4655715803458218,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.5501884913378083,
+   "endpoint_error_m": 0.010637570676299779,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.4159248569710911,
+   "int_err_geometric": 0.39849734866454856,
+   "int_err_neutral": 0.40026980284574687,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 4.8863586922493,
+   "endpoint_error_m": 0.003939514571069871,
+   "endpoint_pred_memory_m": 0.006515727092309413
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.45342853418410894,
+   "int_err_geometric": 0.42333739079418153,
+   "int_err_neutral": 0.42541454555101027,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 5.285162012833965,
+   "endpoint_error_m": 0.004012466480762444,
+   "endpoint_pred_memory_m": 0.008472381246614627
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 20,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.1834330324070122,
+   "int_err_geometric": 0.22654460601770632,
+   "int_err_neutral": 0.22776693625278918,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 7.034036853107923,
+   "endpoint_error_m": 0.0022250082191152443,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.1298117999173061,
+   "int_err_geometric": 0.08183845645171879,
+   "int_err_neutral": 0.08264841879184466,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.6838050388855903,
+   "endpoint_error_m": 0.009793437635218366,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.18396198125247473,
+   "int_err_geometric": 0.20330908600659706,
+   "int_err_neutral": 0.20493440342780364,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.624157241452941,
+   "endpoint_error_m": 0.0067801446747289395,
+   "endpoint_pred_memory_m": 0.005058011571007919
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.18924001649455927,
+   "int_err_geometric": 0.2153060075242647,
+   "int_err_neutral": 0.21706922745715043,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.658506681250744,
+   "endpoint_error_m": 0.006712898723160557,
+   "endpoint_pred_memory_m": 0.005112131930801305
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 40,
+   "branch": "hold_supplied",
+   "int_err_memory": 0.10797250452653287,
+   "int_err_geometric": 0.11647924379068784,
+   "int_err_neutral": 0.117604525425447,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 4.799221645476946,
+   "endpoint_error_m": 0.003261110023221127,
+   "endpoint_pred_memory_m": 0.0029166356364440367
+  }
+ ]
+}

@@ -55,3 +55,71 @@ design: `PREREG_DC_CONSTRAINED_PLANT.md` (legacy law, historical probe, shipped 
 rotation tap sums come out 0.220 / **0.146** / 0.242 (r_x / r_y / r_z), so the gap C closes on r_y
 is 0.146 → 0.254 (1.7×), smaller than the 0.103 → 0.276 (2.7×) of the shipped three-episode fit.
 The other five channels' taps are identical between U and C (verified numerically).
+
+---
+
+## Outcome, libero_spatial block (2026-09-15, 02:40; `results/iclr_unified_v1/E2_core/libero_spatial_*`, `score_libero_spatial.json`; scorer v2, all seven arms complete on the 60 manifest keys, no duplicates)
+
+| arm | success / 60 |
+|---|---|
+| healthy off / U / C | 60 / 58 / 60 |
+| faulted off / U / C / same-mask oracle | 30 / 58 / 55 / 54 |
+
+- **H1 (observation consistency): holds.** Mean |signed r_y observation error| over the last 50
+  valid steps: U 0.0268, C 0.0173 — a **35.5 % reduction**, task-clustered ratio-bootstrap 95 %
+  interval **[0.22, 0.48]** (both registered clauses; U's bias is above the 0.005 informativeness
+  floor; no short or empty windows). Estimate error 0.0257 → 0.0164. Signed remaining r_y
+  disturbance U +0.0235 (half the fault left), C +0.0029 (unbiased on average).
+- **Task, spatial = the no-harm cell.** C − U −5.0 points, interval [−13.3, 0.0] (1 C-only, 4
+  U-only successes); U − off +46.7 [+23.3, +70.0]; C − off +41.7 [+20.0, +63.3]. The same-mask
+  oracle (exact rotation cancellation, translation disturbance left in) scores **54/60**, below
+  both adaptive arms (oracle − U −6.7 [−13.3, 0]; oracle − C −1.7 [−11.7, +8.3]): on this suite an
+  exact rotation correction with the translation offset still applied is not better than the
+  estimator's partial one — the matched-authority oracle is not an upper bound here.
+- **Healthy.** C − off 0.0 [0, 0] (60/60); U − off −3.3 points [−8.3, 0] (2 lost; the healthy
+  estimate stays at zero under the corrected-channel deadzone on 58 episodes, max |f̂_ry| 0.021),
+  neither below the −5-point target. Under C the healthy estimate reached 0.039 on one episode
+  without a lost task.
+
+Reading, before libero_10: the finite-horizon consistency constraint does what H1 asked — it
+removes the r_y under-correction — and on the easy suite that buys nothing in task terms (a
+five-point deficit whose interval reaches zero). Spatial was registered as the no-harm cell;
+the primary task contrast is libero_10, running.
+
+## Outcome, libero_10 block and the E2 decision (2026-09-15, 14:45; `libero_10_*`, `score_libero_10.json`; scorer v2, all seven arms complete on the 60 manifest keys, no duplicates)
+
+| arm | success / 60 |
+|---|---|
+| healthy off / U / C | 56 / 53 / 52 |
+| faulted off / U / C / same-mask oracle | 0 / 18 / 25 / **36** |
+
+- **H1 (observation consistency): fails by the registered statistic on libero_10.** Mean |signed
+  r_y observation error| over the last 50 valid steps: U 0.0252, C **0.0336** — a 33 % *increase*,
+  ratio-bootstrap interval [−1.36, +0.40]. The signed remaining r_y disturbance nevertheless drops
+  from +0.0255 (U, half the fault left) to +0.0056 (C): C is unbiased on average and scatters
+  more per episode on the long-horizon suite (clipped fraction 0.05 vs 0.02). H1 therefore holds
+  on spatial and fails on libero_10 as registered; the signed bias is removed on both.
+- **H2 (task, primary): a positive count with an unresolved interval.** C − U = **+11.7 points**
+  (25 vs 18; 12 C-only, 5 U-only; descriptive McNemar p = 0.14), task-clustered 95 % interval
+  **[0.0, +25.0]** — the lower bound sits at zero, so by the registered rule this is not a
+  demonstrated improvement. U − off +30.0 [+16.7, +46.7]; C − off +41.7 [+23.3, +61.7]. The same-mask
+  oracle reaches 36/60: oracle − C +18.3 [+1.7, +35.0], oracle − U +30.0 [+10.0, +51.7]. On this
+  suite the exact rotation correction *is* an upper reference, and a gap of 11 episodes remains
+  above C.
+- **Healthy: both adaptive arms fail the −5-point target's letter or sit on it.** U − off −5.0
+  [−11.7, 0] (3 lost, 1 gained; on the target, not below); C − off **−6.7** [−16.7, 0] (5 lost, 1
+  gained; below the target). Healthy estimates reach |f̂_ry| 0.045 (U) and 0.058 (C) at most; on
+  the long-horizon suite the corrected-channel deadzone does not keep the estimate at zero as it
+  did on spatial (healthy |obs bias| 0.0096 on both).
+
+**E2 decision, as registered.** The consistency intervention removes the r_y under-correction on
+both suites (signed remaining disturbance to ~0); it reduces the registered absolute-error
+statistic on spatial (−35 %, interval excluding zero) and increases it on libero_10 (+33 %,
+interval including zero). Its task effect on libero_10 is +7 of 60 with an interval touching
+zero: **the identification improvement is supported, its task benefit is not demonstrated**,
+which the prereg's interpretation clause anticipated. Healthy behaviour is worse than the
+registered target on libero_10 for C and at the target for U; both are reported. No retuning.
+Spatial oracle 54 < U 58 and libero_10 oracle 36 > C 25 say the two suites are limited by
+different things: on spatial the estimator's partial correction already suffices; on libero_10
+eleven episodes lie between the estimator and exact same-mask cancellation — the Q5
+six-channel oracle (queued) asks whether the mask or something else holds the rest.

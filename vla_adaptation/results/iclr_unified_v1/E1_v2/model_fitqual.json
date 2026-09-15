@@ -1,0 +1,1772 @@
+{
+ "frozen_model": {
+  "L": 20,
+  "lam_geometric": 0.999,
+  "G_memory": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.5263937684922683,
+    -0.36078239259690104,
+    -0.5823724896787464
+   ],
+   [
+    -0.0011400377268967854,
+    -0.0048681763808991405,
+    -0.006951391830301786
+   ],
+   [
+    0.6943450069550626,
+    1.0297244896073992,
+    0.267562046291897
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.5688737356563958,
+    0.5733906432320185,
+    0.6707349605843039
+   ],
+   [
+    -0.016187636751670453,
+    -0.002421559419661063,
+    -0.010328899334638146
+   ],
+   [
+    -0.6747168622051272,
+    -1.1651650711322934,
+    -0.2516929728882916
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.06901935237895711,
+    -0.2751202229385109,
+    -0.16348566046409777
+   ],
+   [
+    -0.010752399503876808,
+    0.0009642169526115051,
+    -0.006999915342741014
+   ],
+   [
+    0.1329126466387501,
+    0.34688563369497105,
+    0.03147086681306662
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.15635779130340796,
+    0.033043599723777226,
+    -0.09468371186699209
+   ],
+   [
+    -0.008085075747121973,
+    0.0009528601217542851,
+    -0.0046498722853905725
+   ],
+   [
+    -0.0070489702956774754,
+    -0.1920472299272206,
+    0.012479773503133508
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.10245244859216998,
+    0.08879717772219076,
+    0.011459180738680342
+   ],
+   [
+    -0.006799103684105196,
+    0.001443970337173663,
+    -0.004128222166776004
+   ],
+   [
+    -0.09591314888926071,
+    0.03896197713692614,
+    -0.108529633341051
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.002239297089731189,
+    0.022316130165149356,
+    0.03493158781394645
+   ],
+   [
+    -0.006126231804817892,
+    0.0007061985730679763,
+    -0.0036050819745600026
+   ],
+   [
+    -0.0250486830369108,
+    0.12667976312922355,
+    0.03383654610023257
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.02786279884754844,
+    -0.07477856063264637,
+    -0.020185721596915035
+   ],
+   [
+    -0.0062058669910974845,
+    -0.0005052239013115719,
+    -0.004051777999494991
+   ],
+   [
+    0.15262481002826048,
+    0.08822460001762288,
+    0.09072020479933213
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.11671087237407675,
+    -0.04657404812764493,
+    0.11014654896493946
+   ],
+   [
+    -0.004527062962967839,
+    8.18434903107356e-05,
+    -0.002004345443337121
+   ],
+   [
+    0.18725210072878298,
+    0.05695691832836208,
+    -0.007392240156083823
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.001624549663243611,
+    -0.01960552557299658,
+    0.05833465297195418
+   ],
+   [
+    -0.005841182163162068,
+    -0.0022238250556265928,
+    -0.005506086803007929
+   ],
+   [
+    -0.10618331204238785,
+    0.0747395149014161,
+    -0.0022684786789237423
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.10048460925732076,
+    0.16463202098140384,
+    -0.12765320911151923
+   ],
+   [
+    -0.003500297365108863,
+    -0.0007930311018306765,
+    -0.0011640700315039168
+   ],
+   [
+    -0.21099488638283018,
+    -0.007821063876974683,
+    0.021792801330925954
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.18954346386128065,
+    0.0323754128458675,
+    0.06838463121747049
+   ],
+   [
+    -0.0009761200994811786,
+    0.0015538093120490263,
+    -0.0007845695680546936
+   ],
+   [
+    0.20182928288334653,
+    -0.1489395744941891,
+    -0.11976725697704212
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.07356505866958696,
+    0.013839620565360566,
+    0.030884716038066515
+   ],
+   [
+    -0.0033823066405850874,
+    7.492521160324741e-05,
+    -0.0006501796118356134
+   ],
+   [
+    0.2701249532639106,
+    0.2723942093879039,
+    0.19152275000274951
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.024302714284751448,
+    0.01355827974155689,
+    0.10018751767889475
+   ],
+   [
+    -0.001046203168438662,
+    -0.0012393957359156126,
+    0.0004594691973270349
+   ],
+   [
+    0.07417065144430716,
+    0.033124389595135605,
+    0.030906873582195595
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.1454347860964238,
+    -0.27487837030204565,
+    -0.12459129535586896
+   ],
+   [
+    0.0026779679689170064,
+    0.001970811025548869,
+    0.00408434069445844
+   ],
+   [
+    -0.24448845320426046,
+    0.08968691450061833,
+    -0.09104060695046413
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.12187206748687932,
+    -0.20386563042645778,
+    -0.17692000133110458
+   ],
+   [
+    -0.00012944378693026843,
+    -0.0006671623745442989,
+    -5.406885722655607e-05
+   ],
+   [
+    -0.12906183247209885,
+    -0.47244376188214177,
+    -0.024254641902529656
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.17322064345115062,
+    0.49304056895649084,
+    0.12138662354548008
+   ],
+   [
+    0.0005180357843084538,
+    0.0015602572865314336,
+    -0.0007063646859627386
+   ],
+   [
+    0.15573858090969156,
+    0.036467262025749084,
+    0.004366693902808919
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.29139965845383825,
+    0.396715190976073,
+    0.14628487064779372
+   ],
+   [
+    0.00012447006443474783,
+    0.0027741334140778304,
+    -0.0011887825510405237
+   ],
+   [
+    -0.057796858773139524,
+    0.3166384189480009,
+    -0.06057740809442724
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.1424527799702281,
+    -0.6320553619334419,
+    -0.05745167255534686
+   ],
+   [
+    0.004288880054934906,
+    0.002467751056230521,
+    0.0014809231535227267
+   ],
+   [
+    0.20847637324126753,
+    0.31281475398242903,
+    -0.020529044080899356
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -0.5045869574307873,
+    0.10141105750895689,
+    -0.07376230675029465
+   ],
+   [
+    0.0036274320875899343,
+    0.001280604987542691,
+    0.002573090011684637
+   ],
+   [
+    -0.09594825320200928,
+    -0.9025814349579512,
+    0.7651162582505611
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.5699398640215912,
+    0.18581087995347798,
+    -0.004049097931211299
+   ],
+   [
+    -0.004724504013718128,
+    0.009412789509690345,
+    0.015245693181163603
+   ],
+   [
+    0.033020999836284544,
+    0.8716377442558496,
+    -0.8547903432783254
+   ]
+  ],
+  "B_geometric": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -4.336808689942018e-18,
+    -8.673617379884035e-19,
+    -2.6020852139652106e-18
+   ],
+   [
+    0.007151570864867886,
+    0.005668602178389516,
+    0.0016902051301952072
+   ],
+   [
+    -0.0033235577790487626,
+    0.00027940159583855333,
+    -0.0014659917801935667
+   ],
+   [
+    0.030476465466178663,
+    0.01078629720680432,
+    0.021758515271554826
+   ]
+  ],
+  "B_neutral": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    -4.336808689942018e-18,
+    -1.3010426069826053e-18,
+    -2.6020852139652106e-18
+   ],
+   [
+    0.007127556898713378,
+    0.005639823058219585,
+    0.0017570128988420419
+   ],
+   [
+    -0.0032660945785805014,
+    0.0002748890481679107,
+    -0.0014337108346661872
+   ],
+   [
+    0.03036224219780512,
+    0.010538498003403332,
+    0.021690796155907036
+   ]
+  ],
+  "ridge_memory": 1e-06,
+  "fit_objective": {
+   "memory": "direct response error over the continuation",
+   "geometric": "one-step prediction error, lambda on a grid 0.5-0.999 (a comparator fit, not a measured contraction coefficient)",
+   "neutral": "lambda = 1 fixed"
+  },
+  "units": {
+   "e": "m (ee position deviation from healthy)",
+   "d": "normalised action units (remaining disturbance)"
+  },
+  "envelope_r95_by_step": [
+   0.000539591701855141,
+   0.0021351399119294836,
+   0.0017257455161553757,
+   0.0019643951328480397,
+   0.002590522443430456,
+   0.0025535682332214604,
+   0.0031473242389805254,
+   0.0032623759358774893,
+   0.0036849437969814804,
+   0.004023285148438755,
+   0.004382718029561249,
+   0.005115247811867547,
+   0.005720652388490727,
+   0.006304826833013762,
+   0.0062161479036453105,
+   0.005846356472383985,
+   0.005730070825781683,
+   0.006156749254494598,
+   0.006765103252007017,
+   0.007988922042588015,
+   0.009141307302324769,
+   0.009513067249549409,
+   0.008599869239277209,
+   0.008175520189261697,
+   0.008540862957963503,
+   0.009434139781400083,
+   0.010097261432362798,
+   0.010621469964688754,
+   0.01093484686465299,
+   0.011340176854135828,
+   0.012547090891999426,
+   0.014081789030420974,
+   0.0139185489915837,
+   0.014694651395313046,
+   0.01517932030988068,
+   0.014711249760876148,
+   0.015047772291509092,
+   0.014718788773310388,
+   0.014073083278356418,
+   0.013632904226532187,
+   0.013465367782938473,
+   0.013381895173371433,
+   0.013116392237503258,
+   0.012669359211617772,
+   0.012633137277942966,
+   0.0127049803889289,
+   0.012520896434869639,
+   0.012180738870264968,
+   0.012573478399788184,
+   0.012734154175280623
+  ],
+  "envelope_note": "per-step 95th percentile of qualification residual norms; empirical, not a simultaneous or distribution-free bound",
+  "fit_rows": 44,
+  "qual_rows": 28
+ },
+ "n_locked_rows": 72,
+ "whole_continuation_coverage": 0.9166666666666666,
+ "median_endpoint_bound_over_error": 2.3053803271929505,
+ "prediction_4": {
+  "coverage_ge_0_9": true,
+  "median_ratio_le_10": true
+ },
+ "contrast_memory_minus_geometric": {
+  "n_sources": 10,
+  "mean": -0.023491867958389496,
+  "ci95": [
+   -0.04403730253844044,
+   -0.006648673013001565
+  ],
+  "memory_better_excluding_zero": true
+ },
+ "contrast_memory_minus_neutral": {
+  "n_sources": 10,
+  "mean": -0.02403911579972995,
+  "ci95": [
+   -0.04535732949619275,
+   -0.006338596841391378
+  ],
+  "memory_better_excluding_zero": true
+ },
+ "rows": [
+  {
+   "episode": 0,
+   "task": 0,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.11370865792099544,
+   "int_err_geometric": 0.16132940397311685,
+   "int_err_neutral": 0.16196135519615396,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 5.3929998937508365,
+   "endpoint_error_m": 0.003057711841845316,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 0,
+   "task": 0,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.09598415567456323,
+   "int_err_geometric": 0.1370442305207277,
+   "int_err_neutral": 0.1377681974094244,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 9.902338633247311,
+   "endpoint_error_m": 0.0014579292343403199,
+   "endpoint_pred_memory_m": 0.001702754806468199
+  },
+  {
+   "episode": 0,
+   "task": 0,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.09859290212944433,
+   "int_err_geometric": 0.13259108298049935,
+   "int_err_neutral": 0.13327520431228754,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 8.201253982496802,
+   "endpoint_error_m": 0.0017163028145349736,
+   "endpoint_pred_memory_m": 0.0013416811175947993
+  },
+  {
+   "episode": 0,
+   "task": 0,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 0,
+   "task": 0,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.14872367814408635,
+   "int_err_geometric": 0.22489031150091685,
+   "int_err_neutral": 0.22539843551402802,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.0850251393908814,
+   "endpoint_error_m": 0.007908892476476288,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 0,
+   "task": 0,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.07703504511131165,
+   "int_err_geometric": 0.08785504804198795,
+   "int_err_neutral": 0.08879736067752166,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 3.2058401429161067,
+   "endpoint_error_m": 0.005286891125868787,
+   "endpoint_pred_memory_m": 0.0042147736272564644
+  },
+  {
+   "episode": 0,
+   "task": 0,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.07852299226608854,
+   "int_err_geometric": 0.09247917071475537,
+   "int_err_neutral": 0.09356289619664053,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 3.27377271816169,
+   "endpoint_error_m": 0.004862512234984161,
+   "endpoint_pred_memory_m": 0.0031846057213379443
+  },
+  {
+   "episode": 0,
+   "task": 0,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.3511701122328776,
+   "int_err_geometric": 0.4119808013886422,
+   "int_err_neutral": 0.41252434043672803,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.0181340237193555,
+   "endpoint_error_m": 0.01619653135443977,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.2675042826313653,
+   "int_err_geometric": 0.3567006459642204,
+   "int_err_neutral": 0.35752882717002804,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.108472801877152,
+   "endpoint_error_m": 0.017145490330024535,
+   "endpoint_pred_memory_m": 0.0062711555303992875
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.26679187449398467,
+   "int_err_geometric": 0.35643618866558224,
+   "int_err_neutral": 0.3572839639797191,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.1141389133391675,
+   "endpoint_error_m": 0.01720369099314385,
+   "endpoint_pred_memory_m": 0.006433147413243491
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.17915101588752996,
+   "int_err_geometric": 0.1895528099617697,
+   "int_err_neutral": 0.18933602174059766,
+   "whole_coverage": false,
+   "step_coverage": 0.86,
+   "endpoint_bound_over_error": 1.2718054112219281,
+   "endpoint_error_m": 0.012966008394593111,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.12341371382164654,
+   "int_err_geometric": 0.1700755552314316,
+   "int_err_neutral": 0.17086118515467127,
+   "whole_coverage": false,
+   "step_coverage": 0.84,
+   "endpoint_bound_over_error": 4.051290898860109,
+   "endpoint_error_m": 0.004118957293381251,
+   "endpoint_pred_memory_m": 0.003952940020188307
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.12462604647811527,
+   "int_err_geometric": 0.16800352478013234,
+   "int_err_neutral": 0.16883103015358306,
+   "whole_coverage": false,
+   "step_coverage": 0.84,
+   "endpoint_bound_over_error": 4.3556882370763494,
+   "endpoint_error_m": 0.003792312171331154,
+   "endpoint_pred_memory_m": 0.0037839753407079564
+  },
+  {
+   "episode": 1,
+   "task": 1,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.09776799261929653,
+   "int_err_geometric": 0.13277121092058514,
+   "int_err_neutral": 0.13297918982622267,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.4214745923798642,
+   "endpoint_error_m": 0.011600798021007285,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.08219582364455533,
+   "int_err_geometric": 0.09929441501007494,
+   "int_err_neutral": 0.09946881330768673,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.2409618983157102,
+   "endpoint_error_m": 0.006152138647908428,
+   "endpoint_pred_memory_m": 0.0010525541278376949
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.08251032267778555,
+   "int_err_geometric": 0.09909119788510354,
+   "int_err_neutral": 0.0992791965282079,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.2744925507960323,
+   "endpoint_error_m": 0.006081049219319895,
+   "endpoint_pred_memory_m": 0.0010971469750865079
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.3636863301175113,
+   "int_err_geometric": 0.30940933893354233,
+   "int_err_neutral": 0.30984200002945617,
+   "whole_coverage": false,
+   "step_coverage": 0.78,
+   "endpoint_bound_over_error": 0.5478839961223142,
+   "endpoint_error_m": 0.03009804950482811,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.18372332840989486,
+   "int_err_geometric": 0.13912631591081767,
+   "int_err_neutral": 0.1387100020632432,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.205584296230807,
+   "endpoint_error_m": 0.013923934967817738,
+   "endpoint_pred_memory_m": 0.004052323163659448
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.17947704775102033,
+   "int_err_geometric": 0.13402360896440751,
+   "int_err_neutral": 0.1335852315982415,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.229740058175204,
+   "endpoint_error_m": 0.013651708746597631,
+   "endpoint_pred_memory_m": 0.004053898932951292
+  },
+  {
+   "episode": 2,
+   "task": 2,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 3,
+   "task": 3,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.21506413735053773,
+   "int_err_geometric": 0.2602110084976047,
+   "int_err_neutral": 0.2604826845547127,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.3143109909977337,
+   "endpoint_error_m": 0.01254668016256504,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 3,
+   "task": 3,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.12698814727898855,
+   "int_err_geometric": 0.17078586014494548,
+   "int_err_neutral": 0.17239565064730375,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.022096969313859,
+   "endpoint_error_m": 0.008636544504456809,
+   "endpoint_pred_memory_m": 0.004729776292525753
+  },
+  {
+   "episode": 3,
+   "task": 3,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.13170581754505822,
+   "int_err_geometric": 0.17939345137256002,
+   "int_err_neutral": 0.1811400090913457,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.0322252421662848,
+   "endpoint_error_m": 0.008505794467709007,
+   "endpoint_pred_memory_m": 0.0045515360466759575
+  },
+  {
+   "episode": 3,
+   "task": 3,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.23113725018948272,
+   "int_err_geometric": 0.24546757461732163,
+   "int_err_neutral": 0.24579856172208142,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.665947873919731,
+   "endpoint_error_m": 0.009898412727280205,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.14915467337305127,
+   "int_err_geometric": 0.14137036398822167,
+   "int_err_neutral": 0.14149690519216654,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 5.820967151485222,
+   "endpoint_error_m": 0.0027661333166539024,
+   "endpoint_pred_memory_m": 0.0033674169975906154
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.16484459769685286,
+   "int_err_geometric": 0.1343269836398602,
+   "int_err_neutral": 0.13436029130613414,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 6.794522391497704,
+   "endpoint_error_m": 0.0024588457011185056,
+   "endpoint_pred_memory_m": 0.003972527998206935
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.13219387513855968,
+   "int_err_geometric": 0.06720863173427286,
+   "int_err_neutral": 0.0675918839715999,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.6021754496787386,
+   "endpoint_error_m": 0.010292405642277827,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.11572901847045562,
+   "int_err_geometric": 0.09477544618420898,
+   "int_err_neutral": 0.09530093804250625,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.8400675280258074,
+   "endpoint_error_m": 0.006329377072034081,
+   "endpoint_pred_memory_m": 0.005241704119634431
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.11951220176023179,
+   "int_err_geometric": 0.09530861289691564,
+   "int_err_neutral": 0.09586733835584046,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.853743671305628,
+   "endpoint_error_m": 0.006291535635427056,
+   "endpoint_pred_memory_m": 0.005220275827113173
+  },
+  {
+   "episode": 4,
+   "task": 4,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.5297819620380276,
+   "int_err_geometric": 0.6230491637148099,
+   "int_err_neutral": 0.6232476551025032,
+   "whole_coverage": false,
+   "step_coverage": 0.98,
+   "endpoint_bound_over_error": 1.514273341658321,
+   "endpoint_error_m": 0.010889869869949349,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.272996528573062,
+   "int_err_geometric": 0.3618729928872108,
+   "int_err_neutral": 0.3626432499771174,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.817502138994429,
+   "endpoint_error_m": 0.005198812506453489,
+   "endpoint_pred_memory_m": 0.0019135111818830725
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.2592242267960505,
+   "int_err_geometric": 0.34531437285088096,
+   "int_err_neutral": 0.3460241894251158,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 3.0606847137638784,
+   "endpoint_error_m": 0.004788706916465429,
+   "endpoint_pred_memory_m": 0.001922567882640472
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.17977080144010346,
+   "int_err_geometric": 0.11333373155090727,
+   "int_err_neutral": 0.11264989883583204,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.231852484353374,
+   "endpoint_error_m": 0.0073885885172962585,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.1515116665898075,
+   "int_err_geometric": 0.11260772345329458,
+   "int_err_neutral": 0.11199662317266255,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 6.474942771263137,
+   "endpoint_error_m": 0.002509472670367882,
+   "endpoint_pred_memory_m": 0.0035145377514002973
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.14935651152828242,
+   "int_err_geometric": 0.11162392231582552,
+   "int_err_neutral": 0.1110222399810182,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 6.627591405528188,
+   "endpoint_error_m": 0.0024853790882936404,
+   "endpoint_pred_memory_m": 0.003737922909773789
+  },
+  {
+   "episode": 5,
+   "task": 5,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.22540659384440195,
+   "int_err_geometric": 0.23010809938150262,
+   "int_err_neutral": 0.23045973030436345,
+   "whole_coverage": false,
+   "step_coverage": 0.96,
+   "endpoint_bound_over_error": 0.9447671412455748,
+   "endpoint_error_m": 0.017454289970808935,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.19557898532382753,
+   "int_err_geometric": 0.21549705084425846,
+   "int_err_neutral": 0.21601412716023813,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.7642893863187,
+   "endpoint_error_m": 0.007900519211396523,
+   "endpoint_pred_memory_m": 0.0012046480157932487
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.1950015652809247,
+   "int_err_geometric": 0.21443069570947623,
+   "int_err_neutral": 0.2149378297794785,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.8111276022639677,
+   "endpoint_error_m": 0.0077379680208268945,
+   "endpoint_pred_memory_m": 0.0012802932926748519
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.2100159120224604,
+   "int_err_geometric": 0.14838820827012764,
+   "int_err_neutral": 0.1489074885801226,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.1248467367654595,
+   "endpoint_error_m": 0.014659987978105167,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.12534990958762982,
+   "int_err_geometric": 0.15913288932078054,
+   "int_err_neutral": 0.16035468338490103,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 7.696069870718286,
+   "endpoint_error_m": 0.002216028103736377,
+   "endpoint_pred_memory_m": 0.004320552946549884
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.13163804178181068,
+   "int_err_geometric": 0.1715577308896104,
+   "int_err_neutral": 0.17283609955737775,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 7.657999767707836,
+   "endpoint_error_m": 0.002249238019657497,
+   "endpoint_pred_memory_m": 0.0044905100567761225
+  },
+  {
+   "episode": 6,
+   "task": 6,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.24172454812430394,
+   "int_err_geometric": 0.3102919078193011,
+   "int_err_neutral": 0.3101395269281646,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 3.104910179832271,
+   "endpoint_error_m": 0.005311019863087722,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.25142813322389124,
+   "int_err_geometric": 0.36352549891084307,
+   "int_err_neutral": 0.36377193706177696,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 4.081502673840851,
+   "endpoint_error_m": 0.003883996532003293,
+   "endpoint_pred_memory_m": 0.003118388055279412
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.24799115576067293,
+   "int_err_geometric": 0.36050506550623795,
+   "int_err_neutral": 0.3607549541072785,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 4.1532990364088445,
+   "endpoint_error_m": 0.003817035217196773,
+   "endpoint_pred_memory_m": 0.00311913451424136
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.1498061352820451,
+   "int_err_geometric": 0.10746643794841643,
+   "int_err_neutral": 0.10788852627092277,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.6882808030003678,
+   "endpoint_error_m": 0.009767474468042549,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.08285807366230483,
+   "int_err_geometric": 0.044985271816741515,
+   "int_err_neutral": 0.04512926185095883,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 3.502963172226184,
+   "endpoint_error_m": 0.0038194681935460606,
+   "endpoint_pred_memory_m": 0.0006453022442004974
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.08106190192206666,
+   "int_err_geometric": 0.0421526172876921,
+   "int_err_neutral": 0.04224635875106626,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 3.8408556582811997,
+   "endpoint_error_m": 0.0034872816886786927,
+   "endpoint_pred_memory_m": 0.000659991430701351
+  },
+  {
+   "episode": 7,
+   "task": 7,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 8,
+   "task": 8,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.15341629515461241,
+   "int_err_geometric": 0.2295648832130856,
+   "int_err_neutral": 0.23036841193462376,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 3.045953210743488,
+   "endpoint_error_m": 0.005413819089547786,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 8,
+   "task": 8,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.282019967772863,
+   "int_err_geometric": 0.4483684971673025,
+   "int_err_neutral": 0.45069953492837495,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.6251847632382725,
+   "endpoint_error_m": 0.006615935379600593,
+   "endpoint_pred_memory_m": 0.004633898577815871
+  },
+  {
+   "episode": 8,
+   "task": 8,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.2968015906923232,
+   "int_err_geometric": 0.45913089024009796,
+   "int_err_neutral": 0.4614117873981986,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.3362681035898687,
+   "endpoint_error_m": 0.007254688947806631,
+   "endpoint_pred_memory_m": 0.004214744214945956
+  },
+  {
+   "episode": 8,
+   "task": 8,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 20,
+   "branch": "faulted_off",
+   "int_err_memory": 0.29383875734851894,
+   "int_err_geometric": 0.3695972864707596,
+   "int_err_neutral": 0.3701039388590951,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.9655267643505485,
+   "endpoint_error_m": 0.008389730395577282,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 20,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.44784622740448665,
+   "int_err_geometric": 0.44068307237908183,
+   "int_err_neutral": 0.44287178165569796,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 6.0434524979387545,
+   "endpoint_error_m": 0.0034869687121094734,
+   "endpoint_pred_memory_m": 0.008339175598151654
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 20,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.47967754952244657,
+   "int_err_geometric": 0.46157902689266184,
+   "int_err_neutral": 0.4641349311850949,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 6.398756170415697,
+   "endpoint_error_m": 0.003700929647777241,
+   "endpoint_pred_memory_m": 0.01094719224470839
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 20,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 40,
+   "branch": "faulted_off",
+   "int_err_memory": 0.09444632689518913,
+   "int_err_geometric": 0.07807947043851675,
+   "int_err_neutral": 0.07896402297295556,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 1.7668735542039178,
+   "endpoint_error_m": 0.009333004956102987,
+   "endpoint_pred_memory_m": 0.003756085462911843
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 40,
+   "branch": "legacy_from_zero",
+   "int_err_memory": 0.19686511686356925,
+   "int_err_geometric": 0.2204686262020099,
+   "int_err_neutral": 0.22239380836791367,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.189134288590349,
+   "endpoint_error_m": 0.008048098077187642,
+   "endpoint_pred_memory_m": 0.0048842132834289
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 40,
+   "branch": "innovation_from_zero",
+   "int_err_memory": 0.20981738548328002,
+   "int_err_geometric": 0.23921978465854224,
+   "int_err_neutral": 0.24137394024148748,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": 2.21002834204456,
+   "endpoint_error_m": 0.008172930569286715,
+   "endpoint_pred_memory_m": 0.005328254020405398
+  },
+  {
+   "episode": 9,
+   "task": 9,
+   "checkpoint": 40,
+   "branch": "exact_cancellation",
+   "int_err_memory": 0.0,
+   "int_err_geometric": 0.0,
+   "int_err_neutral": 0.0,
+   "whole_coverage": true,
+   "step_coverage": 1.0,
+   "endpoint_bound_over_error": null,
+   "endpoint_error_m": 0.0,
+   "endpoint_pred_memory_m": 0.0
+  }
+ ]
+}

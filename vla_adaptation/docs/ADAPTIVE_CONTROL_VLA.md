@@ -4198,3 +4198,47 @@ pure accumulation of the remaining disturbance (interval includes zero), and the
 comparator fitted λ = 0.999 — no decay. The Panda under OSC_POSE integrates un-cancelled command
 offsets into persistent pose error over this horizon; the theorem's memory term is the integrator
 itself. Three of four predictions hold in full, the fourth in its coverage clauses only.
+
+## 56. E2 core: the finite-horizon consistency intervention, 120 keys × 7 arms (2026-09-15)
+
+`results/iclr_unified_v1/E2_core/` (RECEIPT.json freezes U, C, M, constants, manifests; scorer v2;
+prereg `PREREG_E2_CORE.md` with both block outcomes). Predictor C = U with the r_y tap sum pinned
+to the probe-qualified finite-horizon response 0.254 (U: 0.146 on the 30-episode fit); innovation
+law, corrected-channel normaliser, fresh states (spatial 49/44, libero_10 41/40), three sampler
+seeds under the explicit server schedule, frozen arms run once per condition.
+
+| | healthy off / U / C | faulted off / U / C / same-mask oracle |
+|---|---|---|
+| spatial, 60 keys | 60 / 58 / 60 | 30 / 58 / 55 / 54 |
+| libero_10, 60 keys | 56 / 53 / 52 | 0 / 18 / 25 / 36 |
+
+- H1 (mean |signed r_y observation error|, last 50 valid steps): spatial −35 % [0.22, 0.48], holds;
+  libero_10 +33 % [−1.36, +0.40], fails. Signed remaining r_y disturbance falls to ≈ 0 under C on
+  both suites (U leaves half the fault): C is unbiased on average, with more per-episode scatter
+  on the long-horizon suite.
+- H2 (libero_10 C − U, primary): +11.7 points, task-clustered interval [0.0, +25.0] — lower bound
+  at zero, not a demonstrated improvement; spatial C − U −5.0 [−13.3, 0].
+- Oracles: spatial 54 < U 58 (exact rotation cancellation with the translation offset left in is
+  not an upper bound there); libero_10 36 > C 25 (an 11-episode gap above the estimator).
+- Healthy: spatial C 60/60, U 58; libero_10 U −5.0 points (on the target), C −6.7 (below it).
+
+Reading: the intervention does what the theory said about identification (record 50 confirmed by
+a matched, pinned, fresh-state design) and does not demonstrate a task benefit; the long-horizon
+suite is limited by something beyond the r_y bias — the Q5 six-channel oracle decides whether it
+is the rotation mask. E1 v2 (the physical panel with a prospective forecast) and the
+collaborator's Q2/Q5/Q6 are running.
+
+## 57. E1 v2 on fresh sources: the physical picture survives in kind, the forecast does not yet (2026-09-15)
+
+`results/iclr_unified_v1/E1_v2/` (prereg outcome appended). Driver v2 (replay index asserted, 18/20
+checkpoints, duplicate gap 0), fresh state-33 test sources. Faulted/off 1.33 cm / 0.28 rad at 50
+steps, 1.8× its step-20 value (registered 2×: the letter fails); exact cancellation identical to
+healthy; adaptive-from-zero 0.65–0.67 cm with 45 % of the disturbance left, both below faulted
+with source-level intervals excluding zero; hold at 33 % remaining ends at 26 % of the faulted
+deviation. Envelope coverage 86 % (registered 90 %: fails), ratio 2.4; the signed memory model is
+no better than pure accumulation; the geometric comparator again picks λ = 0.999. The
+prospective coupled forecast, frozen before the locked pass, fails: the registered file by a sign
+error in its feedback term, the corrected one (written before any locked trajectory existed) by
+under-predicting the integrated deviation by half, while the measured ordering
+faulted > innovation ≈ legacy > hold > exact is the registered one. Records 55 (withdrawn) and 57
+together: two of four predictions hold in full, two at the letter fail, the forecast is not usable.

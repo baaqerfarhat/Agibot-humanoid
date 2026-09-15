@@ -156,3 +156,49 @@ innovation branch's forecast integrated ee deviation is within 30 % of the measu
 median locked source, and the forecast ordering faulted > innovation ≈ legacy > hold > exact is
 observed.** Forecasts are written to `results/iclr_unified_v1/E1/forecast_v2.json` before the
 test pass and scored after.
+
+## Outcome, v2 locked test (2026-09-15, 14:51; `results/iclr_unified_v1/E1_v2/`, fresh state-33 sources, driver v2)
+
+Ten locked sources, 18 of 20 checkpoints (replay index asserted equal to the checkpoint on all; two
+missing by the length rule), seven branches, 50-step continuations; hold estimate 0.034 on r_y
+(frozen from the v2 qualification branches). Fit/qualification pass 1 on state 39 with v2: 18
+checkpoints, 8 of 10 second checkpoints (the corrected count), duplicate gap 0.
+
+| branch | integrated ee (cm·step, median) | endpoint ee (cm) [IQR] | endpoint angle (rad) | remaining r_y |
+|---|---|---|---|---|
+| duplicate healthy / exact cancellation | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| faulted / off | 33.4 | **1.33** [0.86, 1.51] | 0.280 | 0.050 |
+| legacy from zero | 24.8 | 0.67 [0.44, 1.30] | 0.160 | 0.023 |
+| innovation from zero | 25.9 | 0.65 [0.50, 1.23] | 0.152 | 0.022 |
+| hold (0.034 supplied) | 9.6 | 0.34 [0.22, 0.70] | 0.096 | 0.017 |
+
+1. **Snapshot fidelity: holds** (duplicate gap 0 on 18/18; independent-prefix replay index verified).
+2. **Persistent offset: holds on cancellation, fails the growth letter.** Exact same-mask
+   cancellation is identical to healthy (max endpoint deviation 0). The faulted/off endpoint is
+   **1.82×** its step-20 value (registered > 2×; the first, invalid pass had 3.0×): the deviation
+   still grows through the continuation, by less than the registered factor on these sources.
+3. **Adaptive branches: holds.** Both laws below faulted/off with source-level intervals excluding
+   zero (legacy −0.091 m·step [−0.144, −0.042]; innovation −0.090 [−0.145, −0.040]); endpoint
+   offsets persist (≈ 0.65 cm with 45 % of the disturbance un-cancelled); the hold branch at 33 %
+   remaining ends at 26 % of the faulted deviation.
+4. **Envelope: coverage 85.6 % (registered ≥ 90 %: fails), median endpoint bound/error 2.4
+   (≤ 10: holds); the memory model is not better than the geometric or neutral comparators**
+   (memory − neutral −0.004 m·step [−0.022, +0.018]; geometric fitted λ = 0.999 again).
+
+**Prospective forecast decision.** The registered forecast (`forecast_v2.json`, frozen 14:47:09)
+carried a sign error in its feedback term and forecasts the innovation branch's integrated
+deviation at 5.1 against 25.9 measured (−80 %): **fails**, by that error. The sign-corrected
+forecast (`forecast_v2_corrected.json`, 14:47:59, before any locked trajectory existed or was read;
+hashes in `FROZEN_CORRECTED_BEFORE_SCORING.sha256`) gives 12.8 against 25.9 (**−51 %, outside the
+registered 30 % band: fails**) and predicts hold ≈ innovation > legacy, whereas the measured
+ordering is faulted > innovation ≈ legacy > hold > exact — which is the ordering the registration
+itself expected. The forecast under-predicts the closed loop's integrated deviation by half
+because it converges the estimator faster than the robot does (forecast remaining r_y 0.016–0.034
+at step 50 against 0.022 measured for both laws, and the physical model's response was fitted on
+different disturbance dynamics); reported as primary.
+
+**Reading.** On fresh sources with correct indexing the physical picture of the withdrawn pass
+survives in kind and shrinks in degree: un-cancelled command offsets accumulate into pose error
+that persists, cancellation at the interface removes it exactly, and the adaptive laws halve it
+within 50 steps. The prospective coupled forecast is not yet quantitatively usable; a pure
+accumulation model explains the deviation as well as a signed memory does. ALOHA not run.

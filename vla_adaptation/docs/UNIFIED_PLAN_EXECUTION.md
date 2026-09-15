@@ -12,12 +12,14 @@ Deadlines: abstract 2026-09-18, full paper 2026-09-25 (AoE). One GPU, one job at
 | shared protocol 4 (real sampler replication) | explicit seed, deterministic per-call schedule shared by arms, reset per episode | `ace_server.py`: `sampler_seed` + `episode` in the control file → `fold_in(fold_in(key(seed), episode), call)`; runner `--sampler-seed`, `--manifest`; old `pin_rng` kept for replay |
 | single-arm runner (840 not 1,200 rollouts) | run the frozen arm once per condition | runner `--arms {both,frozen,adaptive}` |
 | E2 constrained predictor C | FIR with the r_y tap sum constrained to a **separately probed** local response | done: `e2_probe.py` ran the six declared checkpoints; r_y finite-horizon gain 0.254 (fit) / 0.252 (qualification); C = `--dc-gain 4=0.254` (`PREREG_E2_PROBE_QUALIFICATION.md`) |
-| E1 physical continuations | 7-branch replays from full-state snapshots with physical traces and adapter-state branching | first pass SUPERSEDED (second checkpoints mis-indexed, found by the review); driver v2 committed with index assertions; rerun on states 39 (fit/qual) and 33 (fresh test) after the E2 core; ALOHA half not run |
+| E1 physical continuations | 7-branch replays from full-state snapshots with physical traces and adapter-state branching | v2 done on fresh sources (record 57): fidelity and cancellation exact, adaptive branches halve the deviation (intervals exclude zero), growth 1.8× (letter fails), envelope 86 % (fails), prospective forecast fails (−51 %); ALOHA half not run |
 | E3 / E4 | optional | not started |
 
 ## Done since: the DC pilot (record 54, all predictions held), the probe qualification, E1 on the Panda (record 55)
 
-## Running now: the E2 core (`PREREG_E2_CORE.md`, `scripts/re4/e2_core_chain.sh`, started 2026-09-14 22:22, ≈ 24 h)
+## E2 core done (record 56): H1 holds on spatial / fails on libero_10; H2 +11.7 points, interval [0, 25]; oracle 36/60 on libero_10
+
+## Running now: the collaborator's Q2/Q5/Q6 chain on GPU 0 (`scripts/re4/collab_q_chain_gpu0.sh`, 14:45)
 
 ### The pilot that preceded it (registered as `PREREG_DC_CONSTRAINED_PLANT.md`)
 
