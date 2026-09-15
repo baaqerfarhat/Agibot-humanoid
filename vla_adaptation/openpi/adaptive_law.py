@@ -320,7 +320,7 @@ CALIB_EPISODES = None   # set by fit_plant; consumed by the held-out check in ma
 AR_ORDER = 0   # set by --ar: number of past measured increments (own channel) in the plant regressor
 
 
-def fit_plant(log_path, lam=1e-2, mimo=False, episodes=None, ar=None):
+def fit_plant(log_path, lam=1e-2, mimo=False, episodes=None, ar=None, dc=None):
     """MIMO FIR plant, identified on the NOMINAL episodes only.
 
     Each output dim is regressed on the last K_FIR+1 commands of ALL SIX inputs, not just its
@@ -372,6 +372,16 @@ def fit_plant(log_path, lam=1e-2, mimo=False, episodes=None, ar=None):
                 X.append(np.concatenate([feat, arf, [1.0]]))
                 Y.append(y[t])
         X, Y = np.array(X), np.array(Y)
+        if dc is not None and i in dc and not mimo:
+            # re4 theory record 50: every plant fitted on the closed-loop healthy log recovers an r_y DC
+            # gain a third of the probed sensitivity, and the estimate settles at (fitted gain)/(probed
+            # gain). Constrained ridge: minimise |Xw - Y|^2 + lam|w|^2 subject to sum(command taps) = dc[i]
+            # (the probed M entry), solved through its KKT system; the AR terms and the intercept are free.
+            n = X.shape[1]; c = np.zeros(n); c[:K_FIR + 1] = 1.0
+            kkt = np.zeros((n + 1, n + 1)); kkt[:n, :n] = X.T @ X + lam * np.eye(n); kkt[:n, n] = c; kkt[n, :n] = c
+            b = np.concatenate([X.T @ Y, [float(dc[i])]])
+            W.append(np.linalg.solve(kkt, b)[:n])
+            continue
         W.append(np.linalg.solve(X.T @ X + lam * np.eye(X.shape[1]), X.T @ Y))
     return np.array(W)                       # (6, 6*(K_FIR+1)+1)
 
@@ -1012,6 +1022,11 @@ def main():
                    default="step", help="how the fault varies in time")
     p.add_argument("--prof-p", type=float, default=60.0,
                    help="ramp length / sine period / intermittent half-period, in steps")
+    p.add_argument("--dc-constrain", choices=["none", "corrected", "all"], default="none",
+                   help="refit the per-axis FIR with its command-tap sum (DC gain) constrained to the probed "
+                        "M diagonal on the corrected channels or on all six (re4 theory record 50: the "
+                        "closed-loop fit under-reads the r_y offset gain 2.7x and the estimate settles at "
+                        "fitted/probed); none = the unconstrained fit")
     p.add_argument("--law", choices=["legacy", "innov"], default="legacy",
                    help="legacy: normalise the estimate (biased low ~5%%). "
                         "innov: normalise the step, unbiased fixed point.")
@@ -1031,6 +1046,15 @@ def main():
     p.add_argument("--joint-fault", default=None,
                    help="kind:joint:magnitude, a fault BELOW the controller in the MuJoCo model "
                         "(torque N.m bias, friction, damping, gain scale, lock +-rad); see joint_fault.py")
+    p.add_argument("--sampler-seed", type=int, default=None,
+                   help="explicit policy-sampler seed (unified plan, protocol item 4): the server draws call i of "
+                        "episode e with fold_in(fold_in(key(seed), e), i); the runner re-issues the control at every "
+                        "episode start so both arms share the schedule. Recorded per episode. Incompatible with --pin-rng.")
+    p.add_argument("--arms", choices=["both", "frozen", "adaptive"], default="both",
+                   help="which arms to run (a manifest design runs the frozen arm once and pairs it by key)")
+    p.add_argument("--manifest", type=pathlib.Path, default=None,
+                   help="JSON scenario manifest: {'scenarios': [{'task': t, 'init': i, 'sampler_seed': s}, ...]} "
+                        "replaces --episodes/--eval-init/--task-stride; per-scenario sampler seeds override --sampler-seed")
     p.add_argument("--pin-rng", action="store_true",
                    help="pin the policy server's flow-sampler noise (one key per call) so two runs draw identical "
                         "actions given identical observations (re4 theory Part 8.2)")
@@ -1118,6 +1142,15 @@ def main():
         ar_sum = W[:, K_FIR + 1:K_FIR + 1 + AR_ORDER].sum(axis=1)
         M = np.diag(1.0 - ar_sum) @ M
         print(f"ARX plant, AR order {AR_ORDER}: AR coefficients {np.round(ar_sum, 3)}; M rescaled by (1 - AR) per channel")
+    if a.dc_constrain != "none":
+        if a.ar or a.mimo:
+            raise SystemExit("--dc-constrain is implemented for the per-axis FIR plant without AR terms")
+        sel = list(range(6)) if a.dc_constrain == "all" else [int(x) for x in a.corr_dims.split(",")]
+        before = W[:, :K_FIR + 1].sum(axis=1)
+        W = fit_plant(a.log, mimo=a.mimo, episodes=calib, dc={i: float(M[i, i]) for i in sel})
+        after = W[:, :K_FIR + 1].sum(axis=1)
+        print(f"DC-constrained plant on channels {sel}: tap sums {np.round(before, 3)} -> {np.round(after, 3)}; "
+              f"probed M diagonal {np.round(np.diag(M), 3)}")
     M_inv = np.linalg.pinv(M)
     print(f"plant identified; cond(M) = {np.linalg.cond(M):.1f}, gamma = {a.gamma}\n")
     kf_q, kf_r, estimator_config = None, None, None
@@ -1178,6 +1211,15 @@ def main():
     n_tasks = pr.suite.n_tasks
     eps = [(((i * a.task_stride) % n_tasks), a.eval_init + (i * a.task_stride) // n_tasks)
            for i in range(a.episodes)]
+    ep_seeds = [a.sampler_seed] * len(eps)
+    if a.manifest is not None:
+        man = json.loads(a.manifest.read_text())
+        eps = [(int(m["task"]), int(m["init"])) for m in man["scenarios"]]
+        ep_seeds = [m.get("sampler_seed", a.sampler_seed) for m in man["scenarios"]]
+        print(f"scenario manifest {a.manifest}: {len(eps)} scenarios, sampler seeds "
+              f"{sorted(set(x for x in ep_seeds if x is not None)) or 'none'}")
+    if a.pin_rng and (a.sampler_seed is not None or any(x is not None for x in ep_seeds)):
+        raise SystemExit("--pin-rng and --sampler-seed are different schedules; give one")
     # LIBERO stores 50 initial states per task (0-49). A run that needs more states per task
     # than 50 - eval_init (re4 theory Part 8.2: n = 80 on ten tasks from init 45) wraps DOWNWARD
     # from eval_init - 1 rather than crashing at index 50 or silently reusing a state:
@@ -1243,9 +1285,15 @@ def main():
         timing_fh = open(a.timing, "w", buffering=1)
     with telemetry_stream(a.telemetry, header) as telemetry:
         pr.control(dict(site=None, pin_rng=bool(a.pin_rng)))
-        for tag, adapt in (("frozen_faulted", False), ("adaptive", True)):
+        arm_list = [("frozen_faulted", False), ("adaptive", True)]
+        arm_list = [x for x in arm_list if a.arms == "both" or x[0].startswith(a.arms)]
+        for tag, adapt in arm_list:
             ok, fh, trajs, per_ep = 0, [], [], []
             for episode, (tid, init) in enumerate(eps):
+                if ep_seeds[episode] is not None:
+                    # per-episode sampler schedule; the handshake's probe calls consume the first few keys
+                    # identically in every arm, so the arms stay paired on (task, init, seed, call index)
+                    pr.control(dict(site=None, pin_rng=False, sampler_seed=int(ep_seeds[episode]), episode=int(episode)))
                 s, f_hat, traj = run(pr, tid, init, a.sev, M_inv, W, a.gamma, adapt,
                                      dead=a.dead, norm_r=a.norm_r, clip=a.clip,
                                      apply_corr=not a.estimate_only, bias=bias,
@@ -1263,7 +1311,8 @@ def main():
                 # Per-episode outcome, keyed by (task, init). The arms run on the SAME episode
                 # list, so these pair up -- which is what McNemar needs and what the earlier
                 # runs threw away by only accumulating a total. See mcnemar.py.
-                per_ep.append(dict(task=int(tid), init=int(init), ok=bool(s)))
+                per_ep.append(dict(task=int(tid), init=int(init), ok=bool(s),
+                                   **({"sampler_seed": int(ep_seeds[episode])} if ep_seeds[episode] is not None else {})))
                 if traj and "gain" in traj[-1]:
                     per_ep[-1].update(last_gain=traj[-1]["gain"],
                                      last_effective_gain=traj[-1]["effective_gain"],

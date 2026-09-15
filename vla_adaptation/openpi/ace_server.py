@@ -196,13 +196,22 @@ def main():
     def sample(state, rng, obs):
         return nnx.merge(graphdef, state).sample_actions(rng, obs, **sample_kwargs)
 
-    holder = {"state": base_state, "stamp": None, "pin_rng": False}
+    holder = {"state": base_state, "stamp": None, "pin_rng": False,
+              # explicit sampler schedule (unified plan, shared protocol item 4): with sampler_seed set,
+              # call i of episode e draws with fold_in(fold_in(key(seed), e), i); the counter resets on
+              # every control write, which the runner issues at each episode start. pin_rng (key(0) on
+              # every call) is kept unchanged for exact historical replay.
+              "sampler_seed": None, "episode": 0, "call": 0}
 
     def _sample_actions(rng, obs, **kw):
         _apply_control_if_changed()
         # pin_rng freezes the flow sampler's noise so a weight change can be isolated from
         # sampler stochasticity. Diagnostic only -- the screen itself scores real rollouts.
-        if holder["pin_rng"]:
+        if holder["sampler_seed"] is not None:
+            rng = jax.random.fold_in(jax.random.fold_in(jax.random.key(int(holder["sampler_seed"])),
+                                                        int(holder["episode"])), int(holder["call"]))
+            holder["call"] += 1
+        elif holder["pin_rng"]:
             rng = jax.random.key(0)
         return sample(holder["state"], rng, obs)
 
@@ -215,6 +224,7 @@ def main():
         req = json.loads(a.control.read_text())
         holder["stamp"] = stamp
         holder["pin_rng"] = bool(req.get("pin_rng", False))
+        holder["sampler_seed"] = req.get("sampler_seed"); holder["episode"] = int(req.get("episode", 0)); holder["call"] = 0
         if req.get("combo") is not None:
             # delta = sum_k coef_k * N(0, rho^2; seed_k), accumulated AT THE SITE ONLY.
             # Diffing the whole 3.35B-param tree per probe (the obvious implementation)
@@ -285,6 +295,9 @@ def main():
                        rel_tol=rel_tol(st["numel"]),
                        ok=bool(abs(applied["rel"] - c) <= rel_tol(st["numel"]) * c))
         ack["stamp"] = stamp
+        ack["sampler_seed"] = holder["sampler_seed"]; ack["episode"] = holder["episode"]
+        ack["key_schedule"] = ("fold_in(fold_in(key(sampler_seed), episode), call_index), call_index reset at each control write"
+                               if holder["sampler_seed"] is not None else ("key(0) every call" if holder["pin_rng"] else "unpinned"))
         a.ack.write_text(json.dumps(ack, indent=1))
         logging.info("control applied: %s", ack)
 

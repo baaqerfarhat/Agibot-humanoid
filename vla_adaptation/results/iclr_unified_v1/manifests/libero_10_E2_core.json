@@ -1,0 +1,859 @@
+{
+ "rule": "per task, the largest unused stored initial states below 50, descending; outcomes never inspected; sampler seed = seed_base + 100*task + 10*state_rank + replicate",
+ "suite": "libero_10",
+ "n_scenarios": 60,
+ "inits_per_task": 2,
+ "replicates": 3,
+ "seed_base": 1000,
+ "exclusion_sources": [
+  "results/heldout/libero_10_rotonly_heldout.json",
+  "results/re4_evidence/C_healthy/heldout_libero_10/result.json",
+  "results/re4_evidence/C_healthy/shipped_libero_10/result.json",
+  "results/re4_evidence/D_baselines/D0_method_libero_10/result.json",
+  "results/re4_evidence/D_baselines/D1_static_k0_libero_10/result.json",
+  "results/re4_evidence/D_baselines/D2_innov_libero_10/result.json",
+  "results/re4_evidence/D_baselines/D3a_oracle_rot_libero_10/result.json",
+  "results/re4_theory/6_ry/arx_libero_10/result.json",
+  "results/re4_theory/8_statistics/a_method_libero10_n80/result.json",
+  "results/re4_theory/8_statistics/a_static_libero10_n80/result.json",
+  "results/rule_constants/faulted_libero_10/result.json",
+  "results/rule_constants/healthy_libero_10/result.json",
+  "results/suites/libero_10_rotonly_n40.json",
+  "results/suites/libero_10_rotonly_paired.json"
+ ],
+ "ledger": {
+  "0": {
+   "used_states": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49
+   ],
+   "chosen_unused": [
+    41,
+    40
+   ],
+   "reused_states": []
+  },
+  "1": {
+   "used_states": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49
+   ],
+   "chosen_unused": [
+    41,
+    40
+   ],
+   "reused_states": []
+  },
+  "2": {
+   "used_states": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49
+   ],
+   "chosen_unused": [
+    41,
+    40
+   ],
+   "reused_states": []
+  },
+  "3": {
+   "used_states": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49
+   ],
+   "chosen_unused": [
+    41,
+    40
+   ],
+   "reused_states": []
+  },
+  "4": {
+   "used_states": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49
+   ],
+   "chosen_unused": [
+    41,
+    40
+   ],
+   "reused_states": []
+  },
+  "5": {
+   "used_states": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49
+   ],
+   "chosen_unused": [
+    41,
+    40
+   ],
+   "reused_states": []
+  },
+  "6": {
+   "used_states": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49
+   ],
+   "chosen_unused": [
+    41,
+    40
+   ],
+   "reused_states": []
+  },
+  "7": {
+   "used_states": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49
+   ],
+   "chosen_unused": [
+    41,
+    40
+   ],
+   "reused_states": []
+  },
+  "8": {
+   "used_states": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49
+   ],
+   "chosen_unused": [
+    41,
+    40
+   ],
+   "reused_states": []
+  },
+  "9": {
+   "used_states": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49
+   ],
+   "chosen_unused": [
+    41,
+    40
+   ],
+   "reused_states": []
+  }
+ },
+ "scenarios": [
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 0,
+   "init": 41,
+   "sampler_seed": 1000,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 0,
+   "init": 41,
+   "sampler_seed": 1001,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 0,
+   "init": 41,
+   "sampler_seed": 1002,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 0,
+   "init": 40,
+   "sampler_seed": 1010,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 0,
+   "init": 40,
+   "sampler_seed": 1011,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 0,
+   "init": 40,
+   "sampler_seed": 1012,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 1,
+   "init": 41,
+   "sampler_seed": 1100,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 1,
+   "init": 41,
+   "sampler_seed": 1101,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 1,
+   "init": 41,
+   "sampler_seed": 1102,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 1,
+   "init": 40,
+   "sampler_seed": 1110,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 1,
+   "init": 40,
+   "sampler_seed": 1111,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 1,
+   "init": 40,
+   "sampler_seed": 1112,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 2,
+   "init": 41,
+   "sampler_seed": 1200,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 2,
+   "init": 41,
+   "sampler_seed": 1201,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 2,
+   "init": 41,
+   "sampler_seed": 1202,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 2,
+   "init": 40,
+   "sampler_seed": 1210,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 2,
+   "init": 40,
+   "sampler_seed": 1211,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 2,
+   "init": 40,
+   "sampler_seed": 1212,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 3,
+   "init": 41,
+   "sampler_seed": 1300,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 3,
+   "init": 41,
+   "sampler_seed": 1301,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 3,
+   "init": 41,
+   "sampler_seed": 1302,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 3,
+   "init": 40,
+   "sampler_seed": 1310,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 3,
+   "init": 40,
+   "sampler_seed": 1311,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 3,
+   "init": 40,
+   "sampler_seed": 1312,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 4,
+   "init": 41,
+   "sampler_seed": 1400,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 4,
+   "init": 41,
+   "sampler_seed": 1401,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 4,
+   "init": 41,
+   "sampler_seed": 1402,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 4,
+   "init": 40,
+   "sampler_seed": 1410,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 4,
+   "init": 40,
+   "sampler_seed": 1411,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 4,
+   "init": 40,
+   "sampler_seed": 1412,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 5,
+   "init": 41,
+   "sampler_seed": 1500,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 5,
+   "init": 41,
+   "sampler_seed": 1501,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 5,
+   "init": 41,
+   "sampler_seed": 1502,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 5,
+   "init": 40,
+   "sampler_seed": 1510,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 5,
+   "init": 40,
+   "sampler_seed": 1511,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 5,
+   "init": 40,
+   "sampler_seed": 1512,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 6,
+   "init": 41,
+   "sampler_seed": 1600,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 6,
+   "init": 41,
+   "sampler_seed": 1601,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 6,
+   "init": 41,
+   "sampler_seed": 1602,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 6,
+   "init": 40,
+   "sampler_seed": 1610,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 6,
+   "init": 40,
+   "sampler_seed": 1611,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 6,
+   "init": 40,
+   "sampler_seed": 1612,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 7,
+   "init": 41,
+   "sampler_seed": 1700,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 7,
+   "init": 41,
+   "sampler_seed": 1701,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 7,
+   "init": 41,
+   "sampler_seed": 1702,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 7,
+   "init": 40,
+   "sampler_seed": 1710,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 7,
+   "init": 40,
+   "sampler_seed": 1711,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 7,
+   "init": 40,
+   "sampler_seed": 1712,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 8,
+   "init": 41,
+   "sampler_seed": 1800,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 8,
+   "init": 41,
+   "sampler_seed": 1801,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 8,
+   "init": 41,
+   "sampler_seed": 1802,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 8,
+   "init": 40,
+   "sampler_seed": 1810,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 8,
+   "init": 40,
+   "sampler_seed": 1811,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 8,
+   "init": 40,
+   "sampler_seed": 1812,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 9,
+   "init": 41,
+   "sampler_seed": 1900,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 9,
+   "init": 41,
+   "sampler_seed": 1901,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 9,
+   "init": 41,
+   "sampler_seed": 1902,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 9,
+   "init": 40,
+   "sampler_seed": 1910,
+   "replicate": 0,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 9,
+   "init": 40,
+   "sampler_seed": 1911,
+   "replicate": 1,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  },
+  {
+   "robot": "Panda (LIBERO, OSC_POSE)",
+   "suite": "libero_10",
+   "task": 9,
+   "init": 40,
+   "sampler_seed": 1912,
+   "replicate": 2,
+   "reused_state": false,
+   "horizon": null,
+   "fault": "uniform +0.05 on six action channels"
+  }
+ ],
+ "manifest_sha256": "05b76811325cfbdef484846b7ce3dfe96763998d5e34592ba9b4f143de2604b6"
+}

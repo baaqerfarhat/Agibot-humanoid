@@ -163,7 +163,12 @@ def cmd_record(ns):
                         ("gym_aloha env.reset(seed=seed+episode)" if rn == "aloha" else
                          "robocasa env rng reseeded per reset: env.unwrapped.env.rng = default_rng(seed+episode) (gr1_adapt.GR1.reset)")),
         policy_rng_pinned=bool(a.get("pin_rng")),
-        policy_seed=("server key 0 on every policy call (pin_rng)" if a.get("pin_rng") else "not applicable: pin_rng=False, policy sampling unpinned"),
+        policy_seed=("server key 0 on every policy call (pin_rng)" if a.get("pin_rng")
+                     else ("explicit schedule: fold_in(fold_in(key(sampler_seed), episode), call_index), re-issued at every "
+                           "episode start; per-episode seeds in episodes.csv" if (a.get("sampler_seed") is not None or a.get("manifest"))
+                           else "not applicable: pin_rng=False, policy sampling unpinned")),
+        scenario_manifest=(dict(path=str(a["manifest"]), sha256=sha(a["manifest"])) if a.get("manifest") and pathlib.Path(a["manifest"]).exists()
+                           else "none: --episodes/--eval-init/--task-stride enumeration"),
         fault=dict(family=fam, magnitude=mag, profile=a.get("profile", "step"), onset=a.get("onset", 0)),
         episodes_per_arm=a.get("episodes"), suite=a.get("suite"),
         # LIBERO evaluates stored initial states from --eval-init; the joint-space runners key scenes by
@@ -200,7 +205,9 @@ def cmd_record(ns):
             for e in v.get("per_ep") or []:
                 scen = ((f"libero-reset-v1 ({a.get('suite')}, task {e['task']}, init {e['init']})" if a.get("scenario_reset")
                          else "init state only") if rn == "libero" else base + int(e["init"]))
-                w.writerow([e["task"], e["init"], scen, ("pinned:key0" if a.get("pin_rng") else "unpinned"), arm, int(bool(e["ok"])),
+                w.writerow([e["task"], e["init"], scen,
+                            ("pinned:key0" if a.get("pin_rng") else f"schedule:{e['sampler_seed']}" if e.get("sampler_seed") is not None else "unpinned"),
+                            arm, int(bool(e["ok"])),
                             fam, mag, "not applicable (fixed-base arm)", "not applicable (no limit monitor)"])
     print(f"wrote {out}/run_configuration.json and episodes.csv")
     for k, v in cfg["paired"].items():
