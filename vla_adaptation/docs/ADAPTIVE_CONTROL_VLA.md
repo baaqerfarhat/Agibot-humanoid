@@ -4174,3 +4174,19 @@ whether the constrained plant's poorer healthy fit costs healthy episodes at sca
 ahead: probe-qualified constraint, innovation law, fresh partitions, three sampler seeds, 120
 paired keys, healthy arms. Healthy sources for E1/E2 are being collected
 (`PREREG_UNIFIED_PARTITIONS.md`).
+
+## 55. E1 physical continuations on the Panda: the execution component is an integrator (2026-09-14)
+
+`results/iclr_unified_v1/E1/` (prereg `PREREG_E1_PHYSICAL_CONTINUATIONS.md`, outcome appended).
+Full-state snapshots at steps 20 and 40 of healthy sources; the same next 50 nominal commands
+in seven branches; fault +0.05 on rotation-y; fit (6) / qualification (4) / locked test (10)
+sources at states 39 and 34. Snapshot fidelity exact (duplicate gap 0). Locked results: faulted
+1.58 cm / 0.27 rad at 50 steps, growing 3× from step 20; exact cancellation identical to healthy;
+adaptive-from-zero branches 0.95–0.99 cm with half the disturbance still un-cancelled, both below
+faulted with source-level intervals excluding zero; the hold branch scales with its remaining
+disturbance (33 % of the fault → 34 % of the deviation). A signed finite-memory model of the
+deviation covers 92 % of continuations with a bound 2.9× the error, but is not better than a
+pure accumulation of the remaining disturbance (interval includes zero), and the geometric-decay
+comparator fitted λ = 0.999 — no decay. The Panda under OSC_POSE integrates un-cancelled command
+offsets into persistent pose error over this horizon; the theorem's memory term is the integrator
+itself. Three of four predictions hold in full, the fourth in its coverage clauses only.

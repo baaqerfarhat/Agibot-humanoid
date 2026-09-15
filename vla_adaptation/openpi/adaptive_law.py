@@ -1027,6 +1027,10 @@ def main():
                         "M diagonal on the corrected channels or on all six (re4 theory record 50: the "
                         "closed-loop fit under-reads the r_y offset gain 2.7x and the estimate settles at "
                         "fitted/probed); none = the unconstrained fit")
+    p.add_argument("--dc-gain", default=None,
+                   help="explicit command-tap-sum constraints per channel, e.g. '4=0.254': the per-axis FIR is refitted with "
+                        "those channels' tap sums pinned to the given values (E2: a separately probed, qualified local "
+                        "response; PREREG_E2_PROBE_QUALIFICATION.md). Mutually exclusive with --dc-constrain")
     p.add_argument("--law", choices=["legacy", "innov"], default="legacy",
                    help="legacy: normalise the estimate (biased low ~5%%). "
                         "innov: normalise the step, unbiased fixed point.")
@@ -1142,6 +1146,13 @@ def main():
         ar_sum = W[:, K_FIR + 1:K_FIR + 1 + AR_ORDER].sum(axis=1)
         M = np.diag(1.0 - ar_sum) @ M
         print(f"ARX plant, AR order {AR_ORDER}: AR coefficients {np.round(ar_sum, 3)}; M rescaled by (1 - AR) per channel")
+    if a.dc_gain:
+        if a.dc_constrain != "none" or a.ar or a.mimo:
+            raise SystemExit("--dc-gain is for the per-axis FIR plant without AR terms and excludes --dc-constrain")
+        dcg = {int(k): float(v) for k, v in (item.split("=") for item in a.dc_gain.split(","))}
+        before = W[:, :K_FIR + 1].sum(axis=1)
+        W = fit_plant(a.log, mimo=a.mimo, episodes=calib, dc=dcg)
+        print(f"DC-gain-constrained plant {dcg}: tap sums {np.round(before, 3)} -> {np.round(W[:, :K_FIR + 1].sum(axis=1), 3)}")
     if a.dc_constrain != "none":
         if a.ar or a.mimo:
             raise SystemExit("--dc-constrain is implemented for the per-axis FIR plant without AR terms")

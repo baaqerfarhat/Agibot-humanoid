@@ -44,3 +44,63 @@ augmented joint metric; integrated and endpoint; aggregated by source episode.
 first clause failing (no growth) says the OSC controller does not integrate a rotation-y offset
 into persistent pose error over 100 steps; prediction 3 failing on the interval says 10 sources
 do not resolve it.
+
+---
+
+## Amendment before the runs (2026-09-14, 22:10): horizon 50, checkpoints 20 and 40
+
+The fit/qualification sources came in at 83–154 commands (healthy spatial episodes end at
+success); with checkpoints at 30 and 70 and a 100-step continuation only one source would carry
+one checkpoint. The plan caps continuations at 100 steps; this registration sets the horizon to
+**50 steps** (2.5 s at 20 Hz) and the checkpoints to **20 and 40**, so every source of ≥ 70
+commands carries the first checkpoint and every source of ≥ 90 the second (7 of the 10
+fit/qualification sources). The same rule applies to the locked test sources unseen. Prediction
+2's growth clause is read at step 20 against the endpoint at step 50; nothing else changes. No
+branch outcome had been produced when this was written (the E1 passes had not started).
+
+---
+
+## Outcome, locked test sources (2026-09-14, 22:22; `results/iclr_unified_v1/E1/pass2_test.json`, `pass2_score.json`, `memory_model_score.json`)
+
+Ten locked sources (state 34, tasks 0–9), 17 of 20 checkpoints (three sources too short for
+step 40), seven branches each, 50-step continuations. Supplied hold estimate (frozen from the
+qualification innovation branches, pass 1): 0.034 on r_y.
+
+| branch | integrated ee error (cm·step, median over sources) | endpoint ee deviation (cm) [IQR] | endpoint angle (rad) | remaining r_y disturbance |
+|---|---|---|---|---|
+| healthy duplicate | 0 | 0 | 0 | 0 |
+| exact cancellation | 0 | 0 | 0 | 0 |
+| faulted / off | 33.9 | **1.58** [1.11, 2.18] | 0.274 | 0.050 |
+| legacy from zero | 19.8 | 0.99 [0.85, 1.17] | 0.143 | 0.027 |
+| innovation from zero | 19.6 | 0.95 [0.82, 1.25] | 0.141 | 0.025 |
+| hold (supplied 0.034) | 12.0 | 0.53 [0.39, 0.68] | 0.091 | 0.017 |
+
+1. **Snapshot fidelity: holds.** Duplicate healthy replay gap 0.0 rad on all 17 checkpoints.
+2. **Persistent physical offset: holds.** Faulted/off deviation at the endpoint is 3.0× its
+   value at step 20 (median; registered > 2×); exact same-mask cancellation is identical to
+   healthy to the last digit (max endpoint deviation 0). A constant +0.05 rotation-y command
+   offset is integrated by the controller into a growing pose error, and removing it at the
+   interface removes the physical consequence entirely.
+3. **Adaptive branches: holds.** Integrated ee error below faulted/off for both laws with the
+   paired source-level 95 % interval excluding zero (legacy −0.121 m·step [−0.162, −0.074];
+   innovation −0.119 [−0.163, −0.063]); their endpoint offsets persist (≈ 1 cm, not decaying
+   toward healthy) with 50–54 % of the disturbance still un-cancelled at step 50; the hold branch
+   at a supplied estimate carrying 33 % of the fault ends at 34 % of the faulted deviation
+   (0.53 / 1.58 cm) — the offset scales with the remaining disturbance, the execution-memory
+   signature.
+4. **Remainder envelope: coverage and ratio hold, the memory model's advantage does not.**
+   The signed finite-memory model (L = 20, frozen after qualification) covers **91.8 %** of locked
+   continuations whole (registered ≥ 90 %) with a median endpoint bound/error ratio of **2.9**
+   (registered ≤ 10). But its paired integrated-error contrast against the comparators does not
+   exclude zero and is slightly worse (memory − geometric +0.016 m·step [−0.003, +0.035]; memory −
+   neutral +0.016 [−0.004, +0.035]). The geometric comparator fitted λ = 0.999 on the fit sources,
+   i.e. it chose the neutral limit itself: a pure accumulation of the remaining disturbance
+   predicts the Panda's pose deviation as well as a 20-tap signed memory does. This is the
+   Part 1 finding (λ̂ = 1.00, no same-command contraction) seen from the disturbance side, and it
+   is reported as primary for prediction 4's last clause.
+
+**Reading.** On this plant the physical execution component behaves as an integrator of the
+remaining command disturbance over a 50-step horizon: what the estimator has not yet cancelled
+accumulates into pose error and stays. The envelope is usable (coverage 0.92, ratio 2.9), the
+memory distinction is not resolved against accumulation on ten sources. ALOHA's half of E1 is
+not run in this pass.

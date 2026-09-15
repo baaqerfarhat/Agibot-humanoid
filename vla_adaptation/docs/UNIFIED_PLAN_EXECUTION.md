@@ -11,11 +11,15 @@ Deadlines: abstract 2026-09-18, full paper 2026-09-25 (AoE). One GPU, one job at
 | shared protocol 3 (unused states, no wrapping) | enumerate used `(suite, task, init)` and pick unused | `openpi/re4_theory/scenario_manifest.py`; manifests in `results/iclr_unified_v1/manifests/` — spatial inits 49 and 44, libero_10 41 and 40 are unused on every task; 60 keys per suite × 3 sampler seeds |
 | shared protocol 4 (real sampler replication) | explicit seed, deterministic per-call schedule shared by arms, reset per episode | `ace_server.py`: `sampler_seed` + `episode` in the control file → `fold_in(fold_in(key(seed), episode), call)`; runner `--sampler-seed`, `--manifest`; old `pin_rng` kept for replay |
 | single-arm runner (840 not 1,200 rollouts) | run the frozen arm once per condition | runner `--arms {both,frozen,adaptive}` |
-| E2 constrained predictor C | FIR with the r_y tap sum constrained to a **separately probed** local response | `--dc-constrain corrected` exists (constraint from the historical M probe); the plan's probe qualification (150 branches, settling and linearity checks) is not built |
-| E1 physical continuations | 7-branch, 100-step replays from full-state snapshots with physical traces and adapter-state branching | `paired_rollout.py` does state/command perturbations and short continuations with q/v/ee-position only; needs orientation, object pose, contact flags, controller target, adapter branches, and a scorer |
+| E2 constrained predictor C | FIR with the r_y tap sum constrained to a **separately probed** local response | done: `e2_probe.py` ran the six declared checkpoints; r_y finite-horizon gain 0.254 (fit) / 0.252 (qualification); C = `--dc-gain 4=0.254` (`PREREG_E2_PROBE_QUALIFICATION.md`) |
+| E1 physical continuations | 7-branch replays from full-state snapshots with physical traces and adapter-state branching | done on the Panda (`e1_continuations.py`, `e1_score.py`, `e1_memory_model.py`; record 55): 3 of 4 predictions hold, the memory model does not beat pure accumulation (λ fitted 0.999). ALOHA half not run |
 | E3 / E4 | optional | not started |
 
-## Running now (a pilot of E2's core hypothesis, registered as `PREREG_DC_CONSTRAINED_PLANT.md`)
+## Done since: the DC pilot (record 54, all predictions held), the probe qualification, E1 on the Panda (record 55)
+
+## Running now: the E2 core (`PREREG_E2_CORE.md`, `scripts/re4/e2_core_chain.sh`, started 2026-09-14 22:22, ≈ 24 h)
+
+### The pilot that preceded it (registered as `PREREG_DC_CONSTRAINED_PLANT.md`)
 
 Legacy reference with only the plant changed (`--dc-constrain corrected`, constraint from the
 historical probe), spatial n = 20, libero_10 n = 40, healthy spatial n = 20; unpinned, inits

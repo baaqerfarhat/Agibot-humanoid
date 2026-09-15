@@ -30,3 +30,27 @@ translation own-axis gains 0.20–0.35 on x, y and 0.10–0.30 on z (the histori
 was a single-state artefact — if z qualifies near 0.24 on these six checkpoints, that reading is
 confirmed). Refutation: r_y not settling within 40 steps on the majority of checkpoints, or a
 fit/qualification disagreement above 25 %.
+
+---
+
+## Outcome (2026-09-14, 22:14; `results/iclr_unified_v1/E2_probe/*.json`)
+
+All six declared checkpoints ran (no missing, no domain exits; baseline contact on 16–40 of 40
+steps). Own-axis r_y gains per unit command, last window: fit 0.254 / 0.257 / 0.252, qualification
+0.285 / 0.251 / 0.221; means **0.254 (fit) and 0.252 (qualification), 0.8 % apart**.
+
+- **Qualification rule, applied.** r_y is a DC response on **1 of 3 fit** checkpoints (the other
+  two fail the 20 % settling test or the sign symmetry at 0.02) and on 3 of 3 qualification
+  checkpoints. Clause (a) therefore fails; the fit and qualification finite-horizon values agree
+  within 25 % (0.8 %), so **predictor C takes the finite-horizon value 0.254**, and every E2
+  claim is worded as a *matched finite-horizon (40-step) consistency constraint*, not a DC
+  constraint. Clause (b) holds; **the E2 core goes ahead.**
+- **Predictions.** r_y gain in 0.20–0.35: yes (0.22–0.29 on every checkpoint; historical probe
+  0.276; the deployed FIR's tap sum 0.103 is refuted by fresh probes on six states of three
+  tasks). Cross-axis entries below 30 % of the own-axis one: see the table in the JSON (reported,
+  not all below on every checkpoint; contact checkpoints couple x with r_y). Translation: x 0.26–
+  0.29, y 0.26–0.27, **z 0.29 (fit) and 0.22 (qualification)** — the shipped z entry of 0.126 was a
+  single-state artefact, as record 45 read it; r_x 0.26, r_z 0.25, both DC on 6/6.
+
+The constraint value for C is fixed here: **rotation-y tap sum = 0.254**, other channels
+unconstrained, everything else identical to U.
