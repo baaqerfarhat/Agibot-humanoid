@@ -66,4 +66,5 @@ evidence.
   18 / 25 / 36 under the rotation mask; healthy U6 −10, C6 −6 → not adopted; the healthy-gate follow-up
   (`PREREG_SIX_CHANNEL_GATE.md`) is running. Figures `e2_mechanism.pdf`, `libero10_mask.pdf`.
 - Manuscript choice: `docs/MANUSCRIPT_CHOICE_20260916.md` recommends `paper_integrated/`.
-
+- Gated six channels (record 62): healthy 54/60 (3 lost), faulted 32/60 — inconclusive band, not adopted; the gate holds the healthy cost and gives back nine of sixteen faulted episodes.
+- Hand-off for the writing session: `docs/HANDOFF_PAPER_INTEGRATED_20260916.md`. No further GPU runs planned.

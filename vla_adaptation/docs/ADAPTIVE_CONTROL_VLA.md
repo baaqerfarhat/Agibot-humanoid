@@ -4313,3 +4313,18 @@ healthy translation phantom, for which the healthy-only gate of record 37 exists
 registered next step. Oracle on these keys: **57/60** (prediction 1 holds); faulted block off 0 → U6 35 → C6 41 → oracle 57,
 against the rotation mask's 18 / 25 / 36; oracle − C6 +26.7 points [+15.0, +38.3]. The estimator with six
 channels closes two thirds of the distance from the rotation mask to exact cancellation.
+
+## 62. Six channels under the healthy-only gate: the cost halves, the gain halves (2026-09-16)
+
+`results/six_channel/{libero_10_gatestats_healthy20, phantom_stats_six.json, libero_10_healthy_C_gate,
+libero_10_faulted_C_gate}` (prereg `PREREG_SIX_CHANNEL_GATE.md`, outcomes appended). Gate thresholds
+from 20 healthy estimate-only episodes on state 39: 0.107 / 0.049 / 0.066 on translation (x and z above
+the 0.05 fault), 0.013–0.018 on rotation. Healthy C6 + gate **54/60** (3 lost; prediction 1 holds;
+translation open 10–12 % of healthy steps). Faulted C6 + gate **32/60**: nine of the sixteen episodes
+six channels gained given back (6 / 15 vs ungated 41, p = 0.078), seven kept over the rotation mask
+(18 / 11 vs 25, p = 0.27); translation open 31 / 57 / 34 % under the fault (registered > 60 %: fails on
+x, z). Registered decision: not adopted (32 is inside the 31–35 inconclusive band). The three
+configurations on the same 60 keys, faulted / healthy: rotation mask 25 / 52, six channels 41 / 53,
+six channels gated 32 / 54. The paper's libero_10 story: the mask caps the suite (Q5), lifting it
+online costs healthy episodes through the translation phantom, and a healthy-only gate cannot
+hold a phantom the size of the fault without holding the correction too. Both cards released.
