@@ -1,0 +1,118 @@
+{
+ "schema_version": 2,
+ "status": "planned",
+ "records": [],
+ "calib_episodes": [
+  [
+   0,
+   9
+  ],
+  [
+   1,
+   9
+  ],
+  [
+   2,
+   9
+  ],
+  [
+   3,
+   9
+  ],
+  [
+   4,
+   9
+  ],
+  [
+   5,
+   9
+  ],
+  [
+   6,
+   9
+  ],
+  [
+   7,
+   9
+  ],
+  [
+   8,
+   9
+  ],
+  [
+   9,
+   9
+  ],
+  [
+   0,
+   10
+  ],
+  [
+   1,
+   10
+  ],
+  [
+   2,
+   10
+  ],
+  [
+   3,
+   10
+  ],
+  [
+   4,
+   10
+  ],
+  [
+   5,
+   10
+  ],
+  [
+   6,
+   10
+  ],
+  [
+   7,
+   10
+  ],
+  [
+   8,
+   10
+  ],
+  [
+   9,
+   10
+  ]
+ ],
+ "init_base": 9,
+ "suite": "libero_spatial",
+ "reset_protocol": "libero-reset-v1",
+ "args": {
+  "control": "/tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad/ctl_fya.json",
+  "ack": "/tmp/claude-1021/-home-mtaheri-ws-AgibotX2/7b471ff2-72f5-4003-ac45-a286d3b67915/scratchpad/ack_fya.json",
+  "out": "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/frozen_yet_adaptive_deadline_v1/sources/qualification_spatial_init9_10.json",
+  "host": "0.0.0.0",
+  "port": 8000,
+  "replan_steps": 5,
+  "suite": "libero_spatial",
+  "episodes": 20,
+  "healthy_only": true,
+  "max_steps": 220,
+  "init_base": 9,
+  "sampler_seeds": "81000,81002,81004,81006,81008,81010,81012,81014,81016,81018,81001,81003,81005,81007,81009,81011,81013,81015,81017,81019"
+ },
+ "created_utc": "2026-09-16T20:42:48.974210+00:00",
+ "source_hashes": {
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/error_signal.py": "f2ae0418304615a1a502e87438ce884a987a79fcd938c2ad20234020d51ca3e8",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/paired_probe.py": "7631ae2e64ed9b50cbd43fefee220ef30bb1dc988012d24119a23ed669ce78e9",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/gate_faults.py": "3129cf38cc45f54f39455e4ebd24c80f0a81fec683367e30bab7fe6b0639110b",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/so3.py": "cd07c7d21abb0a6d2ba1de00e0ffc86263a9dcc4573bccdd7225a2f2ae9cc12c",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/openpi/libero_reset.py": "4308ae24d3cda9b7e411e6071e52548cb17ac11717b82c88c06eca86cf2934bb"
+ },
+ "setup_probe": {
+  "task": 0,
+  "init": 8,
+  "scored": false
+ },
+ "policy_rng_pinned": false
+}

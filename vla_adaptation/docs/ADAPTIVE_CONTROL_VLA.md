@@ -4328,3 +4328,41 @@ configurations on the same 60 keys, faulted / healthy: rotation mask 25 / 52, si
 six channels gated 32 / 54. The paper's libero_10 story: the mask caps the suite (Q5), lifting it
 online costs healthy episodes through the translation phantom, and a healthy-only gate cannot
 hold a phantom the size of the fault without holding the correction too. Both cards released.
+
+## 63. FrozenYet Adaptive recovery campaign, Stage 0: the certificate is not there, the effects are (2026-09-16)
+
+The writing session reorganised the manuscripts under `papers/` and made `papers/frozen_yet_adaptive/`
+the active paper, with `EXPERIMENT_PLAN.md` asking for one missing capability: a prospective,
+restricted-domain prediction of physical benefit versus harm, tested on untouched sources, plus the
+delay / cap / sign mechanisms and a small reacting-policy bridge. Registration
+`prereg_records/PREREG_FYA_RECOVERY_DEADLINE_V1.md`; root `results/frozen_yet_adaptive_deadline_v1/`.
+
+**Stage 0 (old data only, before registration).** The deployed bundle is frozen with its arrays
+(`configuration.json`: the headline W, r_y tap sum 0.103, and the probed M, r_y 0.276; not the E2
+partition predictor). The scalar memory–authority–delay floor `g [F S_N(λ) − C S_{N−τ}(λ)]_+` equals the
+exact causal minimax (an LP) to 3e-11 on a 200-point grid. The new driver (`fya_continuations.py`)
+passes the delay/cap/reference timing assertions on a fake plant, and on the simulator the duplicate
+restore and a fresh-prefix replay both reproduce the healthy continuation to 0.0 rad. The healthy
+residual under W has no bias on the rotation channels (r_y mean 5e-4, step sd 0.009) and the
+correction-direction feedback model r = M f + (M − G_fit) c reproduces the faulted residuals to noise
+(rms 0.010, mean error −0.0015 on r_y).
+
+**Forecast feasibility, leave-one-state-out on the old sources (states 39 ↔ 33), under the new
+driver.** A finite-memory physical model driven by the remaining disturbance, with the observer
+simulated exactly on the residual model plus sampled healthy residual sequences, forecasts the *energy
+difference* B = J_off − J_A with small median error (−1e-5 to −3e-5 m² s against B ≈ 6e-5) and the
+estimator-error control predicts the sign of B on 88–94 % of cells. But the per-trajectory error is as
+large as the prediction (median ‖E − Ê‖/‖Ê‖ ≈ 0.8–1.0), so any radius that covers the qualification
+sources (max rule ε ≈ 0.02 m√s; affine rule a + ρ‖Ê‖ with ρ ≈ 1.7–2.4) makes every benefit interval
+contain zero: **0 decisive intervals on both folds**. Per the plan's stopping rule the paper will not
+promise a certificate; §9 of the prereg narrows the claim to a point-forecast sign test (target ≥ 80 %)
+and reports the interval labels as expected-inconclusive. The campaign runs unchanged.
+
+Development observations under the new driver (old sources, not results): delay10 raises the adapted
+cost (state 39: +1.6e-5 [1e-6, 3.5e-5] m² s), cap_half raises the *reference's* cost (+2.8e-5 and
++7.6e-5) but barely the online laws, whose estimates settle near 0.025 regardless, the sign reversal
+leaves the benefit fraction unchanged, and healthy false updates cost 1.1–2.1e-5 m² s per source
+(15–20 % of the faulted off energy). Chain `scripts/re4/fya_chain.sh` launched 13:42 on GPU 1 (server
+memory fraction 0.6, Yujin's training untouched): 40 fresh sources (states 9–12, pinned sampler seeds),
+800 branches, then the 160-episode Stage 2 bridge (states 13, 14, seed 83001; the faulted off arm is
+aliased for the delayed condition). Results follow in §64.

@@ -669,7 +669,11 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
         deadzone_mode="zero", telemetry=None, episode=0, arm=None,
         rls_lambda=0.99, rls_p0=1.0, kf_q=None, kf_r=None,
         step_observer=None, freeze_after=None, correction_scale=1.0, scenario_reset=False,
-        gate=None, timing=None, track=None):
+        gate=None, timing=None, track=None, adapt_from=0):
+    # adapt_from: policy step (t - WARMUP_STEPS) before which the adaptive arm sends the raw policy
+    # command and performs no estimator update (estimate held at zero; command history advances).
+    # Registered for the FrozenYet Adaptive reacting-policy bridge (a common unadapted prefix, then an
+    # imposed adaptation delay). 0 keeps the historical behaviour exactly.
     # Keep simulator/client dependencies out of the pure helpers and --selftest.
     # timing: an open line-buffered file; one JSON line per control step (re4 Part E):
     # policy_ms (replan steps only), adapter_ms (correction + FIR prediction + estimator update),
@@ -764,7 +768,8 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
             gmask = None
             if gate is not None:
                 gmask = (np.abs(f_hat - gate["b"]) > gate["k"] * gate["sd"]).astype(float)
-            c = applied_correction(f_hat, adapt=adapt, apply_corr=apply_corr,
+            adapt_now = adapt and (t - WARMUP_STEPS) >= adapt_from
+            c = applied_correction(f_hat, adapt=adapt_now, apply_corr=apply_corr,
                                    static_c=static_c,
                                    mask=gmask if gmask is not None else (mask if corr_dims is not None else None))
             if correction_scale != 1.0:
@@ -840,7 +845,7 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
             f_hat_before = f_hat.copy() if telemetry is not None else None
             diag = dict(nr=None, attenuation=None, deadzone_fired=None,
                         update_applied=False, norm_vector=None)
-            if adapt and (freeze_after is None or t - WARMUP_STEPS < freeze_after):
+            if adapt_now and (freeze_after is None or t - WARMUP_STEPS < freeze_after):
                 f_hat, diag = estimator_step(f_hat, r, M_inv, gamma=gamma, dead=dead,
                     norm_r=norm_r, clip=clip, bias=bias, mask=mask,
                     norm_channels=norm_channels, deadzone_mode=deadzone_mode,
@@ -852,7 +857,7 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
             if tracker is not None:
                 # Pose tracking: measured every step, applied after the base update wherever it updates.
                 track_e, track_z, track_n = tracker.observe(t - WARMUP_STEPS, a_cmd, x0, x1, y)
-                if adapt and (freeze_after is None or t - WARMUP_STEPS < freeze_after):
+                if adapt_now and (freeze_after is None or t - WARMUP_STEPS < freeze_after):
                     f_hat = tracker.correct(f_hat, track_z)
                 diag = dict(diag, track_e=track_e, track_z=track_z, track_n=track_n)
             _tad1 = _time.perf_counter()
@@ -1315,6 +1320,9 @@ def main():
                    help="pixels to roll the wrist camera -- a fault the plant never sees")
     p.add_argument("--obs-offset", default=None,
                    help="x,y,z bias on the position SENSOR -- a fault the residual cannot see")
+    p.add_argument("--adapt-from", type=int, default=0,
+                   help="policy step (after the warmup) at which the adaptive arm starts correcting and "
+                        "updating; before it the raw policy command is sent and the estimate stays zero")
     p.add_argument("--onset", type=int, default=0,
                    help="control step at which the fault appears (0 = from the start)")
     p.add_argument("--eval-init", type=int, default=45,
@@ -1706,7 +1714,8 @@ def main():
                                      telemetry=telemetry, episode=episode, arm=tag,
                                      rls_lambda=a.rls_lambda, rls_p0=a.rls_p0,
                                      kf_q=kf_q, kf_r=kf_r, gate=gate,
-                                     scenario_reset=a.scenario_reset, timing=timing_fh, **opt_in)
+                                     scenario_reset=a.scenario_reset, timing=timing_fh,
+                                     adapt_from=a.adapt_from, **opt_in)
                 ok += int(s); fh.append(f_hat.tolist())
                 # Per-episode outcome, keyed by (task, init). The arms run on the SAME episode
                 # list, so these pair up -- which is what McNemar needs and what the earlier

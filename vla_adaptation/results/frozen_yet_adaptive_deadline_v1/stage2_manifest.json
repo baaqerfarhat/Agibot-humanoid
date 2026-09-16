@@ -1,0 +1,107 @@
+{
+ "name": "fya stage 2 reacting-policy bridge",
+ "suite": "libero_spatial",
+ "scenarios": [
+  {
+   "task": 0,
+   "init": 13,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 1,
+   "init": 13,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 2,
+   "init": 13,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 3,
+   "init": 13,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 4,
+   "init": 13,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 5,
+   "init": 13,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 6,
+   "init": 13,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 7,
+   "init": 13,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 8,
+   "init": 13,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 9,
+   "init": 13,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 0,
+   "init": 14,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 1,
+   "init": 14,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 2,
+   "init": 14,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 3,
+   "init": 14,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 4,
+   "init": 14,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 5,
+   "init": 14,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 6,
+   "init": 14,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 7,
+   "init": 14,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 8,
+   "init": 14,
+   "sampler_seed": 83001
+  },
+  {
+   "task": 9,
+   "init": 14,
+   "sampler_seed": 83001
+  }
+ ],
+ "note": "paired across all arms and conditions on (task, init, sampler_seed); arm order rotated prospectively (see chain)"
+}

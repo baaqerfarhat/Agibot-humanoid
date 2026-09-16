@@ -1,0 +1,167 @@
+{
+ "suite": "libero_spatial",
+ "built": "2026-09-16",
+ "method": "union of three scans of results/ (json 'init' keys with suite context, csv scenario strings, episode_keys of source logs, and a full-text search); ALOHA campaigns (norm_channels 0-19, composite_tuning 0-4) excluded as not LIBERO",
+ "used": {
+  "0": [
+   "re4_evidence (rot-only heldout scan)"
+  ],
+  "1": [
+   "joint_followup"
+  ],
+  "2": [
+   "re4_evidence"
+  ],
+  "3": [
+   "re4_evidence"
+  ],
+  "5": [
+   "heldout",
+   "re4_evidence"
+  ],
+  "6": [
+   "descriptor",
+   "sweep"
+  ],
+  "7": [
+   "heldout",
+   "re4_evidence"
+  ],
+  "8": [
+   "heldout",
+   "iclr_unified_v1",
+   "joint_followup",
+   "re4_evidence"
+  ],
+  "16": [
+   "re4_evidence"
+  ],
+  "20": [
+   "observers"
+  ],
+  "25": [
+   "heldout",
+   "re4_theory",
+   "tracking_pretest"
+  ],
+  "26": [
+   "joint_followup"
+  ],
+  "27": [
+   "composite_followup",
+   "joint_followup"
+  ],
+  "28": [
+   "joint_followup"
+  ],
+  "30": [
+   "joint_followup"
+  ],
+  "32": [
+   "joint_followup"
+  ],
+  "33": [
+   "iclr_unified_v1 E1 v2 locked test (inspected)"
+  ],
+  "34": [
+   "iclr_unified_v1 E1 first pass (inspected)"
+  ],
+  "35": [
+   "joint_followup"
+  ],
+  "36": [
+   "joint_followup"
+  ],
+  "37": [
+   "descriptor",
+   "sweep"
+  ],
+  "38": [
+   "descriptor",
+   "sweep"
+  ],
+  "39": [
+   "iclr_unified_v1 E1 fit/qualification, six-channel gate stats"
+  ],
+  "40": [
+   "iclr_unified_v1 E2 evaluation + fit"
+  ],
+  "41": [
+   "iclr_unified_v1 E2 evaluation + fit"
+  ],
+  "42": [
+   "iclr_unified_v1 E2 fit partition"
+  ],
+  "43": [
+   "iclr_unified_v1 E2 fit partition"
+  ],
+  "44": [
+   "collab_q",
+   "iclr_unified_v1"
+  ],
+  "45": [
+   "headline cohorts, phase05 calibration, many"
+  ],
+  "46": [
+   "headline cohorts, many"
+  ],
+  "47": [
+   "jf_rerun",
+   "re4_evidence (goal/10 heldout)"
+  ],
+  "48": [
+   "jf_rerun",
+   "re4_evidence"
+  ],
+  "49": [
+   "collab_q",
+   "iclr_unified_v1 probe"
+  ]
+ },
+ "free": [
+  4,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  17,
+  18,
+  19,
+  21,
+  22,
+  23,
+  24,
+  29,
+  31
+ ],
+ "allocation": {
+  "qualification": [
+   9,
+   10
+  ],
+  "physical_test": [
+   11,
+   12
+  ],
+  "stage2_bridge": [
+   13,
+   14
+  ],
+  "replacement_order": [
+   15,
+   17,
+   18,
+   19,
+   21,
+   22,
+   23,
+   24,
+   29,
+   31
+  ]
+ },
+ "note": "conservative: any spatial mention counts as used; states 4 and 15 are free but 4 is held back as a buffer next to used state 5"
+}

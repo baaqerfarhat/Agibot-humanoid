@@ -153,6 +153,12 @@ def collect(a, pr, episode_logger=None):
     atomic_json(a.out, payload)
     try:
         payload["policy_control_ack"] = pr.control(dict(site=None, pin_rng=False))
+        seeds = getattr(a, "sampler_seeds", None)
+        if seeds:
+            seeds = [int(x) for x in str(seeds).split(",")]
+            if len(seeds) != len(scenarios):
+                raise ValueError("--sampler-seeds must list one seed per episode")
+            payload["sampler_seeds"] = seeds
         payload["status"] = "running"
         conditions = [(0.0, "NOMINAL (no fault)")]
         if not a.healthy_only:
@@ -160,9 +166,14 @@ def collect(a, pr, episode_logger=None):
         for sev, label in conditions:
             recs, outcomes = [], []
             for k, (task, init) in enumerate(scenarios):
+                ack = None
+                if seeds:
+                    # explicit per-episode sampler schedule (ace_server fold_in(key(seed), episode, call))
+                    ack = pr.control(dict(site=None, pin_rng=False, sampler_seed=int(seeds[k]), episode=int(k)))
                 rec, success = episode_logger(pr, task, init, sev, max_steps=a.max_steps)
                 recs.append(rec)
-                outcomes.append(dict(task=task, init=init, ok=bool(success), steps=len(rec)))
+                outcomes.append(dict(task=task, init=init, ok=bool(success), steps=len(rec),
+                                     **({"sampler_seed": int(seeds[k]), "control_ack": ack} if seeds else {})))
                 print(f"  {label}: episode {k} -> {len(rec)} steps, success={success}")
             record = analyse(recs, sev, label)
             record.update(episode_keys=scenarios, per_ep=outcomes)
@@ -191,6 +202,9 @@ def main(argv=None):
     p.add_argument("--max-steps", type=int, help="policy action cap; default is the suite cap")
     p.add_argument("--init-base", type=int, default=45,
                    help="first initial state; keep DISJOINT from evaluation states")
+    p.add_argument("--sampler-seeds", default=None,
+                   help="comma list, one policy sampler seed per episode (explicit schedule sent to the server "
+                        "before each episode); default: unpinned sampling as before")
     a = p.parse_args(argv)
     if a.episodes < 1 or a.init_base < 0 or a.replan_steps < 1 or (a.max_steps is not None and a.max_steps < 1):
         p.error("episode count, initial state, and step counts must be valid")
