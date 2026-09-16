@@ -55,3 +55,15 @@ evidence.
    clustered interval; healthy change > −5 points).
 3. E1 tooling in parallel on CPU (the plan's first new simulator work), then its locked runs.
 4. Abstract on 18 Sep from completed evidence; results land in the paper by 25 Sep.
+
+## Since 15 Sep (records 58–61)
+- Q5: six-channel oracle 38/40 vs rotation-only 22/40 — the rotation mask caps libero_10 (record 58).
+- Q2 pose tracking: mechanism only (r_z pose excess 0.815), no task lever; Q6 pinned: FIR 10 / ARX 8 / DC 14 of 80,
+  r_y settle 0.30 / 0.34 / 0.72 (median; mean 0.61) (record 59).
+- E1 on ALOHA: all four predictions hold — the servo forgets what the Panda remembers (record 60);
+  figure `results/iclr_unified_v1/figures/e1_contrast_panda_aloha.pdf`; twenty-source extension running.
+- Six-channel correction on libero_10 (record 61): off 0 → U6 35 → C6 41 → oracle 57 of 60 on the E2 keys against
+  18 / 25 / 36 under the rotation mask; healthy U6 −10, C6 −6 → not adopted; the healthy-gate follow-up
+  (`PREREG_SIX_CHANNEL_GATE.md`) is running. Figures `e2_mechanism.pdf`, `libero10_mask.pdf`.
+- Manuscript choice: `docs/MANUSCRIPT_CHOICE_20260916.md` recommends `paper_integrated/`.
+

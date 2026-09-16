@@ -4293,4 +4293,23 @@ saturates at the offset's norm (endpoint 1.01× its step-20 value; Panda 1.8×);
 current remaining disturbance (no memory of the transient); a geometric-decay model with λ = 0.66
 beats pure accumulation by an order of magnitude (Panda: accumulation as good as anything, λ → 1).
 This is the paper's execution-memory distinction observed as a contrast between two robots under
-the same protocol. Caveat: three test sources; the twenty fresh ones await a free card.
+the same protocol. **Twenty fresh sources (seeds 400–419, fit 6 / qual 4 / test 10,
+`E1_aloha_v2/`) reproduce it on ten test sources:** saturation 1.01×, 94–97 % cancelled, λ = 0.66,
+geometric beats accumulation by 0.88 rad·step with intervals far from zero; the one letter that
+fails is the innovation branch's endpoint-gap/remaining ratio (1.43 vs the registered 1.30), a
+quotient of two numbers of order 0.001 rad.
+
+## 61. Six-channel correction on libero_10: the ceiling lifts, the healthy cost appears (2026-09-16)
+
+`results/six_channel/` (prereg `PREREG_SIX_CHANNEL_LIBERO10.md`, outcome appended; the E2 design with
+mask {0..5}, the translation entries of M replaced by the E2 probes' 0.257 / 0.263 / 0.291, frozen
+arms shared with E2). Faulted: U6 **35/60**, C6 **41/60** against 18 and 25 under the rotation mask
+on the same keys (22 won / 6 lost for C, p = 0.004); C6 − U6 +6 [−1.7, +21.7] points. Healthy: U6
+47/60 (10 lost), C6 53/60 (6 lost) against 56 — the translation phantom (z ≈ 0.019 median, episodes
+at the clip) the record-58 hazard list named. Estimates: C6 82 / 72 / 115 % on x / y / z.
+Registered decision: prediction 2 holds, prediction 3 fails → reported, not adopted. What it
+settles for the paper: Q5's mask ceiling can be lifted online (25 → 41), and the price is the
+healthy translation phantom, for which the healthy-only gate of record 37 exists and becomes the
+registered next step. Oracle on these keys: **57/60** (prediction 1 holds); faulted block off 0 → U6 35 → C6 41 → oracle 57,
+against the rotation mask's 18 / 25 / 36; oracle − C6 +26.7 points [+15.0, +38.3]. The estimator with six
+channels closes two thirds of the distance from the rotation mask to exact cancellation.

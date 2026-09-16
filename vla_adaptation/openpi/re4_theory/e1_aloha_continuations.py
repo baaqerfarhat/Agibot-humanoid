@@ -48,7 +48,7 @@ def main():
         obs, r, term, trunc, info = env.step(np.asarray(target, float)); return obs, bool(term or trunc), float(r)
 
     for ei in ep_list:
-        U = np.asarray(d[ei]["u"], float); n = len(U); seed = a.seed_base + ei
+        U = np.asarray(d[ei]["u"], float); n = len(U); seed = int(d[ei]["init"]) if "init" in d[ei] else a.seed_base + ei   # the log records its scene seed when it has one
         obs, _ = env.reset(seed=seed); q = np.asarray(obs["agent_pos"], float); k = 0; out_cps = []; step_count = 0
         for ks in cps:
             if ks + H > n:

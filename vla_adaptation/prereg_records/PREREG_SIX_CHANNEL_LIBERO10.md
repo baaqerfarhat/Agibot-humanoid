@@ -35,3 +35,50 @@ result and the mask sentence changes; if 2 fails, the ceiling is reported as not
 with the estimate quality of 4 as the reason offered; if 3 fails, the result is reported with its
 healthy cost and not adopted. Scorer: `openpi/re4_theory/e2_score.py` with the arm names below
 (`--allow-partial` is not used for the decision).
+
+---
+
+## Outcome, four of five new arms (2026-09-16, 04:35; `results/six_channel/`; the oracle arm on these keys is running)
+
+| arm | success / 60 | paired against | settle, % of fault (x / y / z / r_x / r_y / r_z) |
+|---|---|---|---|
+| healthy off (E2) | 56 | — | — |
+| healthy U6 | **47** | off: 10 lost, 1 gained | phantom median z +0.019 (translation reaches the 0.15 clip on some episodes) |
+| healthy C6 | **53** | off: 6 lost, 3 gained | phantom median z +0.019; 10 episodes with |z| > 0.05 |
+| faulted off (E2) | 0 | — | — |
+| faulted U6 | **35** | rotation-mask U 18: 18 won / 1 lost (p < 0.001) | 118 / 79 / 124 / 88 / 55 / 94 |
+| faulted C6 | **41** | rotation-mask C 25: 22 won / 6 lost (p = 0.004); U6: 11 / 5 (p = 0.21), task-clustered [−1.7, +21.7] points | 82 / 72 / 115 / 89 / 74 / 93 |
+
+- **Prediction 2 (C6 ≥ 36/60): holds** — 41/60, from 25 under the rotation mask on the same keys.
+  Translation correction realises most of what the six-channel oracle promised (Q5: 38/40 ≈ 57/60
+  on this suite's rate; the oracle on these exact keys is pending as prediction 1). C6 − U6 is
+  +6 with an interval that includes zero.
+- **Prediction 3 (healthy ≤ 3 lost): refuted for U6 (10 lost) and at the refutation line for C6
+  (6 lost).** The translation phantom named in record 58 is the cause: the healthy estimate on z
+  settles at 0.019 (two fifths of the fault size) with episodes driven to the clip, while the
+  rotation phantoms stay near zero. The constrained predictor halves the damage and does not
+  remove it.
+- **Prediction 4 (x, y within ±30 %): holds at the letter** (C6: x 82 %, y 72 %); z over-corrects
+  (115–124 %) with the probed entry 0.291, so the probed value is itself high for this suite's
+  states or the translation phantom adds to it — reported, not resolved.
+
+**Decision, as registered.** Prediction 2 holds and prediction 3 fails: the six-channel
+configuration is **reported with its healthy cost and not adopted**. The paper's libero_10
+sentence becomes: the rotation mask caps the suite (Q5); correcting all six channels online
+lifts it from 25 to 41 of 60 (oracle pending) at the price of six to ten healthy episodes in sixty,
+the translation phantom the healthy-only gate of record 37 was built to hold — that gate on the
+six-channel configuration is the registered next step (`PREREG_HEALTHY_GATE.md`'s design on the
+E2 keys, 240 rollouts).
+
+## Oracle arm (2026-09-16, 05:44; `libero_10_faulted_oracle`, the E2 keys)
+
+Six-channel exact cancellation on these 60 keys: **57/60** (prediction 1, ≥ 50: holds). Oracle − C6 +16
+episodes = **+26.7 points** (task-clustered [+15.0, +38.3], 16 oracle-only, 0 C6-only); oracle − U6 +22 episodes =
++36.7 points [+20.0, +51.7], 22 / 0. (Numbers from `score_libero_10_six.json`; the line first written here
+quoted figures that were not the scorer's and was corrected at 05:50.) Healthy, from the same scorer:
+U6 − off −15.0 points [−26.7, −3.3], C6 − off −5.0 [−16.7, +3.3]; C6 − U6 faulted +10.0 [−1.7, +21.7].
+The whole block, faulted: off 0 → U6 35 → C6 41 → oracle 57 of 60 against the rotation mask's
+18 / 25 / 36. The estimator with six channels closes about two thirds of the distance from the
+rotation mask to exact cancellation; the healthy cost is the price (record 61). Scorer output
+`score_libero_10_six.json`.
+
