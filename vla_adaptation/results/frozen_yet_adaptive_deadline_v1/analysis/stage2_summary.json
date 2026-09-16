@@ -1,0 +1,210 @@
+{
+ "arms": {
+  "healthy_off": {
+   "successes": 20,
+   "n": 20
+  },
+  "healthy_nt": {
+   "successes": 19,
+   "n": 20
+  },
+  "healthy_innovation": {
+   "successes": 20,
+   "n": 20
+  },
+  "fault_off": {
+   "successes": 20,
+   "n": 20
+  },
+  "fault_nt": {
+   "successes": 20,
+   "n": 20
+  },
+  "fault_innovation": {
+   "successes": 20,
+   "n": 20
+  },
+  "delay_nt": {
+   "successes": 20,
+   "n": 20
+  },
+  "delay_innovation": {
+   "successes": 20,
+   "n": 20
+  }
+ },
+ "alias": "fault_off serves as the off arm of the delayed condition",
+ "comparisons": {
+  "fault_nt - fault_off": {
+   "n": 20,
+   "a_successes": 20,
+   "b_successes": 20,
+   "wins": 0,
+   "losses": 0,
+   "win_keys": [],
+   "loss_keys": [],
+   "rate_difference": 0.0,
+   "task_clustered_ci95": [
+    0.0,
+    0.0
+   ],
+   "mcnemar_exact_p_descriptive": 1.0
+  },
+  "delay_nt - fault_off": {
+   "n": 20,
+   "a_successes": 20,
+   "b_successes": 20,
+   "wins": 0,
+   "losses": 0,
+   "win_keys": [],
+   "loss_keys": [],
+   "rate_difference": 0.0,
+   "task_clustered_ci95": [
+    0.0,
+    0.0
+   ],
+   "mcnemar_exact_p_descriptive": 1.0
+  },
+  "delay_nt - fault_nt": {
+   "n": 20,
+   "a_successes": 20,
+   "b_successes": 20,
+   "wins": 0,
+   "losses": 0,
+   "win_keys": [],
+   "loss_keys": [],
+   "rate_difference": 0.0,
+   "task_clustered_ci95": [
+    0.0,
+    0.0
+   ],
+   "mcnemar_exact_p_descriptive": 1.0
+  },
+  "healthy_nt - healthy_off": {
+   "n": 20,
+   "a_successes": 19,
+   "b_successes": 20,
+   "wins": 0,
+   "losses": 1,
+   "win_keys": [],
+   "loss_keys": [
+    [
+     8,
+     14,
+     83001
+    ]
+   ],
+   "rate_difference": -0.05,
+   "task_clustered_ci95": [
+    -0.15,
+    0.0
+   ],
+   "mcnemar_exact_p_descriptive": 1.0
+  },
+  "fault_innovation - fault_off": {
+   "n": 20,
+   "a_successes": 20,
+   "b_successes": 20,
+   "wins": 0,
+   "losses": 0,
+   "win_keys": [],
+   "loss_keys": [],
+   "rate_difference": 0.0,
+   "task_clustered_ci95": [
+    0.0,
+    0.0
+   ],
+   "mcnemar_exact_p_descriptive": 1.0
+  },
+  "delay_innovation - fault_off": {
+   "n": 20,
+   "a_successes": 20,
+   "b_successes": 20,
+   "wins": 0,
+   "losses": 0,
+   "win_keys": [],
+   "loss_keys": [],
+   "rate_difference": 0.0,
+   "task_clustered_ci95": [
+    0.0,
+    0.0
+   ],
+   "mcnemar_exact_p_descriptive": 1.0
+  },
+  "delay_innovation - fault_innovation": {
+   "n": 20,
+   "a_successes": 20,
+   "b_successes": 20,
+   "wins": 0,
+   "losses": 0,
+   "win_keys": [],
+   "loss_keys": [],
+   "rate_difference": 0.0,
+   "task_clustered_ci95": [
+    0.0,
+    0.0
+   ],
+   "mcnemar_exact_p_descriptive": 1.0
+  },
+  "healthy_innovation - healthy_off": {
+   "n": 20,
+   "a_successes": 20,
+   "b_successes": 20,
+   "wins": 0,
+   "losses": 0,
+   "win_keys": [],
+   "loss_keys": [],
+   "rate_difference": 0.0,
+   "task_clustered_ci95": [
+    0.0,
+    0.0
+   ],
+   "mcnemar_exact_p_descriptive": 1.0
+  },
+  "fault_nt - fault_innovation": {
+   "n": 20,
+   "a_successes": 20,
+   "b_successes": 20,
+   "wins": 0,
+   "losses": 0,
+   "win_keys": [],
+   "loss_keys": [],
+   "rate_difference": 0.0,
+   "task_clustered_ci95": [
+    0.0,
+    0.0
+   ],
+   "mcnemar_exact_p_descriptive": 1.0
+  },
+  "delay_nt - delay_innovation": {
+   "n": 20,
+   "a_successes": 20,
+   "b_successes": 20,
+   "wins": 0,
+   "losses": 0,
+   "win_keys": [],
+   "loss_keys": [],
+   "rate_difference": 0.0,
+   "task_clustered_ci95": [
+    0.0,
+    0.0
+   ],
+   "mcnemar_exact_p_descriptive": 1.0
+  }
+ },
+ "registered": {
+  "S1_faulted_law_exceeds_off": {
+   "nt": false,
+   "innovation": false
+  },
+  "S2_delayed_not_better": {
+   "nt": true,
+   "innovation": true
+  },
+  "S3_healthy_losses_le_3": {
+   "nt": true,
+   "innovation": true
+  },
+  "note": "S1 uses the task-clustered interval excluding zero; S2 is directional; S3 counts individually lost healthy keys"
+ }
+}

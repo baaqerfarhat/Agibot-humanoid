@@ -8,14 +8,17 @@ Four sub-commands, run in this order and frozen between them:
                * physical response: signed finite-memory linear model e_k = sum_{j<L} G_j d_{k-j} (end-effector translation
                  deviation from the healthy continuation, m; d = remaining command disturbance f + c on all six channels,
                  normalised units), L = 20, ridge 1e-6 (e1_memory_model.fit_memory);
-               * residual model for the observer simulation: r_k = M f + (M - G_fit) c_k + b_h + nu_k, with b_h the mean
-                 healthy residual of the development runs and nu_k drawn as WHOLE healthy residual sequences from the
-                 development pool (keeps autocorrelation and cross-channel correlation; no test data enters);
+               * residual model for the observer simulation: r_k = M f + (M - G_fit) c_k + nu_k, with nu_k drawn as WHOLE
+                 healthy residual sequences from the development pool (they already carry the healthy mean b_h, which the
+                 model stores for reference only; keeps autocorrelation and cross-channel correlation; no test data enters);
                * simple predictive controls selected on the same data: forecast mean |fhat - f| on the corrected channels
                  and forecast mean residual norm, reported next to the energy forecast.
   predict    For each source of a fresh log (nominal commands only; no branch data is read) and each scenario x arm, simulate
-             the deployed observer (adaptive_law.estimator_step, exact NT and innovation laws, cap, delay) under n_draws
-             residual-noise draws, map remaining disturbance to physical deviation, and write predictions.csv with the
+             the deployed observer update (adaptive_law.estimator_step for NT and innovation, cap, delay) under n_draws
+             residual-noise draws. The update function is the deployed one, but the residual it sees comes from the
+             simplified model above, not from the FIR predictor run on the actual command history: this is a
+             simulation of a reduced loop, not of the deployed feedback loop. Map remaining disturbance to physical
+             deviation, and write predictions.csv with the
              forecast trajectory norm ||Ehat||_Q (m sqrt(s)) and forecast energy Jhat = ||Ehat||_Q^2 (m^2 s), Q = dt I, plus
              the estimator-error / residual controls. The file is hashed; freeze it before the corresponding run is read.
   calibrate  On the QUALIFICATION run: per source, s_i = max over all compared branches of ||E - Ehat||_Q; the width rule is
@@ -96,7 +99,10 @@ def simulate(scenario, arm, W, M, M_inv, mask, consts, healthy_cap, H, noise, b_
             c = -f_hat * mask
         else:
             c = np.zeros(6)
-        r = M @ f + (M - G_fit) @ c + b_h + noise[k]
+        # noise[k] is a whole healthy residual sequence from the development pool and already carries the healthy
+        # mean b_h; adding b_h again doubled the expected healthy residual (found in review 2026-09-16 14:10, fixed
+        # before the test forecast was written; the qualification forecast was regenerated with this code).
+        r = M @ f + (M - G_fit) @ c + noise[k]
         D.append(f + c); FH.append(f_hat.copy()); RR.append(r)
         if adapt and k >= delay:
             f_hat, diag = AL.estimator_step(f_hat, r, M_inv, gamma=consts["gamma"], dead=consts["dead"], norm_r=consts["norm_r"], clip=cap,
@@ -249,7 +255,15 @@ def cmd_evaluate(a):
     with open(a.out / "evaluation_rows.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys())); w.writeheader(); w.writerows(rows)
     decisive_sources = sorted({r["source"] for r in rows if r["pred_label"] != "inconclusive" and r["law"] in ("nt", "innovation")})
-    summary = dict(width_rule=a.width, epsilon_max_rule=eps, affine_a=aff_a, affine_rho=aff_rho, zero_tolerance=tol, n_sources=len(joint), joint_coverage=int(sum(joint.values())), individual_coverage=f"{int(sum(cover_ind))}/{len(cover_ind)}",
+    # registered point-forecast criteria (prereg section 9): sign agreement on cells with |B| > tol, per law, and median |error|/|B|
+    sign_agree, rel_err = {}, {}
+    for law in ("nt", "innovation", "reference"):
+        rr = [r for r in rows if r["law"] == law and abs(r["B"]) > tol]
+        sign_agree[law] = float(np.mean([((r["Jhat_off"] - r["Jhat_A"]) > 0) == (r["B"] > 0) for r in rr])) if rr else None
+        rel_err[law] = float(np.median([abs(r["forecast_error_B"]) / abs(r["B"]) for r in rr])) if rr else None
+    summary = dict(width_rule=a.width, epsilon_max_rule=eps, affine_a=aff_a, affine_rho=aff_rho, zero_tolerance=tol,
+                   point_forecast_sign_agreement=sign_agree, point_forecast_median_rel_error=rel_err,
+                   point_forecast_target_ge_0_80=dict((law, bool(sign_agree[law] is not None and sign_agree[law] >= 0.80)) for law in ("nt", "innovation")), n_sources=len(joint), joint_coverage=int(sum(joint.values())), individual_coverage=f"{int(sum(cover_ind))}/{len(cover_ind)}",
                    decisive_sources_nt_or_innovation=decisive_sources, n_decisive=len(decisive_sources),
                    labels={f"{sc}/{law}": {lab: int(sum(1 for r in rows if r['scenario'] == sc and r['law'] == law and r['pred_label'] == lab)) for lab in ("benefit", "harm", "inconclusive")} for sc in scen for law in ("nt", "innovation", "reference")},
                    false_help=[dict(source=r["source"], task=r["task"], init=r["init"], scenario=r["scenario"], law=r["law"], B=r["B"], pred_lower=r["pred_lower"]) for r in rows if r["false_help"]],

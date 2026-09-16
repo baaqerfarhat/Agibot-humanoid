@@ -1,0 +1,107 @@
+{
+ "width_rule": "max",
+ "epsilon_max_rule": 0.025720209035490445,
+ "affine_a": 0.00995247204959191,
+ "affine_rho": 3.826510866055254,
+ "zero_tolerance": 1e-09,
+ "point_forecast_sign_agreement": {
+  "nt": 0.881578947368421,
+  "innovation": 0.868421052631579,
+  "reference": 0.9473684210526315
+ },
+ "point_forecast_median_rel_error": {
+  "nt": 0.6898688163770013,
+  "innovation": 0.698811480261659,
+  "reference": 0.6613510401354606
+ },
+ "point_forecast_target_ge_0_80": {
+  "nt": true,
+  "innovation": true
+ },
+ "n_sources": 19,
+ "joint_coverage": 16,
+ "individual_coverage": "358/361",
+ "decisive_sources_nt_or_innovation": [],
+ "n_decisive": 0,
+ "labels": {
+  "reference/nt": {
+   "benefit": 0,
+   "harm": 0,
+   "inconclusive": 19
+  },
+  "reference/innovation": {
+   "benefit": 0,
+   "harm": 0,
+   "inconclusive": 19
+  },
+  "reference/reference": {
+   "benefit": 0,
+   "harm": 0,
+   "inconclusive": 19
+  },
+  "delay10/nt": {
+   "benefit": 0,
+   "harm": 0,
+   "inconclusive": 19
+  },
+  "delay10/innovation": {
+   "benefit": 0,
+   "harm": 0,
+   "inconclusive": 19
+  },
+  "delay10/reference": {
+   "benefit": 0,
+   "harm": 0,
+   "inconclusive": 19
+  },
+  "cap_half/nt": {
+   "benefit": 0,
+   "harm": 0,
+   "inconclusive": 19
+  },
+  "cap_half/innovation": {
+   "benefit": 0,
+   "harm": 0,
+   "inconclusive": 19
+  },
+  "cap_half/reference": {
+   "benefit": 0,
+   "harm": 0,
+   "inconclusive": 19
+  },
+  "sign_reverse/nt": {
+   "benefit": 0,
+   "harm": 0,
+   "inconclusive": 19
+  },
+  "sign_reverse/innovation": {
+   "benefit": 0,
+   "harm": 0,
+   "inconclusive": 19
+  },
+  "sign_reverse/reference": {
+   "benefit": 0,
+   "harm": 0,
+   "inconclusive": 19
+  }
+ },
+ "false_help": [],
+ "predicted_harm_errors": [],
+ "interval_width_median": 0.0020035587121027213,
+ "forecast_error_B": {
+  "median": -3.4091068309840195e-05,
+  "mean_abs": 9.339128379460137e-05
+ },
+ "control_est_err_accuracy": {
+  "nt": 0.881578947368421,
+  "innovation": 0.868421052631579
+ },
+ "targets": {
+  "joint_coverage_ge_18_of_20": false,
+  "decisive_ge_10": false,
+  "false_help_le_1": true
+ },
+ "predictions_sha256": "7d45f314389d4cc1dfffe5c8ee054cfb99f77d0040606b2ddfd8998e827cf081",
+ "calibration_sha256": "df2d631f404dd251f7df2b380c83a0a5e457e720424723a0f77c5ae017e035a0",
+ "run_sha256": "37b132e774b387d570f1e727bd1f61ad76404a9bc41ca87c191ca3f137b888fd"
+}

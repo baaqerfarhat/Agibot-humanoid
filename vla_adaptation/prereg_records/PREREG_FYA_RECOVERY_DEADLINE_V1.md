@@ -207,3 +207,113 @@ reference's exact cancellation; healthy false updates cost J_p ≈ 1.1–2.1e-5 
 of the faulted off energy.
 
 Chain launched after this section and the code (`fya_forecast.py --width`) were committed.
+
+**Execution note (13:52, before any Stage 1 outcome was read).** The user allowed both cards; the chain was split without changing any registered setting: Stage 1 continues on GPU 1 (`scripts/re4/fya_chain_stage1.sh`, same server and seeds) and Stage 2 runs concurrently on GPU 0 (`scripts/re4/fya_stage2_gpu0.sh`, server port 8001, rendering on GPU 1). Stage 2 therefore does not wait for the Stage 1 qualification result; under §9 it runs as the narrowed empirical bridge in either case.
+
+**Correction (14:10–14:17, before the qualification run file existed and before any test forecast).** Review
+found that `fya_forecast.py` added the healthy residual mean b_h to noise sequences that already carry it,
+doubling the expected healthy residual in the observer simulation (rotation channels ≈ 1e-3, translation
+z ≈ .018 after doubling; it enters the all-channel normaliser). Fixed by dropping the explicit b_h term.
+The §9 feasibility folds and the first qualification forecast used the doubled bias; those files are kept
+as `predictions/qualification_predictions_v1_doublebias.*` and the §9 numbers stand as recorded (the
+fold conclusions do not change qualitatively: the bias is small next to the sampled residual sequences).
+The qualification forecast was regenerated with the corrected code at 14:16:51 from the nominal commands
+only, while the qualification replay was still writing; no replay output was read. Hashes in
+`predictions/FROZEN_BEFORE_QUALIFICATION.sha256` now include the corrected script. The test forecast is
+written by the chain with the corrected code. The forecast remains a reduced-loop simulation (deployed
+update function on a simplified residual model), not an exact simulation of the deployed FIR loop; the
+docstring now says so.
+
+## 10. Outcome, Stage 1 (locked physical test scored 2026-09-16 14:33; `analysis/test_score/`, `analysis/test_evaluation{,_max}/`)
+
+**Sources.** 40/40 fresh episodes succeeded. Qualification: 18/20 eligible by length (task 0 at states 9 and 10:
+75 and 70 commands), one more (task 3, state 10) invalid by the fidelity rule → **17** calibrated. Test: 20/20
+eligible, one (task 7, state 12) invalid by the fidelity rule → **19** scored. Both fidelity failures are of the
+same kind: duplicate-restore gap exactly 0 and identical physics fingerprints at the checkpoint, but the
+fresh-prefix replay diverges over the continuation (2.3e-6 and 1.5e-4 rad max joint gap): solver warm-start
+sensitivity on a contact-rich continuation, not an indexing error. They are excluded per the 1e-8 rule and
+reported; no replacement was drawn (≥ 16 per partition).
+
+**Forecast (frozen before the replays; corrected code).** Interval certificate: **0 decisive intervals** under
+both width rules, as registered in §9. Coverage 19/19 (affine, a = .010, ρ = 3.83) and 16/19 (max, ε = .0257:
+the three misses are all `sign_reverse` cells of sources 7, 8, 18). Point forecast of B: sign agreement
+**nt .882, innovation .868, reference .947** (target ≥ .80 met for both laws; on the qualification partition .90 /
+.88 / .99), median |error|/|B| .69 / .70 / .66. The estimator-error control reaches .882 / .868, the same as the
+energy forecast. Median relative trajectory error stays ≈ 1.0–1.5, so the forecast ranks and signs but does not
+bound.
+
+**Measured (19 sources, task-clustered 95 % intervals, J_p in m² s).** J_off median 1.19e-4 (endpoint 13.7 mm).
+
+| Scenario | B nt | B innovation | B reference | sources + / − (nt) | rel. reduction nt / innov / ref |
+|---|---|---|---|---|---|
+| reference | 8.8e-5 [4.7e-5, 1.3e-4] | 9.0e-5 [4.8e-5, 1.3e-4] | 1.47e-4 [1.0e-4, 1.9e-4] | 18 / 1 | .61 / .62 / 1.00 |
+| delay10 | 6.1e-5 [2.9e-5, 9.2e-5] | 6.2e-5 [3.1e-5, 9.2e-5] | 1.07e-4 [5.4e-5, 1.5e-4] | 15 / 4 | .45 / .41 / .78 |
+| cap_half | 7.7e-5 [4.4e-5, 1.1e-4] | 7.5e-5 [3.8e-5, 1.1e-4] | 9.8e-5 [5.3e-5, 1.4e-4] | 18 / 1 | .55 / .58 / .75 |
+| sign_reverse | 1.62e-4 [4.8e-5, 3.3e-4] | 1.63e-4 [4.6e-5, 3.3e-4] | 2.47e-4 [1.2e-4, 4.4e-4] | 16 / 3 | .59 / .64 / 1.00 |
+
+Endpoints (median, mm): off 13.7 → nt 7.8 / innovation 7.8 / reference 0.0 (reference scenario); delayed
+reference 2.7; capped reference 5.7. Healthy false-update cost J_p: nt 1.22e-5 [5.0e-6, 2.1e-5], innovation
+1.44e-5 [5.8e-6, 2.5e-5] (≈ 10–12 % of the faulted off energy). No saturated step in any branch.
+
+**Registered expectations.**
+- **E1 holds.** delay10 raises the adapted cost: J(delay10) − J(reference) = +2.7e-5 [9.5e-6, 4.4e-5] (nt),
+  +2.8e-5 [1.1e-5, 4.7e-5] (innovation), 18/19 sources each; the delayed reference loses +4.0e-5 [2.2e-5, 6.9e-5].
+- **E2 holds for the cost, fails for the retained fraction.** cap_half raises the adapted cost: +1.05e-5
+  [1.8e-6, 1.9e-5] (nt), +1.5e-5 [5.3e-6, 2.5e-5] (innovation), 14/19 sources; but the capped reference retains
+  a **quarter** of the off energy (median J/J_off .25; endpoint .42 of off), not "≥ half": halving the remaining
+  disturbance quarters the quadratic cost. The clause was mis-specified in energy units and is recorded as failed.
+- **E3 fails.** The linear forecast covers sign_reverse worse than reference: the three max-rule misses are all
+  sign_reverse cells, the adaptive branches' relative trajectory error rises from 1.24–1.29 to 1.48–1.53, and the
+  measured off cost itself is 30 % larger under −.05 than under +.05 (1.57e-4 vs 1.19e-4): the physical response
+  to a rotation-y bias is not sign-symmetric at this magnitude.
+- **E4 holds** on reference and sign_reverse (19/19 sources), 18/19 on delay10, 16/19 on cap_half (sources 7, 15,
+  19: with the cap binding, an online law that settles near .025 anyway can match the capped reference).
+
+Stage 2 outcome follows in §11.
+
+**Caveat on the point-forecast criterion (added 14:50 after inspecting `figures/fya_forecast.pdf`).** The
+registered sign target is met, but trivially: the frozen forecast of B varies only between 3.0e-5 and 4.6e-5
+across the 19 sources (sd 5e-6) while the measured B has sd 1.5e-4, the correlation between forecast and
+measured B is 0.19, and the sign agreement (.882 for NT) equals the base rate of positive benefit exactly
+(an "always benefit" rule scores .882). The forecast does not condition on the source's nominal commands
+(the physical model is driven only by the remaining disturbance, which the reduced loop reproduces almost
+identically for every source), so it cannot discriminate sources. The registered ≥ .80 target was
+mis-specified without a base-rate comparison; the honest reading is that neither the interval certificate
+nor the point forecast predicts *which* source benefits, and the same holds for the estimator-error control.
+What the campaign establishes is the measured effect structure (E1, E2 cost, E4) and the sign asymmetry (E3).
+
+## 11. Outcome, Stage 2 (reacting-policy bridge, GPU 0, complete 15:16; `reacting_policy/`, `analysis/stage2_summary.json`, `analysis/stage2_telemetry.json`)
+
+All 160 policy episodes ran (8 arms × 20 keys; the faulted off arm is aliased for the delayed condition as
+registered). Telemetry confirms the protocol: fault live from env step 40 (policy step 30), estimate exactly zero
+before enablement in every adaptive arm, delayed arms enabled at policy step 40.
+
+| Condition | off | NT | innovation |
+|---|---:|---:|---:|
+| healthy | 20/20 | 19/20 (lost task 8, state 14) | 20/20 |
+| faulted (+.05 r_y from step 30, cap .05) | **20/20** | 20/20 | 20/20 |
+| faulted + 10-step adaptation delay | 20/20 (alias) | 20/20 | 20/20 |
+
+**The registered fault does not degrade task success for the reacting policy on Spatial**: the frozen policy
+completes every key with the r_y bias live for the last ≈ 78 policy steps of each episode. All paired
+comparisons are 0 wins / 0 losses; the bridge is at the ceiling and carries no task-level information about
+delay or adaptation.
+
+- **S1 fails** (faulted NT / innovation do not exceed faulted off: equal at 20/20).
+- **S2 holds trivially** (delayed = immediate = 20/20).
+- **S3 holds** (healthy losses: NT 1, innovation 0).
+
+Estimator behaviour (telemetry, medians over keys): faulted arms reach half the fault 8.5–9 steps after
+enablement and settle at r_y ≈ .036 [.031, .044], 72 % of the fault, spending 1–4 % of enabled steps at the
+cap; the delayed arms settle at the same level. Healthy arms carry a **phantom r_y estimate of ≈ .015**
+[.005, .021] under the reacting policy, a third of the fault and far above the fixed-command healthy residual
+bias (≈ 5e-4): replanning-induced command changes that the FIR does not predict are attributed to a fault.
+Episode lengths 103–108 policy steps (median), no unexposed key.
+
+**Reading.** A single-channel rotation bias of .05 introduced mid-episode is inside the policy's tolerance on
+this suite (the headline uniform six-channel bias from step 0 is not: 8/20 frozen). The bridge therefore does not
+test the delay pattern at task level; a larger or multi-channel mid-episode fault would be needed, and that is a
+new registration, not an extension of this one. What Stage 2 does establish is the healthy phantom magnitude
+under replanning and the unchanged 20/20 healthy innovation / 19/20 NT under a .05 cap.
+
+Campaign closed 15:20. Both servers stopped; no further runs.

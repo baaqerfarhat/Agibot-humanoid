@@ -4366,3 +4366,52 @@ leaves the benefit fraction unchanged, and healthy false updates cost 1.1–2.1e
 memory fraction 0.6, Yujin's training untouched): 40 fresh sources (states 9–12, pinned sampler seeds),
 800 branches, then the 160-episode Stage 2 bridge (states 13, 14, seed 83001; the faulted off arm is
 aliased for the delayed condition). Results follow in §64.
+
+## 64. FrozenYet Adaptive campaign, Stage 1: delay and cap cost what the theory says, the sign does not (2026-09-16)
+
+Forty fresh Spatial sources (states 9–12, pinned sampler seeds, 40/40 successful), 19 locked test
+sources scored (`results/frozen_yet_adaptive_deadline_v1/analysis/`, prereg §10). Two sources in the
+campaign failed the fresh-prefix fidelity rule with identical fingerprints and a zero duplicate gap
+(warm-start sensitivity, 2e-6 and 1.5e-4 rad); excluded per rule.
+
+**The certificate, as registered in §9, is not there: 0 decisive benefit intervals on the locked test
+under either width rule** (coverage 19/19 affine, 16/19 max; the three misses are all sign-reversal
+cells). The frozen point forecast still signs the benefit correctly on 88 % (NT) and 87 % (innovation)
+of cells, above the registered 80 %, with median relative error 0.7; a one-number control (forecast
+estimator error) does exactly as well. Note for the record: the forecast code double-counted the
+healthy residual mean until a review at 14:10; fixed and the qualification forecast regenerated before
+its run file existed (prereg §9 correction).
+
+**Measured, 19 sources, task-clustered intervals (m² s).** Reference scenario (+0.05 r_y, cap 0.05):
+B = 8.8e-5 [4.7e-5, 1.3e-4] for NT, 9.0e-5 for innovation, 1.47e-4 for the known-fault reference; 18/19
+sources improve; endpoint 13.7 → 7.8 mm (reference 0.0). **Delay of 10 steps raises the adapted cost by
++2.7e-5 [9.5e-6, 4.4e-5] (18/19 sources) and the delayed reference's by +4.0e-5** — the integrator
+memory measured prospectively on untouched sources (E1 holds). **Halving the cap raises the adapted cost
+by +1.1e-5 [1.8e-6, 1.9e-5]** (E2 cost clause holds) but the capped reference keeps a quarter of the
+energy, not half: half the remaining disturbance is a quarter of a quadratic cost (the clause was
+written in the wrong units; failed as written). **Sign reversal breaks the linear forecast** (E3 fails):
+the off cost under −0.05 is 30 % larger than under +0.05 (1.57e-4 vs 1.19e-4) and the adaptive
+branches' relative forecast error rises from 1.25 to 1.5. The privileged reference beats both online
+laws on every source in the reference and sign scenarios, 18/19 delayed, 16/19 capped (E4). Healthy
+false updates cost 1.2e-5 (NT) and 1.4e-5 (innovation) per source, a tenth of the faulted energy.
+
+Figures `figures/fya_{benefits,delay_cap,forecast,healthy}.pdf`. Stage 2 (reacting policy, GPU 0) in §65.
+
+**Addendum to §64 (14:50).** The 88 % sign agreement of the point forecast is the base rate: the
+forecast of B spans only 3.0–4.6e-5 across sources (measured sd 1.5e-4, correlation 0.19) because the
+reduced loop sees the same disturbance on every source and never the source's commands. "Always
+benefit" scores the same 88 %. The forecast, the intervals and the estimator-error control all fail
+to say which source benefits; the campaign's evidence is the measured delay/cap/sign structure.
+
+## 65. FrozenYet Adaptive campaign, Stage 2: the bridge sits at the ceiling (2026-09-16)
+
+160 policy episodes on Spatial states 13 and 14 (seed 83001, GPU 0 shared with Yujin's job). Every arm
+scores 20/20 except healthy NT at 19/20: a +0.05 rotation-y bias introduced at policy step 30 does not
+break the reacting policy, so the registered S1 (faulted law > faulted off) fails at the ceiling, S2 holds
+trivially, S3 holds. Telemetry: estimate exactly zero before enablement; faulted arms reach half the fault
+in ~9 steps and settle at 0.036 (72 %); **healthy arms carry a phantom r_y estimate of 0.015 under
+replanning**, thirty times the fixed-command healthy bias — the replanning term the FIR cannot predict is
+attributed to a fault, which is the mechanism behind the healthy regressions seen on libero_10. The bridge
+delivers no task-level evidence on delay; a stronger mid-episode fault would need a new registration.
+Files `results/frozen_yet_adaptive_deadline_v1/{reacting_policy,analysis/stage2_*}`, figure
+`figures/fya_stage2.pdf`. Campaign closed; both cards released (Yujin's jobs only).
