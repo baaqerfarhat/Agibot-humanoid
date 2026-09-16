@@ -4242,3 +4242,40 @@ error in its feedback term, the corrected one (written before any locked traject
 under-predicting the integrated deviation by half, while the measured ordering
 faulted > innovation ≈ legacy > hold > exact is the registered one. Records 55 (withdrawn) and 57
 together: two of four predictions hold in full, two at the letter fail, the forecast is not usable.
+
+## 58. Q5: the libero_10 ceiling is the rotation mask (2026-09-15)
+
+Collaborator's queue item Q5 (`PREREG_Q5_SIXCHANNEL_ORACLE.md` on `integrate/collab-q`; run here,
+`results/collab_q/q5_D3b_oracle_all_libero_10/`). D3a's protocol with the true fault cancelled on
+all six channels: frozen 0/40 → **38/40**, against the rotation-only oracle's 22/40 on the same
+keys (17 six-only, 1 rotation-only). Both registered predictions hold. Every adaptive libero_10
+count in this record (15, 18, 25 of 40/60) has been measured under a rotation-only mask whose
+ceiling is 22/40; the remaining 16 episodes are translation, which the mask never corrects. On
+spatial the same oracle was already at the ceiling (20/20, record 44), which is why the suites
+behave differently: spatial tolerates the uncorrected translation, libero_10 does not. The
+E2/Q2 comparisons are unaffected as comparisons; the paper's libero_10 story changes from
+"identification limits it" to "the mask limits it", and a translation-including correction on
+libero_10 is the obvious next registration (the translation estimate's healthy phantom and the
+z-entry artefact of M are the known hazards, records 37 and 45).
+
+## 59. The collaborator's queue, run (2026-09-15): Q2 pose tracking, Q6 pinned FIR/ARX/DC
+
+Branch `review/dual-track-audit` merged (opt-in tracking and replay code, byte-identical with the
+flags unset; AGENTS.md not adopted). Q1's healthy control was already run (§54). Q5 is §58.
+
+**Q2** (`PREREG_Q2_POSE_TRACKING.md`; `results/collab_q/q2_*`; E2's libero_10 keys and sampler
+schedule, OFF shared with E2; run on GPU 0 shared with another user's training, rendering on
+GPU 1): position-mode tracking on r_x, r_z over the DC-constrained innovation law trims the late
+retained pose offset on r_z to **0.815** of C's [0.70, 0.94] and on r_x to 0.91 [0.80, 1.05] —
+neither the registered ≤ 0.80 nor the ≥ 0.95 refutation; r_y untouched; healthy 18/20 in both
+arms with the excess unchanged; success 27 vs 25 of 60 and 30 vs 27 of 40 on joint 5 (7 / 4,
+p = 0.55), both inside the registered null bands. A mechanism result with no task lever, which
+§58 explains: libero_10's gap is translation.
+
+**Q6** (`PREREG_Q6_PINNED_FIR_ARX_DC.md`; `results/collab_q/q6_*`; the 8.2a pinned keys, frozen
+arm shared): FIR 10, ARX 8, DC **14** of 80; r_y settles 0.30, 0.34, **0.72**. ARX ≈ FIR (p = 0.77)
+and DC moves the fixed point (registered ≥ 0.70) with the count in the predicted direction and
+unresolved (DC vs FIR 8 / 4, p = 0.39). The pinned confirmation of §§50 and 54.
+
+One correction of my own: the joint-5 paired counts first written into the Q2 prereg were not the
+scorer's; the 40-key pairing replaced them with the correction stated in place.

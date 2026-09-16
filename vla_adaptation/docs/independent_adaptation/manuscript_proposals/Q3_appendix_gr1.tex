@@ -1,0 +1,75 @@
+% ---------------------------------------------------------------------------
+% Q3 (Track 2 draft): two appendix insertions.
+%
+% (A) iclr2027/theory_appendix.tex: insert immediately after the proof of
+%     Corollary~\ref{uni:smallgain} (after "\end{proof}" that follows
+%     \eqref{uniapp:weightedstorage}), before the paragraph beginning
+%     "With $m=0$, no drift, and no forcing, ...".
+% ---------------------------------------------------------------------------
+
+\paragraph{Instantiation on a certified position servo (GR1).}
+\label{uniapp:gr1}
+On GR1 the right-arm joints $7$--$13$ receive absolute targets at $20$\,Hz and
+are corrected on the same joints. Fitting
+$q_{k+1}-q_k=a_j\Delta t\,(u_k-q_k)$ per joint on six healthy episodes with
+leave-one-episode-out validation gives sampled poles
+$\lambda_j=1-a_j\Delta t\in[.72,.77]$ (fold spread $\le.02$) with held-out
+increment $R^2$ $.74$--$.95$; the hands and the idle left arm do not certify.
+For the same-command comparison in the joint-position metric ($P_x=I$ on
+these joints, units rad), $q_{k+1}-q^0_{k+1}=\Lambda(q_k-q^0_k)+(I-\Lambda)(f_k-c_k)$
+up to the model remainder, so \eqref{uniapp:physicalpremise} holds with
+$\sigma=\max_j\lambda_j=.77$ and $L^v=1-\min_j\lambda_j=.28$ (fold extremes).
+An offset fault on the corrected joints is command-equivalent by construction,
+so $D_kL_k=I$, $\beta=.28$, $A^f_k=A^c_k=0$ while projection is inactive, and
+$\eta^x_k\le.014$\,rad, the certified one-step remainder over the seven joints.
+The deployed predictor is a per-joint FIR on position with $K=6$. Its fitted
+DC gains are $.968$--$.992$ against probed sensitivities $.990$--$.997$, so
+$R=M^{-1}D$ has $\|I-R\|_2=.023$ and the mismatch coefficient attributable to
+gain error is $m=.02$; its held-out healthy mismatch $\|M^{-1}r_{k+1}\|_2$
+over the seven joints has median $.028$\,rad and 90th percentile $.057$\,rad,
+which bounds $\epsilon_k$ at the healthy state. With the innovation law at
+gain $\alpha_k=\gamma s_k$, condition \eqref{uni:smallgain-condition} reads
+$\beta\alpha\ell<(1-\sigma)\alpha(1-m)$, that is
+\begin{equation}
+ \ell<\frac{(1-\sigma)(1-m)}{\beta}=.79
+ \label{uniapp:gr1condition}
+\end{equation}
+for any constant gain, and $\ell<.79\,\underline\alpha/\gamma$ for one weight
+vector over a gain range $[\underline\alpha,\gamma]$: under a $.10$\,rad
+offset the onset gain is $\underline\alpha\approx.012$ ($\ell<.12$) and after
+the transient $\underline\alpha\approx.07$ ($\ell<.69$). The remaining
+coefficient, $\ell$, the sensitivity of the mismatch to execution deviation
+under the healthy-policy comparison, is not measured: the GR1 runs log
+estimates but not per-step residuals, and no paired healthy execution exists.
+Under the certified model with an exact predictor, $\ell=0$ and the mismatch is
+its own decaying transient, $w_{k+1}=\Lambda w_k$; the frozen-fault logs bound
+the total coupling $\ell X_k+m E_k$ at $11$--$19\%$ of $\|f\|_2$ (mismatch
+medians $.042$ and $.103$\,rad under $.05$ and $.15$\,rad offsets, against
+$.028$ healthy) but neither separate $\ell$ from $m$ nor supply $X_k$. With
+$\ell=0$ the steady state of \eqref{uni:comparison} is
+$E^\ast=\epsilon/(1-m)=.03$--$.06$\,rad and
+$X^\ast=(\beta E^\ast+\chi)/(1-\sigma)=.10$--$.13$\,rad; with $\ell=.2$ they
+are $.06$--$.10$ and $.13$--$.18$\,rad. The innovation run with a $.10$\,rad
+offset reaches $\|\hat f_k-f\|_2=.02$--$.09$\,rad (median $.05$) over steps
+$100$--$200$: four of seven episodes lie below the $\ell=0$ value at the
+90th-percentile $\epsilon$ and all seven below the $\ell=.2$ value. This
+instantiates the constants the corollary needs on one interface; it is not a
+certificate for the policy-closed loop, whose replanning every $16$ steps
+changes the commands outside the same-command comparison
+($\sigma^{16}=.016$, so a within-chunk deviation is forgotten before the next
+replan, and the chunk boundary is where policy feedback enters).
+
+% ---------------------------------------------------------------------------
+% (B) iclr2027/empirical_appendix.tex, subsection "Physical memory and
+%     observation consistency" (\label{exp:physical}): append to the first
+%     paragraph, after "... a different operating domain or a qualified joint
+%     metric."
+% ---------------------------------------------------------------------------
+Propagating the comparison bound of Theorem~\ref{uni:coupled-theorem} on
+twenty logged Spatial episodes with the measured $\sigma=1.00$, the measured
+input sensitivity and the healthy residual's 90th percentile as forcing gives
+coverage $1.00$ only because the bound never forgets: it grows by $.18$ per
+step in the tracking metric and ends at $98$ times (median) the episode's
+largest measured residual, and the small-gain margin computed from the same
+episodes is negative. These constants are reported as measured; no certificate
+follows from them on this interface.

@@ -106,6 +106,33 @@ def paired(arms):
     return out
 
 
+def opt_in_fields(a):
+    """adaptive_law.py's opt-in pose tracking (--track-*) and replay (--replay-*). The runner records
+    these args only when one of them is set, and older runners and the joint-space runners have none,
+    so a result without them ran with tracking off against a live policy."""
+    kappa = float(a.get("track_kappa") or 0.0)
+    off = "not applicable: tracking off (track_kappa = 0)"
+    replay = a.get("replay_log")
+    return dict(
+        track_kappa=kappa,
+        track_ref=(a.get("track_ref") or "dc") if kappa > 0 else off,
+        # steps between re-anchorings of the reference to the measured pose; 0 = once at episode start
+        track_anchor=(int(a["track_anchor"]) if a.get("track_anchor") is not None
+                      else int(a.get("replan_steps") or 5)) if kappa > 0 else off,
+        track_dims=([int(x) for x in str(a["track_dims"]).split(",")] if a.get("track_dims")
+                    else channels(a)) if kappa > 0 else off,
+        replay_log=dict(path=str(replay), sha256=sha(replay)) if replay else "none: live policy server",
+        replay_episodes=(([int(x) for x in str(a["replay_episodes"]).split(",")] if a.get("replay_episodes")
+                          else "all episodes of the replay log") if replay else "not applicable: live policy server"),
+        # --track-mode / --track-leak: recorded by the runner only in position mode, so absent = rate mode
+        # (z_T = M_inv e_p / n, no leak); position = z_T = M_inv e_p with the reference leaking toward the pose
+        track_mode=(a.get("track_mode") or "rate") if kappa > 0 else off,
+        track_leak=float(a.get("track_leak") or 0.0) if kappa > 0 else off,
+        # --track-obs: recorded by the runner only when "tracked", so absent = the full M_inv observation;
+        # tracked = solve(M[R,R], .) on the tracked dims only
+        track_obs=(a.get("track_obs") or "full") if kappa > 0 else off)
+
+
 def cmd_record(ns):
     res = json.loads(ns.result.read_text())
     a = res.get("args") or {}
@@ -186,6 +213,7 @@ def cmd_record(ns):
                          [f"--{k.replace('_', '-')}" + ("" if v is True else f" {v}")
                           for k, v in sorted(a.items()) if v is not None and v is not False and v != ""]),
     )
+    cfg.update(opt_in_fields(a))
     def nonull(x, path="cfg"):
         if x is None:
             return f"not recorded by the runner ({path})"

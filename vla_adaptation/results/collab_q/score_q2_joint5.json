@@ -1,0 +1,10 @@
+{
+ "note": "paired on (task, init, sampler seed); the earlier decision_cells.py output collapsed the 40 keys to 20 (task, init) pairs and is superseded",
+ "n_keys": 40,
+ "C": 27,
+ "D": 30,
+ "D_only": 7,
+ "C_only": 4,
+ "mcnemar_exact_p": 0.548828125,
+ "D_minus_C": 3
+}

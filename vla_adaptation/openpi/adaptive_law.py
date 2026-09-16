@@ -400,6 +400,267 @@ def clip_report(vals, clip, name):
               f"those channels are SATURATED, not estimated. Raise --clip above the expected fault.")
 
 
+# Opt-in additions: a pose-referenced tracking term and a policy-free replay mode. Every flag
+# defaults to off, and with all of them at these defaults run() and main() take exactly the code
+# paths they took before the flags existed (no extra arithmetic, RNG draws, output fields or prints).
+OPT_IN_DEFAULTS = dict(track_kappa=0.0, track_ref="dc", track_anchor=None, track_dims=None,
+                       replay_log=None, replay_episodes=None)
+# The tracking observation's mode (IMP2); recorded only when not at these defaults, so that rate-mode
+# runs stay byte-identical to the runner before --track-mode existed.
+TRACK_MODE_DEFAULTS = dict(track_mode="rate", track_leak=0.0)
+# The tracking observation's map (IMP3); likewise recorded only when not at its default.
+TRACK_OBS_DEFAULTS = dict(track_obs="full")
+
+
+def fir_increment(W, H):
+    """Increment an FIR plant without AR terms predicts for a (K_FIR+1, 6) newest-first command
+    history -- run()'s own arithmetic, per-axis or MIMO by the width of W."""
+    if W.shape[1] > K_FIR + 2:
+        return W[:, :-1] @ H.reshape(-1) + W[:, -1]
+    return np.array([W[i, :K_FIR + 1] @ H[:, i] + W[i, -1] for i in range(6)])
+
+
+class PoseTracker:
+    """The pose-referenced tracking term (--track-kappa > 0); run() builds one per episode.
+
+    Everything is in run()'s normalised units (motion divided by OUT). At each anchor step -- the
+    first rollout step, then every `anchor` steps (0: the first only) -- the reference pose is set
+    to the measured pose before that step's command executes. Each step then advances the
+    reference by W_ref's predicted increment for the NOMINAL policy command u_nom (not the sent
+    command) and the pose by the measured motion: translation from robot0_eef_pos, rotation by
+    accumulating the runner's rot_delta increments (its `measured` y[3:]). With e_p = pose -
+    reference and n = steps since the anchor (1..anchor), z_T = M_inv @ (e_p / max(n, 1)), and
+    after the base estimator update f_hat[d] <- clip(f_hat[d] + kappa z_T[d], -clip, +clip) on the
+    tracked dims only.
+
+    Fixed point with tracking alone on all six dims (all corrected), a constant fault f and a
+    constant nominal command u, true DC map G and reference DC map G_ref:
+    f_hat = f + (I - G^-1 G_ref) u - G^-1 b_ref -- the true offset only if the reference is
+    DC-consistent on the directions the commands excite and its intercept b_ref matches the plant's;
+    this assumes a stationary innovation. M_inv sets the convergence, not the limit. In position mode
+    with uncorrected, untracked channels T (e.g. translation under a rotation-only mask), the full
+    M_inv couples their pose error into the tracked channels R, and the fixed point retains
+    e_R* = -inv(M_inv[R,R]) M_inv[R,T] e_T; the leak bounds e_T (|e_T| ~ d_T / leak). Note: when W_ref
+    is the estimator's own plant (--track-ref dc on top of --dc-constrain), z_T equals the window mean
+    of M_inv (r + W*c), i.e. an unattenuated, deadzone-free integrator of the runner's own residual,
+    not an independent pose signal.
+
+    mode="position" (--track-mode position) feeds back the retained pose offset itself: z_T = M_inv @
+    e_p, no division by n, and after each step the reference leaks toward the measured pose,
+    reference <- reference + leak (pose - reference), so e_p becomes a leaky sum of the per-step pose
+    errors (sum, not mean, of M_inv (r + W*c) in the --track-ref dc on --dc-constrain case). The
+    anchor rule is unchanged; e_p and z_T are those before this step's leak. A constant per-step
+    model error d gives e_p = d (1 - (1-leak)^n) / leak <= d / leak, bounded, where leak = 0 integrates
+    it without bound. With leak = 0 a converged loop has zero pose rate, so it removes the velocity
+    error that a base estimator settling below the fault leaves, retaining only the bounded offset
+    that balances that estimator; with leak > 0 the DC gain is kappa / leak, and against a base law
+    pulling toward f_base at rate gamma the fixed point is (gamma f_base + (kappa/leak) f_track) /
+    (gamma + kappa/leak), f_track being the tracking-alone limit above (the same in both modes).
+
+    obs="tracked" (--track-obs tracked) restricts the observation to the tracked subspace R: with
+    v = e_p (position) or e_p / max(n, 1) (rate), z_T[R] = solve(M[R,R], v[R]) and z_T[not R] = 0,
+    M = inv(M_inv) being the probed sensitivity. The untracked channels' pose error then no longer
+    enters z_T at all, where obs="full" feeds it in through M_inv[R, not R] -- e.g. an uncorrected
+    translation error forcing r_x. The price is a DC bias: if the untracked channels carry a residual
+    fault f_u, the tracked estimate settles at f_R + inv(M[R,R]) M[R,not R] f_u rather than f_R,
+    because the physical coupling M[R,not R] f_u in e_R is now attributed to R.
+    """
+
+    def __init__(self, W_ref, M_inv, *, kappa, anchor, dims, clip, mode="rate", leak=0.0, obs="full"):
+        W_ref, M_inv = np.asarray(W_ref, dtype=float), np.asarray(M_inv, dtype=float)
+        if W_ref.ndim != 2 or W_ref.shape[0] != 6 or W_ref.shape[1] not in (K_FIR + 2, 6 * (K_FIR + 1) + 1):
+            raise ValueError("the tracking reference must be a per-axis or MIMO FIR plant without AR terms")
+        if M_inv.shape != (6, 6):
+            raise ValueError("M_inv must be 6 by 6")
+        dims = sorted({int(d) for d in dims})
+        if not dims or dims[0] < 0 or dims[-1] > 5:
+            raise ValueError("tracked dims must be a nonempty subset of 0..5")
+        if not np.isfinite(kappa) or kappa < 0 or int(anchor) < 0:
+            raise ValueError("kappa must be finite and nonnegative and anchor nonnegative")
+        if mode not in ("rate", "position") or not np.isfinite(leak) or not 0 <= leak <= 1:
+            raise ValueError("mode must be rate or position and leak lie in [0, 1]")
+        if leak and mode != "position":
+            raise ValueError("the reference leak belongs to position mode")
+        if obs not in ("full", "tracked"):
+            raise ValueError("obs must be full or tracked")
+        self.W_ref, self.M_inv, self.kappa = W_ref, M_inv, float(kappa)
+        self.anchor, self.dims, self.clip = int(anchor), np.array(dims), clip
+        self.mode, self.leak, self.obs = mode, float(leak), obs
+        if obs == "tracked":
+            try:
+                self.M_tracked = np.linalg.inv(M_inv)[np.ix_(dims, dims)]   # M[R,R], M = inv(M_inv)
+            except np.linalg.LinAlgError:
+                raise ValueError("--track-obs tracked needs an invertible M_inv") from None
+            if not np.isfinite(np.linalg.cond(self.M_tracked)) or np.linalg.cond(self.M_tracked) > 1e8:
+                raise ValueError("--track-obs tracked: M[R,R] on the tracked dims is singular or ill-conditioned")
+        self.history = collections.deque([np.zeros(6)] * (K_FIR + 1), maxlen=K_FIR + 1)
+        self.origin, self.rotation, self.reference, self.n = None, np.zeros(3), np.zeros(6), 0
+
+    def observe(self, step, u_nom, x0, x1, measured):
+        """Account one executed step (`step` counts rollout steps from 0); returns (e_p, z_T, n)."""
+        if self.origin is None or (self.anchor > 0 and step % self.anchor == 0):
+            self.origin = np.array(x0, dtype=float)
+            self.rotation, self.reference, self.n = np.zeros(3), np.zeros(6), 0
+        self.n += 1
+        self.history.appendleft(np.array(u_nom, dtype=float)[:6])
+        self.reference = self.reference + fir_increment(self.W_ref, np.array(self.history))
+        self.rotation = self.rotation + np.asarray(measured, dtype=float)[3:6]
+        pose = np.concatenate([(np.asarray(x1, dtype=float) - self.origin) / OUT[:3], self.rotation])
+        error = pose - self.reference
+        if self.mode == "position":
+            z = self.M_inv @ error if self.obs == "full" else self.tracked_observation(error)
+            if self.leak:
+                self.reference = self.reference + self.leak * (pose - self.reference)
+            return error, z, self.n
+        if self.obs == "tracked":
+            return error, self.tracked_observation(error / max(self.n, 1)), self.n
+        return error, self.M_inv @ (error / max(self.n, 1)), self.n
+
+    def tracked_observation(self, v):
+        """z_T[R] = solve(M[R,R], v[R]) on the tracked dims R, zero elsewhere (--track-obs tracked)."""
+        z = np.zeros(6)
+        z[self.dims] = np.linalg.solve(self.M_tracked, np.asarray(v, dtype=float)[self.dims])
+        return z
+
+    def correct(self, f_hat, z):
+        """Tracked dims move and are projected onto the box; the others come back bit for bit."""
+        corrected = np.array(f_hat, dtype=float)
+        corrected[self.dims] = np.clip(corrected[self.dims] + self.kappa * np.asarray(z, dtype=float)[self.dims],
+                                       -self.clip, self.clip)
+        return corrected
+
+
+class ReplayPolicy:
+    """--replay-log: stands in for the policy client, so no policy server is ever contacted.
+
+    The log is an error_signal.py artifact. As in re4_theory/paired_rollout.py, episode i of its
+    first (nominal) record is the scenario episode_keys[i] = (task, init) with command rows
+    starts[i] : starts[i] + ep_len[i], starts being the cumulative ep_len. infer() ignores the
+    observation and returns the current episode's next replan-steps recorded commands -- raw_cmd,
+    i.e. the recorded raw_a on the six arm dims (checked equal) plus the recorded gripper;
+    control() is a no-op; start(i) rewinds to the i-th replayed episode.
+    """
+
+    def __init__(self, log_path, episodes=None, *, replan_steps):
+        import hashlib
+        raw = pathlib.Path(log_path).read_bytes()
+        data = json.loads(raw)
+        records = data.get("records") if isinstance(data, dict) else None
+        if not records:
+            raise ValueError("expected an error_signal.py log with a 'records' list")
+        record = records[0]
+        missing = [key for key in ("raw_a", "raw_cmd", "ep_len", "episode_keys") if key not in record]
+        if missing:
+            raise ValueError(f"record 0 lacks {missing}; replay needs full commands and scenario keys")
+        commands = np.asarray(record["raw_cmd"], dtype=float)
+        lengths = [int(n) for n in record["ep_len"]]
+        keys = [(int(k[0]), int(k[1])) for k in record["episode_keys"]]
+        if commands.shape != (sum(lengths), 7) or len(keys) != len(lengths) or min(lengths) < 1:
+            raise ValueError("raw_cmd, ep_len and episode_keys disagree")
+        if not np.array_equal(commands[:, :6], np.asarray(record["raw_a"], dtype=float)):
+            raise ValueError("raw_cmd does not equal raw_a on the six arm dims")
+        starts = np.cumsum([0] + lengths[:-1])
+        self.episodes = list(range(len(lengths))) if episodes is None else [int(i) for i in episodes]
+        if not self.episodes or any(not 0 <= i < len(lengths) for i in self.episodes):
+            raise ValueError(f"replay episodes must lie in 0..{len(lengths) - 1}")
+        self.scenarios = [keys[i] for i in self.episodes]
+        self.lengths = [lengths[i] for i in self.episodes]
+        self._commands = [commands[starts[i]:starts[i] + lengths[i]] for i in self.episodes]
+        self.replan_steps = int(replan_steps)
+        self.meta = dict(log=str(log_path), sha256=hashlib.sha256(raw).hexdigest(),
+                         suite=data.get("suite"), reset_protocol=data.get("reset_protocol"),
+                         record_label=record.get("label"), record_sev=record.get("sev"),
+                         episodes=self.episodes, scenarios=self.scenarios, lengths=self.lengths,
+                         commands="raw_cmd (recorded raw_a plus gripper), replan-steps rows per infer()")
+        self._episode, self._cursor = None, 0
+
+    def start(self, index):
+        self._episode, self._cursor = int(index), 0
+
+    def infer(self, observation):
+        if self._episode is None:
+            raise RuntimeError("replay: start(episode) must precede infer()")
+        rows = self._commands[self._episode][self._cursor:self._cursor + self.replan_steps]
+        if not len(rows):
+            raise RuntimeError("replay: this episode's recorded commands are exhausted")
+        self._cursor += len(rows)
+        return {"actions": rows.copy()}
+
+    def control(self, request):
+        return None
+
+
+def replay_probe(pp, a, replay):
+    """paired_probe.Probe for --replay-log, built by its own __init__ (suite, per-suite MAXS, env
+    cache, atexit close) with the websocket client swapped for the replay before it can connect;
+    control() becomes the replay's no-op, so no control/ack file is ever touched."""
+    websocket_client = pp._wc.WebsocketClientPolicy
+    pp._wc.WebsocketClientPolicy = lambda *args, **kwargs: replay
+    try:
+        probe = pp.Probe(a)
+    finally:
+        pp._wc.WebsocketClientPolicy = websocket_client
+    probe.control = replay.control
+    return probe
+
+
+def _opt_in_arguments(p, a):
+    """Check --track-* and --replay-*; returns (tracked dims, or None when tracking is off; the
+    ReplayPolicy, or None). With every opt-in flag at its default this changes nothing in `a`."""
+    if not np.isfinite(a.track_kappa) or a.track_kappa < 0:
+        p.error("--track-kappa must be finite and >= 0")
+    if a.track_anchor is not None and a.track_anchor < 0:
+        p.error("--track-anchor must be >= 0 (0 = anchor once at episode start)")
+    if not np.isfinite(a.track_leak) or not 0 <= a.track_leak <= 1:
+        p.error("--track-leak must lie in [0, 1]")
+    if a.track_leak and a.track_mode != "position":
+        p.error("--track-leak applies to --track-mode position only")
+    dims = None
+    if a.track_dims is not None:
+        try:
+            dims = sorted({int(x) for x in a.track_dims.split(",")})
+        except ValueError:
+            p.error("--track-dims must be comma-separated integers")
+        if not dims or dims[0] < 0 or dims[-1] > 5:
+            p.error("--track-dims must name channels in 0..5")
+    if a.track_kappa > 0:
+        if a.ar:
+            p.error("--track-kappa is implemented for the FIR plant without AR terms")
+        if a.track_ref == "dc" and a.mimo:
+            p.error("--track-ref dc pins the per-axis FIR's DC gains and cannot be combined with --mimo")
+        if dims is None:
+            dims = [int(x) for x in a.corr_dims.split(",")] if a.corr_dims else list(range(6))
+        a.track_anchor = a.replan_steps if a.track_anchor is None else a.track_anchor
+        a.track_dims = ",".join(str(d) for d in dims)
+    else:
+        if a.track_mode != "rate" or a.track_leak:
+            p.error("--track-mode position / --track-leak need --track-kappa > 0 (tracking is off)")
+        if a.track_obs != "full":
+            p.error("--track-obs tracked needs --track-kappa > 0 (tracking is off)")
+        dims = None
+    if a.replay_episodes is not None and a.replay_log is None:
+        p.error("--replay-episodes requires --replay-log")
+    replay = None
+    if a.replay_log is not None:
+        clashes = [flag for flag, used in (("--manifest", a.manifest is not None),
+                                           ("--sampler-seed", a.sampler_seed is not None),
+                                           ("--pin-rng", a.pin_rng), ("--wrist-shift", bool(a.wrist_shift)),
+                                           ("--obs-offset", a.obs_offset is not None)) if used]
+        if clashes:
+            p.error(f"--replay-log replays recorded commands without a policy; {', '.join(clashes)} cannot apply")
+        try:
+            episodes = None if a.replay_episodes is None else [int(x) for x in a.replay_episodes.split(",")]
+            replay = ReplayPolicy(a.replay_log, episodes, replan_steps=a.replan_steps)
+        except (OSError, ValueError, KeyError, IndexError, TypeError) as error:
+            p.error(f"--replay-log {a.replay_log}: {error}")
+        if replay.meta["suite"] is not None and replay.meta["suite"] != a.suite:
+            p.error(f"--suite {a.suite} differs from the replay log's suite {replay.meta['suite']}")
+        a.scenario_reset = True           # the recording's reset (libero_reset), as paired_rollout.py
+        a.episodes = len(replay.episodes)
+        a.replay_episodes = ",".join(str(i) for i in replay.episodes)
+    return dims, replay
+
+
 def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, onset=0,
         obs_off=None, wrist_shift=0, static_c=None,
         dead=0.05, norm_r=0.5, clip=0.15, apply_corr=True, bias=None, corr_dims=None,
@@ -408,7 +669,7 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
         deadzone_mode="zero", telemetry=None, episode=0, arm=None,
         rls_lambda=0.99, rls_p0=1.0, kf_q=None, kf_r=None,
         step_observer=None, freeze_after=None, correction_scale=1.0, scenario_reset=False,
-        gate=None, timing=None):
+        gate=None, timing=None, track=None):
     # Keep simulator/client dependencies out of the pure helpers and --selftest.
     # timing: an open line-buffered file; one JSON line per control step (re4 Part E):
     # policy_ms (replan steps only), adapter_ms (correction + FIR prediction + estimator update),
@@ -416,6 +677,8 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
     # gate: dict(b, sd, k) -- the healthy-phantom channel gate (prereg_records/PREREG_HEALTHY_GATE.md):
     # channel i is corrected at a step iff |f_hat_i - b_i| > k sd_i. Measured on healthy data only;
     # the estimator still runs on all six channels. Re-evaluated every step, no memory.
+    # track: dict(W_ref, kappa, anchor, dims[, mode, leak, obs]) -- the opt-in pose tracking term (PoseTracker);
+    # None or kappa 0 = off, and then no tracking code runs.
     import main as lm
     from so3 import rot_delta
     from joint_fault import JointFault
@@ -446,6 +709,8 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
         step_meta = dict(type="step", arm=arm or ("adaptive" if adapt else "frozen_faulted"),
                          episode=episode, task=int(tid), init=int(init))
         traj = []
+        tracker = (PoseTracker(M_inv=M_inv, clip=clip, **track)
+                   if track is not None and track["kappa"] > 0 else None)
         _t_obs = _time.perf_counter()
         while t < max_steps + WARMUP_STEPS:
             if t < WARMUP_STEPS:
@@ -584,6 +849,12 @@ def run(pr, tid, init, sev, M_inv, W, gamma, adapt, max_steps=None, fvec=None, o
                     state=estimator_state, rls_lambda=rls_lambda, rls_p0=rls_p0,
                     kf_q=kf_q, kf_r=kf_r)
                 estimator_state = diag.get("estimator_state")
+            if tracker is not None:
+                # Pose tracking: measured every step, applied after the base update wherever it updates.
+                track_e, track_z, track_n = tracker.observe(t - WARMUP_STEPS, a_cmd, x0, x1, y)
+                if adapt and (freeze_after is None or t - WARMUP_STEPS < freeze_after):
+                    f_hat = tracker.correct(f_hat, track_z)
+                diag = dict(diag, track_e=track_e, track_z=track_z, track_n=track_n)
             _tad1 = _time.perf_counter()
             if timing is not None:
                 timing.write(json.dumps(dict(step_meta, t=int(t - WARMUP_STEPS), wall=_wall0,
@@ -1093,6 +1364,34 @@ def main():
     p.add_argument("--task-stride", type=int, default=1,
                    help="step between task ids; >1 samples a large suite evenly")
     p.add_argument("--sev", type=float, default=0.05)
+    # Opt-in (OPT_IN_DEFAULTS): every default below leaves the runner exactly as it was.
+    p.add_argument("--track-kappa", type=float, default=0.0,
+                   help="pose-referenced tracking gain, 0 = off: after the base update, f_hat[d] <- "
+                        "clip(f_hat[d] + kappa (M_inv e_p / n)[d]) on --track-dims (see PoseTracker)")
+    p.add_argument("--track-ref", choices=["dc", "fitted"], default="dc",
+                   help="plant that turns the nominal command into the reference: dc = the --dc-constrain fit "
+                        "pinned to the probed M diagonal on the tracked dims; fitted = the unconstrained FIR")
+    p.add_argument("--track-anchor", type=int, default=None,
+                   help="re-anchor the reference to the measured pose every this many steps "
+                        "(default: --replan-steps; 0 = once at episode start)")
+    p.add_argument("--track-dims", default=None,
+                   help="comma-separated dims the tracking term updates (default: --corr-dims, else all six)")
+    p.add_argument("--replay-log", type=pathlib.Path, default=None,
+                   help="no policy server: replay the commands of an error_signal.py log (raw_cmd, "
+                        "episode_keys); each episode resets to its recorded scenario (implies "
+                        "--scenario-reset) and ends at its recorded length; --control/--ack not needed")
+    p.add_argument("--replay-episodes", default=None,
+                   help="comma-separated episode indices of --replay-log (default: all); replaces --episodes")
+    p.add_argument("--track-mode", choices=["rate", "position"], default="rate",
+                   help="tracking observation: rate = z_T = M_inv e_p / n, the mean pose rate since the anchor; "
+                        "position = z_T = M_inv e_p, the retained pose offset itself (see PoseTracker)")
+    p.add_argument("--track-leak", type=float, default=0.0,
+                   help="position mode: after each step the reference leaks toward the measured pose by this "
+                        "fraction, bounding drift from a constant model error (0 = no leak)")
+    p.add_argument("--track-obs", choices=["full", "tracked"], default="full",
+                   help="tracking observation map: full = M_inv over all six pose channels; tracked = "
+                        "solve(M[R,R], .) on the tracked dims R only, so untracked channels' pose error "
+                        "(e.g. uncorrected translation) does not force them (see PoseTracker)")
     a = p.parse_args()
     if a.selftest:
         selftest()
@@ -1116,6 +1415,8 @@ def main():
         if a.kf_q is None and (not np.isfinite(a.gamma) or not 0 < a.gamma < 1):
             p.error("automatic --kf-q requires 0 < --gamma < 1")
     required_paths = ("control", "ack", "log", "openloop", "out")
+    if a.replay_log is not None:
+        required_paths = ("log", "openloop", "out")   # replay: no policy server, no control/ack handshake
     missing = ["--" + name for name in required_paths if getattr(a, name) is None]
     if missing:
         p.error("the following arguments are required: " + ", ".join(missing))
@@ -1123,6 +1424,7 @@ def main():
         for name in required_paths:
             if a.telemetry.resolve() == getattr(a, name).resolve():
                 p.error(f"--telemetry must differ from --{name}")
+    track_dims, replay = _opt_in_arguments(p, a)
 
     import main as lm
     import paired_probe as pp
@@ -1209,11 +1511,57 @@ def main():
         print(f"structured fault: {fvec}")
     if cdims is not None:
         print(f"correction applied only on dims {cdims}")
-    pr = pp.Probe(a)
+    track = tracking_record = None
+    if track_dims is not None:
+        # The reference plant, chosen independently of the estimator's own (--dc-constrain): the same
+        # constrained fitting path pinned on the tracked dims, or the unconstrained (shipped) fit.
+        W_ref = fit_plant(a.log, mimo=a.mimo, episodes=calib,
+                          dc={i: float(M[i, i]) for i in track_dims} if a.track_ref == "dc" else None)
+        track = dict(W_ref=W_ref, kappa=a.track_kappa, anchor=a.track_anchor, dims=track_dims)
+        tracking_record = dict(kappa=a.track_kappa, reference=a.track_ref, anchor=a.track_anchor,
+                               dims=track_dims, dc_pinned_dims=track_dims if a.track_ref == "dc" else [],
+                               W_ref=W_ref, reference_command="nominal policy command (before correction and fault)",
+                               z_map="M_inv (the probed map the estimator uses)")
+        taps = (f"tap sums {np.round(W_ref[:, :K_FIR + 1].sum(axis=1), 3)}"
+                if W_ref.shape[1] == K_FIR + 2 else "MIMO FIR")
+        print(f"POSE TRACKING: kappa {a.track_kappa} on dims {track_dims}; reference '{a.track_ref}' ({taps}); "
+              f"anchored {'every %d steps' % a.track_anchor if a.track_anchor else 'once at episode start'}")
+        if a.track_mode == "position":
+            # Rate mode (the default) adds nothing here, so its outputs stay as they were.
+            track.update(mode="position", leak=a.track_leak)
+            tracking_record.update(mode="position", leak=a.track_leak,
+                                   observation="z_T = M_inv e_p (no division by n); after each step the "
+                                               "reference leaks toward the measured pose by `leak`")
+            print(f"  position mode: z_T = M_inv e_p (the retained pose offset), reference leak {a.track_leak} per step")
+        if a.track_obs == "tracked":
+            # The full observation (the default) adds nothing here, so its outputs stay as they were.
+            track.update(obs="tracked")
+            tracking_record.update(obs="tracked", observation_map="z_T[R] = solve(M[R,R], v[R]), z_T[not R] = 0, "
+                                                                  "M = inv(M_inv), R = the tracked dims",
+                                   z_map="solve(M[R,R], .) on the tracked dims, M = inv(M_inv); 0 elsewhere")
+            print(f"  tracked-subspace observation: z_T[R] = solve(M[R,R], v[R]) on R = {track_dims}, 0 elsewhere")
+    pr = pp.Probe(a) if replay is None else replay_probe(pp, a, replay)
     parsed_args = json.loads(json.dumps(vars(a), default=_json_default))
+    if all(parsed_args[key] == value for key, value in OPT_IN_DEFAULTS.items()):
+        # Nothing opt-in was used: record exactly the argument set of the runner before these
+        # flags, so a default run's result JSON and telemetry args stay byte-identical to it.
+        for key in OPT_IN_DEFAULTS:
+            del parsed_args[key]
+    if all(parsed_args[key] == value for key, value in TRACK_MODE_DEFAULTS.items()):
+        # Likewise for the tracking mode: a rate-mode run records what it recorded before --track-mode.
+        for key in TRACK_MODE_DEFAULTS:
+            del parsed_args[key]
+    if all(parsed_args[key] == value for key, value in TRACK_OBS_DEFAULTS.items()):
+        # And for the observation map: a full-observation run records what it did before --track-obs.
+        for key in TRACK_OBS_DEFAULTS:
+            del parsed_args[key]
     res = {"gamma": a.gamma, "joint_fault": a.joint_fault, "args": parsed_args, "arms": {}}
     if estimator_config is not None:
         res["estimator_config"] = json.loads(json.dumps(estimator_config, default=_json_default))
+    if tracking_record is not None:
+        res["tracking"] = json.loads(json.dumps(tracking_record, default=_json_default))
+    if replay is not None:
+        res["replay"] = json.loads(json.dumps(replay.meta, default=_json_default))
     if a.joint_fault:
         print(f"JOINT-LEVEL fault (below the controller): {a.joint_fault}")
     # Spread episodes across the WHOLE suite. The old form, i % 10, silently confined a
@@ -1229,6 +1577,11 @@ def main():
         ep_seeds = [m.get("sampler_seed", a.sampler_seed) for m in man["scenarios"]]
         print(f"scenario manifest {a.manifest}: {len(eps)} scenarios, sampler seeds "
               f"{sorted(set(x for x in ep_seeds if x is not None)) or 'none'}")
+    if replay is not None:
+        eps, ep_seeds = list(replay.scenarios), [None] * len(replay.scenarios)
+        print(f"REPLAY (no policy server): {a.replay_log} episodes {replay.episodes} -> (task, init) {eps}, "
+              f"recorded lengths {replay.lengths}; scenario reset implied; "
+              f"--eval-init/--task-stride are ignored (scenarios come from the recording)")
     if a.pin_rng and (a.sampler_seed is not None or any(x is not None for x in ep_seeds)):
         raise SystemExit("--pin-rng and --sampler-seed are different schedules; give one")
     # LIBERO stores 50 initial states per task (0-49). A run that needs more states per task
@@ -1270,7 +1623,7 @@ def main():
             config=dict(W=W, M=M, M_inv=M_inv, mask=correction_mask(cdims),
                 bias=bias, static_correction=static_c, fault_vector=fvec,
                 observation_offset=obs_off, calibration_episodes=calib,
-                max_steps=pp.MAXS, episodes=eps, n_tasks=n_tasks,
+                max_steps=pp.MAXS if replay is None else replay.lengths, episodes=eps, n_tasks=n_tasks,
                 control_request=dict(site=None, pin_rng=bool(a.pin_rng))),
             fields=dict(t="environment step, including the warmup",
                 raw_action="full policy action before correction and action fault",
@@ -1290,6 +1643,27 @@ def main():
             runner_source=pathlib.Path(__file__).read_text())
         if estimator_config is not None:
             header["config"]["estimator"] = estimator_config
+        if tracking_record is not None:
+            header["config"]["tracking"] = tracking_record
+            header["fields"].update(
+                track_e="pose minus reference since the anchor, normalised units (translation from "
+                        "robot0_eef_pos, rotation from accumulated rot_delta increments)",
+                track_z="M_inv @ (track_e / max(track_n, 1)); kappa times its tracked entries is added "
+                        "to f_hat after the base update",
+                track_n="steps since the anchor, this step included")
+            if a.track_mode == "position":
+                header["fields"].update(
+                    track_e="pose minus the leaky reference since the anchor, before this step's leak "
+                            "(normalised units, same pose conventions)",
+                    track_z="M_inv @ track_e (position mode); kappa times its tracked entries is added to "
+                            "f_hat after the base update")
+            if a.track_obs == "tracked":
+                header["fields"].update(
+                    track_z="tracked-subspace observation: solve(M[R,R], v[R]) on the tracked dims R and 0 "
+                            "elsewhere, v = track_e (position mode) or track_e / max(track_n, 1) (rate mode), "
+                            "M = inv(M_inv); kappa times its tracked entries is added to f_hat after the base update")
+        if replay is not None:
+            header["config"]["replay"] = replay.meta
     timing_fh = None
     if a.timing is not None:
         a.timing.parent.mkdir(parents=True, exist_ok=True)
@@ -1305,6 +1679,12 @@ def main():
                     # per-episode sampler schedule; the handshake's probe calls consume the first few keys
                     # identically in every arm, so the arms stay paired on (task, init, seed, call index)
                     pr.control(dict(site=None, pin_rng=False, sampler_seed=int(ep_seeds[episode]), episode=int(episode)))
+                opt_in = {}
+                if replay is not None:
+                    replay.start(episode)
+                    opt_in["max_steps"] = replay.lengths[episode]
+                if track is not None:
+                    opt_in["track"] = track
                 s, f_hat, traj = run(pr, tid, init, a.sev, M_inv, W, a.gamma, adapt,
                                      dead=a.dead, norm_r=a.norm_r, clip=a.clip,
                                      apply_corr=not a.estimate_only, bias=bias,
@@ -1317,13 +1697,16 @@ def main():
                                      telemetry=telemetry, episode=episode, arm=tag,
                                      rls_lambda=a.rls_lambda, rls_p0=a.rls_p0,
                                      kf_q=kf_q, kf_r=kf_r, gate=gate,
-                                     scenario_reset=a.scenario_reset, timing=timing_fh)
+                                     scenario_reset=a.scenario_reset, timing=timing_fh, **opt_in)
                 ok += int(s); fh.append(f_hat.tolist())
                 # Per-episode outcome, keyed by (task, init). The arms run on the SAME episode
                 # list, so these pair up -- which is what McNemar needs and what the earlier
                 # runs threw away by only accumulating a total. See mcnemar.py.
                 per_ep.append(dict(task=int(tid), init=int(init), ok=bool(s),
                                    **({"sampler_seed": int(ep_seeds[episode])} if ep_seeds[episode] is not None else {})))
+                if replay is not None:
+                    per_ep[-1].update(replay_episode=replay.episodes[episode],
+                                      recorded_steps=replay.lengths[episode], steps=len(traj))
                 if traj and "gain" in traj[-1]:
                     per_ep[-1].update(last_gain=traj[-1]["gain"],
                                      last_effective_gain=traj[-1]["effective_gain"],

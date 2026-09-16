@@ -1,0 +1,40 @@
+% ---------------------------------------------------------------------------
+% Q3 (Track 2 draft): replacement for iclr2027/theory_main.tex, the block
+% from "\begin{corollary}[A contraction and small-gain special case]" through
+% "... remains applicable when they do not." (lines 109-122 at HEAD).
+% The corollary itself is unchanged; the paragraph after it is replaced.
+% ---------------------------------------------------------------------------
+
+\begin{corollary}[A contraction and small-gain special case]
+\label{uni:smallgain}
+If $B_k\preceq B=\left[\begin{smallmatrix}\sigma&\beta\\t&q\end{smallmatrix}\right]$
+and
+\begin{equation}
+ \sigma<1,\qquad q<1,\qquad \beta t<(1-\sigma)(1-q),
+ \label{uni:smallgain-condition}
+\end{equation}
+then positive weights give a storage function $V_k=p_1X_k+p_2E_k$ satisfying
+$V_{k+1}\le\lambda V_k+p^\top d_k$ for some $\lambda<1$.
+\end{corollary}
+The inequality balances attenuation within each component against their
+coupling and yields a geometric disturbance bound. Its first premise,
+$\sigma<1$, is a property of the execution interface in the chosen metric,
+and it does not hold on every interface we evaluate. On the Panda under
+OSC\_POSE, same-command replays from perturbed states give median one-step
+gap ratios of $1.00$ in joint, joint--velocity and end-effector metrics
+(480 perturbations, Appendix~\ref{exp:physical}): the controller sets each
+goal relative to the current pose, so a displacement neither decays nor
+grows. There $\sigma=1$, the corollary is empty, and the comparison bound
+propagated on logged episodes grows by the healthy residual level at every
+step; Theorem~\ref{uni:coupled-theorem} is the applicable statement, and the
+repair evidence on that interface is the paired counts of
+Section~\ref{sec:experiments}. The premise holds on absolute-target position
+servos. The GR1 right-arm joints are certified first order with sampled poles
+$.72$--$.77$ (held-out increment $R^2$ $.74$--$.95$), which gives
+$\sigma=.77$ and $\beta=.28$ in the joint-position metric for the same-command
+comparison, the predictor's DC gain matches the probed sensitivity to within
+$m=.02$, and the condition reduces to a bound on the coupling from execution
+deviation to observation mismatch, $\ell<(1-\sigma)(1-m)/\beta=.79$ for a
+constant gain (Appendix~\ref{uniapp:gr1}). That coupling is not measured, so
+we state the constants without claiming the certificate; on ALOHA only four of
+fourteen joints certify.

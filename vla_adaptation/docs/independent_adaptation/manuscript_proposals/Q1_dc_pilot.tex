@@ -1,0 +1,20 @@
+% Q1 -- proposed text for iclr2027/experiments.tex, in the observation-consistency discussion
+% (\label{exp:boundaries}) after the fitted-versus-probed DC-gain sentence. NOT applied.
+% HEALTHY CONTROL PENDING: the registered 20-rollout healthy control (PREREG_DC_CONSTRAINED_PLANT.md,
+% prediction 3: adaptive >= frozen - 2 and healthy r_y phantom < 0.01) has not run; lambda is on hold.
+% Fill the two \PENDING markers from results/dc_plant/dc_healthy_libero_spatial/ before use, and
+% drop the paragraph if prediction 3 fails.
+\paragraph{A causal test of the gain mismatch.}
+If the rotation-$y$ shortfall is caused by the fitted-to-probed DC-gain ratio, constraining the
+predictor's DC gain to the probe should move the estimate's fixed point, while model order should
+not (Proposition~\ref{uniapp:firarx-prop}). We refitted the predictor by constrained ridge regression
+with each corrected channel's command-tap sum pinned to its probed sensitivity, leaving all other
+settings unchanged, and registered the predictions before running. The rotation-$y$ estimate then
+settles at $82\%$ of the fault on Spatial and $70.5\%$ on libero\_10 (median), against $41\%$ and
+$45\%$ with the unconstrained predictor; every fitted plant class had settled near the ratio
+$.37$. libero\_10 moves from $0/40$ to $18/40$ (18 rescues, 0 regressions; the unconstrained predictor
+reaches $15/40$ on the same scenarios, the rotation-only oracle $22/40$), and Spatial reaches $17/20$
+(11 rescues, one regression). On a healthy robot the constrained predictor scores \PENDING{} against
+the frozen policy's \PENDING{}, with a healthy rotation-$y$ phantom of \PENDING. These runs use the
+scenarios of the principal evaluation, so they test the mechanism by intervention rather than
+supplying an independent confirmation cohort.

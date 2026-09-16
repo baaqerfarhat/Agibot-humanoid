@@ -1,0 +1,27 @@
+% ---------------------------------------------------------------------------
+% Q4 (Track 2 draft): main-text pointer. Two placements are proposed; use one
+% or both.
+% ---------------------------------------------------------------------------
+
+% (A) iclr2027/experiments.tex, Section "Observation consistency and correction
+%     authority" (\label{exp:boundaries}). Replace the sentence
+%       "This discrepancy motivates treating observation mismatch explicitly; it
+%        does not determine the closed-loop estimate without the command history."
+%     by:
+This discrepancy sets the estimate's bias: under an exact linear model the FIR
+residual and the ARX innovation are related by an invertible filter and carry
+the same information about an additive command fault, and under
+misspecification the stationary estimate of either predictor depends on the
+model only through the ratio $R=M^{-1}D$ of fitted to probed DC gain
+(Proposition~\ref{uniapp:firarx-prop}), here $.37$ and $.36$. That ratio
+brackets the settle between $R$ and $1/(2-R)$ according to how much of the
+remaining disturbance the policy's own feedback absorbs; the measured
+$.32$--$.45$ lies in $[.36,.61]$.
+
+% (B) iclr2027/theory_main.tex, end of the paragraph following \eqref{uni:maps}
+%     (after "... may exceed the authority of the action interface."), one sentence:
+Adding measured responses to the predictor does not change what the residual
+reveals about an additive command fault: the state innovation is an invertible
+filtering of the input-only residual, and misspecification biases either
+estimate through the fitted-to-probed DC-gain ratio alone
+(Proposition~\ref{uniapp:firarx-prop}).

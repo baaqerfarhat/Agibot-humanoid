@@ -1,0 +1,18 @@
+% Track 1 draft, Q6 relabel -- proposed replacement for the descriptor paragraph in
+% iclr2027/empirical_appendix.tex (currently lines 222-233). Not applied.
+A descriptor implementation uses a healthy ARX2 model with twelve motion
+history states and a constant supplied basis $\Phi=E$ with six
+action-equivalent coefficients. Its composite tracking term was numerically
+inert in every run: with the stored gains its operator norm is $10^{6}$--$10^{7}$
+times smaller than the prediction-error gain, so the evaluated controller is a
+prediction-only law with one input map used for both observation and allocation.
+It attains $135/140$ versus $112/140$ off over seven Spatial faults
+(28 rescues, five regressions). On Object joint 3 it attains $18/20$ versus
+$7/20$ with correction cap $.25$, a cap selected after Object development
+outcomes; at the originally registered cap $.15$ the same scenarios give
+$12/20$ (8 rescues, 3 regressions, $p=.23$). Its calibration states 35--36,
+evaluation states 37--38 and 280-step horizon differ from the allocation
+comparison, and a matched healthy arm is not available for every condition.
+The result concerns this prediction-only supplied-basis controller; it does not
+isolate a learned representation, geometric structure, composite term or
+advantage over another adapter on the same scenarios.

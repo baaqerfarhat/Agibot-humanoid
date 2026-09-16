@@ -1,0 +1,186 @@
+% ---------------------------------------------------------------------------
+% Q4 (Track 2 draft): proposed new subsection for iclr2027/theory_appendix.tex.
+% Insert AFTER the subsection "Predictor consistency and the adaptive-loop
+% equilibrium" (\label{uniapp:dc}), i.e. at the end of the file. Notation and
+% macros are the manuscript's (theory_main.tex / theory_appendix.tex).
+%
+% Also proposed, in the last sentences of \label{uniapp:dc}: replace
+%   "State dependence, FIR/ARX memory, normalization, and deadzones further
+%    change the stationary relation."
+% by
+%   "Normalization and deadzones further change the stationary relation;
+%    predictor memory (FIR or ARX) does not, as Proposition~\ref{uniapp:firarx}
+%    shows, although it changes the transient."
+% ---------------------------------------------------------------------------
+
+\subsection{Input-only and state predictors observe the same fault}
+\label{uniapp:firarx}
+
+The deployed predictor is input-only: \eqref{eq:predictor} regresses the
+response on the command history. A state (autoregressive) predictor adds the
+channel's own past responses to the regressor. The following statement
+separates what such memory can and cannot change. Consider a causal linear
+command-to-response model with an additive command fault,
+\begin{equation}
+ y_{k+1}=\sum_{j\ge0}G_j\,(u_{k-j}+f_{k-j})+n_{k+1},
+ \qquad G:=\sum_{j\ge0}G_j,
+ \label{uniapp:lti}
+\end{equation}
+with an absolutely summable impulse response $\{G_j\}$, DC gain $G$, a record
+that starts from rest ($u=f=n=0$ before $k=0$), and an arbitrary disturbance
+sequence $n$, which may depend on the state, be colored, or be biased.
+Suppose the response also has an exact autoregressive form of
+order $p$: there are matrices $A_1,\dots,A_p$ and $B_0,\dots,B_K$ such that,
+for every input sequence,
+\begin{equation}
+ y_{k+1}=\sum_{i=1}^{p}A_i\,y_{k+1-i}
+        +\sum_{j=0}^{K}B_j\,(u_{k-j}+f_{k-j})+n_{k+1}
+        -\sum_{i=1}^{p}A_i\,n_{k+1-i}.
+ \label{uniapp:arx}
+\end{equation}
+Write $A(1)=I-\sum_iA_i$ and $B(1)=\sum_jB_j$, so that $G=A(1)^{-1}B(1)$.
+The exact input-only residual and the exact state innovation are
+\begin{equation}
+ r^{\rm in}_{k+1}=y_{k+1}-\sum_{j\ge0}G_j\,u_{k-j},\qquad
+ r^{\rm st}_{k+1}=y_{k+1}-\sum_{i=1}^{p}A_i\,y_{k+1-i}-\sum_{j=0}^{K}B_j\,u_{k-j}.
+ \label{uniapp:tworesiduals}
+\end{equation}
+The implemented ARX plant is the case $p=1$ with diagonal $A_1$; its
+sensitivity is rescaled to $A(1)M$ per channel.
+
+\begin{proposition}[Input-only and state residuals]
+\label{uniapp:firarx-prop}
+\begin{enumerate}[leftmargin=1.5em,itemsep=1pt,label=(\roman*)]
+\item\emph{Filter identity and information.}
+Under \eqref{uniapp:lti} and \eqref{uniapp:arx}, for all $k\ge p$,
+\begin{equation}
+ r^{\rm st}_{k+1}=r^{\rm in}_{k+1}-\sum_{i=1}^{p}A_i\,r^{\rm in}_{k+1-i},
+ \qquad
+ r^{\rm in}_{k+1}=\sum_{j\ge0}G_jf_{k-j}+n_{k+1},\qquad
+ r^{\rm st}_{k+1}=\sum_{j=0}^{K}B_jf_{k-j}+n_{k+1}-\sum_{i=1}^{p}A_in_{k+1-i}.
+ \label{uniapp:filteridentity}
+\end{equation}
+For every horizon $N$, the map from $(r^{\rm in}_1,\dots,r^{\rm in}_N)$ to
+$(r^{\rm in}_1,\dots,r^{\rm in}_p,r^{\rm st}_{p+1},\dots,r^{\rm st}_N)$ is
+block unit lower triangular and therefore invertible. Consequently the two
+residual histories generate the same $\sigma$-algebra: for any prior on the
+fault sequence, any law of $n$, and any estimator, they yield the same
+posterior and the same attainable estimation error, and for Gaussian $n$ the
+same Fisher information about $f$.
+\item\emph{Stationary estimate under misspecification.}
+Let the deployed predictors be fitted models: an input-only predictor with taps
+$\widehat W_0,\dots,\widehat W_K$ and DC gain $D^{\rm in}=\sum_j\widehat W_j$,
+and a state predictor with coefficients $(\widehat A_i,\widehat B_j)$,
+$\widehat A(1)$ invertible, and DC gain
+$D^{\rm st}=\widehat A(1)^{-1}\widehat B(1)$. Let the probed sensitivity be
+$M$, and let the observations be $z^{\rm in}=M^{-1}r^{\rm in}$ and
+$z^{\rm st}=[\widehat A(1)M]^{-1}r^{\rm st}$. Suppose the fault is constant,
+$f_k\equiv f$, the request settles, $u_k\to\bar u$, the disturbance settles to
+$\bar n$, the transients of \eqref{uniapp:lti} have decayed, the update gain
+stays positive, and projection is inactive. Then both observations settle to
+\begin{equation}
+ z=M^{-1}Gf+M^{-1}(G-D)\,\bar u+M^{-1}\bar n,
+ \label{uniapp:stationaryobs}
+\end{equation}
+with $D$ the DC gain of the deployed predictor, so the model class enters
+only through $D$. If $M=G$ and $\bar n=0$, write $R=M^{-1}D$; the innovation
+law's stationary estimate is $\hat f=f+(I-R)\bar u$, and the
+normalized-target law's is $\bar s\,[f+(I-R)\bar u]$ with $\bar s=s(\|Jr\|_2)$
+at the stationary residual. Two request regimes follow:
+\begin{align}
+ \text{fixed nominal request }a\ (\bar u=a-\hat f):\quad&
+ \hat f=(2I-R)^{-1}\big[f+(I-R)a\big],\label{uniapp:fp-open}\\
+ \text{healthy motion restored }(\bar u+f=\bar a^0):\quad&
+ \hat f=Rf+(I-R)\bar a^0.\label{uniapp:fp-closed}
+\end{align}
+In either regime $\hat f=f$ for every $f$ if and only if $R=I$. In the scalar
+case with $a=\bar a^0=0$ and $0\le\rho\le1$, if the policy absorbs a fraction
+$\theta\in[0,1]$ of the remaining disturbance, $a=-\theta(f-\hat f)$, then
+$\hat f/f=[1-(1-\rho)\theta]/[1+(1-\rho)(1-\theta)]$, which decreases from
+$1/(2-\rho)$ at $\theta=0$ to $\rho$ at $\theta=1$; and the quasi-static
+innovation recursion in the fixed-request regime,
+$\hat f_{k+1}=[1-\alpha(2-\rho)]\hat f_k+\alpha[f+(1-\rho)a]$, converges if
+and only if $2-2/\alpha<\rho<2$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(i) Substituting \eqref{uniapp:lti} into the first definition in
+\eqref{uniapp:tworesiduals} gives the second identity; substituting
+\eqref{uniapp:arx} into the second definition gives the third. Applying
+$I-\sum_iA_i(\cdot)_{k+1-i}$ to the input-only residual and using
+$G_j-\sum_iA_iG_{j-i}=B_j$ (with $B_j=0$ for $j>K$ and $G_{j}=0$ for $j<0$),
+which is the coefficient form of $A(1)^{-1}B(1)$ evaluated on the impulse
+response, yields the first identity. The stacked map subtracts from each
+$r^{\rm in}_{k+1}$, $k\ge p$, a linear combination of earlier entries and has
+unit diagonal blocks, so its determinant is one. A bijective measurable
+transformation with measurable inverse leaves the generated $\sigma$-algebra,
+hence every conditional law given the data, unchanged; for Gaussian $n$ and an
+invertible transformation $T$ that does not depend on $f$, the Fisher
+information $H^\top\Sigma^{-1}H$ equals $(TH)^\top(T\Sigma T^\top)^{-1}(TH)$.
+
+(ii) At the stationary point the response is $y=G(\bar u+f)+\bar n$. The
+input-only residual is $y-D^{\rm in}\bar u$. The state innovation is
+$\widehat A(1)y-\widehat B(1)\bar u=\widehat A(1)[G(\bar u+f)+\bar n-D^{\rm st}\bar u]$,
+and multiplying by $[\widehat A(1)M]^{-1}$ cancels $\widehat A(1)$. Both
+give \eqref{uniapp:stationaryobs}. The innovation update
+$\hat f_{k+1}=\hat f_k+\alpha_k(z_{k+1}-\hat f_k)$ is stationary with
+$\alpha_k>0$ and inactive projection if and only if $\hat f=z$; the
+normalized-target update
+$\hat f_{k+1}=(1-\gamma)\hat f_k+\gamma s_kz_{k+1}$ if and only if
+$\hat f=\bar sz$. Substituting $\bar u=a-\hat f$ and solving, or
+$\bar u=\bar a^0-f$, gives \eqref{uniapp:fp-open}--\eqref{uniapp:fp-closed};
+$(2I-R)$ is invertible whenever $1$ is not an eigenvalue of $I-R$, and the
+last two scalar claims follow by direct substitution: with
+$a=-\theta(f-\hat f)$ the stationary condition is
+$\hat f=f+(1-\rho)[-\theta f+(\theta-1)\hat f]$, and the recursion's root
+$1-\alpha(2-\rho)$ lies in $(-1,1)$ exactly when $2-2/\alpha<\rho<2$.
+\end{proof}
+
+Part~(i) says that adding measured responses to the regressor cannot add
+information about an additive command fault: the state innovation is the
+input-only residual passed through the known invertible filter
+$I-\sum_iA_i(\cdot)_{k+1-i}$. What the filter changes is timing and noise
+shaping. For a fault step at $k=0$ and a fixed request, the exact innovations
+are $z^{\rm in}_{k+1}=M^{-1}\sum_{j\le k}G_jf$, the partial sums of the
+response, and $z^{\rm st}_{k+1}=[A(1)M]^{-1}\sum_{j\le k}B_jf$; for a
+first-order channel ($p=1$, $K=0$) the latter equals $f$ from the first
+response while the former is $(1-\lambda^{k+1})f$. The noise enters as
+$M^{-1}n$ versus $[A(1)M]^{-1}(n_{k+1}-\sum_iA_in_{k+1-i})$: for white $n$ and
+$\lambda=.93$, the per-sample variance of the state innovation is
+$(1+\lambda^2)/(1-\lambda)^2\approx380$ times that of the input-only residual,
+but the ratio of their spectral densities is one at zero frequency and $2.2$ at
+$.08$\,rad per step, the bandwidth of the deployed gain; a low-pass estimator
+sees nearly the same noise from either. Part~(ii) says that misspecification
+acts on the stationary estimate only through the fitted-to-probed DC-gain
+ratio $R$, for either model class, while the transient of a state predictor
+also depends on $\widehat A_i-A_i$: in the first-order case its first-response
+observation is $(1-\lambda)/(1-\hat a)$ times the fault, so an over-estimated
+pole overshoots and an under-estimated one lags, with the same stationary
+point. Which regime applies is a property of the policy loop, not of the
+predictor: \eqref{uniapp:fp-open} is the equilibrium of Appendix~\ref{uniapp:dc}
+with a fixed request, and \eqref{uniapp:fp-closed} is its remark that the gain
+ratio emerges when the measured output is restored. The bias in $R$ is an
+empirical fact of closed-loop identification, not a consequence of the
+proposition: every model fitted to the healthy calibration log identifies a
+rotation-$y$ DC gain near a third of the probed sensitivity
+(Appendix~\ref{exp:physical}).
+
+\paragraph{What the proposition explains in the data.}
+On the shipped Panda calibration log the deployed fits give rotation-$y$ DC
+gains $.103$ (FIR, $K=6$) and $.099$ (ARX, $\hat a=.63$) against $M_{ry}=.276$,
+so $R_{ry}=.37$ and $.36$. \Eqref{uniapp:fp-closed} predicts settles at
+$.37$ and $.36$ of the fault and \eqref{uniapp:fp-open} at $.61$; the measured
+settles are $.41$ (FIR, NT), $.45$ (FIR, innovation) and $.32$ (ARX, NT), inside
+the bracket $[\rho,1/(2-\rho)]$ for the FIR and at $\bar s\rho$ for the ARX,
+whose smaller residual attenuates less but whose ratio is smaller. On
+rotation-$x$ and -$z$, $R=.90$ and $1.02$ predict $.90$--$.91$ and $1.02$,
+against measured $.87$--$.95$ and $.88$--$.98$. The same DC mismatch appears
+before the estimator moves: at fault onset the residual step is $Gf=Mf$, not
+$D^{\rm in}f$, and the measured rotation-$y$ plateau is $3.0$ times the FIR's
+predicted one ($M_{ry}/D_{ry}=2.7$). The ARX plant therefore could not repair
+the rotation-$y$ estimate although it raised healthy prediction $R^2$ from
+$.41$ to $.95$; its residual is the filtered FIR residual (on the rotation
+channels the fitted residuals satisfy the filter identity to within $0$--$1\%$
+of their variance; $34\%$ on translation-$x$), and its DC gain is equally
+biased. Constraining the fitted DC gain to the probed sensitivity, which sets
+$R_{ry}=1$, is the intervention part~(ii) singles out.

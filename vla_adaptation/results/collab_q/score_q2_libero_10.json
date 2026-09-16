@@ -1,0 +1,76 @@
+{
+ "suite": "libero_10",
+ "arms_present": [
+  "C",
+  "D",
+  "HC",
+  "HD"
+ ],
+ "primary": {
+  "n_pairs": 60,
+  "pose_excess": {
+   "r_x": {
+    "C_mean": 0.050533546439189024,
+    "D_mean": 0.04612259602176304,
+    "ratio": 0.9127124310831018,
+    "ratio_ci95": [
+     0.7963576158827317,
+     1.051875595485126
+    ]
+   },
+   "r_z": {
+    "C_mean": 0.0802115877913279,
+    "D_mean": 0.06538327584952268,
+    "ratio": 0.8151350403338058,
+    "ratio_ci95": [
+     0.696454339161529,
+     0.9431275891510322
+    ]
+   }
+  },
+  "prediction_1": {
+   "rz_ratio_le_0_80": false,
+   "rx_ratio_le_0_80": false,
+   "refuted_rz_ge_0_95": false
+  },
+  "specificity": {
+   "ry_settle_C": 0.04344317467868461,
+   "ry_settle_D": 0.043517248064493724,
+   "within_0_10": true
+  }
+ },
+ "success": {
+  "C": 25,
+  "D": 27,
+  "n": 60,
+  "D_minus_C": 2,
+  "D_only": 7,
+  "C_only": 5,
+  "mcnemar_p": 0.7744140625,
+  "task_clustered_ci95_points": [
+   -6.666666666666667,
+   13.333333333333334
+  ],
+  "prediction_4_within_minus2_plus4": true
+ },
+ "healthy": {
+  "HC": 18,
+  "HD": 18,
+  "n": 20,
+  "HD_lost_vs_HC": 1,
+  "late_abs_excess": {
+   "HC": {
+    "r_x": 0.015098344105097385,
+    "r_z": 0.014388431934509106
+   },
+   "HD": {
+    "r_x": 0.014708856221463848,
+    "r_z": 0.01549124929257353
+   }
+  },
+  "prediction_2": {
+   "lost_le_2": true,
+   "excess_increase_le_0_02": true
+  }
+ }
+}
