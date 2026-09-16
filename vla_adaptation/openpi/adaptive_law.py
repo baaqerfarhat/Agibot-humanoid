@@ -1298,6 +1298,9 @@ def main():
                         "M diagonal on the corrected channels or on all six (re4 theory record 50: the "
                         "closed-loop fit under-reads the r_y offset gain 2.7x and the estimate settles at "
                         "fitted/probed); none = the unconstrained fit")
+    p.add_argument("--m-diag", default=None,
+                   help="override diagonal entries of the loaded sensitivity M, e.g. '0=0.257,1=0.263,2=0.291' (six-channel "
+                        "correction on libero_10: the shipped z entry 0.126 is a single-state artefact, records 45 and E2 probes)")
     p.add_argument("--dc-gain", default=None,
                    help="explicit command-tap-sum constraints per channel, e.g. '4=0.254': the per-axis FIR is refitted with "
                         "those channels' tap sums pinned to the given values (E2: a separately probed, qualified local "
@@ -1441,6 +1444,12 @@ def main():
     if calib is not None:
         print(f"plant fitted on healthy episodes {calib} only")
     M = np.array(json.loads(a.openloop.read_text())["M"])
+    if a.m_diag:
+        md = {int(k): float(v) for k, v in (item.split("=") for item in a.m_diag.split(","))}
+        before = np.diag(M).copy()
+        for i, v in md.items():
+            M[i, i] = v
+        print(f"M diagonal overridden {md}: {np.round(before, 3)} -> {np.round(np.diag(M), 3)}")
     if a.ar:
         # Under a constant command offset f the measured increment settles at M f, and the ARX
         # residual r = y - (FIR taps . u + AR . y_prev + c) settles at (1 - sum AR) M f: the past

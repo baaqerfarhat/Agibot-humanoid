@@ -39,8 +39,12 @@ shipped constants, `--ar 1`, frozen arm shared (0/80).
 Pinned DC arm (`--dc-constrain corrected`, legacy law, same 80 keys, frozen arm shared): **14/80**;
 r_y settle **0.715** of the fault (median over episodes; IQR 0.35–0.87), r_x 0.92, r_z 0.83.
 
-- **Prediction 2 (DC moves the fixed point): holds at the letter** (0.715 ≥ 0.70; refutation < 0.60
-  not entered) — on the pinned keys the constrained plant more than doubles the FIR's 0.30 and the
+- **Prediction 2 (DC moves the fixed point): holds under the median, fails under the mean.** The
+  registered statistic ("late-window mean of f̂_ry / f over adaptive episodes") does not say whether
+  the per-episode values are averaged or their median taken: the **median is 0.715** (≥ 0.70) and the
+  **mean is 0.613** (< 0.70; FIR 0.267 / 0.295, ARX 0.333 / 0.337 mean / median). Both are reported;
+  the manuscript integration reads it as the mean and scores the target as missed, which is the
+  stricter and safer reading. The refutation band (< 0.60) is not entered under either — on the pinned keys the constrained plant more than doubles the FIR's 0.30 and the
   ARX's 0.34, with wide per-episode spread.
 - **Prediction 3 (DC ≥ FIR in successes): holds, unresolved in size.** DC 14 vs FIR 10 (8 DC-only,
   4 FIR-only, p = 0.39); DC 14 vs ARX 8 (13 / 7, p = 0.26). As registered, the paired test is

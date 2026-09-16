@@ -4274,8 +4274,23 @@ p = 0.55), both inside the registered null bands. A mechanism result with no tas
 
 **Q6** (`PREREG_Q6_PINNED_FIR_ARX_DC.md`; `results/collab_q/q6_*`; the 8.2a pinned keys, frozen
 arm shared): FIR 10, ARX 8, DC **14** of 80; r_y settles 0.30, 0.34, **0.72**. ARX ≈ FIR (p = 0.77)
-and DC moves the fixed point (registered ≥ 0.70) with the count in the predicted direction and
-unresolved (DC vs FIR 8 / 4, p = 0.39). The pinned confirmation of §§50 and 54.
+and DC moves the fixed point — median r_y settle 0.715 (≥ 0.70), mean 0.613 (< 0.70; the prereg's
+wording admits both readings, the manuscripts use the stricter mean) — with the count in the
+predicted direction and unresolved (DC vs FIR 8 / 4, p = 0.39). The pinned confirmation of §§50 and 54.
 
 One correction of my own: the joint-5 paired counts first written into the Q2 prereg were not the
 scorer's; the 40-key pairing replaced them with the correction stated in place.
+
+## 60. E1 on ALOHA: the servo forgets what the Panda remembers (2026-09-16)
+
+`results/iclr_unified_v1/E1_aloha/` (prereg `PREREG_E1_ALOHA_CONTINUATIONS.md`, outcome appended;
+driver `e1_aloha_continuations.py`, full simulator snapshots via `aloha_local_probe.Snapshot`).
+Eight recorded healthy command streams replayed from declared seeds 300–307 (fit 0–2, qual 3–4,
+test 5–7), checkpoints 60 and 120, 50-step continuations, +0.02 rad on the six left-arm joints.
+All four registered predictions hold on the locked sources: fidelity exact; the faulted deviation
+saturates at the offset's norm (endpoint 1.01× its step-20 value; Panda 1.8×); both laws cancel
+97 % of the disturbance within 50 steps (Panda 55 %) and the residual deviation is 1.0–1.2× the
+current remaining disturbance (no memory of the transient); a geometric-decay model with λ = 0.66
+beats pure accumulation by an order of magnitude (Panda: accumulation as good as anything, λ → 1).
+This is the paper's execution-memory distinction observed as a contrast between two robots under
+the same protocol. Caveat: three test sources; the twenty fresh ones await a free card.

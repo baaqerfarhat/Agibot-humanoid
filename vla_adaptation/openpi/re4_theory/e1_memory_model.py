@@ -24,13 +24,21 @@ import numpy as np
 L = 20
 
 
+SPACE = "ee"          # "ee": end-effector position deviation (m), Panda; "joint": joint-position deviation (rad), ALOHA
+JOINTS = None         # joint-space: which joints carry the disturbance (the corrected ones)
+
+
 def series(cp):
     h = cp["branches"]["healthy"]; out = {}
     for name, br in cp["branches"].items():
         if name in ("healthy", "healthy_duplicate"):
             continue
-        e = np.array([np.array(s["ee_pos"]) - np.array(hh["ee_pos"]) for s, hh in zip(br, h)])
-        d = np.array([s["remaining_disturbance"] for s in br])
+        if SPACE == "ee":
+            e = np.array([np.array(s["ee_pos"]) - np.array(hh["ee_pos"]) for s, hh in zip(br, h)])
+            d = np.array([s["remaining_disturbance"] for s in br])
+        else:
+            e = np.array([np.array(s["q"])[JOINTS] - np.array(hh["q"])[JOINTS] for s, hh in zip(br, h)])
+            d = np.array([np.array(s["remaining_disturbance"])[JOINTS] for s in br])
         out[name] = (e, d)
     return out
 
@@ -61,7 +69,7 @@ def fit_geometric(data, neutral=False):
     for lam in lams:
         X, Y = [], []
         for e, d in data:
-            prev = np.zeros(3)
+            prev = np.zeros(e.shape[1])
             for k in range(len(e)):
                 X.append(d[k]); Y.append(e[k] - lam * prev); prev = e[k]
         X, Y = np.array(X), np.array(Y); B = np.linalg.lstsq(X, Y, rcond=None)[0]
@@ -72,21 +80,21 @@ def fit_geometric(data, neutral=False):
 
 
 def predict_geometric(lam, B, d):
-    out = []; prev = np.zeros(3)
+    out = []; prev = np.zeros(d.shape[1] if SPACE == 'joint' else 3)
     for k in range(len(d)):
         prev = lam * prev + d[k] @ B; out.append(prev.copy())
     return np.array(out)
 
 
-def collect(run, task_filter=None):
+def collect(run, ep_filter=None):
     d = json.loads(pathlib.Path(run).read_text()); data = []
     for ep in d["episodes"]:
-        if task_filter is not None and not task_filter(ep["task"]):
+        if ep_filter is not None and not ep_filter(ep):
             continue
         for cp in ep["checkpoints"]:
             if cp.get("status") == "ok":
                 for name, (e, dd) in series(cp).items():
-                    data.append(dict(episode=ep["episode"], task=ep["task"], checkpoint=cp["checkpoint"], branch=name, e=e, d=dd))
+                    data.append(dict(episode=ep["episode"], task=ep.get("task"), checkpoint=cp["checkpoint"], branch=name, e=e, d=dd))
     return data
 
 
@@ -94,8 +102,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--pass1", type=pathlib.Path, required=True, help="fit + qualification sources (state 39: tasks 0-5 fit, 6-9 qualification)")
     ap.add_argument("--pass2", type=pathlib.Path, required=True, help="locked test sources")
-    ap.add_argument("--out", type=pathlib.Path); ap.add_argument("--boot", type=int, default=5000); a = ap.parse_args()
-    fit = collect(a.pass1, lambda t: t < 6); qual = collect(a.pass1, lambda t: t >= 6); test = collect(a.pass2)
+    ap.add_argument("--out", type=pathlib.Path); ap.add_argument("--boot", type=int, default=5000)
+    ap.add_argument("--space", choices=["ee", "joint"], default="ee"); ap.add_argument("--joints", default="0,1,2,3,4,5")
+    ap.add_argument("--fit-key", default="task", help="episode field that splits fit from qualification (task on the Panda, episode on ALOHA)")
+    ap.add_argument("--fit-below", type=int, default=6, help="fit = key < this; qualification = key >= this")
+    a = ap.parse_args()
+    global SPACE, JOINTS; SPACE = a.space; JOINTS = [int(x) for x in a.joints.split(",")]
+    key = a.fit_key
+    fit = collect(a.pass1, lambda ep: ep[key] < a.fit_below); qual = collect(a.pass1, lambda ep: ep[key] >= a.fit_below); test = collect(a.pass2)
     pairs = lambda rows: [(r["e"], r["d"]) for r in rows]
     G = fit_memory(pairs(fit)); lam, Bg = fit_geometric(pairs(fit)); _, Bn = fit_geometric(pairs(fit), neutral=True)
     # envelope from qualification residuals of the memory model
@@ -115,7 +129,7 @@ def main():
         inside = en <= bound; cov_all.append(bool(inside.all()))
         if en[-1] > 0:
             ratios.append(float(bound[-1] / en[-1]))
-        rows.append(dict(episode=r["episode"], task=r["task"], checkpoint=r["checkpoint"], branch=r["branch"], int_err_memory=err(pm), int_err_geometric=err(pg), int_err_neutral=err(pn),
+        rows.append(dict(episode=r["episode"], task=r.get("task"), checkpoint=r["checkpoint"], branch=r["branch"], int_err_memory=err(pm), int_err_geometric=err(pg), int_err_neutral=err(pn),
                          whole_coverage=bool(inside.all()), step_coverage=float(inside.mean()), endpoint_bound_over_error=(float(bound[-1] / en[-1]) if en[-1] > 0 else None),
                          endpoint_error_m=float(en[-1]), endpoint_pred_memory_m=float(np.linalg.norm(pm[-1]))))
     rng = np.random.default_rng(0)
