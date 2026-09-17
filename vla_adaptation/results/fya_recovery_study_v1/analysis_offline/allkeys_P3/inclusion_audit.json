@@ -1,0 +1,39 @@
+{
+ "campaign": "P3_nt_vs_dob",
+ "assigned": 40,
+ "eligible": 29,
+ "replay_valid": 27,
+ "discordant_keys": [
+  {
+   "task": 5,
+   "init": 18,
+   "kind": "rescue",
+   "eligible": "True",
+   "replay_valid": true,
+   "R1": "0.0016663457996408775",
+   "D0": "0.0007482536042910676"
+  },
+  {
+   "task": 2,
+   "init": 19,
+   "kind": "regression",
+   "eligible": "False",
+   "replay_valid": null,
+   "R1": "",
+   "D0": ""
+  }
+ ],
+ "n_discordant": 2,
+ "n_discordant_with_effects": 1,
+ "selection_rule": "lexicographically first fidelity-valid rescue and regression",
+ "selection": {
+  "first_valid_rescue": [
+   5,
+   18
+  ],
+  "first_valid_regression": null
+ },
+ "empty_categories": [
+  "first_valid_regression"
+ ]
+}

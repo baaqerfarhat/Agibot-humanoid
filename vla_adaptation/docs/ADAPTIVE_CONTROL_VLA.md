@@ -4528,3 +4528,52 @@ seeds now agree: the direct physical cost of false healthy updates is small (1�
 stream under those corrections is several times further from its own healthy path. Healthy task outcomes on
 LIBERO-10 are imperfect in every arm (off 38, NT 37, duplicate 37 of 40), so this stays a physical-deviation
 statement. Recovery-study plan P1–P3 complete; both cards released 05:34.
+
+## 74. Offline analyses for the recovery-study paper: reference sensitivity and all-key tables (2026-09-17)
+
+`openpi/re4_theory/fya_reference_sensitivity.py`, `fya_all_key_table.py`; outputs `results/fya_recovery_study_v1/analysis_offline/`.
+Retrospective (trajectories were inspected before the analysis was written). The exact translation identities
+R1(r+v) = R1 + 2⟨Δ,v⟩ and S(r+v) = S − 2⟨H,v⟩ (full S = J00 − 2J10 + J11) were checked numerically per source.
+Largest per-step reference displacement preserving the equal-task sign: healthy archived Spatial R1 7.0 mm (S 6.1),
+fresh Spatial 5.1 (4.5), LIBERO-10 3.8 (2.8); the strong-fault R1 7.7 mm (its own interval already spans zero).
+At 1 mm per step every cohort keeps its sign; at 5 mm the LIBERO-10 bounds cross zero. Duplicate-off paths give
+alternative references on every key but are identical to the original on all but 2 (Spatial) and 3 (LIBERO-10)
+keys; the alternative-reference estimates equal the originals to three digits, so the empirical reference
+comparison is uninformative. All-key joins: P2 has three task-discordant keys (rescue 4/31, regressions 6/33 and
+8/30, the last without effects because its prefix mismatched), P1 ten (nine rescues, one regression; nine with
+effects), P3 two (one unique success per law). Selection rule for main-text cases: lexicographically first valid
+rescue and regression (P2: 4/31 and 6/33; P1: 0/18 and 2/19; P3 has no valid regression).
+
+## 75. GR00T N1.7 seeded sampling and the crossed-replay pilot (2026-09-17)
+
+`openpi/groot_server.py` now seeds the flow-matching noise per (seed, episode, call) and acknowledges provenance
+(`PREREG_FYA_GROOT_HEALTHY_CROSSED_V1.md` §A). Pilot on four inspected keys: self-test exact, off/NT prefixes 4/4,
+duplicate whole-episode agreement 4/4 (exact: GR00T's torch path reproduces bit for bit where pi0.5's JAX server
+diverged on a few keys per forty), diagonal replay 4/4 valid with zero gaps; 70 s per episode. Part B (40 keys on
+states 23, 24, 29, 31, seed 89001) launched 13:35.
+
+### Verification correction to the offline reference analysis (2026-09-17)
+
+The recovery-study paper independently reconstructed record 74 in
+`papers/frozen_yet_adaptive_recovery_study/evidence/offline_analyses_verified.json`.
+The analytical envelopes are unchanged, but their point-mean sign thresholds are not confidence guarantees:
+LIBERO-10's R1 upper-envelope interval at 1 mm stays negative but crosses the original practical margin,
+and the S lower-envelope interval already crosses zero. The empirical duplicate-reference comparison is
+**unavailable in the primary metric**, not an observed null: the original prefix gate was inactive and source
+`position` is measurably different from replay `ee_pos`. Corrected duplicate prefixes pass on 34/34 Spatial
+and 34/36 LIBERO-10 candidates, but none retains the required `ee_pos` source window.
+All 22 historical offline outputs remain unchanged; corrected outputs are in
+`results/fya_recovery_study_v1/analysis_offline_corrected_v1/`. P3 task-outcome comparisons are NT versus DOB,
+while its all-key physical columns are explicitly NT-matrix effects, not paired observer differences.
+The paper retains all fifteen task-discordant cases, including rescues with adverse translation effects
+and a regression with favorable translation effects.
+
+## 76. The healthy stream effect transfers to GR00T N1.7 (2026-09-17)
+
+`PREREG_FYA_GROOT_HEALTHY_CROSSED_V1.md` §E. Fresh GR00T sources on Spatial states 23, 24, 29, 31 (seed 89001), one
+server process, 36 of 40 keys eligible and all reproduced exactly. **R1 = −1.81e-4 [−4.2e-4, −3.6e-5] m² s, negative on
+36/36; S = 1.64e-4 [2.8e-5, 4.0e-4]; D0 < 0 on every key; I unresolved.** Healthy task outcomes off 38/40, NT 39/40
+(one rescue, no regression). Cross-device control: GR00T reproduces across cards on 35/40 keys, so arms still share
+a process. The paper can now say the policy-reaction cost on healthy executions is not a pi0.5 artefact: two backbones,
+two suites, four cohorts (`figures/healthy_R1_four_cohorts.pdf`). Everything the recovery-study plan lists as
+required or highest-value is done; faulted GR00T transfer, dynamics shifts and unknown onset remain optional.

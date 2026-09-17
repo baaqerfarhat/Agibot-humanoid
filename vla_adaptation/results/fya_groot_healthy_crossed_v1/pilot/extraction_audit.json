@@ -1,0 +1,55 @@
+{
+ "inputs_sha256": {
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/fya_groot_healthy_crossed_v1/pilot/manifest.json": "bd19b83efdfd103a847255b48c817674801382c4762095c66956ca9af500be46",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/fya_groot_healthy_crossed_v1/pilot/sources/healthy_off_telemetry.jsonl.gz": "f1d3f58458bb979a5702a55e5a3b550389ec95daa148ab015e0009ef19b2e77c",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/fya_groot_healthy_crossed_v1/pilot/sources/healthy_nt_telemetry.jsonl.gz": "4a4225031c82bb37dbbfe5590d8dfd78a6416b38b390cdb9b9e2e1f8679198e5",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/fya_groot_healthy_crossed_v1/pilot/sources/healthy_off_dup_telemetry.jsonl.gz": "dff244fdf255325bc6cfe4a9200bc4e6d3e7ede984889056895671ce7b703702"
+ },
+ "extractor_sha256": "a14463448e52e32facf663a6da58a5475c0f25fac43d0ebfe81595f2e094868a",
+ "n_keys": 4,
+ "n_eligible": 4,
+ "eligible_keys": [
+  [
+   0,
+   13,
+   88001
+  ],
+  [
+   3,
+   13,
+   88001
+  ],
+  [
+   6,
+   13,
+   88001
+  ],
+  [
+   9,
+   13,
+   88001
+  ]
+ ],
+ "ineligible": [],
+ "warmup_command": [
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  -1.0
+ ],
+ "arms": [
+  "healthy_off",
+  "healthy_off",
+  "healthy_nt"
+ ],
+ "optional_arms": [
+  "healthy_off_dup"
+ ],
+ "prefix": 30,
+ "window": 50,
+ "configuration_sha256": "810c2a24144c2a88e4e0e61e68cc3b992cc40a99063bfa124106b68fc544e7bf",
+ "note": "read-only extraction; prefix agreement exact (tolerance 0) on raw actions, positions and joints across the three arms"
+}

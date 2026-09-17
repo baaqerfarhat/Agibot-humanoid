@@ -131,3 +131,17 @@ keys; not a certificate. This is the result the previous bridge could not give.
 **Recovery study P2 (`PREREG_FYA_HEALTHY_LIBERO10_V1.md`):** fresh LIBERO-10 keys, 36 exact; R1 = −8.5e-5 [−1.6e-4, −2.4e-5] (replicated on a second suite), S = +7.2e-5 [1.1e-5, 1.5e-4] prospective; D0 < 0 on all; I unresolved. Healthy task outcomes off 38/40, NT 37/40, dup 37/40 (list the NT regressions 8/30, 6/33 and the gain 4/31). Coupling 36/40 prefix, duplicate 31/40. Figure `results/fya_recovery_study_v1/healthy_libero10/figures/healthy_R1_three_cohorts.pdf`.
 
 **Recovery-study plan closed (17 Sep 05:35):** P1 negative (decomposition uninformative under the strong fault), P2 replicated on LIBERO-10, P3 unresolved NT–DOB physical difference. Records §§71–73.
+
+**17 Sep afternoon, recovery-study plan §§1–3.** Offline: reference-sensitivity envelopes and all-key tables in `results/fya_recovery_study_v1/analysis_offline/` (record §74; identities checked; healthy R1 sign survives 3.8–7.0 mm/step reference displacement depending on cohort; duplicate-off alternative references are identical on all but 2–3 keys, so that comparison is uninformative; discordant-key lists and the lexicographic case-selection rule are in `inclusion_audit.json` per campaign). GR00T: server seeded per call with provenance acks (`PREREG_FYA_GROOT_HEALTHY_CROSSED_V1.md`), pilot passed exactly (record §75), confirmatory 40-key healthy matrix running (states 23, 24, 29, 31 reused from the pi0.5 cohort, disclosed; seed 89001; scorer seed 20260920). Outcome to be appended as §E.
+
+**Offline verification correction, September 17.** The paper's
+`evidence/offline_analyses_verified.json` supersedes the preceding duplicate-reference interpretation:
+source `position` is not the primary replay `ee_pos` metric, so no empirical duplicate reference qualifies.
+Corrected prefix qualification is 34/34 Spatial and 34/36 LIBERO-10. Analytical bounds remain unchanged,
+but point-mean sign radii are not confidence guarantees; LIBERO-10 S loses a resolved lower-envelope
+sign already at 1 mm. Corrected outputs are in `analysis_offline_corrected_v1/`; historical files remain.
+All fifteen task-discordant cases are retained, and P3 physical fields explicitly describe the NT matrix.
+The new trajectory analysis separates cost I from reference-independent Z; the paired NT-minus-DOB
+RMS Z difference is .049 [−.389,.558] mm, unresolved.
+
+**GR00T healthy crossed replication (`PREREG_FYA_GROOT_HEALTHY_CROSSED_V1.md` §E):** 36 exact keys (states 23, 24, 29, 31 reused, seed 89001), R1 = −1.81e-4 [−4.2e-4, −3.6e-5] negative on every key, S = +1.64e-4 [2.8e-5, 4.0e-4], D0 < 0 on all, I unresolved; healthy off 38/40, NT 39/40 (rescue 2/29, no regression); coupling 38/40 prefix, duplicate 35/40; cross-device control 35/40 exact. Figure `results/fya_groot_healthy_crossed_v1/figures/healthy_R1_four_cohorts.pdf`. Wording: transfer of the healthy stream effect to a second backbone on inspected physical states; not a task-harm claim.

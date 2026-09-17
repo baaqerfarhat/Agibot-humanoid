@@ -1,0 +1,908 @@
+{
+  "label": "healthy_spatial_coupled_v3",
+  "run": "results/fya_healthy_coupled_v1/runs_v3/crossed_healthy.json.gz",
+  "n_sources": 34,
+  "n_tasks": 9,
+  "radii_mm": [
+    1.0,
+    2.5,
+    5.0,
+    10.0
+  ],
+  "vq_factor": "||v_i||_Q <= sqrt(50 dt) a; a uniform per-step displacement bound a is sufficient",
+  "metric": "ee_pos",
+  "horizon": 50,
+  "dt": 0.05,
+  "boot": 10000,
+  "seed": 20260919,
+  "scope": "retrospective fixed-trajectory sensitivity; point-mean thresholds are not confidence/stability/task-recovery certificates; registered decisions remain unchanged",
+  "original": {
+    "R1": {
+      "estimate": -0.000171016589486108,
+      "ci95": [
+        -0.00025139712881372514,
+        -9.867060505150734e-05
+      ]
+    },
+    "S": {
+      "estimate": 0.00015230710567930636,
+      "ci95": [
+        8.765131868535189e-05,
+        0.00022501684890489536
+      ]
+    }
+  },
+  "radius": {
+    "1.0": {
+      "R1_lower": {
+        "estimate": -0.00020436123986842603,
+        "ci95": [
+          -0.00029130933902387035,
+          -0.0001250892648402245
+        ]
+      },
+      "R1_upper": {
+        "estimate": -0.00013767193910379,
+        "ci95": [
+          -0.00021127763782518655,
+          -7.22042515969644e-05
+        ]
+      },
+      "sources_R1_sign_preserved": 31,
+      "S_lower": {
+        "estimate": 0.00011877931273306443,
+        "ci95": [
+          5.964665761796427e-05,
+          0.00018606453126439478
+        ]
+      },
+      "S_upper": {
+        "estimate": 0.00018583489862554833,
+        "ci95": [
+          0.00011559427187013405,
+          0.0002638817783943798
+        ]
+      },
+      "sources_S_sign_preserved": 27
+    },
+    "2.5": {
+      "R1_lower": {
+        "estimate": -0.00025437821544190307,
+        "ci95": [
+          -0.00035189656612020473,
+          -0.00016466961588074768
+        ]
+      },
+      "R1_upper": {
+        "estimate": -8.765496353031293e-05,
+        "ci95": [
+          -0.00015151670904447445,
+          -3.2258241975008656e-05
+        ]
+      },
+      "sources_R1_sign_preserved": 18,
+      "S_lower": {
+        "estimate": 6.848762331370151e-05,
+        "ci95": [
+          1.7354546262483723e-05,
+          0.0001288867654037911
+        ]
+      },
+      "S_upper": {
+        "estimate": 0.00023612658804491126,
+        "ci95": [
+          0.0001571786860855288,
+          0.00032252326463300704
+        ]
+      },
+      "sources_S_sign_preserved": 17
+    },
+    "5.0": {
+      "R1_lower": {
+        "estimate": -0.00033773984139769814,
+        "ci95": [
+          -0.0004514561709530291,
+          -0.00023068653831491713
+        ]
+      },
+      "R1_upper": {
+        "estimate": -4.293337574517885e-06,
+        "ci95": [
+          -5.2987248402250584e-05,
+          3.58000881341843e-05
+        ]
+      },
+      "sources_R1_sign_preserved": 9,
+      "S_lower": {
+        "estimate": -1.5331859051903356e-05,
+        "ci95": [
+          -5.43284368800342e-05,
+          3.400558719375292e-05
+        ]
+      },
+      "S_upper": {
+        "estimate": 0.0003199460704105161,
+        "ci95": [
+          0.00022689488154891018,
+          0.00042080429099829045
+        ]
+      },
+      "sources_S_sign_preserved": 7
+    },
+    "10.0": {
+      "R1_lower": {
+        "estimate": -0.0005044630933092883,
+        "ci95": [
+          -0.000652429887142448,
+          -0.00036284981228038146
+        ]
+      },
+      "R1_upper": {
+        "estimate": 0.00016242991433707227,
+        "ci95": [
+          0.00013524945909077214,
+          0.00018516515797970787
+        ]
+      },
+      "sources_R1_sign_preserved": 1,
+      "S_lower": {
+        "estimate": -0.00018297082378311309,
+        "ci95": [
+          -0.0002139138253778599,
+          -0.00014512788488118143
+        ]
+      },
+      "S_upper": {
+        "estimate": 0.0004875850351417258,
+        "ci95": [
+          0.00036435232294438713,
+          0.0006184593593678553
+        ]
+      },
+      "sources_S_sign_preserved": 1
+    }
+  },
+  "identities_checked": 34,
+  "identity_displacements_per_source": 2,
+  "point_mean_sign_envelope_threshold_mm": {
+    "R1": 5.1287564129565615,
+    "S": 4.542711950157702
+  },
+  "duplicate_reference": {
+    "n_candidates": 34,
+    "n_prefix_matched": 34,
+    "n_same_metric_retained": 0,
+    "n_qualified": 0,
+    "n_distinct": 0,
+    "metric": "simulator ee_pos; telemetry position is not substituted",
+    "prefix_action_tolerance": 0.0,
+    "prefix_physical_tolerance": 1e-08,
+    "qualification": "full task/init/sampler_seed identity, 30-step command and observed physical prefix, 50-step same-coordinate reference",
+    "R1_alt_equal_task": null,
+    "S_alt_equal_task": null,
+    "rows": [
+      {
+        "task": 1,
+        "init": 23,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 115,
+        "duplicate_steps": 115,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 2,
+        "init": 23,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 94,
+        "duplicate_steps": 94,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 3,
+        "init": 23,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 87,
+        "duplicate_steps": 87,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 4,
+        "init": 23,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 135,
+        "duplicate_steps": 135,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 5,
+        "init": 23,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 90,
+        "duplicate_steps": 90,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 6,
+        "init": 23,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 100,
+        "duplicate_steps": 100,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 7,
+        "init": 23,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 119,
+        "duplicate_steps": 119,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 8,
+        "init": 23,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 113,
+        "duplicate_steps": 113,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 9,
+        "init": 23,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 109,
+        "duplicate_steps": 109,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 1,
+        "init": 24,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 112,
+        "duplicate_steps": 112,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 2,
+        "init": 24,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 98,
+        "duplicate_steps": 98,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 3,
+        "init": 24,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 84,
+        "duplicate_steps": 84,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 4,
+        "init": 24,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 121,
+        "duplicate_steps": 121,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 5,
+        "init": 24,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 88,
+        "duplicate_steps": 88,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 6,
+        "init": 24,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 103,
+        "duplicate_steps": 103,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 8,
+        "init": 24,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 98,
+        "duplicate_steps": 98,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 9,
+        "init": 24,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 117,
+        "duplicate_steps": 117,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 1,
+        "init": 29,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 108,
+        "duplicate_steps": 108,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 2,
+        "init": 29,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 95,
+        "duplicate_steps": 95,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 3,
+        "init": 29,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 84,
+        "duplicate_steps": 84,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 4,
+        "init": 29,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 120,
+        "duplicate_steps": 120,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 5,
+        "init": 29,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 90,
+        "duplicate_steps": 90,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 6,
+        "init": 29,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 114,
+        "duplicate_steps": 114,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 8,
+        "init": 29,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 108,
+        "duplicate_steps": 108,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 9,
+        "init": 29,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 117,
+        "duplicate_steps": 117,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 1,
+        "init": 31,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 96,
+        "duplicate_steps": 96,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 2,
+        "init": 31,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 99,
+        "duplicate_steps": 99,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 3,
+        "init": 31,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 87,
+        "duplicate_steps": 87,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 4,
+        "init": 31,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 128,
+        "duplicate_steps": 128,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 5,
+        "init": 31,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 145,
+        "duplicate_steps": 145,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 6,
+        "init": 31,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 109,
+        "duplicate_steps": 109,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 7,
+        "init": 31,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 120,
+        "duplicate_steps": 120,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 8,
+        "init": 31,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 102,
+        "duplicate_steps": 102,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      },
+      {
+        "task": 9,
+        "init": 31,
+        "sampler_seed": 86001,
+        "full_key_matched": true,
+        "original_steps": 117,
+        "duplicate_steps": 117,
+        "window_available": true,
+        "prefix_gaps": {
+          "raw_action": 0.0,
+          "position": 0.0,
+          "joint_position": 0.0,
+          "quaternion_angle": 0.0
+        },
+        "prefix_matched": true,
+        "same_metric_retained": false,
+        "qualified": false,
+        "unavailable_reasons": [
+          "source telemetry does not retain ee_pos for both windows"
+        ]
+      }
+    ]
+  },
+  "source_files_sha256": {
+    "results/fya_healthy_coupled_v1/runs_v3/crossed_healthy.json.gz": "51ae5f2468044b54d1d41539da548119bca126af30675ba9a2cf1268074fe509",
+    "results/fya_healthy_coupled_v1/sources_v3/healthy_off_telemetry.jsonl.gz": "7c8fbe65de6910e5de974a044e00fd83a503fd7a67d728a6233bc1676d744573",
+    "results/fya_healthy_coupled_v1/sources_v3/healthy_off_dup_telemetry.jsonl.gz": "a21aefd986447c1a80e89c56c38a0d04ae4eda2c535326db3c34ee2067d5aa5c",
+    "results/fya_healthy_coupled_v1/sources_v3/healthy_off.json": "81a7595b4b84378b9073e9752b22c57c0bf36260f7c37b3623eaad955a8104f7",
+    "results/fya_healthy_coupled_v1/sources_v3/healthy_off_dup.json": "60cb639f5cb74ce883ad6ae96a875489d071ab92bb024b043e22094d7311f206"
+  },
+  "producer_sha256": "a28d43d3b9debace037ebfa9e224551d11c9734cefd516f1009fc151214288c6"
+}

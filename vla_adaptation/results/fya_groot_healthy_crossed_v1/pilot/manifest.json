@@ -1,0 +1,26 @@
+{
+ "name": "GR00T healthy crossed pilot (inspected keys, technical only)",
+ "suite": "libero_spatial",
+ "scenarios": [
+  {
+   "task": 0,
+   "init": 13,
+   "sampler_seed": 88001
+  },
+  {
+   "task": 3,
+   "init": 13,
+   "sampler_seed": 88001
+  },
+  {
+   "task": 6,
+   "init": 13,
+   "sampler_seed": 88001
+  },
+  {
+   "task": 9,
+   "init": 13,
+   "sampler_seed": 88001
+  }
+ ]
+}

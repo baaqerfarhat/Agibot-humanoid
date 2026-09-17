@@ -1,0 +1,112 @@
+{
+ "campaign": "P1_stronger_nt",
+ "assigned": 40,
+ "eligible": 32,
+ "replay_valid": 30,
+ "discordant_keys": [
+  {
+   "task": 0,
+   "init": 18,
+   "kind": "rescue",
+   "eligible": "True",
+   "replay_valid": true,
+   "R1": "0.0010748339916480118",
+   "D0": "-0.00016987852989620682"
+  },
+  {
+   "task": 2,
+   "init": 18,
+   "kind": "rescue",
+   "eligible": "True",
+   "replay_valid": true,
+   "R1": "0.015301844854104442",
+   "D0": "0.0017008070185589204"
+  },
+  {
+   "task": 5,
+   "init": 18,
+   "kind": "rescue",
+   "eligible": "True",
+   "replay_valid": true,
+   "R1": "0.0016663457996408775",
+   "D0": "0.0007482536042910676"
+  },
+  {
+   "task": 2,
+   "init": 19,
+   "kind": "regression",
+   "eligible": "True",
+   "replay_valid": true,
+   "R1": "0.0008034294249357754",
+   "D0": "-0.0007220176914542005"
+  },
+  {
+   "task": 7,
+   "init": 19,
+   "kind": "rescue",
+   "eligible": "True",
+   "replay_valid": true,
+   "R1": "0.0004620544919279705",
+   "D0": "-0.00021650285143266432"
+  },
+  {
+   "task": 9,
+   "init": 19,
+   "kind": "rescue",
+   "eligible": "True",
+   "replay_valid": true,
+   "R1": "0.00356773310498551",
+   "D0": "0.0001852634106227491"
+  },
+  {
+   "task": 3,
+   "init": 21,
+   "kind": "rescue",
+   "eligible": "False",
+   "replay_valid": null,
+   "R1": "",
+   "D0": ""
+  },
+  {
+   "task": 7,
+   "init": 21,
+   "kind": "rescue",
+   "eligible": "True",
+   "replay_valid": true,
+   "R1": "-0.006801946255867379",
+   "D0": "0.00016742729816662458"
+  },
+  {
+   "task": 2,
+   "init": 22,
+   "kind": "rescue",
+   "eligible": "True",
+   "replay_valid": true,
+   "R1": "-0.0005624117149617561",
+   "D0": "-0.0005498676523600565"
+  },
+  {
+   "task": 6,
+   "init": 22,
+   "kind": "rescue",
+   "eligible": "True",
+   "replay_valid": true,
+   "R1": "0.0008341046540248065",
+   "D0": "-0.00035238135443233084"
+  }
+ ],
+ "n_discordant": 10,
+ "n_discordant_with_effects": 9,
+ "selection_rule": "lexicographically first fidelity-valid rescue and regression",
+ "selection": {
+  "first_valid_rescue": [
+   0,
+   18
+  ],
+  "first_valid_regression": [
+   2,
+   19
+  ]
+ },
+ "empty_categories": []
+}

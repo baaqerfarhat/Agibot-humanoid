@@ -1692,10 +1692,11 @@ def main():
         for tag, adapt in arm_list:
             ok, fh, trajs, per_ep = 0, [], [], []
             for episode, (tid, init) in enumerate(eps):
+                episode_ack = None
                 if ep_seeds[episode] is not None:
                     # per-episode sampler schedule; the handshake's probe calls consume the first few keys
                     # identically in every arm, so the arms stay paired on (task, init, seed, call index)
-                    pr.control(dict(site=None, pin_rng=False, sampler_seed=int(ep_seeds[episode]), episode=int(episode)))
+                    episode_ack = pr.control(dict(site=None, pin_rng=False, sampler_seed=int(ep_seeds[episode]), episode=int(episode), reset=True))
                 opt_in = {}
                 if replay is not None:
                     replay.start(episode)
@@ -1721,7 +1722,7 @@ def main():
                 # list, so these pair up -- which is what McNemar needs and what the earlier
                 # runs threw away by only accumulating a total. See mcnemar.py.
                 per_ep.append(dict(task=int(tid), init=int(init), ok=bool(s),
-                                   **({"sampler_seed": int(ep_seeds[episode])} if ep_seeds[episode] is not None else {})))
+                                   **({"sampler_seed": int(ep_seeds[episode]), "control_ack": episode_ack} if ep_seeds[episode] is not None else {})))
                 if replay is not None:
                     per_ep[-1].update(replay_episode=replay.episodes[episode],
                                       recorded_steps=replay.lengths[episode], steps=len(traj))

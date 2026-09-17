@@ -1,0 +1,49 @@
+{
+ "campaign": "P2_healthy_libero10",
+ "assigned": 40,
+ "eligible": 36,
+ "replay_valid": 36,
+ "discordant_keys": [
+  {
+   "task": 8,
+   "init": 30,
+   "kind": "regression",
+   "eligible": "False",
+   "replay_valid": null,
+   "R1": "",
+   "D0": ""
+  },
+  {
+   "task": 4,
+   "init": 31,
+   "kind": "rescue",
+   "eligible": "True",
+   "replay_valid": true,
+   "R1": "-1.5023525610263021e-05",
+   "D0": "-4.126431783055248e-07"
+  },
+  {
+   "task": 6,
+   "init": 33,
+   "kind": "regression",
+   "eligible": "True",
+   "replay_valid": true,
+   "R1": "-1.423952679988185e-05",
+   "D0": "-1.4091160911887924e-07"
+  }
+ ],
+ "n_discordant": 3,
+ "n_discordant_with_effects": 2,
+ "selection_rule": "lexicographically first fidelity-valid rescue and regression",
+ "selection": {
+  "first_valid_rescue": [
+   4,
+   31
+  ],
+  "first_valid_regression": [
+   6,
+   33
+  ]
+ },
+ "empty_categories": []
+}
