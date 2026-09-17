@@ -1,0 +1,151 @@
+{
+ "development": {
+  "dev_F1_off": "18/20",
+  "dev_F2_off": "16/20",
+  "dev_F3_off": "12/20",
+  "dev_F4_nt": "7/20",
+  "dev_F4_off": "5/20",
+  "dev_F5_off": "7/20",
+  "dev_healthy_off": "20/20",
+  "selected": "F4 0.10,0.10,0.10,0.10,0.10,0.10",
+  "nt_vs_off_dev": {
+   "n": 20,
+   "a_successes": 7,
+   "b_successes": 5,
+   "wins": 2,
+   "losses": 0,
+   "net": 2,
+   "win_keys": [
+    [
+     7,
+     15,
+     84001
+    ],
+    [
+     9,
+     17,
+     84001
+    ]
+   ],
+   "loss_keys": [],
+   "rate_difference": 0.1,
+   "task_clustered_ci95": [
+    0.0,
+    0.25
+   ],
+   "mcnemar_exact_p_descriptive": 0.5
+  }
+ },
+ "evaluation": {
+  "eval_healthy_off": "40/40",
+  "eval_healthy_nt": "40/40",
+  "eval_fault_off": "6/40",
+  "eval_fault_nt": "14/40",
+  "primary_fault_nt_minus_off": {
+   "n": 40,
+   "a_successes": 14,
+   "b_successes": 6,
+   "wins": 9,
+   "losses": 1,
+   "net": 8,
+   "win_keys": [
+    [
+     0,
+     18,
+     85001
+    ],
+    [
+     2,
+     18,
+     85001
+    ],
+    [
+     2,
+     22,
+     85001
+    ],
+    [
+     3,
+     21,
+     85001
+    ],
+    [
+     5,
+     18,
+     85001
+    ],
+    [
+     6,
+     22,
+     85001
+    ],
+    [
+     7,
+     19,
+     85001
+    ],
+    [
+     7,
+     21,
+     85001
+    ],
+    [
+     9,
+     19,
+     85001
+    ]
+   ],
+   "loss_keys": [
+    [
+     2,
+     19,
+     85001
+    ]
+   ],
+   "rate_difference": 0.2,
+   "task_clustered_ci95": [
+    0.1,
+    0.3
+   ],
+   "mcnemar_exact_p_descriptive": 0.021484375
+  },
+  "T1_min_effect_5_and_ci_excludes_zero": true,
+  "healthy_nt_minus_off": {
+   "n": 40,
+   "a_successes": 40,
+   "b_successes": 40,
+   "wins": 0,
+   "losses": 0,
+   "net": 0,
+   "win_keys": [],
+   "loss_keys": [],
+   "rate_difference": 0.0,
+   "task_clustered_ci95": [
+    0.0,
+    0.0
+   ],
+   "mcnemar_exact_p_descriptive": 1.0
+  },
+  "T2_healthy_losses_le_3": true,
+  "eval_fault_nt_telemetry": {
+   "n": 40,
+   "final_fhat_ry_median": 0.034092190493916597,
+   "final_fhat_ry_iqr": [
+    0.013634512535489352,
+    0.05
+   ],
+   "episode_steps_median": 220.0,
+   "unexposed_keys": 0
+  },
+  "eval_healthy_nt_telemetry": {
+   "n": 40,
+   "final_fhat_ry_median": 0.014086870203404565,
+   "final_fhat_ry_iqr": [
+    0.0031277050085034997,
+    0.02472343184879059
+   ],
+   "episode_steps_median": 101.5,
+   "unexposed_keys": 0
+  }
+ }
+}

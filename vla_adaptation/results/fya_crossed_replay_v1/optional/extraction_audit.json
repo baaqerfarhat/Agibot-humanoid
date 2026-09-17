@@ -1,0 +1,133 @@
+{
+ "inputs_sha256": {
+  "results/frozen_yet_adaptive_deadline_v1/stage2_manifest.json": "cbf7d20260501b8ab11e0afd25d2e782fe62eb6486900b322790ca63e47f71c9",
+  "results/frozen_yet_adaptive_deadline_v1/reacting_policy/healthy_off_telemetry.jsonl.gz": "5ea4f5272e346f0c28c8579c47af581719a46d85f8add92dede56a68229da757",
+  "results/frozen_yet_adaptive_deadline_v1/reacting_policy/fault_off_telemetry.jsonl.gz": "8de49dfaa57cb973c01859fb00a6c1318f1efbd8212731add78bbbc32b98f93a",
+  "results/frozen_yet_adaptive_deadline_v1/reacting_policy/fault_nt_telemetry.jsonl.gz": "582770f093ea5586e206776f4dcc9ed8c9864283f22ebfd46fb1719c78b8abbe",
+  "results/frozen_yet_adaptive_deadline_v1/reacting_policy/delay_nt_telemetry.jsonl.gz": "22a6a3795ac5da2604626775ced318bc59db5ed7c10e13ff7e1a02a210b8f231",
+  "results/frozen_yet_adaptive_deadline_v1/reacting_policy/fault_innovation_telemetry.jsonl.gz": "3f8acf9f23f30b4a00692c80a2047382fac080827ad2d4bb4d7b1cd4c48a1fdf",
+  "results/frozen_yet_adaptive_deadline_v1/reacting_policy/healthy_nt_telemetry.jsonl.gz": "8d9e5f6b21ef8c9325373399393e808359d316ed4e0dde4f8fb4117bbee355d7"
+ },
+ "extractor_sha256": "57b90e2aafab49605837cd7c6c57769b1265b70f15bb6293a49815b086e0a4b1",
+ "n_keys": 20,
+ "n_eligible": 18,
+ "eligible_keys": [
+  [
+   1,
+   13,
+   83001
+  ],
+  [
+   2,
+   13,
+   83001
+  ],
+  [
+   3,
+   13,
+   83001
+  ],
+  [
+   4,
+   13,
+   83001
+  ],
+  [
+   5,
+   13,
+   83001
+  ],
+  [
+   6,
+   13,
+   83001
+  ],
+  [
+   7,
+   13,
+   83001
+  ],
+  [
+   8,
+   13,
+   83001
+  ],
+  [
+   9,
+   13,
+   83001
+  ],
+  [
+   1,
+   14,
+   83001
+  ],
+  [
+   2,
+   14,
+   83001
+  ],
+  [
+   3,
+   14,
+   83001
+  ],
+  [
+   4,
+   14,
+   83001
+  ],
+  [
+   5,
+   14,
+   83001
+  ],
+  [
+   6,
+   14,
+   83001
+  ],
+  [
+   7,
+   14,
+   83001
+  ],
+  [
+   8,
+   14,
+   83001
+  ],
+  [
+   9,
+   14,
+   83001
+  ]
+ ],
+ "ineligible": [
+  {
+   "task": 0,
+   "init": 13,
+   "sampler_seed": 83001,
+   "reasons": "healthy_off: prefix raw_action gap 2.746e-03 vs fault_off; healthy_off: prefix position gap 9.545e-05 vs fault_off; healthy_off: prefix joint_position gap 5.119e-04 vs fault_off"
+  },
+  {
+   "task": 0,
+   "init": 14,
+   "sampler_seed": 83001,
+   "reasons": "healthy_off: 75 < 80 policy steps; fault_off: 72 < 80 policy steps; fault_nt: 72 < 80 policy steps"
+  }
+ ],
+ "warmup_command": [
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  -1.0
+ ],
+ "prefix": 30,
+ "window": 50,
+ "configuration_sha256": "c92c273cc2e278a9f6bd69ddf30c8f58ee17d4ecc4ceaf2ec0572f1df37611ef",
+ "note": "read-only extraction; prefix agreement exact (tolerance 0) on raw actions, positions and joints across the three arms"
+}

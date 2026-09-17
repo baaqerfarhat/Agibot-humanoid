@@ -4415,3 +4415,43 @@ attributed to a fault, which is the mechanism behind the healthy regressions see
 delivers no task-level evidence on delay; a stronger mid-episode fault would need a new registration.
 Files `results/frozen_yet_adaptive_deadline_v1/{reacting_policy,analysis/stage2_*}`, figure
 `figures/fya_stage2.pdf`. Campaign closed; both cards released (Yujin's jobs only).
+
+## 66. Crossed command-stream replay: correction and stream separate, interaction unresolved (2026-09-16)
+
+The closed-loop revision of the paper asked for the four-cell matrix on the archived Stage 2 keys: replay the
+recorded raw action streams M0 (fault off) and M1 (fault NT) from the common prefix with the adapter off or the
+NT observer rerun causally (`PREREG_FYA_CROSSED_REPLAY_V1.md`, `results/fya_crossed_replay_v1/`). Exact
+reproduction is real: on 15 of 18 keys every gap to the live paths is 0.0 (joints, positions, corrections),
+fresh and restored routes coincide. Three state-14 keys differ from the live run by 5e-8 to 9e-5 rad although
+the replay is self-consistent (the live env carried the previous episode's state); excluded by rule. A first
+collection was invalidated by an arccos angle check that cannot see 1e-8; fixed and re-collected, identical.
+
+**Matrix (15 keys, equal-task, m² s):** D0 = J00 − J10 = 8.9e-5 [2.5e-5, 1.5e-4] (12/15 keys): the correction
+under the off-generated stream buys exactly what the fixed-command study measured (8.8e-5). T = J00 − J11 =
+5.0e-4 [9.4e-6, 1.0e-3] (14/15). R1 = J10 − J11 = 4.1e-4 [−4.7e-5, 9.3e-4]: most of T is the changed nominal
+stream, heavy-tailed. **I = 2.3e-5 [−2.7e-5, 7.6e-5], 8+/7−: unresolved at the 1e-5 margin.** Costs are
+dominated by policy-path divergence from the reacting healthy reference (J00 8.3e-4, endpoints 26–31 mm even
+for the adapted live path), which is the honest scale for this decomposition. Figures `figures/crossed_*.pdf`.
+
+## 67. Optional crossed matrices: delay, innovation, and the healthy phantom's mechanism (2026-09-16)
+
+Three more matrices on the same archived keys (`PREREG_FYA_CROSSED_REPLAY_V1.md` §§9–10), exact reproduction
+on 15–16 keys. Delayed NT: the correction term drops to 5.2e-5 (from 8.9e-5) and the total to 1.5e-4 (from
+5.0e-4). Innovation: same D0 (8.9e-5), stream term 5.0e-4 [1.1e-4, 1.0e-3]. **Healthy control (no fault):**
+false updates on the healthy off-stream cost only J10 = 8.5e-6 (2.2 mm at the endpoint) on every key, but the
+stream the policy produced while feeling those corrections is 12.7 mm from the healthy reference (J01 = 8.0e-5):
+R1 = −3.6e-4 [−5.6e-4, −1.7e-4], negative on 16/16 keys. The healthy phantom is physically small and the
+policy's reaction to it is large; that is the mechanism behind healthy regressions, stated on archived keys
+without a task-level claim. Interaction I unresolved in all four matrices.
+
+## 68. Stronger mid-episode fault: the bridge finally moves (2026-09-16)
+
+`PREREG_FYA_STRONGER_FAULT_V1.md`, `results/fya_stronger_fault_v1/`. Development on states 15, 17 found the
+Spatial policy tolerant of every mid-episode r_y bias up to +.15 (frozen 18, 16, 12 of 20) and of uniform
++.05 (18/20); uniform **+.10 on all six channels from policy step 30** is the first registered candidate to
+break it (5/20) and was selected by the pre-declared rule. On 40 untouched keys (states 18, 19, 21, 22): frozen
+**6/40 → NT 14/40**, 9 wins / 1 loss, +20 points [10, 30], McNemar p = .021; healthy 40/40 → 40/40 with zero
+discordant keys. Both registered expectations hold. The adapter corrects three of six faulted channels at a cap
+of half the fault, so the repair is partial by construction; the point is that a fixed adapter, enabled at the
+onset, recovers a fifth of the keys the fault destroys without touching a single healthy key, on untouched
+states. Both cards were used (one server each, fraction .42) with Yujin's jobs running throughout.

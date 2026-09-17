@@ -76,3 +76,38 @@ python3 openpi/re4_theory/fya_forecast.py evaluate --predictions results/frozen_
   --calibration results/frozen_yet_adaptive_deadline_v1/qualification/calibration.json --run results/frozen_yet_adaptive_deadline_v1/physical_test/run.json.gz --out /tmp/fya_eval
 python3 openpi/re4_theory/fya_stage2_score.py; python3 openpi/re4_theory/fya_stage2_telemetry.py
 ```
+
+## Addendum (16 Sep, evening): crossed command-stream replay for `papers/frozen_yet_adaptive_closed_loop/`
+
+Registration with outcomes: `prereg_records/PREREG_FYA_CROSSED_REPLAY_V1.md` (§§8, 10). Data
+`results/fya_crossed_replay_v1/` (`analysis/`, `analysis_{delay,innovation,healthy}/`, `figures/crossed_*.pdf`).
+Record §§66–67.
+
+**Fidelity.** Exact reproduction of the archived live paths (gaps 0.0 on joints, positions, corrections) on 15
+of 18 eligible keys; three state-14 keys (tasks 2, 5, 7) differ from the live run by 5e-8 to 9e-5 rad although
+fresh and restored replay routes agree exactly (the live env carried the previous episode's state). Excluded by
+the registered tolerance; say so. A first collection was invalidated by an angle-check formula; disclosed.
+
+**Primary matrix (immediate NT, 15 keys / 9 tasks, equal-task, m² s).** J00 8.3e-4, J10 7.9e-4, J01 6.7e-4,
+J11 4.0e-4 (medians; endpoints 31 / 26 / 26 / 26 mm from the reacting healthy reference).
+D0 = 8.9e-5 [2.5e-5, 1.5e-4] (12/15 keys), T = 5.0e-4 [9.4e-6, 1.0e-3] (14/15), R1 = 4.1e-4 [−4.7e-5, 9.3e-4],
+**I = 2.3e-5 [−2.7e-5, 7.6e-5], unresolved** at δ_I = 1e-5. The correction term equals the fixed-command
+benefit (8.8e-5) almost exactly; most of T is the stream term, heavy-tailed. No mechanistic headline on I.
+
+**Optional matrices.** Delayed NT: D0 5.2e-5, T 1.5e-4 (a third of immediate). Innovation: D0 8.9e-5,
+R1 5.0e-4 [1.1e-4, 1.0e-3]. **Healthy control (no fault):** J10 = 8.5e-6 (2.2 mm; the direct cost of false
+updates, 16/16 keys) but J01 = 8.0e-5 (12.7 mm): R1 = −3.6e-4 [−5.6e-4, −1.7e-4] on every key. The policy's
+reaction to small false corrections costs ten times the corrections themselves. Wording: mechanism on archived
+keys; not a causal account of the one healthy task loss; not a task-success statement.
+
+**Stronger-fault campaign (running, `PREREG_FYA_STRONGER_FAULT_V1.md`).** Development selection among F1
+(uniform six-channel +.05 from step 30), F2 (r_y +.10), F3 (r_y +.15) on states 15, 17; evaluation of four arms
+on 40 untouched keys (states 18, 19, 21, 22). Outcome appended to that registration when done.
+
+**Stronger-fault campaign, done (`PREREG_FYA_STRONGER_FAULT_V1.md` §6, `results/fya_stronger_fault_v1/`).**
+Development: the policy tolerates mid-episode r_y biases up to +.15 and uniform +.05; uniform **+.10 on all six
+channels from step 30** breaks it (5/20) and was selected by the registered rule. Evaluation on 40 untouched keys:
+frozen 6/40 → NT 14/40 (9 wins / 1 loss, +20 points [10, 30], exact McNemar p = .021); healthy 40/40 → 40/40, no
+discordant key. Both registered expectations hold. Wording: partial repair by construction (rotation-only mask,
+cap .05 against a .10 fault); task-level effect of the fixed adapter under a registered command fault on untouched
+keys; not a certificate. This is the result the previous bridge could not give.
