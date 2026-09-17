@@ -4497,3 +4497,34 @@ sensitivity, mask, cap and activation does what NT does; the deadzone gate and t
 resolvable here. This is what the plan anticipated as the informative tie: the paper's claim should be the
 calibrated execution interface, with NT as one of several equivalent update rules (consistent with the Panda
 19/17/17/18/15-of-20 observer table and the ALOHA study). Closed 23:42; both cards released.
+
+## 71. Crossed matrix under the task-breaking fault: the fifty-step decomposition goes blind (2026-09-17)
+
+`PREREG_FYA_CROSSED_STRONG_V1.md`. On 30 of 32 archived stronger-fault keys (exact reproduction; two live-process
+divergences excluded), the four-cell decomposition under +.10 on all six coordinates resolves nothing: R1 = 1.2e-3
+[−2.7e-3, 4.5e-3], D0 = 5e-5 [−1.7e-4, 3.0e-4], T and I unresolved, with costs ten to forty times the benign
+matrices (paths 10 cm from the healthy reference within 2.5 s, translation inputs clipping). The direct correction
+term that equalled the fixed-command benefit under the benign fault is invisible here: a rotation-only correction
+capped at half the fault cannot move a path that a six-channel fault has already thrown off. The 6/40 → 14/40 task
+repair therefore happens beyond this window or on a different quantity than proximity to the healthy path. For
+the paper: the decomposition characterises the benign and healthy regimes; it does not explain task recovery under
+the strong fault, and the paper must say so rather than extrapolate the benign-fault mechanism.
+
+## 72. NT versus DOB under the strong fault: physically indistinguishable at this size (2026-09-17)
+
+`PREREG_FYA_CROSSED_DOB_V1.md`. The DOB replay path passed its registered exact-reproduction pilot. On the 27 common
+exact keys the paired total-benefit difference T(NT) − T(DOB) is −1.3e-3 [−3.5e-3, +6e-5], unresolved; DOB's
+stream term is marginally larger (paired R1 −1.3e-3 [−3.6e-3, −8e-6], 8/19 keys) and NT's direct term marginally
+larger (+4e-5 [−5e-7, 7e-5]), with the same heavy tails as §71. Two laws with identical task totals also have
+indistinguishable physical decompositions at n = 27. Together with the DOB tie on task success this closes the
+observer question for the paper: the calibrated interface is the object; the law is a footnote.
+
+## 73. Healthy stream effect replicates on LIBERO-10 (2026-09-17)
+
+`PREREG_FYA_HEALTHY_LIBERO10_V1.md`. Fresh LIBERO-10 keys (states 30–33, seed 87001), three arms on one server
+process, 36 eligible keys all reproduced exactly. **R1 = −8.5e-5 [−1.6e-4, −2.4e-5] m² s, negative on 36/36 keys;
+S = D0 − R1 = 7.2e-5 [1.1e-5, 1.5e-4] (registered secondary, prospective).** Three cohorts, two suites, three
+seeds now agree: the direct physical cost of false healthy updates is small (1–3 mm) and the policy's re-planned
+stream under those corrections is several times further from its own healthy path. Healthy task outcomes on
+LIBERO-10 are imperfect in every arm (off 38, NT 37, duplicate 37 of 40), so this stays a physical-deviation
+statement. Recovery-study plan P1–P3 complete; both cards released 05:34.

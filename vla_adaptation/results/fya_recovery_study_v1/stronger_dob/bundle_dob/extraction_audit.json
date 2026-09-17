@@ -1,0 +1,245 @@
+{
+ "inputs_sha256": {
+  "results/fya_stronger_fault_v1/eval_manifest.json": "ebe2fbceb477091d4d7df2ced091ebb88104e5b776ac0e8fa9cb03b088cc964e",
+  "results/fya_recovery_study_v1/stronger_dob/sources/eval_healthy_off_telemetry.jsonl.gz": "985ccb885357619b085b548309eaba5ea2452f4a22e3262f1827145e574be812",
+  "results/fya_recovery_study_v1/stronger_dob/sources/fault_off_telemetry.jsonl.gz": "cc6b74878d27a22c297073f1185cfd7f0944bba2ede155bd01a71e0047820edd",
+  "results/fya_recovery_study_v1/stronger_dob/sources/fault_dob_telemetry.jsonl.gz": "3c24ab3d1866a297cc4ed8c05985c6ecd2453b0e7d0e1d3c5d10f3e8fada9afd"
+ },
+ "extractor_sha256": "a14463448e52e32facf663a6da58a5475c0f25fac43d0ebfe81595f2e094868a",
+ "n_keys": 40,
+ "n_eligible": 29,
+ "eligible_keys": [
+  [
+   0,
+   18,
+   85001
+  ],
+  [
+   1,
+   18,
+   85001
+  ],
+  [
+   2,
+   18,
+   85001
+  ],
+  [
+   3,
+   18,
+   85001
+  ],
+  [
+   4,
+   18,
+   85001
+  ],
+  [
+   5,
+   18,
+   85001
+  ],
+  [
+   6,
+   18,
+   85001
+  ],
+  [
+   7,
+   18,
+   85001
+  ],
+  [
+   9,
+   18,
+   85001
+  ],
+  [
+   1,
+   19,
+   85001
+  ],
+  [
+   4,
+   19,
+   85001
+  ],
+  [
+   7,
+   19,
+   85001
+  ],
+  [
+   8,
+   19,
+   85001
+  ],
+  [
+   1,
+   21,
+   85001
+  ],
+  [
+   2,
+   21,
+   85001
+  ],
+  [
+   4,
+   21,
+   85001
+  ],
+  [
+   5,
+   21,
+   85001
+  ],
+  [
+   6,
+   21,
+   85001
+  ],
+  [
+   7,
+   21,
+   85001
+  ],
+  [
+   8,
+   21,
+   85001
+  ],
+  [
+   9,
+   21,
+   85001
+  ],
+  [
+   1,
+   22,
+   85001
+  ],
+  [
+   2,
+   22,
+   85001
+  ],
+  [
+   4,
+   22,
+   85001
+  ],
+  [
+   5,
+   22,
+   85001
+  ],
+  [
+   6,
+   22,
+   85001
+  ],
+  [
+   7,
+   22,
+   85001
+  ],
+  [
+   8,
+   22,
+   85001
+  ],
+  [
+   9,
+   22,
+   85001
+  ]
+ ],
+ "ineligible": [
+  {
+   "task": 8,
+   "init": 18,
+   "sampler_seed": 85001,
+   "reasons": "fault_dob: prefix raw_action gap 1.465e-03 vs fault_off; fault_dob: prefix position gap 3.856e-05 vs fault_off; fault_dob: prefix joint_position gap 1.363e-04 vs fault_off"
+  },
+  {
+   "task": 0,
+   "init": 19,
+   "sampler_seed": 85001,
+   "reasons": "eval_healthy_off: 76 < 80 policy steps"
+  },
+  {
+   "task": 2,
+   "init": 19,
+   "sampler_seed": 85001,
+   "reasons": "eval_healthy_off: prefix raw_action gap 1.831e-03 vs fault_off; eval_healthy_off: prefix position gap 5.635e-05 vs fault_off; eval_healthy_off: prefix joint_position gap 7.262e-04 vs fault_off; fault_dob: prefix raw_action gap 1.831e-03 vs fault_off; fault_dob: prefix position gap 5.635e-05 vs fault_off; fault_dob: prefix joint_position gap 7.262e-04 vs fault_off"
+  },
+  {
+   "task": 3,
+   "init": 19,
+   "sampler_seed": 85001,
+   "reasons": "fault_off: 79 < 80 policy steps; fault_dob: 72 < 80 policy steps"
+  },
+  {
+   "task": 5,
+   "init": 19,
+   "sampler_seed": 85001,
+   "reasons": "eval_healthy_off: prefix raw_action gap 3.290e-03 vs fault_off; eval_healthy_off: prefix position gap 8.696e-05 vs fault_off; eval_healthy_off: prefix joint_position gap 5.513e-04 vs fault_off"
+  },
+  {
+   "task": 6,
+   "init": 19,
+   "sampler_seed": 85001,
+   "reasons": "eval_healthy_off: prefix raw_action gap 1.953e-03 vs fault_off; eval_healthy_off: prefix position gap 1.022e-04 vs fault_off; eval_healthy_off: prefix joint_position gap 2.620e-04 vs fault_off; fault_dob: prefix raw_action gap 1.953e-03 vs fault_off; fault_dob: prefix position gap 1.022e-04 vs fault_off; fault_dob: prefix joint_position gap 2.620e-04 vs fault_off"
+  },
+  {
+   "task": 9,
+   "init": 19,
+   "sampler_seed": 85001,
+   "reasons": "eval_healthy_off: prefix raw_action gap 7.814e-03 vs fault_off; eval_healthy_off: prefix position gap 5.716e-04 vs fault_off; eval_healthy_off: prefix joint_position gap 1.932e-03 vs fault_off; fault_dob: prefix raw_action gap 7.814e-03 vs fault_off; fault_dob: prefix position gap 5.716e-04 vs fault_off; fault_dob: prefix joint_position gap 1.932e-03 vs fault_off"
+  },
+  {
+   "task": 0,
+   "init": 21,
+   "sampler_seed": 85001,
+   "reasons": "eval_healthy_off: 69 < 80 policy steps"
+  },
+  {
+   "task": 3,
+   "init": 21,
+   "sampler_seed": 85001,
+   "reasons": "eval_healthy_off: 78 < 80 policy steps; fault_dob: 77 < 80 policy steps"
+  },
+  {
+   "task": 0,
+   "init": 22,
+   "sampler_seed": 85001,
+   "reasons": "eval_healthy_off: 74 < 80 policy steps"
+  },
+  {
+   "task": 3,
+   "init": 22,
+   "sampler_seed": 85001,
+   "reasons": "fault_off: 73 < 80 policy steps; fault_dob: 75 < 80 policy steps"
+  }
+ ],
+ "warmup_command": [
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  -1.0
+ ],
+ "arms": [
+  "eval_healthy_off",
+  "fault_off",
+  "fault_dob"
+ ],
+ "optional_arms": [],
+ "prefix": 30,
+ "window": 50,
+ "configuration_sha256": "dd1468b874ecf854f757e777d7c26156d421ceb1b7e78c53c4eb6953eef92cdb",
+ "note": "read-only extraction; prefix agreement exact (tolerance 0) on raw actions, positions and joints across the three arms"
+}

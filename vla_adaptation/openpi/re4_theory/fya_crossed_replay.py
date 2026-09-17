@@ -68,13 +68,18 @@ def main():
     ap.add_argument("--suite", default="libero_spatial"); ap.add_argument("--out", type=pathlib.Path, required=True); ap.add_argument("--label", default="unlabelled")
     ap.add_argument("--tol-joint", type=float, default=1e-8); ap.add_argument("--tol-pos", type=float, default=1e-8); ap.add_argument("--tol-angle", type=float, default=1e-8)
     ap.add_argument("--cells", default="all", help="'all' (matrix + ref + fresh repeats) or 'diagonal' (ref, J00, J11, fresh repeats only; pilot)")
-    ap.add_argument("--matrix", choices=["nt", "delay", "innovation", "healthy"], default="nt",
+    ap.add_argument("--matrix", choices=["nt", "delay", "innovation", "healthy", "dob"], default="nt",
                     help="nt: M1 = fault_nt, NT causal, fault on (primary); delay: M1 = delay_nt, NT causal with updates and corrections "
                          "suppressed for the first 10 window steps, fault on; innovation: M1 = fault_innovation, innovation law causal, fault on; "
                          "healthy: M0 = healthy_off, M1 = healthy_nt, NT causal, fault OFF (ref = healthy_off path)")
+    ap.add_argument("--ref-arm", default=None, help="override the reference arm name (default healthy_off)")
+    ap.add_argument("--m0-arm", default=None, help="override the M0 source arm name"); ap.add_argument("--m1-arm", default=None, help="override the M1 source arm name")
     a = ap.parse_args()
     MATRIX = dict(nt=dict(m0="fault_off", m1="fault_nt", law="legacy", delay=0, fault=True), delay=dict(m0="fault_off", m1="delay_nt", law="legacy", delay=10, fault=True),
-                  innovation=dict(m0="fault_off", m1="fault_innovation", law="innov", delay=0, fault=True), healthy=dict(m0="healthy_off", m1="healthy_nt", law="legacy", delay=0, fault=False))[a.matrix]
+                  innovation=dict(m0="fault_off", m1="fault_innovation", law="innov", delay=0, fault=True), healthy=dict(m0="healthy_off", m1="healthy_nt", law="legacy", delay=0, fault=False),
+                  dob=dict(m0="fault_off", m1="fault_dob", law="legacy", baseline="dob", delay=0, fault=True))[a.matrix]
+    MATRIX.setdefault("baseline", "none")
+    MATRIX = dict(MATRIX, ref=a.ref_arm or "healthy_off", m0=a.m0_arm or MATRIX["m0"], m1=a.m1_arm or MATRIX["m1"])
     from libero.libero import benchmark
     import main as libero_main
     from libero_reset import reset_libero, physics_fingerprint
@@ -82,12 +87,17 @@ def main():
     cfg = json.loads((a.root / "configuration.json").read_text())
     W = np.array(cfg["W"], float); M = np.array(cfg["M"], float); M_inv = np.linalg.pinv(M); mask = np.array(cfg["mask"], float); K = AL.K_FIR
     args = cfg["args"]; gamma, dead, norm_r, clip, nch = float(args["gamma"]), float(args["dead"]), float(args["norm_r"]), float(args["clip"]), args["norm_channels"]
-    fvec = np.array([float(x) for x in args["fault_vec"].split(",")]); assert args["law"] == "legacy" and args["deadzone_mode"] == "zero" and W.shape == (6, K + 2)
-    LAW, DELAY, FAULT_ON = MATRIX["law"], int(MATRIX["delay"]), bool(MATRIX["fault"])
+    fvec = np.array([float(x) for x in args["fault_vec"].split(",")]); assert args["deadzone_mode"] == "zero" and W.shape == (6, K + 2)
+    LAW, DELAY, FAULT_ON, BASELINE = MATRIX["law"], int(MATRIX["delay"]), bool(MATRIX["fault"]), MATRIX["baseline"]
+    if BASELINE == "dob":
+        assert args.get("baseline") == "dob" and args["law"] == "legacy", f"dob matrix requires a DOB configuration header, got baseline={args.get('baseline')} law={args['law']}"
+    else:
+        assert args["law"] == LAW or a.matrix in ("nt", "delay", "healthy"), (args["law"], LAW)
+    BIAS = np.array(cfg["bias"], float) if cfg.get("bias") is not None else None
     import csv
     rows = list(csv.DictReader(open(a.root / "source_keys.csv")))
     if a.keys == "eligible":
-        sel = [r for r in rows if r["eligible"] == "True" and (a.matrix == "nt" or r.get(f"eligible_{MATRIX['m1']}", r["eligible"]) == "True")]
+        sel = [r for r in rows if r["eligible"] == "True" and r.get(f"eligible_{MATRIX['m1']}", r["eligible"]) == "True"]
     elif a.keys == "all":
         sel = rows
     else:
@@ -96,7 +106,7 @@ def main():
     for ki, r in enumerate(sel):
         t, i, seed = int(r["task"]), int(r["init"]), int(r["sampler_seed"]); key_id = f"{t}_{i}_{seed}"
         ex = json.loads((a.root / "extracted_streams" / f"{key_id}.json").read_text()); arms = ex["arms"]; P, H = ex["prefix"], ex["window"]
-        streams = dict(ref=np.array(arms["healthy_off"]["raw_action"], float), M0=np.array(arms[MATRIX["m0"]]["raw_action"], float), M1=np.array(arms[MATRIX["m1"]]["raw_action"], float))
+        streams = dict(ref=np.array(arms[MATRIX["ref"]]["raw_action"], float), M0=np.array(arms[MATRIX["m0"]]["raw_action"], float), M1=np.array(arms[MATRIX["m1"]]["raw_action"], float))
         n_win = min(H, *(len(s) - P for s in streams.values()))          # complete window only if every stream is long enough
         prefix = streams["M0"][:P]; warm_cmd = arms[MATRIX["m0"]]["warmup_commands"][0]
         if t not in envs:
@@ -147,7 +157,8 @@ def main():
                 pred = np.array([W[j, :K + 1] @ Hh[:, j] + W[j, -1] for j in range(6)]); res = y - pred
                 fb = f_hat.copy(); diag = dict(nr=None, attenuation=None, deadzone_fired=None, update_applied=False)
                 if enabled:
-                    f_hat, diag = AL.estimator_step(f_hat, res, M_inv, gamma=gamma, dead=dead, norm_r=norm_r, clip=clip, mask=mask, norm_channels=nch, law=LAW, M=M, state=est_state)
+                    f_hat, diag = AL.estimator_step(f_hat, res, M_inv, gamma=gamma, dead=dead, norm_r=norm_r, clip=clip, mask=mask, norm_channels=nch, law=LAW, M=M,
+                                                    baseline=BASELINE, bias=BIAS, state=est_state)
                     est_state = diag.get("estimator_state")
                 recs.append(dict(k=k, env_t=AL.WARMUP_STEPS + P + k, wall=wall, raw_action=raw.tolist(), correction=corr.tolist(), nominal_command=nominal.tolist(), command=cmd.tolist(),
                                  clipped_input=clipped, injected=f.tolist(), measured=y.tolist(), residual=res.tolist(), nr=(None if diag.get("nr") is None else float(diag["nr"])),
@@ -184,10 +195,10 @@ def main():
             gp = max(float(np.linalg.norm(np.array(x["position"]) - np.array(arch["position"][offset + k]))) for k, x in enumerate(recs))
             ga = max(quat_angle(x["quaternion"], arch["quaternion"][offset + k]) for k, x in enumerate(recs))
             return dict(joint=gj, position=gp, angle=ga, n=n)
-        fid = dict(prefix_vs_archive=gaps(pre_recs, MATRIX["m0"], 0), ref_vs_healthy_off=gaps(branches["ref"], "healthy_off", P), J00_vs_fault_off=gaps(branches["J00"], MATRIX["m0"], P), J11_vs_fault_nt=gaps(branches["J11"], MATRIX["m1"], P))
+        fid = dict(prefix_vs_archive=gaps(pre_recs, MATRIX["m0"], 0), ref_vs_healthy_off=gaps(branches["ref"], MATRIX["ref"], P), J00_vs_fault_off=gaps(branches["J00"], MATRIX["m0"], P), J11_vs_fault_nt=gaps(branches["J11"], MATRIX["m1"], P))
         fid["J11_corrections_vs_archive"] = max(float(np.max(np.abs(np.array(x["correction"]) - np.array(arms[MATRIX["m1"]]["correction"][P + k])))) for k, x in enumerate(branches["J11"]))
         fid["J11_estimates_vs_archive"] = max(float(np.max(np.abs(np.array(x["f_hat_after"]) - np.array(arms[MATRIX["m1"]]["f_hat_after"][P + k])))) for k, x in enumerate(branches["J11"]))
-        fid["diagonal_archives"] = dict(J00=MATRIX["m0"], J11=MATRIX["m1"])
+        fid["diagonal_archives"] = dict(ref=MATRIX["ref"], J00=MATRIX["m0"], J11=MATRIX["m1"])
         for cell in ("J00", "J11"):
             fr = branches[cell + "_fresh"]; bb = branches[cell]
             fid[f"{cell}_fresh_vs_restored"] = dict(joint=max(float(np.max(np.abs(np.array(x["joint_position"]) - np.array(y["joint_position"])))) for x, y in zip(fr, bb)),
@@ -207,7 +218,7 @@ def main():
     meta = dict(driver="fya_crossed_replay.py", driver_sha256=sha(__file__), adaptive_law_sha256=sha(HERE / "adaptive_law.py"), configuration_sha256=sha(a.root / "configuration.json"),
                 label=a.label, suite=a.suite, cells=a.cells, matrix=dict(name=a.matrix, **MATRIX), tolerances=dict(joint=a.tol_joint, position=a.tol_pos, angle=a.tol_angle), n_keys=len(out_keys), seconds=time.time() - t0,
                 continuation_semantics="after a wrapper done the terminated-episode guard is cleared and physics continues; done steps recorded per branch",
-                law=dict(law=LAW, delay=DELAY, fault_on=FAULT_ON, gamma=gamma, dead=dead, norm_r=norm_r, clip=clip, norm_channels=nch, mask=mask.tolist()), fault_vec=fvec.tolist(), W=W.tolist(), M=M.tolist())
+                law=dict(law=LAW, baseline=BASELINE, bias=(BIAS.tolist() if BIAS is not None else None), delay=DELAY, fault_on=FAULT_ON, gamma=gamma, dead=dead, norm_r=norm_r, clip=clip, norm_channels=nch, mask=mask.tolist()), fault_vec=fvec.tolist(), W=W.tolist(), M=M.tolist())
     a.out.parent.mkdir(parents=True, exist_ok=True); a.out.write_text(json.dumps(dict(meta=meta, keys=out_keys))); print("wrote", a.out, f"({time.time() - t0:.0f} s)")
 
 

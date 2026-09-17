@@ -1,0 +1,206 @@
+{
+ "name": "fya recovery study: healthy LIBERO-10 replication keys",
+ "suite": "libero_10",
+ "scenarios": [
+  {
+   "task": 0,
+   "init": 30,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 1,
+   "init": 30,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 2,
+   "init": 30,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 3,
+   "init": 30,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 4,
+   "init": 30,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 5,
+   "init": 30,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 6,
+   "init": 30,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 7,
+   "init": 30,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 8,
+   "init": 30,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 9,
+   "init": 30,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 0,
+   "init": 31,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 1,
+   "init": 31,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 2,
+   "init": 31,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 3,
+   "init": 31,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 4,
+   "init": 31,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 5,
+   "init": 31,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 6,
+   "init": 31,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 7,
+   "init": 31,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 8,
+   "init": 31,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 9,
+   "init": 31,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 0,
+   "init": 32,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 1,
+   "init": 32,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 2,
+   "init": 32,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 3,
+   "init": 32,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 4,
+   "init": 32,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 5,
+   "init": 32,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 6,
+   "init": 32,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 7,
+   "init": 32,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 8,
+   "init": 32,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 9,
+   "init": 32,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 0,
+   "init": 33,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 1,
+   "init": 33,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 2,
+   "init": 33,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 3,
+   "init": 33,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 4,
+   "init": 33,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 5,
+   "init": 33,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 6,
+   "init": 33,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 7,
+   "init": 33,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 8,
+   "init": 33,
+   "sampler_seed": 87001
+  },
+  {
+   "task": 9,
+   "init": 33,
+   "sampler_seed": 87001
+  }
+ ]
+}

@@ -1,0 +1,242 @@
+{
+ "inputs_sha256": {
+  "results/fya_stronger_fault_v1/eval_manifest.json": "ebe2fbceb477091d4d7df2ced091ebb88104e5b776ac0e8fa9cb03b088cc964e",
+  "results/fya_stronger_fault_v1/evaluation/eval_healthy_off_telemetry.jsonl.gz": "985ccb885357619b085b548309eaba5ea2452f4a22e3262f1827145e574be812",
+  "results/fya_stronger_fault_v1/evaluation/eval_fault_off_telemetry.jsonl.gz": "8dd98d318d265dd34822bd215c7da8b03ba7ebe733c47ecc3ad31085aa936530",
+  "results/fya_stronger_fault_v1/evaluation/eval_fault_nt_telemetry.jsonl.gz": "011c1194f1710496811c6b473b62051f2e4edbb09d0d4306b3dbb50c6dbfc3b5"
+ },
+ "extractor_sha256": "3fd7137c0b44a4aede828867b2dd0dededb0ced339c74ac6cec5b5a0b764fd95",
+ "n_keys": 40,
+ "n_eligible": 32,
+ "eligible_keys": [
+  [
+   0,
+   18,
+   85001
+  ],
+  [
+   1,
+   18,
+   85001
+  ],
+  [
+   2,
+   18,
+   85001
+  ],
+  [
+   3,
+   18,
+   85001
+  ],
+  [
+   4,
+   18,
+   85001
+  ],
+  [
+   5,
+   18,
+   85001
+  ],
+  [
+   6,
+   18,
+   85001
+  ],
+  [
+   7,
+   18,
+   85001
+  ],
+  [
+   8,
+   18,
+   85001
+  ],
+  [
+   9,
+   18,
+   85001
+  ],
+  [
+   1,
+   19,
+   85001
+  ],
+  [
+   2,
+   19,
+   85001
+  ],
+  [
+   4,
+   19,
+   85001
+  ],
+  [
+   6,
+   19,
+   85001
+  ],
+  [
+   7,
+   19,
+   85001
+  ],
+  [
+   9,
+   19,
+   85001
+  ],
+  [
+   1,
+   21,
+   85001
+  ],
+  [
+   2,
+   21,
+   85001
+  ],
+  [
+   4,
+   21,
+   85001
+  ],
+  [
+   5,
+   21,
+   85001
+  ],
+  [
+   6,
+   21,
+   85001
+  ],
+  [
+   7,
+   21,
+   85001
+  ],
+  [
+   8,
+   21,
+   85001
+  ],
+  [
+   9,
+   21,
+   85001
+  ],
+  [
+   1,
+   22,
+   85001
+  ],
+  [
+   2,
+   22,
+   85001
+  ],
+  [
+   4,
+   22,
+   85001
+  ],
+  [
+   5,
+   22,
+   85001
+  ],
+  [
+   6,
+   22,
+   85001
+  ],
+  [
+   7,
+   22,
+   85001
+  ],
+  [
+   8,
+   22,
+   85001
+  ],
+  [
+   9,
+   22,
+   85001
+  ]
+ ],
+ "ineligible": [
+  {
+   "task": 0,
+   "init": 19,
+   "sampler_seed": 85001,
+   "reasons": "eval_healthy_off: 76 < 80 policy steps"
+  },
+  {
+   "task": 3,
+   "init": 19,
+   "sampler_seed": 85001,
+   "reasons": "eval_fault_off: 79 < 80 policy steps; eval_fault_nt: 76 < 80 policy steps"
+  },
+  {
+   "task": 5,
+   "init": 19,
+   "sampler_seed": 85001,
+   "reasons": "eval_healthy_off: prefix raw_action gap 3.290e-03 vs eval_fault_off; eval_healthy_off: prefix position gap 8.696e-05 vs eval_fault_off; eval_healthy_off: prefix joint_position gap 5.513e-04 vs eval_fault_off"
+  },
+  {
+   "task": 8,
+   "init": 19,
+   "sampler_seed": 85001,
+   "reasons": "eval_healthy_off: prefix raw_action gap 2.807e-03 vs eval_fault_off; eval_healthy_off: prefix position gap 1.135e-04 vs eval_fault_off; eval_healthy_off: prefix joint_position gap 3.157e-04 vs eval_fault_off; eval_fault_nt: prefix raw_action gap 2.807e-03 vs eval_fault_off; eval_fault_nt: prefix position gap 1.135e-04 vs eval_fault_off; eval_fault_nt: prefix joint_position gap 3.157e-04 vs eval_fault_off"
+  },
+  {
+   "task": 0,
+   "init": 21,
+   "sampler_seed": 85001,
+   "reasons": "eval_healthy_off: 69 < 80 policy steps"
+  },
+  {
+   "task": 3,
+   "init": 21,
+   "sampler_seed": 85001,
+   "reasons": "eval_healthy_off: 78 < 80 policy steps; eval_fault_nt: 75 < 80 policy steps"
+  },
+  {
+   "task": 0,
+   "init": 22,
+   "sampler_seed": 85001,
+   "reasons": "eval_healthy_off: 74 < 80 policy steps"
+  },
+  {
+   "task": 3,
+   "init": 22,
+   "sampler_seed": 85001,
+   "reasons": "eval_fault_off: 73 < 80 policy steps; eval_fault_nt: 75 < 80 policy steps"
+  }
+ ],
+ "warmup_command": [
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  -1.0
+ ],
+ "arms": [
+  "eval_healthy_off",
+  "eval_fault_off",
+  "eval_fault_nt"
+ ],
+ "optional_arms": [],
+ "prefix": 30,
+ "window": 50,
+ "configuration_sha256": "7e40a9754cfc2380455f198a92074d75ffc528ae05e67269d82001a7bd7ca4d1",
+ "note": "read-only extraction; prefix agreement exact (tolerance 0) on raw actions, positions and joints across the three arms"
+}

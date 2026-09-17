@@ -55,7 +55,8 @@ def main():
             continue
         hashes[str(p)] = sha(p); headers[arm], data[arm] = read_arm(p)
     cfg_hdr = headers[a.config_arm or ("fault_nt" if "fault_nt" in headers else ARMS[2])]; cfg = dict(W=cfg_hdr["config"]["W"], M=cfg_hdr["config"]["M"], mask=cfg_hdr["config"]["mask"], fault_vector=cfg_hdr["config"]["fault_vector"],
-                                            args={k: cfg_hdr["args"][k] for k in ("gamma", "dead", "norm_r", "clip", "corr_dims", "norm_channels", "law", "onset", "adapt_from", "fault_vec", "scenario_reset", "deadzone_mode", "replan_steps")},
+                                            args={k: cfg_hdr["args"].get(k) for k in ("gamma", "dead", "norm_r", "clip", "corr_dims", "norm_channels", "law", "baseline", "onset", "adapt_from", "fault_vec", "scenario_reset", "deadzone_mode", "replan_steps")},
+                                            bias=cfg_hdr["config"].get("bias"),
                                             constants=cfg_hdr["constants"], source="fault_nt telemetry header (deployed arrays)", runner_source_sha256=hashlib.sha256(cfg_hdr["runner_source"].encode()).hexdigest())
     (a.out / "extracted_streams").mkdir(parents=True, exist_ok=True)
     (a.out / "configuration.json").write_text(json.dumps(cfg, indent=1))

@@ -57,7 +57,7 @@ def task_boot(vals, tasks, n, rng, equal_task=True):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("run", type=pathlib.Path); ap.add_argument("--out", type=pathlib.Path, required=True)
     ap.add_argument("--boot", type=int, default=10000); ap.add_argument("--seed", type=int, default=20260916); ap.add_argument("--delta-I", type=float, default=1e-5)
-    ap.add_argument("--primary", default="I", choices=["I", "R1", "D0", "T"], help="registered primary contrast (I for the archived matrices; R1 for the coupled healthy replication)"); a = ap.parse_args()
+    ap.add_argument("--primary", default="I", choices=["I", "R1", "D0", "T", "S"], help="registered primary contrast (I for the archived matrices; R1 for the coupled healthy replication)"); a = ap.parse_args()
     d = read_json(a.run); rng = np.random.default_rng(a.seed); a.out.mkdir(parents=True, exist_ok=True)
     valid = [k for k in d["keys"] if k["fidelity"]["valid"]]; invalid = [dict(key=k["key"], checks=k["fidelity"]["checks"], n_window=k["n_window_steps"]) for k in d["keys"] if not k["fidelity"]["valid"]]
     cost_rows, eff_rows = [], []
@@ -70,6 +70,7 @@ def main():
         J = {c: C[c]["J"] for c in CELLS}; Jr = {c: C[c]["J_r"] for c in CELLS}
         eff = dict(task=k["key"]["task"], init=k["key"]["init"], seed=k["key"]["sampler_seed"], **{f"{c}": J[c] for c in CELLS},
                    D0=J["J00"] - J["J10"], D1=J["J01"] - J["J11"], R0=J["J00"] - J["J01"], R1=J["J10"] - J["J11"], T=J["J00"] - J["J11"], I=(J["J01"] - J["J11"]) - (J["J00"] - J["J10"]),
+                   S=(J["J00"] - J["J10"]) - (J["J10"] - J["J11"]), J00_is_zero=bool(abs(J["J00"]) <= 1e-12),
                    I_r=(Jr["J01"] - Jr["J11"]) - (Jr["J00"] - Jr["J10"]), D0_r=Jr["J00"] - Jr["J10"], R1_r=Jr["J10"] - Jr["J11"], T_r=Jr["J00"] - Jr["J11"],
                    cell_order="/".join(k["cell_order"]))
         eff_rows.append(eff)
@@ -80,7 +81,7 @@ def main():
         with open(a.out / name, "w", newline="") as fh:
             w = csv.DictWriter(fh, fieldnames=list(rows[0].keys())); w.writeheader(); w.writerows(rows)
     tasks = [r["task"] for r in eff_rows]; agg = {}
-    for q in ("I", "D0", "D1", "R0", "R1", "T", "I_r", "D0_r", "R1_r", "T_r"):
+    for q in ("I", "D0", "D1", "R0", "R1", "T", "S", "I_r", "D0_r", "R1_r", "T_r"):
         agg[q] = dict(equal_task=task_boot([r[q] for r in eff_rows], tasks, a.boot, rng, True), source_weighted=task_boot([r[q] for r in eff_rows], tasks, a.boot, rng, False))
     Ivals = np.array([r["I"] for r in eff_rows]); ut = sorted(set(tasks))
     loo = {str(t): float(np.mean([np.mean(Ivals[np.array(tasks) == s]) for s in ut if s != t])) for t in ut}
