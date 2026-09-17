@@ -87,7 +87,7 @@ def main():
     import csv
     rows = list(csv.DictReader(open(a.root / "source_keys.csv")))
     if a.keys == "eligible":
-        sel = [r for r in rows if r["eligible"] == "True" and (a.matrix == "nt" or r.get(f"eligible_{MATRIX['m1']}") == "True")]
+        sel = [r for r in rows if r["eligible"] == "True" and (a.matrix == "nt" or r.get(f"eligible_{MATRIX['m1']}", r["eligible"]) == "True")]
     elif a.keys == "all":
         sel = rows
     else:
@@ -98,7 +98,7 @@ def main():
         ex = json.loads((a.root / "extracted_streams" / f"{key_id}.json").read_text()); arms = ex["arms"]; P, H = ex["prefix"], ex["window"]
         streams = dict(ref=np.array(arms["healthy_off"]["raw_action"], float), M0=np.array(arms[MATRIX["m0"]]["raw_action"], float), M1=np.array(arms[MATRIX["m1"]]["raw_action"], float))
         n_win = min(H, *(len(s) - P for s in streams.values()))          # complete window only if every stream is long enough
-        prefix = streams["M0"][:P]; warm_cmd = arms["fault_off"]["warmup_commands"][0]
+        prefix = streams["M0"][:P]; warm_cmd = arms[MATRIX["m0"]]["warmup_commands"][0]
         if t not in envs:
             task = suite.get_task(t); env, _ = libero_main._get_libero_env(task, libero_main.LIBERO_ENV_RESOLUTION, 7); envs[t] = (env, suite.get_task_init_states(t))
         env, inits = envs[t]; state = {"obs": None}; S = {}

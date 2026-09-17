@@ -1,0 +1,275 @@
+{
+ "inputs_sha256": {
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/fya_healthy_coupled_v1/manifest.json": "fdd1eb9b072d872c6bb7d5b056062185c836e5f35b4aaec57311ab9011f4a1d6",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/fya_healthy_coupled_v1/sources/healthy_off_telemetry.jsonl.gz": "769b88515d9de39641d71049994ee46e04f814d89ff597d487e52df36facf4f5",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/fya_healthy_coupled_v1/sources/healthy_nt_telemetry.jsonl.gz": "2878f51eb985490001402f4d522d7c6bc992c0c4f55ae006915c1ed26892331e",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/fya_healthy_coupled_v1/sources/healthy_off_dup_telemetry.jsonl.gz": "48e8e2c6343a9ff276d7d566a108ac341253fd27f1f5c3250c8d098ac830cf93"
+ },
+ "extractor_sha256": "3fd7137c0b44a4aede828867b2dd0dededb0ced339c74ac6cec5b5a0b764fd95",
+ "n_keys": 40,
+ "n_eligible": 0,
+ "eligible_keys": [],
+ "ineligible": [
+  {
+   "task": 0,
+   "init": 23,
+   "sampler_seed": 86001,
+   "reasons": "healthy_off: 73 < 80 policy steps; healthy_off: 73 < 80 policy steps; healthy_nt: 72 < 80 policy steps; healthy_nt: prefix raw_action gap 6.580e-03 vs healthy_off; healthy_nt: prefix position gap 4.911e-04 vs healthy_off; healthy_nt: prefix joint_position gap 1.510e-03 vs healthy_off"
+  },
+  {
+   "task": 1,
+   "init": 23,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 4.421e-03 vs healthy_off; healthy_nt: prefix position gap 2.044e-04 vs healthy_off; healthy_nt: prefix joint_position gap 6.317e-04 vs healthy_off"
+  },
+  {
+   "task": 2,
+   "init": 23,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 5.758e-03 vs healthy_off; healthy_nt: prefix position gap 3.058e-04 vs healthy_off; healthy_nt: prefix joint_position gap 2.330e-03 vs healthy_off"
+  },
+  {
+   "task": 3,
+   "init": 23,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 7.323e-03 vs healthy_off; healthy_nt: prefix position gap 3.369e-04 vs healthy_off; healthy_nt: prefix joint_position gap 3.478e-03 vs healthy_off"
+  },
+  {
+   "task": 4,
+   "init": 23,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 7.403e-03 vs healthy_off; healthy_nt: prefix position gap 2.259e-04 vs healthy_off; healthy_nt: prefix joint_position gap 1.596e-03 vs healthy_off"
+  },
+  {
+   "task": 5,
+   "init": 23,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 1.698e-02 vs healthy_off; healthy_nt: prefix position gap 6.026e-04 vs healthy_off; healthy_nt: prefix joint_position gap 3.880e-03 vs healthy_off"
+  },
+  {
+   "task": 6,
+   "init": 23,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 3.890e-03 vs healthy_off; healthy_nt: prefix position gap 1.312e-04 vs healthy_off; healthy_nt: prefix joint_position gap 5.969e-04 vs healthy_off"
+  },
+  {
+   "task": 7,
+   "init": 23,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 7.323e-03 vs healthy_off; healthy_nt: prefix position gap 3.607e-04 vs healthy_off; healthy_nt: prefix joint_position gap 4.000e-03 vs healthy_off"
+  },
+  {
+   "task": 8,
+   "init": 23,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 6.991e-03 vs healthy_off; healthy_nt: prefix position gap 5.182e-04 vs healthy_off; healthy_nt: prefix joint_position gap 2.725e-03 vs healthy_off"
+  },
+  {
+   "task": 9,
+   "init": 23,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 1.131e-02 vs healthy_off; healthy_nt: prefix position gap 4.548e-04 vs healthy_off; healthy_nt: prefix joint_position gap 9.300e-04 vs healthy_off"
+  },
+  {
+   "task": 0,
+   "init": 24,
+   "sampler_seed": 86001,
+   "reasons": "healthy_off: 70 < 80 policy steps; healthy_off: 70 < 80 policy steps; healthy_nt: 72 < 80 policy steps; healthy_nt: prefix raw_action gap 3.084e-02 vs healthy_off; healthy_nt: prefix position gap 5.353e-04 vs healthy_off; healthy_nt: prefix joint_position gap 2.705e-03 vs healthy_off"
+  },
+  {
+   "task": 1,
+   "init": 24,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 3.701e-03 vs healthy_off; healthy_nt: prefix position gap 4.553e-04 vs healthy_off; healthy_nt: prefix joint_position gap 1.425e-03 vs healthy_off"
+  },
+  {
+   "task": 2,
+   "init": 24,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 4.745e-02 vs healthy_off; healthy_nt: prefix position gap 3.979e-03 vs healthy_off; healthy_nt: prefix joint_position gap 2.488e-02 vs healthy_off"
+  },
+  {
+   "task": 3,
+   "init": 24,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 6.407e-03 vs healthy_off; healthy_nt: prefix position gap 1.768e-04 vs healthy_off; healthy_nt: prefix joint_position gap 3.456e-04 vs healthy_off"
+  },
+  {
+   "task": 4,
+   "init": 24,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 3.905e-03 vs healthy_off; healthy_nt: prefix position gap 1.870e-04 vs healthy_off; healthy_nt: prefix joint_position gap 1.330e-03 vs healthy_off"
+  },
+  {
+   "task": 5,
+   "init": 24,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 7.323e-03 vs healthy_off; healthy_nt: prefix position gap 4.615e-04 vs healthy_off; healthy_nt: prefix joint_position gap 1.462e-03 vs healthy_off"
+  },
+  {
+   "task": 6,
+   "init": 24,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 1.053e-02 vs healthy_off; healthy_nt: prefix position gap 8.614e-04 vs healthy_off; healthy_nt: prefix joint_position gap 1.582e-03 vs healthy_off"
+  },
+  {
+   "task": 7,
+   "init": 24,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 5.659e-03 vs healthy_off; healthy_nt: prefix position gap 2.541e-04 vs healthy_off; healthy_nt: prefix joint_position gap 1.380e-03 vs healthy_off"
+  },
+  {
+   "task": 8,
+   "init": 24,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 2.471e-02 vs healthy_off; healthy_nt: prefix position gap 5.146e-04 vs healthy_off; healthy_nt: prefix joint_position gap 5.296e-03 vs healthy_off"
+  },
+  {
+   "task": 9,
+   "init": 24,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 2.226e-02 vs healthy_off; healthy_nt: prefix position gap 9.359e-04 vs healthy_off; healthy_nt: prefix joint_position gap 6.898e-03 vs healthy_off"
+  },
+  {
+   "task": 0,
+   "init": 29,
+   "sampler_seed": 86001,
+   "reasons": "healthy_off: 71 < 80 policy steps; healthy_off: 71 < 80 policy steps; healthy_nt: 74 < 80 policy steps; healthy_nt: prefix raw_action gap 2.506e-02 vs healthy_off; healthy_nt: prefix position gap 8.597e-04 vs healthy_off; healthy_nt: prefix joint_position gap 9.690e-03 vs healthy_off"
+  },
+  {
+   "task": 1,
+   "init": 29,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 3.701e-03 vs healthy_off; healthy_nt: prefix position gap 2.161e-04 vs healthy_off; healthy_nt: prefix joint_position gap 9.452e-04 vs healthy_off"
+  },
+  {
+   "task": 2,
+   "init": 29,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 8.355e-02 vs healthy_off; healthy_nt: prefix position gap 2.578e-03 vs healthy_off; healthy_nt: prefix joint_position gap 7.616e-03 vs healthy_off"
+  },
+  {
+   "task": 3,
+   "init": 29,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 6.619e-03 vs healthy_off; healthy_nt: prefix position gap 4.233e-04 vs healthy_off; healthy_nt: prefix joint_position gap 9.727e-04 vs healthy_off"
+  },
+  {
+   "task": 4,
+   "init": 29,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 5.507e-03 vs healthy_off; healthy_nt: prefix position gap 3.136e-04 vs healthy_off; healthy_nt: prefix joint_position gap 4.858e-04 vs healthy_off"
+  },
+  {
+   "task": 5,
+   "init": 29,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 4.022e-02 vs healthy_off; healthy_nt: prefix position gap 1.228e-03 vs healthy_off; healthy_nt: prefix joint_position gap 8.967e-03 vs healthy_off"
+  },
+  {
+   "task": 6,
+   "init": 29,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 7.403e-03 vs healthy_off; healthy_nt: prefix position gap 2.892e-04 vs healthy_off; healthy_nt: prefix joint_position gap 1.479e-03 vs healthy_off"
+  },
+  {
+   "task": 7,
+   "init": 29,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 1.727e-02 vs healthy_off; healthy_nt: prefix position gap 8.038e-04 vs healthy_off; healthy_nt: prefix joint_position gap 4.743e-03 vs healthy_off"
+  },
+  {
+   "task": 8,
+   "init": 29,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 5.659e-03 vs healthy_off; healthy_nt: prefix position gap 2.940e-04 vs healthy_off; healthy_nt: prefix joint_position gap 9.377e-04 vs healthy_off"
+  },
+  {
+   "task": 9,
+   "init": 29,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 8.098e-03 vs healthy_off; healthy_nt: prefix position gap 2.856e-04 vs healthy_off; healthy_nt: prefix joint_position gap 7.609e-04 vs healthy_off"
+  },
+  {
+   "task": 0,
+   "init": 31,
+   "sampler_seed": 86001,
+   "reasons": "healthy_off: 75 < 80 policy steps; healthy_off: 75 < 80 policy steps; healthy_nt: 74 < 80 policy steps; healthy_nt: prefix raw_action gap 3.551e-02 vs healthy_off; healthy_nt: prefix position gap 1.649e-03 vs healthy_off; healthy_nt: prefix joint_position gap 5.469e-03 vs healthy_off"
+  },
+  {
+   "task": 1,
+   "init": 31,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 2.879e-03 vs healthy_off; healthy_nt: prefix position gap 1.234e-04 vs healthy_off; healthy_nt: prefix joint_position gap 3.335e-04 vs healthy_off"
+  },
+  {
+   "task": 2,
+   "init": 31,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 3.154e-02 vs healthy_off; healthy_nt: prefix position gap 1.659e-03 vs healthy_off; healthy_nt: prefix joint_position gap 6.472e-03 vs healthy_off"
+  },
+  {
+   "task": 3,
+   "init": 31,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 2.060e-02 vs healthy_off; healthy_nt: prefix position gap 8.989e-04 vs healthy_off; healthy_nt: prefix joint_position gap 1.617e-03 vs healthy_off"
+  },
+  {
+   "task": 4,
+   "init": 31,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 3.032e-02 vs healthy_off; healthy_nt: prefix position gap 1.659e-03 vs healthy_off; healthy_nt: prefix joint_position gap 4.733e-03 vs healthy_off"
+  },
+  {
+   "task": 5,
+   "init": 31,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 9.039e-02 vs healthy_off; healthy_nt: prefix position gap 2.432e-03 vs healthy_off; healthy_nt: prefix joint_position gap 1.119e-02 vs healthy_off"
+  },
+  {
+   "task": 6,
+   "init": 31,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 1.011e-02 vs healthy_off; healthy_nt: prefix position gap 4.598e-04 vs healthy_off; healthy_nt: prefix joint_position gap 1.776e-03 vs healthy_off"
+  },
+  {
+   "task": 7,
+   "init": 31,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 1.542e-02 vs healthy_off; healthy_nt: prefix position gap 6.212e-04 vs healthy_off; healthy_nt: prefix joint_position gap 4.292e-03 vs healthy_off"
+  },
+  {
+   "task": 8,
+   "init": 31,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 2.929e-03 vs healthy_off; healthy_nt: prefix position gap 1.243e-04 vs healthy_off; healthy_nt: prefix joint_position gap 6.794e-04 vs healthy_off"
+  },
+  {
+   "task": 9,
+   "init": 31,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 9.459e-03 vs healthy_off; healthy_nt: prefix position gap 3.679e-04 vs healthy_off; healthy_nt: prefix joint_position gap 1.956e-03 vs healthy_off"
+  }
+ ],
+ "warmup_command": [
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  -1.0
+ ],
+ "arms": [
+  "healthy_off",
+  "healthy_off",
+  "healthy_nt"
+ ],
+ "optional_arms": [
+  "healthy_off_dup"
+ ],
+ "prefix": 30,
+ "window": 50,
+ "configuration_sha256": "c27373fddc652365f73e9ca40cb424943074f9fc5db6c85992cc55bbc8cd9e6f",
+ "note": "read-only extraction; prefix agreement exact (tolerance 0) on raw actions, positions and joints across the three arms"
+}

@@ -96,3 +96,29 @@ relative to the headline (from-step-0) cohorts. This is a task-level effect of t
 keys under a registered fault; it is not a certificate, and the fault is a command-level bias.
 
 Campaign closed 18:52; both servers stopped, both cards released.
+
+## 7. Registered increment: delayed NT on the evaluation keys (19:08, before the arm was run)
+
+EXPERIMENT_PLAN.md §7 allows a delayed-NT arm "only for an explicit delay claim". The four-arm evaluation is
+closed and its outcomes were read; this increment adds **one arm**, faulted NT under F4 with adaptation
+enabled at policy step 40 (`--adapt-from 40`, a 10-step delay after the onset at step 30), on the same 40
+evaluation keys (paired on task, init, seed 85001), split across the two cards by state (18, 19 on GPU 1;
+21, 22 on GPU 0) and merged. Comparisons: delayed NT − immediate NT (primary of this increment), delayed NT −
+faulted off; exact McNemar descriptive, task-clustered bootstrap (seed 20260916). Registered expectation D1:
+delayed NT is not better than immediate NT (net ≤ 0); a tie is possible. This is an increment on keys whose
+off and immediate-NT outcomes are known; it is reported as such, separately from §6, and no other setting
+changes. Outcome in §8.
+
+## 8. Outcome, delayed-NT increment (run 19:06–19:25 on both cards; `evaluation/eval_delay_nt_{a,b}.json`, `analysis/delay_increment.json`)
+
+Delayed NT (adaptation enabled at policy step 40, ten steps after the onset) under F4 on the 40 evaluation keys:
+**14/40**, identical in count to immediate NT.
+- Delayed − immediate NT: 14/40 vs 14/40: 3 wins / 3 losses, net +0, +0 points, task-clustered 95 % interval [-10, 10], exact McNemar p = 1.000. Win keys [[2, 19, 85001], [8, 21, 85001], [9, 21, 85001]], loss keys [[0, 18, 85001], [2, 18, 85001], [5, 18, 85001]].
+- Delayed − faulted off: 14/40 vs 6/40: 8 wins / 0 losses, net +8, +20 points, task-clustered 95 % interval [10, 32], exact McNemar p = 0.008.
+
+**D1 holds as a tie:** delayed adaptation is not better than immediate adaptation at task level, and at this n it is
+not measurably worse either (six discordant keys, three each way). The fixed-command result (a ten-step delay
+raises the physical cost on 18/19 sources) therefore does not translate into a task-level penalty on this fault and
+cohort; task success on Spatial is tolerant of a half-second later start of correction. Reported as an increment on
+inspected keys; no pooled denominator. Campaign closed 19:26; the servers were handed to the healthy coupled
+replication (`PREREG_FYA_HEALTHY_COUPLED_V1.md`).

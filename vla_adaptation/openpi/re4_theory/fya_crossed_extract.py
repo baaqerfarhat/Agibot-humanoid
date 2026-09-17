@@ -40,7 +40,13 @@ def main():
     ap.add_argument("--src", type=pathlib.Path, default=pathlib.Path("results/frozen_yet_adaptive_deadline_v1/reacting_policy"))
     ap.add_argument("--manifest", type=pathlib.Path, default=pathlib.Path("results/frozen_yet_adaptive_deadline_v1/stage2_manifest.json"))
     ap.add_argument("--out", type=pathlib.Path, default=pathlib.Path("results/fya_crossed_replay_v1"))
-    ap.add_argument("--prefix", type=int, default=30); ap.add_argument("--window", type=int, default=50); a = ap.parse_args()
+    ap.add_argument("--prefix", type=int, default=30); ap.add_argument("--window", type=int, default=50)
+    ap.add_argument("--arms", default=None, help="comma list of arm telemetry names to extract in role order ref,m0,m1[,extra...] (default: healthy_off,fault_off,fault_nt plus the optional arms)")
+    ap.add_argument("--config-arm", default=None, help="arm whose telemetry header supplies the deployed configuration (default fault_nt or the m1 arm)")
+    a = ap.parse_args()
+    global ARMS, OPTIONAL_ARMS
+    if a.arms:
+        names = a.arms.split(","); ARMS = tuple(names[:3]); OPTIONAL_ARMS = tuple(names[3:])
     man = json.loads(a.manifest.read_text()); keys = [(s["task"], s["init"], s["sampler_seed"]) for s in man["scenarios"]]
     data = {}; hashes = {str(a.manifest): sha(a.manifest)}; headers = {}
     for arm in ARMS + OPTIONAL_ARMS:
@@ -48,7 +54,7 @@ def main():
         if not p.exists():
             continue
         hashes[str(p)] = sha(p); headers[arm], data[arm] = read_arm(p)
-    cfg_hdr = headers["fault_nt"]; cfg = dict(W=cfg_hdr["config"]["W"], M=cfg_hdr["config"]["M"], mask=cfg_hdr["config"]["mask"], fault_vector=cfg_hdr["config"]["fault_vector"],
+    cfg_hdr = headers[a.config_arm or ("fault_nt" if "fault_nt" in headers else ARMS[2])]; cfg = dict(W=cfg_hdr["config"]["W"], M=cfg_hdr["config"]["M"], mask=cfg_hdr["config"]["mask"], fault_vector=cfg_hdr["config"]["fault_vector"],
                                             args={k: cfg_hdr["args"][k] for k in ("gamma", "dead", "norm_r", "clip", "corr_dims", "norm_channels", "law", "onset", "adapt_from", "fault_vec", "scenario_reset", "deadzone_mode", "replan_steps")},
                                             constants=cfg_hdr["constants"], source="fault_nt telemetry header (deployed arrays)", runner_source_sha256=hashlib.sha256(cfg_hdr["runner_source"].encode()).hexdigest())
     (a.out / "extracted_streams").mkdir(parents=True, exist_ok=True)
@@ -78,15 +84,16 @@ def main():
                 else:
                     opt_ok[arm] = False
         if all(arm in rec for arm in ARMS):
-            ref = rec["fault_off"]
-            for arm in ("healthy_off", "fault_nt") + tuple(x for x in OPTIONAL_ARMS if x in rec):
+            REF, M0, M1 = ARMS
+            ref = rec[M0]
+            for arm in tuple(x for x in (REF, M1) if x != M0) + tuple(x for x in OPTIONAL_ARMS if x in rec):
                 for field, tol in (("raw_action", 0.0), ("position", 0.0), ("joint_position", 0.0)):
                     n = min(a.prefix, rec[arm]["n_policy_steps"], ref["n_policy_steps"])
                     gapv = float(np.max(np.abs(np.array(rec[arm][field][:n]) - np.array(ref[field][:n])))) if n else float("inf")
                     rec[arm][f"prefix_{field}_max_gap_vs_fault_off"] = gapv
                     if gapv > tol:
                         if arm in ARMS:
-                            ok = False; reasons.append(f"{arm}: prefix {field} gap {gapv:.3e} vs fault_off")
+                            ok = False; reasons.append(f"{arm}: prefix {field} gap {gapv:.3e} vs {M0}")
                         else:
                             opt_ok[arm] = False
             for arm in OPTIONAL_ARMS:
@@ -95,24 +102,24 @@ def main():
                     if arm == "delay_nt" and (np.any(np.abs(np.array(rec[arm]["correction"][:a.prefix + 10])) > 0) or np.any(np.abs(np.array(rec[arm]["f_hat_before"][:a.prefix + 10])) > 0)):
                         opt_ok[arm] = False
             # corrections in the prefix must be zero and the pre-update estimate at the first window step must be zero (fault_nt)
-            if np.any(np.abs(np.array(rec["fault_nt"]["correction"][:a.prefix])) > 0) or np.any(np.abs(np.array(rec["fault_nt"]["f_hat_before"][a.prefix])) > 0):
-                ok = False; reasons.append("fault_nt: correction or estimate nonzero inside the prefix")
+            if np.any(np.abs(np.array(rec[M1]["correction"][:a.prefix])) > 0) or np.any(np.abs(np.array(rec[M1]["f_hat_before"][a.prefix])) > 0):
+                ok = False; reasons.append(f"{M1}: correction or estimate nonzero inside the prefix")
             for arm in ARMS:
-                if arm != "healthy_off" and not all(rec[arm]["live"][a.prefix:a.prefix + a.window]):
+                if arm.startswith("fault") and not all(rec[arm]["live"][a.prefix:a.prefix + a.window]):
                     ok = False; reasons.append(f"{arm}: fault not live throughout the window")
         key_id = f"{t}_{i}_{seed}"
         out = dict(key=dict(task=t, init=i, sampler_seed=seed), eligible=ok, reasons=reasons, optional_eligible=opt_ok, prefix=a.prefix, window=a.window, arms=rec)
         (a.out / "extracted_streams" / f"{key_id}.json").write_text(json.dumps(out))
         rows.append(dict(task=t, init=i, sampler_seed=seed, eligible=ok, reasons="; ".join(reasons), **{f"len_{arm}": rec[arm]["n_policy_steps"] if arm in rec else None for arm in ARMS},
                          **{f"eligible_{arm}": (ok and opt_ok.get(arm, False)) for arm in OPTIONAL_ARMS},
-                         stream_sha256_M0=hashlib.sha256(json.dumps(rec["fault_off"]["raw_action"]).encode()).hexdigest() if "fault_off" in rec else None,
-                         stream_sha256_M1=hashlib.sha256(json.dumps(rec["fault_nt"]["raw_action"]).encode()).hexdigest() if "fault_nt" in rec else None,
-                         stream_sha256_ref=hashlib.sha256(json.dumps(rec["healthy_off"]["raw_action"]).encode()).hexdigest() if "healthy_off" in rec else None))
+                         stream_sha256_M0=hashlib.sha256(json.dumps(rec[ARMS[1]]["raw_action"]).encode()).hexdigest() if ARMS[1] in rec else None,
+                         stream_sha256_M1=hashlib.sha256(json.dumps(rec[ARMS[2]]["raw_action"]).encode()).hexdigest() if ARMS[2] in rec else None,
+                         stream_sha256_ref=hashlib.sha256(json.dumps(rec[ARMS[0]]["raw_action"]).encode()).hexdigest() if ARMS[0] in rec else None))
     with open(a.out / "source_keys.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys())); w.writeheader(); w.writerows(rows)
     audit = dict(inputs_sha256=hashes, extractor_sha256=sha(__file__), n_keys=len(rows), n_eligible=int(sum(r["eligible"] for r in rows)),
                  eligible_keys=[[r["task"], r["init"], r["sampler_seed"]] for r in rows if r["eligible"]], ineligible=[{k: r[k] for k in ("task", "init", "sampler_seed", "reasons")} for r in rows if not r["eligible"]],
-                 warmup_command=data["fault_off"][keys[0][:2]][0]["command"], prefix=a.prefix, window=a.window,
+                 warmup_command=data[ARMS[1]][keys[0][:2]][0]["command"], arms=list(ARMS), optional_arms=list(OPTIONAL_ARMS), prefix=a.prefix, window=a.window,
                  configuration_sha256=sha(a.out / "configuration.json"), note="read-only extraction; prefix agreement exact (tolerance 0) on raw actions, positions and joints across the three arms")
     (a.out / "extraction_audit.json").write_text(json.dumps(audit, indent=1)); print(json.dumps({k: v for k, v in audit.items() if k != "inputs_sha256"}, indent=1))
 

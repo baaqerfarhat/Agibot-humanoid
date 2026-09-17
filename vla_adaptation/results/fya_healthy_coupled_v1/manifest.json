@@ -1,0 +1,206 @@
+{
+ "name": "fya healthy coupled replication v1: fresh keys",
+ "suite": "libero_spatial",
+ "scenarios": [
+  {
+   "task": 0,
+   "init": 23,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 1,
+   "init": 23,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 2,
+   "init": 23,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 3,
+   "init": 23,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 4,
+   "init": 23,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 5,
+   "init": 23,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 6,
+   "init": 23,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 7,
+   "init": 23,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 8,
+   "init": 23,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 9,
+   "init": 23,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 0,
+   "init": 24,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 1,
+   "init": 24,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 2,
+   "init": 24,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 3,
+   "init": 24,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 4,
+   "init": 24,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 5,
+   "init": 24,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 6,
+   "init": 24,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 7,
+   "init": 24,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 8,
+   "init": 24,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 9,
+   "init": 24,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 0,
+   "init": 29,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 1,
+   "init": 29,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 2,
+   "init": 29,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 3,
+   "init": 29,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 4,
+   "init": 29,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 5,
+   "init": 29,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 6,
+   "init": 29,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 7,
+   "init": 29,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 8,
+   "init": 29,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 9,
+   "init": 29,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 0,
+   "init": 31,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 1,
+   "init": 31,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 2,
+   "init": 31,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 3,
+   "init": 31,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 4,
+   "init": 31,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 5,
+   "init": 31,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 6,
+   "init": 31,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 7,
+   "init": 31,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 8,
+   "init": 31,
+   "sampler_seed": 86001
+  },
+  {
+   "task": 9,
+   "init": 31,
+   "sampler_seed": 86001
+  }
+ ]
+}

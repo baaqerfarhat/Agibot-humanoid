@@ -111,3 +111,15 @@ frozen 6/40 → NT 14/40 (9 wins / 1 loss, +20 points [10, 30], exact McNemar p 
 discordant key. Both registered expectations hold. Wording: partial repair by construction (rotation-only mask,
 cap .05 against a .10 fault); task-level effect of the fixed adapter under a registered command fault on untouched
 keys; not a certificate. This is the result the previous bridge could not give.
+
+**Delayed-NT increment (stronger fault, prereg §8):** 14/40, identical to immediate NT (3 wins / 3 losses, [−10, +10] points). Wording: at task level the ten-step delay is neither better nor measurably worse on this fault; the delay cost is a physical-deviation result, not a task-success result.
+
+**Delayed-NT repair (`PREREG_FYA_DELAY_REPAIR_V1.md`):** the split-manifest increment was invalid (sampler ordinals changed on the second shard). Repaired on one server with the full manifest, coupled 40/40: delayed NT 13/40 vs immediate 14/40 (2W/3L, [−10, +5] points), vs off +7 net [7.5, 30]. Use these numbers, not the 14/40 of the first increment, for any controlled delay statement; the statement remains 'not better, not measurably worse'.
+
+**Delayed-NT repair (replaces the sharded increment for any delay statement; `PREREG_FYA_DELAY_REPAIR_V1.md`):** coupled 40/40 with immediate NT; delayed 13/40 vs immediate 14/40 (2 wins / 3 losses, [−10, +5] points, p = 1.0) and vs off 6/40 (+7 net, [7.5, 30], p = .016). Wording: no task-level delay penalty resolved at this n; equal totals are not equivalence.
+
+**Independent healthy replication (`PREREG_FYA_HEALTHY_COUPLED_V1.md` §7):** on 34 fresh coupled keys (9 tasks, seed 86001) R1 = −1.71e-4 [−2.5e-4, −9.8e-5] m² s, negative on every key; D0 = −1.9e-5 (0/34 positive); I unresolved. Replicates the archived healthy control (−3.6e-4, 16 keys) at about half the magnitude. Coupling caveats to state: arms must share one server process; duplicate exact on 36/40; one key excluded by fidelity, four task-0 keys too short. Figure `results/fya_healthy_coupled_v1/figures/healthy_R1_two_cohorts.pdf`.
+
+**Matched DOB comparator (`PREREG_FYA_DOB_COMPARATOR_V1.md`):** in-process trios on the 40 evaluation keys: faulted off 6/40, NT 14/40, DOB (α .08, development-selected and gain-matched) 14/40, 1 win / 1 loss, [−7.5, +7.5] points; healthy off 39/40, NT 40/40, DOB 40/40. Wording: the calibrated execution interface carries the task benefit; NT's gate and normaliser add nothing resolvable; nonsignificance is not equivalence. The fresh trio reproduces the archived 6 → 14.
+
+**Closing status (23:45).** Everything in the closed-loop EXPERIMENT_PLAN.md is now complete: the independent healthy replication (R1 replicated on 34 fresh keys), the delayed-NT repair (13/40 vs 14/40, coupled), and the DOB comparator (tie). Registrations: `PREREG_FYA_HEALTHY_COUPLED_V1.md` §7, `PREREG_FYA_DELAY_REPAIR_V1.md`, `PREREG_FYA_DOB_COMPARATOR_V1.md`. Record §§66–70. Both cards released.

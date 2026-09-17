@@ -9,4 +9,8 @@ Registration `prereg_records/PREREG_FYA_STRONGER_FAULT_V1.md` (§§5–6 outcome
 | Evaluation (40 untouched keys): healthy 40/40 → 40/40; faulted 6/40 → 14/40 (+8 net, [10, 30] points, p = .021) | complete |
 | Analysis | `analysis/summary.json`, `figures/sf_summary.pdf` |
 
+| Delayed-NT repair (`PREREG_FYA_DELAY_REPAIR_V1.md`): 13/40, coupled 40/40, vs immediate net −1 [−10, +5] pts | complete |
+| Delayed-NT increment (prereg §7–8, superseded for controlled comparisons): 14/40, tie with immediate NT (3/3 discordant), `analysis/delay_increment.json` | complete |
+| Delayed-NT repair (`PREREG_FYA_DELAY_REPAIR_V1.md`): full manifest, one process, coupled 40/40; delayed 13/40 vs immediate 14/40 (net −1, [−10, +5]); the sharded increment above is superseded for delay claims | complete |
+
 No missing cells; no unexposed keys; telemetry gzipped.

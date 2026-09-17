@@ -56,7 +56,8 @@ def task_boot(vals, tasks, n, rng, equal_task=True):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("run", type=pathlib.Path); ap.add_argument("--out", type=pathlib.Path, required=True)
-    ap.add_argument("--boot", type=int, default=10000); ap.add_argument("--seed", type=int, default=20260916); ap.add_argument("--delta-I", type=float, default=1e-5); a = ap.parse_args()
+    ap.add_argument("--boot", type=int, default=10000); ap.add_argument("--seed", type=int, default=20260916); ap.add_argument("--delta-I", type=float, default=1e-5)
+    ap.add_argument("--primary", default="I", choices=["I", "R1", "D0", "T"], help="registered primary contrast (I for the archived matrices; R1 for the coupled healthy replication)"); a = ap.parse_args()
     d = read_json(a.run); rng = np.random.default_rng(a.seed); a.out.mkdir(parents=True, exist_ok=True)
     valid = [k for k in d["keys"] if k["fidelity"]["valid"]]; invalid = [dict(key=k["key"], checks=k["fidelity"]["checks"], n_window=k["n_window_steps"]) for k in d["keys"] if not k["fidelity"]["valid"]]
     cost_rows, eff_rows = [], []
@@ -83,13 +84,18 @@ def main():
         agg[q] = dict(equal_task=task_boot([r[q] for r in eff_rows], tasks, a.boot, rng, True), source_weighted=task_boot([r[q] for r in eff_rows], tasks, a.boot, rng, False))
     Ivals = np.array([r["I"] for r in eff_rows]); ut = sorted(set(tasks))
     loo = {str(t): float(np.mean([np.mean(Ivals[np.array(tasks) == s]) for s in ut if s != t])) for t in ut}
+    Pvals = np.array([r[a.primary] for r in eff_rows]); loo_primary = {str(t): float(np.mean([np.mean(Pvals[np.array(tasks) == s]) for s in ut if s != t])) for t in ut}
     lo, hi = agg["I"]["equal_task"]["ci95"]
     decision = ("resolved_positive" if lo > a.delta_I else "resolved_negative" if hi < -a.delta_I else "small_within_margin" if (lo >= -a.delta_I and hi <= a.delta_I) else "unresolved")
+    plo, phi = agg[a.primary]["equal_task"]["ci95"]
+    primary_decision = dict(contrast=a.primary, estimate=agg[a.primary]["equal_task"]["estimate"], ci95=[plo, phi],
+                            decision=("resolved_positive" if plo > a.delta_I else "resolved_negative" if phi < -a.delta_I else "small_within_margin" if (plo >= -a.delta_I and phi <= a.delta_I) else "unresolved"),
+                            leave_one_task_out=loo_primary, per_task=agg[a.primary]["equal_task"]["per_task"])
     cells_med = {c: dict(J_median=float(np.median([r[c] for r in eff_rows])), J_q25=float(np.percentile([r[c] for r in eff_rows], 25)), J_q75=float(np.percentile([r[c] for r in eff_rows], 75)),
                          endpoint_p_median=float(np.median([x["endpoint_p"] for x in cost_rows if x["cell"] == c])), done_any=int(sum(x["done_step"] is not None for x in cost_rows if x["cell"] == c)),
                          clipped_total=int(sum(x["clipped_steps"] for x in cost_rows if x["cell"] == c))) for c in CELLS}
     out = dict(run=str(a.run), label=d["meta"].get("label"), n_keys_valid=len(valid), n_tasks=len(ut), invalid=invalid, delta_I=a.delta_I, boot=a.boot, seed=a.seed,
-               units=dict(J="m^2 s", J_r="rad^2 s", endpoint_p="m", endpoint_r="rad"), primary_I=agg["I"], interaction_decision=decision, leave_one_task_out_I=loo,
+               units=dict(J="m^2 s", J_r="rad^2 s", endpoint_p="m", endpoint_r="rad"), primary_I=agg["I"], interaction_decision=decision, registered_primary=primary_decision, leave_one_task_out_I=loo,
                descriptive=agg, cells=cells_med, secondary_ratio_R1_over_T=dict(note="unstable near T = 0; reported per source only", values=[(r["R1"] / r["T"]) if abs(r["T"]) > 1e-9 else None for r in eff_rows]),
                fidelity=[dict(key=k["key"], **{kk: vv for kk, vv in k["fidelity"].items() if kk != "checks"}) for k in valid], driver_sha256=d["meta"]["driver_sha256"], configuration_sha256=d["meta"]["configuration_sha256"])
     (a.out / "source_intervals.json").write_text(json.dumps(out, indent=1))

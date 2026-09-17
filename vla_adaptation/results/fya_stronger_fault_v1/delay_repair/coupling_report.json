@@ -1,0 +1,414 @@
+{
+ "n": 40,
+ "prefix_exact_vs_nt": 40,
+ "prefix_exact_vs_off": 39,
+ "preactivation_exact_vs_off": 39,
+ "first_correction_steps": [
+  41
+ ],
+ "first_update_steps": [
+  40
+ ],
+ "rows": [
+  {
+   "task": 0,
+   "init": 18,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 0,
+   "init": 19,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 0,
+   "init": 21,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 0,
+   "init": 22,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 1,
+   "init": 18,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 1,
+   "init": 19,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 1,
+   "init": 21,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 1,
+   "init": 22,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 2,
+   "init": 18,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 2,
+   "init": 19,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 105
+  },
+  {
+   "task": 2,
+   "init": 21,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 91
+  },
+  {
+   "task": 2,
+   "init": 22,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 83
+  },
+  {
+   "task": 3,
+   "init": 18,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 81
+  },
+  {
+   "task": 3,
+   "init": 19,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 73
+  },
+  {
+   "task": 3,
+   "init": 21,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 74
+  },
+  {
+   "task": 3,
+   "init": 22,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 74
+  },
+  {
+   "task": 4,
+   "init": 18,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 4,
+   "init": 19,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 4,
+   "init": 21,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 4,
+   "init": 22,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 5,
+   "init": 18,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 5,
+   "init": 19,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 5,
+   "init": 21,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 5,
+   "init": 22,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 6,
+   "init": 18,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 6,
+   "init": 19,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 102
+  },
+  {
+   "task": 6,
+   "init": 21,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 6,
+   "init": 22,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 122
+  },
+  {
+   "task": 7,
+   "init": 18,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 7,
+   "init": 19,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 102
+  },
+  {
+   "task": 7,
+   "init": 21,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 116
+  },
+  {
+   "task": 7,
+   "init": 22,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 8,
+   "init": 18,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 8,
+   "init": 19,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0028070570678710993,
+   "preactivation_gap_vs_off": 0.005263232177734389,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 8,
+   "init": 21,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 8,
+   "init": 22,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 9,
+   "init": 18,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  },
+  {
+   "task": 9,
+   "init": 19,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 109
+  },
+  {
+   "task": 9,
+   "init": 21,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 109
+  },
+  {
+   "task": 9,
+   "init": 22,
+   "prefix_gap_vs_nt": 0.0,
+   "prefix_gap_vs_off": 0.0,
+   "preactivation_gap_vs_off": 0.0,
+   "first_correction_step": 41,
+   "first_update_step": 40,
+   "len": 220
+  }
+ ]
+}

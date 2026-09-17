@@ -1,0 +1,241 @@
+{
+ "inputs_sha256": {
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/fya_healthy_coupled_v1/manifest.json": "fdd1eb9b072d872c6bb7d5b056062185c836e5f35b4aaec57311ab9011f4a1d6",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/fya_healthy_coupled_v1/sources_v3/healthy_off_telemetry.jsonl.gz": "7c8fbe65de6910e5de974a044e00fd83a503fd7a67d728a6233bc1676d744573",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/fya_healthy_coupled_v1/sources_v3/healthy_nt_telemetry.jsonl.gz": "65d2b3b3298ae6c05779b97475086efe6baf38d49969dee4bb26c71e9658a915",
+  "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/fya_healthy_coupled_v1/sources_v3/healthy_off_dup_telemetry.jsonl.gz": "a21aefd986447c1a80e89c56c38a0d04ae4eda2c535326db3c34ee2067d5aa5c"
+ },
+ "extractor_sha256": "3fd7137c0b44a4aede828867b2dd0dededb0ced339c74ac6cec5b5a0b764fd95",
+ "n_keys": 40,
+ "n_eligible": 35,
+ "eligible_keys": [
+  [
+   1,
+   23,
+   86001
+  ],
+  [
+   2,
+   23,
+   86001
+  ],
+  [
+   3,
+   23,
+   86001
+  ],
+  [
+   4,
+   23,
+   86001
+  ],
+  [
+   5,
+   23,
+   86001
+  ],
+  [
+   6,
+   23,
+   86001
+  ],
+  [
+   7,
+   23,
+   86001
+  ],
+  [
+   8,
+   23,
+   86001
+  ],
+  [
+   9,
+   23,
+   86001
+  ],
+  [
+   1,
+   24,
+   86001
+  ],
+  [
+   2,
+   24,
+   86001
+  ],
+  [
+   3,
+   24,
+   86001
+  ],
+  [
+   4,
+   24,
+   86001
+  ],
+  [
+   5,
+   24,
+   86001
+  ],
+  [
+   6,
+   24,
+   86001
+  ],
+  [
+   7,
+   24,
+   86001
+  ],
+  [
+   8,
+   24,
+   86001
+  ],
+  [
+   9,
+   24,
+   86001
+  ],
+  [
+   1,
+   29,
+   86001
+  ],
+  [
+   2,
+   29,
+   86001
+  ],
+  [
+   3,
+   29,
+   86001
+  ],
+  [
+   4,
+   29,
+   86001
+  ],
+  [
+   5,
+   29,
+   86001
+  ],
+  [
+   6,
+   29,
+   86001
+  ],
+  [
+   8,
+   29,
+   86001
+  ],
+  [
+   9,
+   29,
+   86001
+  ],
+  [
+   1,
+   31,
+   86001
+  ],
+  [
+   2,
+   31,
+   86001
+  ],
+  [
+   3,
+   31,
+   86001
+  ],
+  [
+   4,
+   31,
+   86001
+  ],
+  [
+   5,
+   31,
+   86001
+  ],
+  [
+   6,
+   31,
+   86001
+  ],
+  [
+   7,
+   31,
+   86001
+  ],
+  [
+   8,
+   31,
+   86001
+  ],
+  [
+   9,
+   31,
+   86001
+  ]
+ ],
+ "ineligible": [
+  {
+   "task": 0,
+   "init": 23,
+   "sampler_seed": 86001,
+   "reasons": "healthy_off: 73 < 80 policy steps; healthy_off: 73 < 80 policy steps; healthy_nt: 72 < 80 policy steps"
+  },
+  {
+   "task": 0,
+   "init": 24,
+   "sampler_seed": 86001,
+   "reasons": "healthy_off: 70 < 80 policy steps; healthy_off: 70 < 80 policy steps; healthy_nt: 72 < 80 policy steps"
+  },
+  {
+   "task": 0,
+   "init": 29,
+   "sampler_seed": 86001,
+   "reasons": "healthy_off: 71 < 80 policy steps; healthy_off: 71 < 80 policy steps; healthy_nt: 71 < 80 policy steps"
+  },
+  {
+   "task": 7,
+   "init": 29,
+   "sampler_seed": 86001,
+   "reasons": "healthy_nt: prefix raw_action gap 1.398e-02 vs healthy_off; healthy_nt: prefix position gap 5.986e-04 vs healthy_off; healthy_nt: prefix joint_position gap 1.768e-03 vs healthy_off"
+  },
+  {
+   "task": 0,
+   "init": 31,
+   "sampler_seed": 86001,
+   "reasons": "healthy_off: 75 < 80 policy steps; healthy_off: 75 < 80 policy steps; healthy_nt: 76 < 80 policy steps"
+  }
+ ],
+ "warmup_command": [
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  -1.0
+ ],
+ "arms": [
+  "healthy_off",
+  "healthy_off",
+  "healthy_nt"
+ ],
+ "optional_arms": [
+  "healthy_off_dup"
+ ],
+ "prefix": 30,
+ "window": 50,
+ "configuration_sha256": "c27373fddc652365f73e9ca40cb424943074f9fc5db6c85992cc55bbc8cd9e6f",
+ "note": "read-only extraction; prefix agreement exact (tolerance 0) on raw actions, positions and joints across the three arms"
+}

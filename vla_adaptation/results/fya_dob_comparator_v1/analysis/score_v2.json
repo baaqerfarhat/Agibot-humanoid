@@ -1,0 +1,418 @@
+{
+ "manifest": "/home/mtaheri/ws_AgibotX2/vla-adaptation/results/fya_stronger_fault_v1/eval_manifest.json",
+ "n_keys": 40,
+ "arms": {
+  "fault_off": "6/40",
+  "fault_nt": "14/40",
+  "fault_dob": "14/40",
+  "healthy_off": "39/40",
+  "healthy_nt": "40/40",
+  "healthy_dob": "40/40"
+ },
+ "configuration": {
+  "fault_off": {
+   "gamma": 0.08,
+   "dead": 0.008,
+   "norm_r": 0.15,
+   "clip": 0.05,
+   "corr_dims": "3,4,5",
+   "norm_channels": "all",
+   "law": "legacy",
+   "onset": 40,
+   "adapt_from": 30,
+   "fault_vec": "0.10,0.10,0.10,0.10,0.10,0.10",
+   "baseline": "none",
+   "scenario_reset": true
+  },
+  "fault_nt": {
+   "gamma": 0.08,
+   "dead": 0.008,
+   "norm_r": 0.15,
+   "clip": 0.05,
+   "corr_dims": "3,4,5",
+   "norm_channels": "all",
+   "law": "legacy",
+   "onset": 40,
+   "adapt_from": 30,
+   "fault_vec": "0.10,0.10,0.10,0.10,0.10,0.10",
+   "baseline": "none",
+   "scenario_reset": true
+  },
+  "fault_dob": {
+   "gamma": 0.08,
+   "dead": 0.008,
+   "norm_r": 0.15,
+   "clip": 0.05,
+   "corr_dims": "3,4,5",
+   "norm_channels": "all",
+   "law": "legacy",
+   "onset": 40,
+   "adapt_from": 30,
+   "fault_vec": "0.10,0.10,0.10,0.10,0.10,0.10",
+   "baseline": "dob",
+   "scenario_reset": true
+  },
+  "healthy_off": {
+   "gamma": 0.08,
+   "dead": 0.008,
+   "norm_r": 0.15,
+   "clip": 0.05,
+   "corr_dims": "3,4,5",
+   "norm_channels": "all",
+   "law": "legacy",
+   "onset": 40,
+   "adapt_from": 30,
+   "fault_vec": "0,0,0,0,0,0",
+   "baseline": "none",
+   "scenario_reset": true
+  },
+  "healthy_nt": {
+   "gamma": 0.08,
+   "dead": 0.008,
+   "norm_r": 0.15,
+   "clip": 0.05,
+   "corr_dims": "3,4,5",
+   "norm_channels": "all",
+   "law": "legacy",
+   "onset": 40,
+   "adapt_from": 30,
+   "fault_vec": "0,0,0,0,0,0",
+   "baseline": "none",
+   "scenario_reset": true
+  },
+  "healthy_dob": {
+   "gamma": 0.08,
+   "dead": 0.008,
+   "norm_r": 0.15,
+   "clip": 0.05,
+   "corr_dims": "3,4,5",
+   "norm_channels": "all",
+   "law": "legacy",
+   "onset": 40,
+   "adapt_from": 30,
+   "fault_vec": "0,0,0,0,0,0",
+   "baseline": "dob",
+   "scenario_reset": true
+  }
+ },
+ "primary": {
+  "contrast": "fault_nt-fault_dob",
+  "n": 40,
+  "a_successes": 14,
+  "b_successes": 14,
+  "wins": 1,
+  "losses": 1,
+  "net": 0,
+  "rate_difference": 0.0,
+  "task_clustered_ci95": [
+   -0.075,
+   0.075
+  ],
+  "per_task": {
+   "0": 0.0,
+   "1": 0.0,
+   "2": -0.25,
+   "3": 0.0,
+   "4": 0.0,
+   "5": 0.25,
+   "6": 0.0,
+   "7": 0.0,
+   "8": 0.0,
+   "9": 0.0
+  },
+  "leave_one_task_out": {
+   "0": 0.0,
+   "1": 0.0,
+   "2": 0.027777777777777776,
+   "3": 0.0,
+   "4": 0.0,
+   "5": -0.027777777777777776,
+   "6": 0.0,
+   "7": 0.0,
+   "8": 0.0,
+   "9": 0.0
+  },
+  "mcnemar_exact_p_descriptive": 1.0,
+  "win_keys": [
+   [
+    5,
+    18,
+    85001
+   ]
+  ],
+  "loss_keys": [
+   [
+    2,
+    19,
+    85001
+   ]
+  ]
+ },
+ "secondary": {
+  "fault_dob-fault_off": {
+   "n": 40,
+   "a_successes": 14,
+   "b_successes": 6,
+   "wins": 8,
+   "losses": 0,
+   "net": 8,
+   "rate_difference": 0.2,
+   "task_clustered_ci95": [
+    0.1,
+    0.325
+   ],
+   "per_task": {
+    "0": 0.25,
+    "1": 0.0,
+    "2": 0.5,
+    "3": 0.25,
+    "4": 0.0,
+    "5": 0.0,
+    "6": 0.25,
+    "7": 0.5,
+    "8": 0.0,
+    "9": 0.25
+   },
+   "leave_one_task_out": {
+    "0": 0.19444444444444445,
+    "1": 0.2222222222222222,
+    "2": 0.16666666666666666,
+    "3": 0.19444444444444445,
+    "4": 0.2222222222222222,
+    "5": 0.2222222222222222,
+    "6": 0.19444444444444445,
+    "7": 0.16666666666666666,
+    "8": 0.2222222222222222,
+    "9": 0.19444444444444445
+   },
+   "mcnemar_exact_p_descriptive": 0.0078125,
+   "win_keys": [
+    [
+     0,
+     18,
+     85001
+    ],
+    [
+     2,
+     18,
+     85001
+    ],
+    [
+     2,
+     22,
+     85001
+    ],
+    [
+     3,
+     21,
+     85001
+    ],
+    [
+     6,
+     22,
+     85001
+    ],
+    [
+     7,
+     19,
+     85001
+    ],
+    [
+     7,
+     21,
+     85001
+    ],
+    [
+     9,
+     19,
+     85001
+    ]
+   ],
+   "loss_keys": []
+  },
+  "fault_nt-fault_off": {
+   "n": 40,
+   "a_successes": 14,
+   "b_successes": 6,
+   "wins": 9,
+   "losses": 1,
+   "net": 8,
+   "rate_difference": 0.2,
+   "task_clustered_ci95": [
+    0.1,
+    0.3
+   ],
+   "per_task": {
+    "0": 0.25,
+    "1": 0.0,
+    "2": 0.25,
+    "3": 0.25,
+    "4": 0.0,
+    "5": 0.25,
+    "6": 0.25,
+    "7": 0.5,
+    "8": 0.0,
+    "9": 0.25
+   },
+   "leave_one_task_out": {
+    "0": 0.19444444444444445,
+    "1": 0.2222222222222222,
+    "2": 0.19444444444444445,
+    "3": 0.19444444444444445,
+    "4": 0.2222222222222222,
+    "5": 0.19444444444444445,
+    "6": 0.19444444444444445,
+    "7": 0.16666666666666666,
+    "8": 0.2222222222222222,
+    "9": 0.19444444444444445
+   },
+   "mcnemar_exact_p_descriptive": 0.021484375,
+   "win_keys": [
+    [
+     0,
+     18,
+     85001
+    ],
+    [
+     2,
+     18,
+     85001
+    ],
+    [
+     2,
+     22,
+     85001
+    ],
+    [
+     3,
+     21,
+     85001
+    ],
+    [
+     5,
+     18,
+     85001
+    ],
+    [
+     6,
+     22,
+     85001
+    ],
+    [
+     7,
+     19,
+     85001
+    ],
+    [
+     7,
+     21,
+     85001
+    ],
+    [
+     9,
+     19,
+     85001
+    ]
+   ],
+   "loss_keys": [
+    [
+     2,
+     19,
+     85001
+    ]
+   ]
+  },
+  "healthy_dob-healthy_off": {
+   "n": 40,
+   "a_successes": 40,
+   "b_successes": 39,
+   "wins": 1,
+   "losses": 0,
+   "net": 1,
+   "rate_difference": 0.025,
+   "task_clustered_ci95": [
+    0.0,
+    0.075
+   ],
+   "per_task": {
+    "0": 0.0,
+    "1": 0.0,
+    "2": 0.0,
+    "3": 0.0,
+    "4": 0.0,
+    "5": 0.0,
+    "6": 0.0,
+    "7": 0.0,
+    "8": 0.0,
+    "9": 0.25
+   },
+   "leave_one_task_out": {
+    "0": 0.027777777777777776,
+    "1": 0.027777777777777776,
+    "2": 0.027777777777777776,
+    "3": 0.027777777777777776,
+    "4": 0.027777777777777776,
+    "5": 0.027777777777777776,
+    "6": 0.027777777777777776,
+    "7": 0.027777777777777776,
+    "8": 0.027777777777777776,
+    "9": 0.0
+   },
+   "mcnemar_exact_p_descriptive": 1.0,
+   "win_keys": [
+    [
+     9,
+     19,
+     85001
+    ]
+   ],
+   "loss_keys": []
+  },
+  "healthy_nt-healthy_off": {
+   "n": 40,
+   "a_successes": 40,
+   "b_successes": 39,
+   "wins": 1,
+   "losses": 0,
+   "net": 1,
+   "rate_difference": 0.025,
+   "task_clustered_ci95": [
+    0.0,
+    0.075
+   ],
+   "per_task": {
+    "0": 0.0,
+    "1": 0.0,
+    "2": 0.0,
+    "3": 0.0,
+    "4": 0.0,
+    "5": 0.0,
+    "6": 0.0,
+    "7": 0.0,
+    "8": 0.0,
+    "9": 0.25
+   },
+   "leave_one_task_out": {
+    "0": 0.027777777777777776,
+    "1": 0.027777777777777776,
+    "2": 0.027777777777777776,
+    "3": 0.027777777777777776,
+    "4": 0.027777777777777776,
+    "5": 0.027777777777777776,
+    "6": 0.027777777777777776,
+    "7": 0.027777777777777776,
+    "8": 0.027777777777777776,
+    "9": 0.0
+   },
+   "mcnemar_exact_p_descriptive": 1.0,
+   "win_keys": [
+    [
+     9,
+     19,
+     85001
+    ]
+   ],
+   "loss_keys": []
+  }
+ }
+}

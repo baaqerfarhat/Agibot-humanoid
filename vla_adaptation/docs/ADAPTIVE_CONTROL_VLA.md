@@ -4455,3 +4455,45 @@ discordant keys. Both registered expectations hold. The adapter corrects three o
 of half the fault, so the repair is partial by construction; the point is that a fixed adapter, enabled at the
 onset, recovers a fifth of the keys the fault destroys without touching a single healthy key, on untouched
 states. Both cards were used (one server each, fraction .42) with Yujin's jobs running throughout.
+
+**Addendum to §68 (19:26): delayed NT.** Enabling adaptation ten steps after the onset gives the same 14/40 as
+immediate adaptation (3 wins / 3 losses against immediate, net 0, [−10, +10] points; +8 net against off). The
+physical delay cost measured on fixed commands does not show up at task level on this fault: the reacting policy
+tolerates a half-second later correction. Registered expectation D1 (delayed not better) holds as a tie.
+
+**Addendum to §68 (21:20): delayed NT, repaired.** The first delayed increment had split the manifest across the two
+cards, which changed the sampler ordinals of the second shard (the writing session caught it). Re-run with the full
+ordered manifest on one server: coupled 40/40 with immediate NT; delayed NT **13/40** vs immediate 14/40 (2 wins /
+3 losses, [−10, +5] points) and vs off +7 net [7.5, 30]. Delayed is not better (D1 holds); not measurably worse at
+this n. Protocol lesson recorded in `PREREG_FYA_DELAY_REPAIR_V1.md`: never shard a manifest across servers.
+
+**§68, second addendum (21:30): delayed NT, repaired.** The writing session found that splitting the 40 keys across the
+two cards changed the sampler ordinals of the second shard (0–19 instead of 20–39), so the earlier 14/40 was not
+coupled to the immediate arm. Re-run with the full ordered manifest on one server process (`PREREG_FYA_DELAY_REPAIR_V1.md`):
+prefixes match immediate NT on 40/40 keys; delayed NT **13/40** vs immediate 14/40 (2 wins / 3 losses, [−10, +5]
+points, p = 1) and vs off 6/40 (+7 net, [7.5, 30], p = .016). Delay neither helps nor measurably hurts task success on
+this fault; it does raise the physical cost on fixed commands. Lesson recorded: never shard a manifest across servers;
+parallelise arms, not keys, and check prefix coupling before pairing.
+
+## 69. Independent healthy replication: the stream term replicates on fresh coupled keys (2026-09-16)
+
+`PREREG_FYA_HEALTHY_COUPLED_V1.md` §§5–7. Two failed attempts (cross-device, then same-device on a new process:
+0/40 coupled both times, bit-identical to each other) established that the sampler schedule couples arms only within
+one server process; amendment 2 ran off, NT and duplicate-off back to back on one process: prefixes coupled 39/40,
+duplicate exact 36/40. On 34 eligible keys (9 tasks, states 23, 24, 29, 31, seed 86001): **R1 = −1.71e-4
+[−2.5e-4, −9.8e-5] m² s, negative on every key** (archived cohort: −3.6e-4 on 16 keys); D0 = −1.9e-5 (0/34
+positive); I unresolved. The healthy-stream claim in the closed-loop paper now rests on two cohorts and two seeds.
+Direct false-update cost 2.7 mm; the policy's reaction to it 12.4 mm. Not a task-level statement (healthy 40/40 off,
+39/40 NT). Lesson for the record: the first two attempts each cost 40–120 episodes; the same-process rule and a
+prefix coupling report are now mandatory before any paired replay.
+
+## 70. Matched DOB comparator: the interface carries the benefit, not the law (2026-09-16)
+
+`PREREG_FYA_DOB_COMPARATOR_V1.md`. Gain selection on the development keys picked α = .08 (ties at .700 with .20,
+fewer healthy losses). In-process trios on the 40 evaluation keys (coupled 36–37/40 within each process): faulted
+off 6/40, NT 14/40, **DOB 14/40** (1 win / 1 loss, [−7.5, +7.5] points); healthy off 39/40, NT 40/40, DOB 40/40.
+The fresh trio reproduces the archived 6 → 14 exactly. A calibrated exponential smoother with the same residual,
+sensitivity, mask, cap and activation does what NT does; the deadzone gate and the normaliser contribute nothing
+resolvable here. This is what the plan anticipated as the informative tie: the paper's claim should be the
+calibrated execution interface, with NT as one of several equivalent update rules (consistent with the Panda
+19/17/17/18/15-of-20 observer table and the ALOHA study). Closed 23:42; both cards released.
